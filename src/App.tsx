@@ -24,7 +24,7 @@ const ShipmentPage = React.lazy(() => import('@/pages/ShipmentPage'))
 const InventoryManagementPage = React.lazy(() => import('@/pages/InventoryManagementPage'))
 const ShopProfileSettingsPage = React.lazy(() => import('@/pages/ShopProfileSettingsPage'))
 const WithdrawBalancePage = React.lazy(() => import('@/pages/WithdrawBalancePage'))
-const AdminDashboard = React.lazy(() => import('@/pages/AdminDashboard'))
+const AdminPage = React.lazy(() => import('@/pages/admin/AdminPage'))
 const SellerDashboard = React.lazy(() => import('@/pages/SellerDashboard'))
 const SellerProductsPage = React.lazy(() => import('@/pages/SellerProductsPage'))
 const AddProductPage = React.lazy(() => import('@/pages/AddProductPage'))
@@ -81,7 +81,7 @@ function App() {
                               <Route path="/inventory" element={<InventoryManagementPage />} />
                               <Route path="/shop-settings" element={<ShopProfileSettingsPage />} />
                               <Route path="/withdraw" element={<WithdrawBalancePage />} />
-                              <Route path="/admin" element={<AdminDashboard />} />
+                                      <Route path="/admin/*" element={<AdminPage />} />
                               <Route path="/seller/:id" element={<SellerDashboard />} />
                               <Route path="/dashboard" element={<SellerDashboard />} />
                               <Route path="/seller/products" element={<SellerProductsPage />} />

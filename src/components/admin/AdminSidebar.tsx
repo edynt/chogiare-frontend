@@ -1,136 +1,193 @@
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import React from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { 
-  BarChart3, 
-  Users, 
-  Package, 
-  ShoppingCart, 
-  Settings, 
+  LayoutDashboard,
+  Users,
+  Package,
+  ShoppingCart,
+  BarChart3,
+  Settings,
+  FileText,
+  MessageSquare,
+  CreditCard,
+  Tag,
   Shield,
-  AlertTriangle,
-  TrendingUp
+  Mail,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 
-type AdminTab = 'overview' | 'users' | 'products' | 'orders' | 'settings'
+const menuItems = [
+  {
+    title: 'Tổng quan',
+    href: '/admin',
+    icon: LayoutDashboard,
+    badge: null
+  },
+  {
+    title: 'Quản lý người dùng',
+    href: '/admin/users',
+    icon: Users,
+    badge: '12'
+  },
+  {
+    title: 'Kiểm duyệt sản phẩm',
+    href: '/admin/products',
+    icon: Package,
+    badge: '5'
+  },
+  {
+    title: 'Đơn hàng & Thanh toán',
+    href: '/admin/orders',
+    icon: ShoppingCart,
+    badge: null
+  },
+  {
+    title: 'Danh mục & Tags',
+    href: '/admin/categories',
+    icon: Tag,
+    badge: null
+  },
+  {
+    title: 'Gói dịch vụ',
+    href: '/admin/packages',
+    icon: CreditCard,
+    badge: null
+  },
+  {
+    title: 'Báo cáo & Thống kê',
+    href: '/admin/reports',
+    icon: BarChart3,
+    badge: null
+  },
+  {
+    title: 'Quản lý nội dung',
+    href: '/admin/cms',
+    icon: FileText,
+    badge: null
+  },
+  {
+    title: 'Hỗ trợ & Khiếu nại',
+    href: '/admin/support',
+    icon: MessageSquare,
+    badge: '3'
+  },
+  {
+    title: 'Cài đặt hệ thống',
+    href: '/admin/settings',
+    icon: Settings,
+    badge: null
+  },
+  {
+    title: 'Email & Thông báo',
+    href: '/admin/notifications',
+    icon: Mail,
+    badge: null
+  }
+]
 
 interface AdminSidebarProps {
-  activeTab: AdminTab
-  onTabChange: (tab: AdminTab) => void
+  isCollapsed: boolean
+  onToggle: () => void
 }
 
-export function AdminSidebar({ activeTab, onTabChange }: AdminSidebarProps) {
-  const menuItems = [
-    {
-      id: 'overview' as const,
-      label: 'Tổng quan',
-      icon: BarChart3,
-      description: 'Thống kê tổng quan hệ thống'
-    },
-    {
-      id: 'users' as const,
-      label: 'Người dùng',
-      icon: Users,
-      description: 'Quản lý người dùng và quyền hạn',
-      badge: '12'
-    },
-    {
-      id: 'products' as const,
-      label: 'Sản phẩm',
-      icon: Package,
-      description: 'Quản lý sản phẩm và danh mục',
-      badge: '3'
-    },
-    {
-      id: 'orders' as const,
-      label: 'Đơn hàng',
-      icon: ShoppingCart,
-      description: 'Quản lý đơn hàng và giao dịch',
-      badge: '5'
-    },
-    {
-      id: 'settings' as const,
-      label: 'Cài đặt',
-      icon: Settings,
-      description: 'Cấu hình hệ thống'
-    }
-  ]
+export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
+  const location = useLocation()
 
   return (
-    <div className="space-y-2">
-      {menuItems.map((item) => {
-        const Icon = item.icon
-        return (
-          <Button
-            key={item.id}
-            variant={activeTab === item.id ? 'default' : 'ghost'}
-            className={cn(
-              "w-full justify-start h-auto p-4",
-              activeTab === item.id && "bg-primary text-primary-foreground"
-            )}
-            onClick={() => onTabChange(item.id)}
-          >
-            <div className="flex items-center w-full">
-              <Icon className="h-5 w-5 mr-3 flex-shrink-0" />
-              <div className="flex-1 text-left">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">{item.label}</span>
-                  {item.badge && (
-                    <Badge 
-                      variant={activeTab === item.id ? 'secondary' : 'destructive'}
-                      className="ml-2"
-                    >
-                      {item.badge}
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-xs opacity-70 mt-1">
-                  {item.description}
-                </p>
-              </div>
-            </div>
-          </Button>
-        )
-      })}
-
-      {/* Quick Stats */}
-      <div className="mt-8 p-4 bg-muted/30 rounded-lg">
-        <h3 className="font-semibold text-sm mb-3 flex items-center">
-          <TrendingUp className="h-4 w-4 mr-2" />
-          Thống kê nhanh
-        </h3>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Tổng người dùng:</span>
-            <span className="font-medium">1,234</span>
+    <div className={cn(
+      "fixed top-0 left-0 z-50 h-full bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out",
+      isCollapsed ? "w-20" : "w-80"
+    )}>
+      {/* Logo */}
+      <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className={cn(
+          "flex items-center gap-4 transition-opacity duration-300",
+          isCollapsed ? "opacity-0" : "opacity-100"
+        )}>
+          <div className="w-10 h-10 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center">
+            <Shield className="h-6 w-6 text-white" />
           </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Sản phẩm hoạt động:</span>
-            <span className="font-medium">5,678</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Đơn hàng hôm nay:</span>
-            <span className="font-medium text-success">89</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Doanh thu tháng:</span>
-            <span className="font-medium text-success">2.5B VNĐ</span>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+            <p className="text-sm text-gray-500">Chogiare Marketplace</p>
           </div>
         </div>
+        
+        {/* Toggle Button */}
+        <button
+          onClick={onToggle}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title={isCollapsed ? "Mở rộng sidebar" : "Thu nhỏ sidebar"}
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-5 w-5 text-gray-600" />
+          ) : (
+            <ChevronLeft className="h-5 w-5 text-gray-600" />
+          )}
+        </button>
       </div>
 
-      {/* Alerts */}
-      <div className="mt-4 p-4 bg-warning/10 border border-warning/20 rounded-lg">
-        <div className="flex items-center mb-2">
-          <AlertTriangle className="h-4 w-4 text-warning mr-2" />
-          <span className="text-sm font-medium text-warning">Cảnh báo</span>
+      {/* Navigation */}
+      <nav className="flex-1 px-6 py-6 space-y-2 overflow-y-auto">
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.href
+          const Icon = item.icon
+          
+          return (
+            <Link
+              key={item.href}
+              to={item.href}
+              className={cn(
+                "flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
+                "hover:bg-gray-100 group",
+                isActive 
+                  ? "bg-amber-50 text-amber-700 border-l-4 border-amber-700" 
+                  : "text-gray-700 hover:text-gray-900"
+              )}
+              title={isCollapsed ? item.title : undefined}
+            >
+              <Icon className={cn(
+                "h-5 w-5 flex-shrink-0",
+                isActive ? "text-amber-700" : "text-gray-500 group-hover:text-gray-700"
+              )} />
+              
+              <span className={cn(
+                "flex-1 transition-opacity duration-300",
+                isCollapsed ? "opacity-0" : "opacity-100"
+              )}>
+                {item.title}
+              </span>
+              
+              {item.badge && !isCollapsed && (
+                <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">
+                  {item.badge}
+                </span>
+              )}
+            </Link>
+          )
+        })}
+      </nav>
+
+      {/* User Info */}
+      <div className="p-6 border-t border-gray-200">
+        <div className={cn(
+          "flex items-center gap-4 transition-opacity duration-300",
+          isCollapsed ? "opacity-0" : "opacity-100"
+        )}>
+          <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+            <span className="text-sm font-medium text-white">A</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900 truncate">
+              Admin User
+            </p>
+            <p className="text-xs text-gray-500 truncate">
+              Super Admin
+            </p>
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground">
-          3 sản phẩm cần kiểm duyệt
-        </p>
-        <Button size="sm" variant="outline" className="mt-2 w-full">
-          Xem chi tiết
-        </Button>
       </div>
     </div>
   )
