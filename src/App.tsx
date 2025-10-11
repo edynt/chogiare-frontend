@@ -13,8 +13,13 @@ const HomePage = React.lazy(() => import('@/pages/HomePage'))
 const ProductListPage = React.lazy(() => import('@/pages/ProductListPage'))
 const ProductPage = React.lazy(() => import('@/pages/ProductPage'))
 const CategoriesPage = React.lazy(() => import('@/pages/CategoriesPage'))
+const CartPage = React.lazy(() => import('@/pages/CartPage'))
 const ChatPage = React.lazy(() => import('@/pages/ChatPage'))
 const PaymentPage = React.lazy(() => import('@/pages/PaymentPage'))
+const PromotionPage = React.lazy(() => import('@/pages/PromotionPage'))
+const AboutPage = React.lazy(() => import('@/pages/AboutPage'))
+const ContactPage = React.lazy(() => import('@/pages/ContactPage'))
+const FAQPage = React.lazy(() => import('@/pages/FAQPage'))
 const AdminDashboard = React.lazy(() => import('@/pages/AdminDashboard'))
 const SellerDashboard = React.lazy(() => import('@/pages/SellerDashboard'))
 const SellerProductsPage = React.lazy(() => import('@/pages/SellerProductsPage'))
@@ -59,9 +64,14 @@ function App() {
                               <Route path="/products" element={<ProductListPage />} />
                               <Route path="/product/:id" element={<ProductPage />} />
                               <Route path="/categories" element={<CategoriesPage />} />
+                              <Route path="/cart" element={<CartPage />} />
                               <Route path="/chat" element={<ChatPage />} />
                               <Route path="/chat/:chatId" element={<ChatPage />} />
                               <Route path="/payment" element={<PaymentPage />} />
+                              <Route path="/promotions" element={<PromotionPage />} />
+                              <Route path="/about" element={<AboutPage />} />
+                              <Route path="/contact" element={<ContactPage />} />
+                              <Route path="/faq" element={<FAQPage />} />
                               <Route path="/admin" element={<AdminDashboard />} />
                               <Route path="/seller/:id" element={<SellerDashboard />} />
                               <Route path="/dashboard" element={<SellerDashboard />} />

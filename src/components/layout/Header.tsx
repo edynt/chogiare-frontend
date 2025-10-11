@@ -74,18 +74,20 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => dispatch(openCart())}
+              asChild
               className="relative"
             >
-              <ShoppingCart className="h-4 w-4" />
-              {totalItems > 0 && (
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
-                >
-                  {totalItems}
-                </Badge>
-              )}
+              <Link to="/cart">
+                <ShoppingCart className="h-4 w-4" />
+                {totalItems > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                  >
+                    {totalItems}
+                  </Badge>
+                )}
+              </Link>
             </Button>
 
             {/* User Menu */}

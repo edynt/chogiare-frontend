@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
+import { Badge } from '@/components/ui/badge'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   CreditCard, 
   Smartphone, 
@@ -18,7 +20,18 @@ import {
   Lock,
   Truck,
   RefreshCw,
-  Zap
+  Zap,
+  Gift,
+  Tag,
+  MapPin,
+  User,
+  Phone,
+  Mail,
+  Clock,
+  Star,
+  AlertCircle,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 
