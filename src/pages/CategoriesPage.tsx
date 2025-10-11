@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { CategoryGridSkeleton } from '@/components/skeleton/CategoryCardSkeleton'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   Search,
   Grid3X3,
@@ -41,6 +43,14 @@ export default function CategoriesPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const { t } = useLanguage()
+
+  // Simulate loading
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1000)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Mock data - trong thực tế sẽ fetch từ API
   const categories: Category[] = [
@@ -378,62 +388,69 @@ export default function CategoriesPage() {
           </div>
         </div>
 
-        {/* Featured Categories */}
-        {!searchQuery && (
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <Crown className="h-5 w-5 text-primary" />
-              <h2 className="text-xl font-semibold">Danh mục nổi bật</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredCategories.map((category) => (
-                <CategoryCard key={category.id} category={category} />
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Loading State */}
+        {isLoading ? (
+          <CategoryGridSkeleton count={6} viewMode={viewMode} />
+        ) : (
+          <>
+            {/* Featured Categories */}
+            {!searchQuery && (
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <Crown className="h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-semibold">{t('category.featured')}</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {featuredCategories.map((category) => (
+                    <CategoryCard key={category.id} category={category} />
+                  ))}
+                </div>
+              </div>
+            )}
 
-        {/* Trending Categories */}
-        {!searchQuery && (
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="h-5 w-5 text-warning" />
-              <h2 className="text-xl font-semibold">Danh mục đang hot</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {trendingCategories.map((category) => (
-                <CategoryCard key={category.id} category={category} />
-              ))}
-            </div>
-          </div>
-        )}
+            {/* Trending Categories */}
+            {!searchQuery && (
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="h-5 w-5 text-warning" />
+                  <h2 className="text-xl font-semibold">{t('category.trending')}</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {trendingCategories.map((category) => (
+                    <CategoryCard key={category.id} category={category} />
+                  ))}
+                </div>
+              </div>
+            )}
 
-        {/* All Categories */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Package className="h-5 w-5 text-primary" />
-            <h2 className="text-xl font-semibold">
-              {searchQuery ? `Kết quả tìm kiếm cho "${searchQuery}"` : 'Tất cả danh mục'}
-            </h2>
-            <Badge variant="secondary">
-              {filteredCategories.length} danh mục
-            </Badge>
-          </div>
-          
-          {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCategories.map((category) => (
-                <CategoryCard key={category.id} category={category} />
-              ))}
+            {/* All Categories */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Package className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-semibold">
+                  {searchQuery ? `${t('common.searchResults')} "${searchQuery}"` : t('category.all')}
+                </h2>
+                <Badge variant="secondary">
+                  {filteredCategories.length} {t('category.stats.subcategories')}
+                </Badge>
+              </div>
+              
+              {viewMode === 'grid' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredCategories.map((category) => (
+                    <CategoryCard key={category.id} category={category} />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredCategories.map((category) => (
+                    <CategoryListItem key={category.id} category={category} />
+                  ))}
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredCategories.map((category) => (
-                <CategoryListItem key={category.id} category={category} />
-              ))}
-            </div>
-          )}
-        </div>
+          </>
+        )}
 
         {/* Empty State */}
         {filteredCategories.length === 0 && (

@@ -10,36 +10,54 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { useCreateProduct } from '@/hooks/useProducts'
 import { useCategories } from '@/hooks/useProducts'
 import { useNotification } from '@/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
-import { 
-  Plus, 
-  Upload, 
-  X, 
-  Package, 
-  DollarSign, 
-  MapPin, 
+import {
+  Plus,
+  Upload,
+  X,
+  Package,
+  DollarSign,
+  MapPin,
   Tag,
   Image as ImageIcon,
   Save,
-  ArrowLeft
+  ArrowLeft,
 } from 'lucide-react'
 import type { Product, ProductCondition, ProductStatus } from '@/types'
 
 const schema = yup.object({
-  title: yup.string().required('Tên sản phẩm là bắt buộc').min(5, 'Tên sản phẩm phải có ít nhất 5 ký tự'),
-  description: yup.string().required('Mô tả là bắt buộc').min(20, 'Mô tả phải có ít nhất 20 ký tự'),
-  price: yup.number().required('Giá là bắt buộc').min(1000, 'Giá tối thiểu là 1,000 VNĐ'),
+  title: yup
+    .string()
+    .required('Tên sản phẩm là bắt buộc')
+    .min(5, 'Tên sản phẩm phải có ít nhất 5 ký tự'),
+  description: yup
+    .string()
+    .required('Mô tả là bắt buộc')
+    .min(20, 'Mô tả phải có ít nhất 20 ký tự'),
+  price: yup
+    .number()
+    .required('Giá là bắt buộc')
+    .min(1000, 'Giá tối thiểu là 1,000 VNĐ'),
   originalPrice: yup.number().optional(),
   categoryId: yup.string().required('Danh mục là bắt buộc'),
   condition: yup.string().required('Tình trạng là bắt buộc'),
   location: yup.string().required('Địa điểm là bắt buộc'),
-  stock: yup.number().required('Số lượng là bắt buộc').min(1, 'Số lượng tối thiểu là 1'),
+  stock: yup
+    .number()
+    .required('Số lượng là bắt buộc')
+    .min(1, 'Số lượng tối thiểu là 1'),
   tags: yup.string().optional(),
   badges: yup.array().optional(),
 })
@@ -110,10 +128,8 @@ export default function AddProductPage() {
   }
 
   const handleBadgeToggle = (badge: string) => {
-    setSelectedBadges(prev => 
-      prev.includes(badge) 
-        ? prev.filter(b => b !== badge)
-        : [...prev, badge]
+    setSelectedBadges(prev =>
+      prev.includes(badge) ? prev.filter(b => b !== badge) : [...prev, badge]
     )
     setValue('badges', selectedBadges)
   }
@@ -122,7 +138,10 @@ export default function AddProductPage() {
     execute(async () => {
       const productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'> = {
         ...data,
-        images: images.length > 0 ? images : ['https://via.placeholder.com/400x400?text=No+Image'],
+        images:
+          images.length > 0
+            ? images
+            : ['https://via.placeholder.com/400x400?text=No+Image'],
         badges: selectedBadges as any[],
         sellerId: 'current-user-id', // TODO: Get from auth context
         status: 'draft' as ProductStatus,
@@ -150,15 +169,18 @@ export default function AddProductPage() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => navigate(-1)}
               className="mb-4"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Quay lại
             </Button>
-            <div className="flex items-center gap-2 mb-2">
+            <div
+              onClick={() => navigate('/seller/products/add')}
+              className="flex items-center gap-2 mb-2 cursor-pointer hover:opacity-80 transition-opacity"
+            >
               <Plus className="h-8 w-8 text-primary" />
               <h1 className="text-3xl font-bold">Thêm sản phẩm mới</h1>
             </div>
@@ -185,7 +207,11 @@ export default function AddProductPage() {
                     {...register('title')}
                     className={errors.title ? 'border-destructive' : ''}
                   />
-                  {errors.title && <p className="text-sm text-destructive mt-1">{errors.title.message}</p>}
+                  {errors.title && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.title.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -197,42 +223,69 @@ export default function AddProductPage() {
                     {...register('description')}
                     className={errors.description ? 'border-destructive' : ''}
                   />
-                  {errors.description && <p className="text-sm text-destructive mt-1">{errors.description.message}</p>}
+                  {errors.description && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.description.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="categoryId">Danh mục *</Label>
-                    <Select onValueChange={(value) => setValue('categoryId', value)}>
-                      <SelectTrigger className={errors.categoryId ? 'border-destructive' : ''}>
+                    <Select
+                      onValueChange={value => setValue('categoryId', value)}
+                    >
+                      <SelectTrigger
+                        className={
+                          errors.categoryId ? 'border-destructive' : ''
+                        }
+                      >
                         <SelectValue placeholder="Chọn danh mục" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories?.map((category) => (
+                        {categories?.map(category => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.categoryId && <p className="text-sm text-destructive mt-1">{errors.categoryId.message}</p>}
+                    {errors.categoryId && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.categoryId.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <Label htmlFor="condition">Tình trạng *</Label>
-                    <Select onValueChange={(value) => setValue('condition', value as ProductCondition)}>
-                      <SelectTrigger className={errors.condition ? 'border-destructive' : ''}>
+                    <Select
+                      onValueChange={value =>
+                        setValue('condition', value as ProductCondition)
+                      }
+                    >
+                      <SelectTrigger
+                        className={errors.condition ? 'border-destructive' : ''}
+                      >
                         <SelectValue placeholder="Chọn tình trạng" />
                       </SelectTrigger>
                       <SelectContent>
-                        {conditions.map((condition) => (
-                          <SelectItem key={condition.value} value={condition.value}>
+                        {conditions.map(condition => (
+                          <SelectItem
+                            key={condition.value}
+                            value={condition.value}
+                          >
                             {condition.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.condition && <p className="text-sm text-destructive mt-1">{errors.condition.message}</p>}
+                    {errors.condition && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.condition.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -257,7 +310,11 @@ export default function AddProductPage() {
                       {...register('price', { valueAsNumber: true })}
                       className={errors.price ? 'border-destructive' : ''}
                     />
-                    {errors.price && <p className="text-sm text-destructive mt-1">{errors.price.message}</p>}
+                    {errors.price && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.price.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -268,7 +325,9 @@ export default function AddProductPage() {
                       placeholder="0"
                       {...register('originalPrice', { valueAsNumber: true })}
                     />
-                    <p className="text-sm text-muted-foreground mt-1">Để trống nếu không có giá gốc</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Để trống nếu không có giá gốc
+                    </p>
                   </div>
                 </div>
 
@@ -282,7 +341,11 @@ export default function AddProductPage() {
                       {...register('stock', { valueAsNumber: true })}
                       className={errors.stock ? 'border-destructive' : ''}
                     />
-                    {errors.stock && <p className="text-sm text-destructive mt-1">{errors.stock.message}</p>}
+                    {errors.stock && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.stock.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -293,7 +356,11 @@ export default function AddProductPage() {
                       {...register('location')}
                       className={errors.location ? 'border-destructive' : ''}
                     />
-                    {errors.location && <p className="text-sm text-destructive mt-1">{errors.location.message}</p>}
+                    {errors.location && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.location.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -321,7 +388,8 @@ export default function AddProductPage() {
                     />
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Tải lên tối đa 10 hình ảnh. Hình đầu tiên sẽ là ảnh đại diện.
+                    Tải lên tối đa 10 hình ảnh. Hình đầu tiên sẽ là ảnh đại
+                    diện.
                   </p>
                 </div>
 
@@ -344,7 +412,9 @@ export default function AddProductPage() {
                           <X className="h-3 w-3" />
                         </Button>
                         {index === 0 && (
-                          <Badge className="absolute bottom-2 left-2">Ảnh chính</Badge>
+                          <Badge className="absolute bottom-2 left-2">
+                            Ảnh chính
+                          </Badge>
                         )}
                       </div>
                     ))}
@@ -377,7 +447,7 @@ export default function AddProductPage() {
                 <div>
                   <Label>Badges</Label>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {availableBadges.map((badge) => (
+                    {availableBadges.map(badge => (
                       <div key={badge} className="flex items-center space-x-2">
                         <Checkbox
                           id={badge}

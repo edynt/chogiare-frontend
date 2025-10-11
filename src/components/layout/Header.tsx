@@ -3,18 +3,21 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { LanguageToggle } from '@/components/ui/language-toggle'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAppSelector, useAppDispatch } from '@/store'
-import { toggleTheme, toggleMobileMenu } from '@/store/slices/uiSlice'
+import { toggleMobileMenu } from '@/store/slices/uiSlice'
 import { openCart } from '@/store/slices/cartSlice'
 import { useCategories } from '@/hooks/useProducts'
-import { Search, ShoppingCart, Menu, Sun, Moon, User, MessageCircle } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { Search, ShoppingCart, Menu, User, MessageCircle } from 'lucide-react'
 
 export function Header() {
   const dispatch = useAppDispatch()
-  const { theme } = useAppSelector((state) => state.ui)
   const { totalItems } = useAppSelector((state) => state.cart)
   const { isAuthenticated, user } = useAppSelector((state) => state.auth)
   const { data: categories } = useCategories()
+  const { t } = useLanguage()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -31,13 +34,13 @@ export function Header() {
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Sản phẩm
+              {t('nav.products')}
             </Link>
             <Link to="/categories" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Danh mục
+              {t('nav.categories')}
             </Link>
             <Link to="/seller/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Người bán
+              {t('nav.sellers')}
             </Link>
           </nav>
 
@@ -46,7 +49,7 @@ export function Header() {
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Tìm kiếm sản phẩm..."
+                placeholder={t('common.search')}
                 className="pl-10 pr-4"
               />
             </div>
@@ -56,23 +59,16 @@ export function Header() {
           <div className="hidden md:flex items-center space-x-4">
             {/* Chat Icon */}
             <Link to="/chat">
-              <Button variant="ghost" size="icon" aria-label="Messages">
+              <Button variant="ghost" size="icon" aria-label={t('nav.chat')}>
                 <MessageCircle className="h-4 w-4" />
               </Button>
             </Link>
 
+            {/* Language Toggle */}
+            <LanguageToggle />
+
             {/* Theme Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => dispatch(toggleTheme())}
-            >
-              {theme === 'light' ? (
-                <Moon className="h-4 w-4" />
-              ) : (
-                <Sun className="h-4 w-4" />
-              )}
-            </Button>
+            <ThemeToggle />
 
             {/* Cart */}
             <Button
@@ -97,7 +93,7 @@ export function Header() {
               <div className="flex items-center space-x-2">
                 <Link to="/seller/products">
                   <Button variant="ghost" size="sm">
-                    Quản lý sản phẩm
+                    {t('nav.manageProducts')}
                   </Button>
                 </Link>
                 <Link to="/profile">
@@ -112,10 +108,10 @@ export function Header() {
             ) : (
               <div className="flex items-center space-x-2">
                 <Button variant="ghost" asChild>
-                  <Link to="/auth/login">Đăng nhập</Link>
+                  <Link to="/auth/login">{t('common.login')}</Link>
                 </Button>
                 <Button asChild>
-                  <Link to="/auth/register">Đăng ký</Link>
+                  <Link to="/auth/register">{t('common.register')}</Link>
                 </Button>
               </div>
             )}

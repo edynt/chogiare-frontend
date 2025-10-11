@@ -8,8 +8,10 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { ProductCard } from '@/components/product/ProductCard'
 import { ProductFilters } from '@/components/product/ProductFilters'
+import { ProductGridSkeleton } from '@/components/skeleton/ProductCardSkeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useProducts, useCategories } from '@/hooks/useProducts'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Search, Grid, List, SlidersHorizontal, Star, TrendingUp, Zap } from 'lucide-react'
 import type { SearchFilters } from '@/types'
 
@@ -17,6 +19,7 @@ export default function ProductListPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showFilters, setShowFilters] = useState(false)
+  const { t } = useLanguage()
   
   // Lấy tham số từ URL
   const query = searchParams.get('q') || ''
@@ -291,18 +294,7 @@ export default function ProductListPage() {
 
           {/* Loading State */}
           {isLoading && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <Card key={i} className="animate-pulse">
-                  <div className="aspect-square bg-muted rounded-t-lg" />
-                  <CardContent className="p-4">
-                    <div className="h-4 bg-muted rounded mb-2" />
-                    <div className="h-4 bg-muted rounded w-2/3 mb-2" />
-                    <div className="h-6 bg-muted rounded w-1/2" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <ProductGridSkeleton count={8} viewMode={viewMode} />
           )}
 
           {/* Products Grid/List */}
@@ -330,6 +322,7 @@ export default function ProductListPage() {
                       <ProductCard
                         key={product.id}
                         product={product}
+                        viewMode={viewMode}
                         className={viewMode === 'list' ? 'flex flex-row' : ''}
                       />
                     ))}

@@ -43,7 +43,7 @@ export function ProductGrid() {
 
         <div className="text-center mt-8">
           <Button size="lg" asChild>
-            <Link to="/products">Xem thêm sản phẩm</Link>
+            <Link to="/seller/products/add">Xem thêm sản phẩm</Link>
           </Button>
         </div>
       </div>
