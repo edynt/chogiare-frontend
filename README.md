@@ -221,4 +221,4 @@ For support and questions:
 
 ---
 
-Built with ❤️ using React, TypeScript, and modern web technologies.# chogiare
+Built with ❤️ using React, TypeScript, and modern web technologies.

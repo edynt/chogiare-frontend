@@ -49,7 +49,7 @@ export function AdminOrders() {
       case 'delivered':
         return <Badge variant="success">Đã giao</Badge>
       case 'shipping':
-        return <Badge variant="info">Đang giao</Badge>
+        return <Badge variant="secondary">Đang giao</Badge>
       case 'pending':
         return <Badge variant="warning">Chờ xử lý</Badge>
       case 'cancelled':

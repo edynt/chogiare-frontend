@@ -95,13 +95,19 @@ export function Header() {
             {/* User Menu */}
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user?.avatar} />
-                  <AvatarFallback>
-                    <User className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-medium">{user?.name}</span>
+                <Link to="/seller/products">
+                  <Button variant="ghost" size="sm">
+                    Quản lý sản phẩm
+                  </Button>
+                </Link>
+                <Link to="/profile">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user?.avatar} />
+                    <AvatarFallback>
+                      <User className="h-4 w-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
               </div>
             ) : (
               <div className="flex items-center space-x-2">

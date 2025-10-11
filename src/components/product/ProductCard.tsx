@@ -8,14 +8,16 @@ import { Heart, Eye, ShoppingCart } from 'lucide-react'
 import { useAppDispatch } from '@/store'
 import { addToCart } from '@/store/slices/cartSlice'
 import { setModal } from '@/store/slices/uiSlice'
-import { formatPrice } from '@/lib/utils'
+import { cn, formatPrice } from '@/lib/utils'
 import type { Product } from '@/types'
 
 interface ProductCardProps {
   product: Product
+  className?: string
+  viewMode?: 'grid' | 'list'
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, className, viewMode = 'grid' }: ProductCardProps) {
   const dispatch = useAppDispatch()
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -37,7 +39,7 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <Card className="group hover:shadow-lg transition-shadow duration-200">
+    <Card className={cn("group hover:shadow-lg transition-shadow duration-200", className, viewMode === 'list' && 'flex flex-row')}>
       <Link to={`/product/${product.id}`}>
         <div className="relative aspect-square overflow-hidden rounded-t-lg">
           <img
@@ -112,9 +114,14 @@ export function ProductCard({ product }: ProductCardProps) {
               {formatPrice(product.price)}
             </span>
             {product.originalPrice && product.originalPrice > product.price && (
-              <span className="text-sm text-muted-foreground line-through">
-                {formatPrice(product.originalPrice)}
-              </span>
+              <>
+                <span className="text-sm text-muted-foreground line-through">
+                  {formatPrice(product.originalPrice)}
+                </span>
+                <Badge variant="destructive" className="text-xs">
+                  -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                </Badge>
+              </>
             )}
           </div>
 

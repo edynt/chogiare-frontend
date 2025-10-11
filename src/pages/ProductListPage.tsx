@@ -1,18 +1,19 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Checkbox } from '@/components/ui/checkbox'
 import { ProductCard } from '@/components/product/ProductCard'
 import { ProductFilters } from '@/components/product/ProductFilters'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useProducts, useCategories } from '@/hooks/useProducts'
-import { Search, Filter, Grid, List, SlidersHorizontal } from 'lucide-react'
+import { Search, Grid, List, SlidersHorizontal, Star, TrendingUp, Zap } from 'lucide-react'
 import type { SearchFilters } from '@/types'
 
-export function ProductListPage() {
+export default function ProductListPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showFilters, setShowFilters] = useState(false)
@@ -89,18 +90,39 @@ export function ProductListPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Danh sách sản phẩm</h1>
-        <p className="text-muted-foreground">
-          Tìm kiếm và lọc sản phẩm theo nhu cầu của bạn
-        </p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Zap className="h-8 w-8 text-primary" />
+            <h1 className="text-3xl font-bold">Sản phẩm giá tốt</h1>
+          </div>
+          <p className="text-muted-foreground text-lg">
+            Khám phá hàng ngàn sản phẩm chất lượng với giá cả hợp lý
+          </p>
+          
+          {/* Trust indicators */}
+          <div className="flex items-center gap-6 mt-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <Star className="h-4 w-4 text-yellow-500" />
+              <span>4.8/5 đánh giá</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <TrendingUp className="h-4 w-4 text-success" />
+              <span>+50% tiết kiệm</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Zap className="h-4 w-4 text-primary" />
+              <span>Giao hàng nhanh</span>
+            </div>
+          </div>
+        </div>
 
       {/* Search và Controls */}
       <div className="mb-6 space-y-4">
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           {/* Search Bar */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -114,7 +136,7 @@ export function ProductListPage() {
 
           {/* Sort */}
           <Select value={sortBy} onValueChange={handleSortChange}>
-            <SelectTrigger className="w-full md:w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Sắp xếp theo" />
             </SelectTrigger>
             <SelectContent>
@@ -188,7 +210,7 @@ export function ProductListPage() {
               <Badge variant="secondary" className="gap-1">
                 Giá: {minPrice ? `${minPrice}đ` : '0đ'} - {maxPrice ? `${maxPrice}đ` : '∞'}
                 <button
-                  onClick={() => handleFilterChange({ minPrice: '', maxPrice: '' })}
+                  onClick={() => handleFilterChange({ minPrice: undefined, maxPrice: undefined })}
                   className="ml-1 hover:text-destructive"
                 >
                   ×
@@ -199,7 +221,7 @@ export function ProductListPage() {
               <Badge variant="secondary" className="gap-1">
                 Tình trạng: {condition === 'new' ? 'Mới' : 'Đã sử dụng'}
                 <button
-                  onClick={() => handleFilterChange({ condition: '' })}
+                  onClick={() => handleFilterChange({ condition: undefined })}
                   className="ml-1 hover:text-destructive"
                 >
                   ×
@@ -263,7 +285,7 @@ export function ProductListPage() {
           {/* Results Count */}
           {productsData && (
             <div className="mb-4 text-sm text-muted-foreground">
-              Hiển thị {productsData.items.length} trong tổng số {productsData.total} sản phẩm
+              Hiển thị {productsData.items?.length} trong tổng số {productsData.total} sản phẩm
             </div>
           )}
 
@@ -286,7 +308,7 @@ export function ProductListPage() {
           {/* Products Grid/List */}
           {!isLoading && productsData && (
             <>
-              {productsData.items.length === 0 ? (
+              {productsData.items?.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="text-6xl mb-4">🔍</div>
                   <h3 className="text-xl font-semibold mb-2">Không tìm thấy sản phẩm</h3>
@@ -304,7 +326,7 @@ export function ProductListPage() {
                       ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
                       : 'grid-cols-1'
                   }`}>
-                    {productsData.items.map((product) => (
+                    {productsData?.items?.map((product) => (
                       <ProductCard
                         key={product.id}
                         product={product}
@@ -356,7 +378,9 @@ export function ProductListPage() {
             </>
           )}
         </div>
-      </div>
+        </div>
+      </main>
+      <Footer />
     </div>
   )
 }

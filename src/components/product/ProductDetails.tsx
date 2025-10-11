@@ -187,7 +187,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </div>
             <div>
               <span className="font-medium">Danh mục:</span>
-              <span className="ml-2">{product.category.name}</span>
+              <span className="ml-2">{product.category?.name}</span>
             </div>
           </div>
 
@@ -306,7 +306,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                   <h4>Thông số kỹ thuật</h4>
                   <ul>
                     <li>Tình trạng: {product.condition === 'new' ? 'Mới 100%' : 'Đã sử dụng'}</li>
-                    <li>Danh mục: {product.category.name}</li>
+                    <li>Danh mục: {product.category?.name}</li>
                     <li>Khu vực: {product.location}</li>
                     <li>Số lượng còn lại: {product.stock} sản phẩm</li>
                   </ul>

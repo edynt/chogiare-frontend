@@ -100,3 +100,11 @@ export const useBulkUpdateProducts = () => {
     },
   })
 }
+
+export const useMyProducts = (filters: Omit<SearchFilters, 'sellerId'> = {}) => {
+  return useQuery({
+    queryKey: ['products', 'my', filters],
+    queryFn: () => productsApi.getMyProducts(filters),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}

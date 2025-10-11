@@ -7,18 +7,12 @@ import { AdminUsers } from '@/components/admin/AdminUsers'
 import { AdminProducts } from '@/components/admin/AdminProducts'
 import { AdminOrders } from '@/components/admin/AdminOrders'
 import { AdminSettings } from '@/components/admin/AdminSettings'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { 
-  Users, 
-  Package, 
-  ShoppingCart, 
-  DollarSign, 
   TrendingUp, 
-  AlertTriangle,
   Shield,
-  BarChart3
+  Zap,
+  Crown
 } from 'lucide-react'
 
 type AdminTab = 'overview' | 'users' | 'products' | 'orders' | 'settings'
@@ -50,15 +44,34 @@ export default function AdminDashboard() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Quản trị hệ thống</h1>
-              <p className="text-muted-foreground">
-                Quản lý toàn bộ hoạt động của nền tảng Chogiare
+              <div className="flex items-center gap-2 mb-2">
+                <Crown className="h-8 w-8 text-primary" />
+                <h1 className="text-3xl font-bold">Quản trị hệ thống</h1>
+              </div>
+              <p className="text-muted-foreground text-lg">
+                Quản lý toàn bộ hoạt động của nền tảng Chogiare - Nơi mua sắm giá tốt
               </p>
+              
+              {/* Performance indicators */}
+              <div className="flex items-center gap-6 mt-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="h-4 w-4 text-success" />
+                  <span>+25% doanh thu tháng này</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Zap className="h-4 w-4 text-primary" />
+                  <span>99.9% uptime</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Shield className="h-4 w-4 text-info" />
+                  <span>Bảo mật cao</span>
+                </div>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="flex items-center gap-1">
-                <Shield className="h-3 w-3" />
-                Admin
+                <Crown className="h-3 w-3" />
+                Super Admin
               </Badge>
             </div>
           </div>

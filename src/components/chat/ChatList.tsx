@@ -31,7 +31,7 @@ interface Chat {
 
 interface ChatListProps {
   searchQuery: string
-  selectedChatId?: string
+  selectedChatId?: string | undefined
 }
 
 export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {

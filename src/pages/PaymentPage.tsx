@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
 import { 
   CreditCard, 
   Smartphone, 
@@ -18,9 +17,10 @@ import {
   ArrowLeft,
   Lock,
   Truck,
-  RefreshCw
+  RefreshCw,
+  Zap
 } from 'lucide-react'
-import { cn, formatPrice } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 
 export default function PaymentPage() {
   const navigate = useNavigate()
@@ -133,10 +133,29 @@ export default function PaymentPage() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Quay lại
             </Button>
-            <h1 className="text-3xl font-bold mb-2">Thanh toán</h1>
-            <p className="text-muted-foreground">
-              Hoàn tất đơn hàng của bạn một cách an toàn
+            <div className="flex items-center gap-2 mb-2">
+              <CreditCard className="h-8 w-8 text-primary" />
+              <h1 className="text-3xl font-bold">Thanh toán</h1>
+            </div>
+            <p className="text-muted-foreground text-lg">
+              Hoàn tất đơn hàng của bạn một cách an toàn và nhanh chóng
             </p>
+            
+            {/* Trust indicators */}
+            <div className="flex items-center gap-6 mt-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Shield className="h-4 w-4 text-success" />
+                <span>Bảo mật tuyệt đối</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Zap className="h-4 w-4 text-primary" />
+                <span>Thanh toán nhanh</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <CreditCard className="h-4 w-4 text-info" />
+                <span>Nhiều phương thức</span>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

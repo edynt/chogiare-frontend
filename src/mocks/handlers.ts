@@ -106,7 +106,8 @@ export const handlers = [
     return HttpResponse.json({
       success: true,
       data: {
-        data: paginatedProducts,
+        items: paginatedProducts,
+        total: filteredProducts.length,
         pagination: {
           page,
           limit,
@@ -199,6 +200,89 @@ export const handlers = [
           hasPrev: page > 1,
         },
       },
+    })
+  }),
+
+  // Seller products endpoints
+  http.get('/api/seller/products', ({ request }) => {
+    const url = new URL(request.url)
+    const page = parseInt(url.searchParams.get('page') || '1')
+    const limit = parseInt(url.searchParams.get('limit') || '20')
+    const status = url.searchParams.get('status')
+    const query = url.searchParams.get('query')
+
+    let filteredProducts = [...demoData.products]
+
+    if (status && status !== 'all') {
+      filteredProducts = filteredProducts.filter(p => p.status === status)
+    }
+
+    if (query) {
+      filteredProducts = filteredProducts.filter(p => 
+        p.title.toLowerCase().includes(query.toLowerCase()) ||
+        p.description.toLowerCase().includes(query.toLowerCase())
+      )
+    }
+
+    const startIndex = (page - 1) * limit
+    const endIndex = startIndex + limit
+    const paginatedProducts = filteredProducts.slice(startIndex, endIndex)
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        items: paginatedProducts,
+        total: filteredProducts.length,
+        pagination: {
+          page,
+          limit,
+          total: filteredProducts.length,
+          totalPages: Math.ceil(filteredProducts.length / limit),
+          hasNext: endIndex < filteredProducts.length,
+          hasPrev: page > 1,
+        },
+      },
+    })
+  }),
+
+  http.post('/api/products', async ({ request }) => {
+    const body = await request.json() as any
+    const newProduct = {
+      id: `prod${Date.now()}`,
+      ...body,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+    
+    demoData.products.push(newProduct)
+    
+    return HttpResponse.json({
+      success: true,
+      data: newProduct,
+    })
+  }),
+
+  http.patch('/api/products/:id', async ({ params, request }) => {
+    const productId = params.id as string
+    const updates = await request.json() as any
+    
+    const productIndex = demoData.products.findIndex(p => p.id === productId)
+    if (productIndex === -1) {
+      return HttpResponse.json(
+        { success: false, message: 'Product not found' },
+        { status: 404 }
+      )
+    }
+
+    demoData.products[productIndex] = {
+      ...demoData.products[productIndex],
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    }
+
+    return HttpResponse.json({
+      success: true,
+      data: demoData.products[productIndex],
     })
   }),
 

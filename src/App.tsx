@@ -15,6 +15,9 @@ const ChatPage = React.lazy(() => import('@/pages/ChatPage'))
 const PaymentPage = React.lazy(() => import('@/pages/PaymentPage'))
 const AdminDashboard = React.lazy(() => import('@/pages/AdminDashboard'))
 const SellerDashboard = React.lazy(() => import('@/pages/SellerDashboard'))
+const SellerProductsPage = React.lazy(() => import('@/pages/SellerProductsPage'))
+const AddProductPage = React.lazy(() => import('@/pages/AddProductPage'))
+const EditProductPage = React.lazy(() => import('@/pages/EditProductPage'))
 const AuthPage = React.lazy(() => import('@/pages/AuthPage'))
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'))
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'))
@@ -58,6 +61,9 @@ function App() {
                             <Route path="/admin" element={<AdminDashboard />} />
                             <Route path="/seller/:id" element={<SellerDashboard />} />
                             <Route path="/dashboard" element={<SellerDashboard />} />
+                            <Route path="/seller/products" element={<SellerProductsPage />} />
+                            <Route path="/seller/products/add" element={<AddProductPage />} />
+                            <Route path="/seller/products/edit/:id" element={<EditProductPage />} />
                             <Route path="/auth/*" element={<AuthPage />} />
                             <Route path="/profile" element={<ProfilePage />} />
                             <Route path="*" element={<NotFoundPage />} />

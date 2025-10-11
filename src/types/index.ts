@@ -142,21 +142,25 @@ export interface Conversation {
 }
 
 export interface SearchFilters {
-  query?: string
-  categoryId?: string
-  minPrice?: number
-  maxPrice?: number
-  condition?: ProductCondition[]
-  location?: string
-  sellerId?: string
-  badges?: ProductBadge[]
-  sortBy?: 'price_asc' | 'price_desc' | 'newest' | 'oldest' | 'rating' | 'popular'
-  page?: number
-  limit?: number
+  query?: string | undefined
+  categoryId?: string | undefined
+  minPrice?: number | undefined
+  maxPrice?: number | undefined
+  condition?: ProductCondition | undefined
+  location?: string | undefined
+  sellerId?: string | undefined
+  badges?: ProductBadge[] | undefined
+  rating?: number | undefined
+  sortBy?: string | undefined
+  sortOrder?: 'asc' | 'desc' | undefined
+  page?: number | undefined
+  limit?: number | undefined
+  offset?: number | undefined
 }
 
 export interface PaginatedResponse<T> {
-  data: T[]
+  total: number
+  items: T[]
   pagination: {
     page: number
     limit: number
