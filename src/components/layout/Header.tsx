@@ -36,7 +36,7 @@ export function Header() {
             <Link to="/categories" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Danh mục
             </Link>
-            <Link to="/sellers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/seller/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Người bán
             </Link>
           </nav>

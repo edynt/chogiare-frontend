@@ -11,12 +11,13 @@ import { Input } from '@/components/ui/input'
 export default function ChatPage() {
   const { chatId } = useParams<{ chatId?: string }>()
   const [searchQuery, setSearchQuery] = useState('')
-
+  
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-6">
+      
+      <main className="flex-1 flex flex-col container mx-auto px-4 py-8 overflow-hidden">
+        <div className="mb-6 flex-shrink-0">
           <div className="flex items-center gap-2 mb-4">
             <MessageCircle className="h-8 w-8 text-primary" />
             <h1 className="text-3xl font-bold">Tin nhắn</h1>
@@ -42,12 +43,12 @@ export default function ChatPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)] min-h-[600px]">
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-hidden">
           {/* Chat List Sidebar */}
-          <div className="lg:col-span-1 order-2 lg:order-1">
-            <Card className="h-full">
-              <CardContent className="p-4 h-full flex flex-col">
-                <div className="mb-4">
+          <div className="lg:col-span-1 order-2 lg:order-1 h-full max-h-[calc(100vh-280px)]">
+            <Card className="h-full flex flex-col">
+              <CardContent className="p-4 h-full flex flex-col overflow-hidden">
+                <div className="mb-4 flex-shrink-0">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
@@ -67,13 +68,13 @@ export default function ChatPage() {
           </div>
 
           {/* Chat Window */}
-          <div className="lg:col-span-2 order-1 lg:order-2">
-            <Card className="h-full">
-              <CardContent className="p-0 h-full">
+          <div className="lg:col-span-2 order-1 lg:order-2 h-full max-h-[calc(100vh-280px)]">
+            <Card className="h-full flex flex-col overflow-hidden">
+              <CardContent className="p-0 h-full flex flex-col overflow-hidden">
                 {chatId ? (
                   <ChatWindow chatId={chatId} />
                 ) : (
-                  <div className="h-full flex items-center justify-center">
+                  <div className="flex-1 flex items-center justify-center">
                     <div className="text-center">
                       <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                       <h3 className="text-lg font-semibold mb-2">Chọn cuộc trò chuyện</h3>
@@ -88,6 +89,7 @@ export default function ChatPage() {
           </div>
         </div>
       </main>
+
       <Footer />
     </div>
   )

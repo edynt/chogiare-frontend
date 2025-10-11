@@ -11,6 +11,7 @@ import { NotificationProvider } from '@/components/notification-provider'
 const HomePage = React.lazy(() => import('@/pages/HomePage'))
 const ProductListPage = React.lazy(() => import('@/pages/ProductListPage'))
 const ProductPage = React.lazy(() => import('@/pages/ProductPage'))
+const CategoriesPage = React.lazy(() => import('@/pages/CategoriesPage'))
 const ChatPage = React.lazy(() => import('@/pages/ChatPage'))
 const PaymentPage = React.lazy(() => import('@/pages/PaymentPage'))
 const AdminDashboard = React.lazy(() => import('@/pages/AdminDashboard'))
@@ -55,6 +56,7 @@ function App() {
                             <Route path="/" element={<HomePage />} />
                             <Route path="/products" element={<ProductListPage />} />
                             <Route path="/product/:id" element={<ProductPage />} />
+                            <Route path="/categories" element={<CategoriesPage />} />
                             <Route path="/chat" element={<ChatPage />} />
                             <Route path="/chat/:chatId" element={<ChatPage />} />
                             <Route path="/payment" element={<PaymentPage />} />
