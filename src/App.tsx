@@ -18,9 +18,9 @@ const ChatPage = React.lazy(() => import('@/pages/ChatPage'))
 const PaymentPage = React.lazy(() => import('@/pages/PaymentPage'))
 const PromotionPage = React.lazy(() => import('@/pages/PromotionPage'))
 const AboutPage = React.lazy(() => import('@/pages/AboutPage'))
-const ContactPage = React.lazy(() => import('@/pages/ContactPage'))
-const FAQPage = React.lazy(() => import('@/pages/FAQPage'))
-const ShipmentPage = React.lazy(() => import('@/pages/ShipmentPage'))
+        const ContactPage = React.lazy(() => import('@/pages/ContactPage'))
+        const FAQPage = React.lazy(() => import('@/pages/FAQPage'))
+        const ShipmentPage = React.lazy(() => import('@/pages/ShipmentPage'))
 const InventoryManagementPage = React.lazy(() => import('@/pages/InventoryManagementPage'))
 const ShopProfileSettingsPage = React.lazy(() => import('@/pages/ShopProfileSettingsPage'))
 const WithdrawBalancePage = React.lazy(() => import('@/pages/WithdrawBalancePage'))
@@ -74,10 +74,10 @@ function App() {
                               <Route path="/payment" element={<PaymentPage />} />
                               <Route path="/promotions" element={<PromotionPage />} />
                               <Route path="/about" element={<AboutPage />} />
-                              <Route path="/contact" element={<ContactPage />} />
-                              <Route path="/faq" element={<FAQPage />} />
-                              <Route path="/shipment" element={<ShipmentPage />} />
-                              <Route path="/shipment/:shipmentId" element={<ShipmentPage />} />
+                                      <Route path="/contact" element={<ContactPage />} />
+                                      <Route path="/faq" element={<FAQPage />} />
+                                      <Route path="/shipment" element={<ShipmentPage />} />
+                                      <Route path="/shipment/:shipmentId" element={<ShipmentPage />} />
                               <Route path="/inventory" element={<InventoryManagementPage />} />
                               <Route path="/shop-settings" element={<ShopProfileSettingsPage />} />
                               <Route path="/withdraw" element={<WithdrawBalancePage />} />

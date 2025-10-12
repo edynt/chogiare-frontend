@@ -8,8 +8,6 @@ const routeMap: Record<string, string> = {
   '/admin/users': 'Quản lý người dùng',
   '/admin/products': 'Kiểm duyệt sản phẩm',
   '/admin/orders': 'Đơn hàng & Thanh toán',
-  '/admin/categories': 'Danh mục & Tags',
-  '/admin/packages': 'Gói dịch vụ',
   '/admin/reports': 'Báo cáo & Thống kê',
   '/admin/cms': 'Quản lý nội dung',
   '/admin/support': 'Hỗ trợ & Khiếu nại',

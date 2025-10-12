@@ -11,6 +11,7 @@ import ContentManagementPage from './ContentManagementPage'
 import SupportTicketsPage from './SupportTicketsPage'
 import SystemSettingsPage from './SystemSettingsPage'
 import NotificationManagementPage from './NotificationManagementPage'
+import CustomerSupportPage from './CustomerSupportPage'
 
 export default function AdminPage() {
   return (
@@ -23,9 +24,10 @@ export default function AdminPage() {
         <Route path="/subscriptions" element={<PackageManagementPage />} />
         <Route path="/reports" element={<ReportsAnalyticsPage />} />
         <Route path="/cms" element={<ContentManagementPage />} />
-        <Route path="/tickets" element={<SupportTicketsPage />} />
-        <Route path="/settings" element={<SystemSettingsPage />} />
-        <Route path="/notifications" element={<NotificationManagementPage />} />
+                <Route path="/tickets" element={<SupportTicketsPage />} />
+                <Route path="/support" element={<CustomerSupportPage />} />
+                <Route path="/settings" element={<SystemSettingsPage />} />
+                <Route path="/notifications" element={<NotificationManagementPage />} />
       </Routes>
     </AdminLayout>
   )

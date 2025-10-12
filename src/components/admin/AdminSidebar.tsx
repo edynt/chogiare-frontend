@@ -44,18 +44,6 @@ const menuItems = [
     badge: null
   },
   {
-    title: 'Danh mục & Tags',
-    href: '/admin/categories',
-    icon: Tag,
-    badge: null
-  },
-  {
-    title: 'Gói dịch vụ',
-    href: '/admin/packages',
-    icon: CreditCard,
-    badge: null
-  },
-  {
     title: 'Báo cáo & Thống kê',
     href: '/admin/reports',
     icon: BarChart3,
@@ -106,7 +94,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
           "flex items-center gap-4 transition-opacity duration-300",
           isCollapsed ? "opacity-0" : "opacity-100"
         )}>
-          <div className="w-10 h-10 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
             <Shield className="h-6 w-6 text-white" />
           </div>
           <div>
@@ -143,14 +131,14 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                 "flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                 "hover:bg-gray-100 group",
                 isActive 
-                  ? "bg-amber-50 text-amber-700 border-l-4 border-amber-700" 
+                  ? "bg-primary/10 text-primary border-l-4 border-primary" 
                   : "text-gray-700 hover:text-gray-900"
               )}
               title={isCollapsed ? item.title : undefined}
             >
               <Icon className={cn(
                 "h-5 w-5 flex-shrink-0",
-                isActive ? "text-amber-700" : "text-gray-500 group-hover:text-gray-700"
+                isActive ? "text-primary" : "text-gray-500 group-hover:text-gray-700"
               )} />
               
               <span className={cn(
@@ -176,7 +164,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
           "flex items-center gap-4 transition-opacity duration-300",
           isCollapsed ? "opacity-0" : "opacity-100"
         )}>
-          <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center">
             <span className="text-sm font-medium text-white">A</span>
           </div>
           <div className="flex-1 min-w-0">

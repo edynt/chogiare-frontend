@@ -10,7 +10,7 @@ import { toggleMobileMenu } from '@/store/slices/uiSlice'
 import { openCart } from '@/store/slices/cartSlice'
 import { useCategories } from '@/hooks/useProducts'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { Search, ShoppingCart, Menu, User, MessageCircle } from 'lucide-react'
+import { Search, ShoppingCart, Menu, User, MessageCircle, MessageSquare } from 'lucide-react'
 
 export function Header() {
   const dispatch = useAppDispatch()
@@ -63,6 +63,7 @@ export function Header() {
                 <MessageCircle className="h-4 w-4" />
               </Button>
             </Link>
+
 
             {/* Language Toggle */}
             <LanguageToggle />
