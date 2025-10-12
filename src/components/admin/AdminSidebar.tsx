@@ -15,7 +15,9 @@ import {
   Shield,
   Mail,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Gift,
+  Menu
 } from 'lucide-react'
 
 const menuItems = [
@@ -62,6 +64,12 @@ const menuItems = [
     badge: '3'
   },
   {
+    title: 'Quản lý khuyến mãi',
+    href: '/admin/promotions',
+    icon: Gift,
+    badge: null
+  },
+  {
     title: 'Cài đặt hệ thống',
     href: '/admin/settings',
     icon: Settings,
@@ -88,37 +96,35 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
       "fixed top-0 left-0 z-50 h-full bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out",
       isCollapsed ? "w-20" : "w-80"
     )}>
-      {/* Logo */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200">
-        <div className={cn(
-          "flex items-center gap-4 transition-opacity duration-300",
-          isCollapsed ? "opacity-0" : "opacity-100"
-        )}>
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-            <Shield className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
-            <p className="text-sm text-gray-500">Chogiare Marketplace</p>
-          </div>
-        </div>
-        
-        {/* Toggle Button */}
-        <button
-          onClick={onToggle}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          title={isCollapsed ? "Mở rộng sidebar" : "Thu nhỏ sidebar"}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-5 w-5 text-gray-600" />
-          ) : (
+      {/* Logo / Toggle Button */}
+      <button
+        onClick={onToggle}
+        className={cn(
+          "flex items-center justify-between p-6 border-b border-gray-200 hover:bg-gray-50 transition-colors",
+          isCollapsed && "justify-center"
+        )}
+        title={isCollapsed ? "Mở rộng sidebar" : "Thu nhỏ sidebar"}
+      >
+        {!isCollapsed ? (
+          <>
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+                <p className="text-sm text-gray-500">Chogiare Marketplace</p>
+              </div>
+            </div>
             <ChevronLeft className="h-5 w-5 text-gray-600" />
-          )}
-        </button>
-      </div>
+          </>
+        ) : (
+          <Menu className="h-6 w-6 text-gray-600" />
+        )}
+      </button>
 
       {/* Navigation */}
-      <nav className="flex-1 px-6 py-6 space-y-2 overflow-y-auto">
+      <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.href
           const Icon = item.icon
@@ -129,10 +135,11 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
               to={item.href}
               className={cn(
                 "flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
-                "hover:bg-gray-100 group",
+                "hover:bg-gray-100 group relative",
                 isActive 
-                  ? "bg-primary/10 text-primary border-l-4 border-primary" 
-                  : "text-gray-700 hover:text-gray-900"
+                  ? "bg-primary/10 text-primary" 
+                  : "text-gray-700 hover:text-gray-900",
+                isCollapsed && "justify-center"
               )}
               title={isCollapsed ? item.title : undefined}
             >
@@ -141,17 +148,30 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                 isActive ? "text-primary" : "text-gray-500 group-hover:text-gray-700"
               )} />
               
-              <span className={cn(
-                "flex-1 transition-opacity duration-300",
-                isCollapsed ? "opacity-0" : "opacity-100"
-              )}>
-                {item.title}
-              </span>
+              {!isCollapsed && (
+                <>
+                  <span className="flex-1">
+                    {item.title}
+                  </span>
+                  
+                  {item.badge && (
+                    <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">
+                      {item.badge}
+                    </span>
+                  )}
+                </>
+              )}
               
-              {item.badge && !isCollapsed && (
-                <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">
+              {/* Badge indicator when collapsed */}
+              {isCollapsed && item.badge && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                   {item.badge}
                 </span>
+              )}
+              
+              {/* Active indicator when collapsed */}
+              {isCollapsed && isActive && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full" />
               )}
             </Link>
           )
@@ -160,22 +180,27 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
 
       {/* User Info */}
       <div className="p-6 border-t border-gray-200">
-        <div className={cn(
-          "flex items-center gap-4 transition-opacity duration-300",
-          isCollapsed ? "opacity-0" : "opacity-100"
-        )}>
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center">
-            <span className="text-sm font-medium text-white">A</span>
+        {!isCollapsed ? (
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center">
+              <span className="text-sm font-medium text-white">A</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                Admin User
+              </p>
+              <p className="text-xs text-gray-500 truncate">
+                Super Admin
+              </p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
-              Admin User
-            </p>
-            <p className="text-xs text-gray-500 truncate">
-              Super Admin
-            </p>
+        ) : (
+          <div className="flex justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center">
+              <span className="text-sm font-medium text-white">A</span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

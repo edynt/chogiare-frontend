@@ -12,6 +12,7 @@ import SupportTicketsPage from './SupportTicketsPage'
 import SystemSettingsPage from './SystemSettingsPage'
 import NotificationManagementPage from './NotificationManagementPage'
 import CustomerSupportPage from './CustomerSupportPage'
+import PromotionManagementPage from './PromotionManagementPage'
 
 export default function AdminPage() {
   return (
@@ -26,6 +27,7 @@ export default function AdminPage() {
         <Route path="/cms" element={<ContentManagementPage />} />
                 <Route path="/tickets" element={<SupportTicketsPage />} />
                 <Route path="/support" element={<CustomerSupportPage />} />
+                <Route path="/promotions" element={<PromotionManagementPage />} />
                 <Route path="/settings" element={<SystemSettingsPage />} />
                 <Route path="/notifications" element={<NotificationManagementPage />} />
       </Routes>
