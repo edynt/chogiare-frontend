@@ -11,8 +11,7 @@ import { NotificationProvider } from '@/components/notification-provider'
 // Lazy load pages
 const HomePage = React.lazy(() => import('@/pages/HomePage'))
 const ProductListPage = React.lazy(() => import('@/pages/ProductListPage'))
-const ProductPage = React.lazy(() => import('@/pages/ProductPage'))
-const CategoriesPage = React.lazy(() => import('@/pages/CategoriesPage'))
+const ProductDetailPage = React.lazy(() => import('@/pages/ProductDetailPage'))
 const CartPage = React.lazy(() => import('@/pages/CartPage'))
 const ChatPage = React.lazy(() => import('@/pages/ChatPage'))
 const PaymentPage = React.lazy(() => import('@/pages/PaymentPage'))
@@ -65,9 +64,8 @@ function App() {
                           <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
                             <Routes>
                               <Route path="/" element={<HomePage />} />
-                              <Route path="/products" element={<ProductListPage />} />
-                              <Route path="/product/:id" element={<ProductPage />} />
-                              <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/products" element={<ProductListPage />} />
+        <Route path="/product/:id" element={<ProductDetailPage />} />
                               <Route path="/cart" element={<CartPage />} />
                               <Route path="/chat" element={<ChatPage />} />
                               <Route path="/chat/:chatId" element={<ChatPage />} />

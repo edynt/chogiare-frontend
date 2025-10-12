@@ -1,193 +1,697 @@
 {
   "categories": [
     {
-      "id": "1",
+      "id": "cat-1",
       "name": "Điện thoại & Phụ kiện",
       "slug": "dien-thoai-phu-kien",
-      "description": "Điện thoại thông minh và các phụ kiện liên quan",
-      "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=200&fit=crop",
-      "productCount": 25,
+      "description": "Điện thoại thông minh, phụ kiện và đồ công nghệ",
+      "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=300&fit=crop",
       "isActive": true,
-      "createdAt": "2024-01-01T10:00:00Z",
-      "updatedAt": "2024-01-01T10:00:00Z"
+      "productCount": 45
     },
     {
-      "id": "2",
-      "name": "Laptop & Máy tính",
-      "slug": "laptop-may-tinh",
-      "description": "Laptop, máy tính để bàn và phụ kiện",
-      "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&h=200&fit=crop",
-      "productCount": 18,
+      "id": "cat-2", 
+      "name": "Thời trang",
+      "slug": "thoi-trang",
+      "description": "Quần áo, giày dép, phụ kiện thời trang",
+      "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop",
       "isActive": true,
-      "createdAt": "2024-01-01T10:00:00Z",
-      "updatedAt": "2024-01-01T10:00:00Z"
+      "productCount": 78
     },
     {
-      "id": "3",
-      "name": "Thời trang & Phụ kiện",
-      "slug": "thoi-trang-phu-kien",
-      "description": "Quần áo, giày dép, túi xách, trang sức",
-      "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=200&fit=crop",
-      "productCount": 42,
+      "id": "cat-3",
+      "name": "Mỹ phẩm & Làm đẹp",
+      "slug": "my-pham-lam-dep", 
+      "description": "Mỹ phẩm, đồ trang điểm, chăm sóc da",
+      "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop",
       "isActive": true,
-      "createdAt": "2024-01-01T10:00:00Z",
-      "updatedAt": "2024-01-01T10:00:00Z"
+      "productCount": 32
     },
     {
-      "id": "4",
+      "id": "cat-4",
       "name": "Đồ gia dụng",
       "slug": "do-gia-dung",
-      "description": "Thiết bị nhà bếp, đồ dùng gia đình",
-      "image": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop",
-      "productCount": 33,
+      "description": "Đồ dùng nhà bếp, nội thất, trang trí",
+      "image": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
       "isActive": true,
-      "createdAt": "2024-01-01T10:00:00Z",
-      "updatedAt": "2024-01-01T10:00:00Z"
+      "productCount": 56
     },
     {
-      "id": "5",
+      "id": "cat-5",
+      "name": "Thể thao & Du lịch",
+      "slug": "the-thao-du-lich",
+      "description": "Đồ thể thao, du lịch, ngoài trời",
+      "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+      "isActive": true,
+      "productCount": 29
+    },
+    {
+      "id": "cat-6",
       "name": "Sách & Văn phòng phẩm",
       "slug": "sach-van-phong-pham",
-      "description": "Sách, truyện, bút, vở, dụng cụ học tập",
-      "image": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop",
-      "productCount": 28,
+      "description": "Sách, văn phòng phẩm, đồ học tập",
+      "image": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
       "isActive": true,
-      "createdAt": "2024-01-01T10:00:00Z",
-      "updatedAt": "2024-01-01T10:00:00Z"
+      "productCount": 41
+    },
+    {
+      "id": "cat-7",
+      "name": "Đồ chơi & Trẻ em",
+      "slug": "do-choi-tre-em",
+      "description": "Đồ chơi, quần áo trẻ em, đồ dùng cho bé",
+      "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+      "isActive": true,
+      "productCount": 23
+    },
+    {
+      "id": "cat-8",
+      "name": "Ô tô & Xe máy",
+      "slug": "oto-xe-may",
+      "description": "Phụ kiện ô tô, xe máy, đồ bảo hộ",
+      "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+      "isActive": true,
+      "productCount": 18
     }
   ],
   "products": [
     {
-      "id": "prod1",
-      "title": "Điện thoại thông minh XYZ",
-      "description": "Điện thoại thông minh cao cấp với camera 108MP, màn hình AMOLED 120Hz và chip xử lý mạnh mẽ. Pin 5000mAh, sạc nhanh 67W. Thiết kế sang trọng, màu sắc đa dạng.",
-      "price": 7990000,
-      "originalPrice": 9990000,
-      "categoryId": "1",
+      "id": "prod-1",
+      "name": "iPhone 15 Pro Max 256GB",
+      "description": "iPhone 15 Pro Max với chip A17 Pro, camera 48MP, pin lâu dài. Thiết kế titan cao cấp, màn hình Super Retina XDR 6.7 inch.",
+      "price": 29990000,
+      "originalPrice": 32990000,
+      "category": "cat-1",
       "images": [
-        "https://images.unsplash.com/photo-1585060544812-6b457753b291?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "https://images.unsplash.com/photo-1601784551446-20c9e07cd5f1?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "https://images.unsplash.com/photo-1598327105666-5b8988a0629f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&h=600&fit=crop"
       ],
-      "condition": "new",
-      "tags": ["smartphone", "android", "camera", "5G"],
-      "location": "Hà Nội",
-      "stock": 50,
-      "sellerId": "user1",
-      "status": "active",
-      "badges": ["SALE", "NEW"],
+      "stock": 15,
       "rating": 4.8,
-      "reviewCount": 150,
-      "viewCount": 2500,
-      "isFeatured": true,
-      "isPromoted": true,
-      "createdAt": "2024-01-01T10:00:00Z",
-      "updatedAt": "2024-01-01T10:00:00Z"
+      "reviewCount": 234,
+      "seller": {
+        "id": "seller-1",
+        "name": "TechStore Pro",
+        "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["iphone", "apple", "smartphone", "premium"],
+      "specifications": {
+        "brand": "Apple",
+        "model": "iPhone 15 Pro Max",
+        "storage": "256GB",
+        "color": "Natural Titanium",
+        "screen": "6.7 inch Super Retina XDR"
+      }
     },
     {
-      "id": "prod2",
-      "title": "Tai nghe Bluetooth không dây",
-      "description": "Tai nghe không dây chất lượng cao với âm thanh sống động, chống ồn chủ động và thời lượng pin lên đến 30 giờ. Thiết kế nhỏ gọn, thoải mái khi đeo.",
-      "price": 1250000,
-      "originalPrice": 1500000,
-      "categoryId": "1",
+      "id": "prod-2",
+      "name": "Samsung Galaxy S24 Ultra 512GB",
+      "description": "Samsung Galaxy S24 Ultra với S Pen, camera 200MP, màn hình Dynamic AMOLED 2X 6.8 inch. Hiệu năng mạnh mẽ với chip Snapdragon 8 Gen 3.",
+      "price": 26990000,
+      "originalPrice": 29990000,
+      "category": "cat-1",
       "images": [
-        "https://images.unsplash.com/photo-1505740420928-5e560c06f2e0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "https://images.unsplash.com/photo-1546435770-d3e499d6b749?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&h=600&fit=crop"
       ],
-      "condition": "new",
-      "tags": ["audio", "wireless", "ANC"],
-      "location": "TP.HCM",
-      "stock": 120,
-      "sellerId": "user2",
-      "status": "active",
-      "badges": ["FEATURED"],
-      "rating": 4.5,
-      "reviewCount": 80,
-      "viewCount": 1800,
-      "isFeatured": false,
-      "isPromoted": false,
-      "createdAt": "2024-01-01T10:00:00Z",
-      "updatedAt": "2024-01-01T10:00:00Z"
-    },
-    {
-      "id": "prod3",
-      "title": "Áo thun nam cotton cao cấp",
-      "description": "Áo thun nam làm từ 100% cotton tự nhiên, mềm mại, thoáng mát và thấm hút mồ hôi tốt. Phù hợp cho mọi hoạt động hàng ngày. Đủ size và màu sắc.",
-      "price": 199000,
-      "originalPrice": 250000,
-      "categoryId": "3",
-      "images": [
-        "https://images.unsplash.com/photo-1576566588028-cdfd587962e0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "https://images.unsplash.com/photo-1621947081220-72492f2141a7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-      ],
-      "condition": "new",
-      "tags": ["fashion", "men", "tshirt"],
-      "location": "Đà Nẵng",
-      "stock": 300,
-      "sellerId": "user3",
-      "status": "active",
-      "badges": ["SALE"],
+      "stock": 8,
       "rating": 4.7,
-      "reviewCount": 200,
-      "viewCount": 3000,
-      "isFeatured": true,
-      "isPromoted": false,
-      "createdAt": "2024-01-01T10:00:00Z",
-      "updatedAt": "2024-01-01T10:00:00Z"
+      "reviewCount": 189,
+      "seller": {
+        "id": "seller-2",
+        "name": "Mobile World",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["samsung", "galaxy", "android", "s-pen"],
+      "specifications": {
+        "brand": "Samsung",
+        "model": "Galaxy S24 Ultra",
+        "storage": "512GB",
+        "color": "Titanium Black",
+        "screen": "6.8 inch Dynamic AMOLED 2X"
+      }
+    },
+    {
+      "id": "prod-3",
+      "name": "Áo thun nam cao cấp",
+      "description": "Áo thun nam chất liệu cotton 100%, thiết kế đơn giản, thoải mái. Phù hợp cho mọi hoạt động hàng ngày.",
+      "price": 299000,
+      "originalPrice": 399000,
+      "category": "cat-2",
+      "images": [
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=600&fit=crop"
+      ],
+      "stock": 50,
+      "rating": 4.5,
+      "reviewCount": 67,
+      "seller": {
+        "id": "seller-3",
+        "name": "Fashion Store",
+        "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["ao-thun", "nam", "cotton", "basic"],
+      "specifications": {
+        "material": "Cotton 100%",
+        "size": "S, M, L, XL, XXL",
+        "color": "Trắng, Đen, Xám",
+        "origin": "Việt Nam"
+      }
+    },
+    {
+      "id": "prod-4",
+      "name": "Váy đầm nữ dự tiệc",
+      "description": "Váy đầm nữ thiết kế sang trọng, phù hợp cho các buổi tiệc, sự kiện quan trọng. Chất liệu cao cấp, form dáng đẹp.",
+      "price": 1299000,
+      "originalPrice": 1599000,
+      "category": "cat-2",
+      "images": [
+        "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=600&fit=crop"
+      ],
+      "stock": 12,
+      "rating": 4.6,
+      "reviewCount": 43,
+      "seller": {
+        "id": "seller-4",
+        "name": "Boutique Fashion",
+        "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["vay-dam", "nu", "du-tiec", "sang-trong"],
+      "specifications": {
+        "material": "Lụa cao cấp",
+        "size": "S, M, L, XL",
+        "color": "Đen, Đỏ, Xanh navy",
+        "style": "Dự tiệc"
+      }
+    },
+    {
+      "id": "prod-5",
+      "name": "Son môi matte cao cấp",
+      "description": "Son môi matte không trôi, màu sắc bền lâu, không gây khô môi. Công thức đặc biệt với vitamin E.",
+      "price": 199000,
+      "originalPrice": 249000,
+      "category": "cat-3",
+      "images": [
+        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&h=600&fit=crop"
+      ],
+      "stock": 35,
+      "rating": 4.4,
+      "reviewCount": 89,
+      "seller": {
+        "id": "seller-5",
+        "name": "Beauty Corner",
+        "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["son-moi", "matte", "khong-troi", "vitamin-e"],
+      "specifications": {
+        "type": "Son môi matte",
+        "weight": "3.5g",
+        "colors": "12 màu",
+        "ingredients": "Vitamin E, Hyaluronic Acid"
+      }
+    },
+    {
+      "id": "prod-6",
+      "name": "Kem chống nắng SPF 50+",
+      "description": "Kem chống nắng SPF 50+ PA+++, bảo vệ da khỏi tia UV, không gây bít tắc lỗ chân lông.",
+      "price": 299000,
+      "originalPrice": 399000,
+      "category": "cat-3",
+      "images": [
+        "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=800&h=600&fit=crop"
+      ],
+      "stock": 28,
+      "rating": 4.7,
+      "reviewCount": 156,
+      "seller": {
+        "id": "seller-6",
+        "name": "Skin Care Pro",
+        "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["kem-chong-nang", "spf50", "cham-soc-da", "uv-protection"],
+      "specifications": {
+        "spf": "50+",
+        "pa": "PA+++",
+        "volume": "50ml",
+        "skin_type": "Mọi loại da"
+      }
+    },
+    {
+      "id": "prod-7",
+      "name": "Nồi cơm điện tử cao cấp",
+      "description": "Nồi cơm điện tử 1.8L, công nghệ nấu cơm thông minh, tiết kiệm điện, dễ vệ sinh.",
+      "price": 1299000,
+      "originalPrice": 1599000,
+      "category": "cat-4",
+      "images": [
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
+      ],
+      "stock": 20,
+      "rating": 4.6,
+      "reviewCount": 78,
+      "seller": {
+        "id": "seller-7",
+        "name": "Home Appliances",
+        "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["noi-com-dien", "gia-dung", "tiet-kiem-dien", "thong-minh"],
+      "specifications": {
+        "capacity": "1.8L",
+        "power": "700W",
+        "material": "Inox 304",
+        "features": "Nấu cơm thông minh, hẹn giờ"
+      }
+    },
+    {
+      "id": "prod-8",
+      "name": "Bộ sofa 3 chỗ ngồi",
+      "description": "Bộ sofa 3 chỗ ngồi hiện đại, chất liệu da PU cao cấp, màu sắc trang nhã, phù hợp mọi không gian.",
+      "price": 8999000,
+      "originalPrice": 11999000,
+      "category": "cat-4",
+      "images": [
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
+      ],
+      "stock": 5,
+      "rating": 4.8,
+      "reviewCount": 34,
+      "seller": {
+        "id": "seller-8",
+        "name": "Furniture World",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["sofa", "noi-that", "da-pu", "3-cho"],
+      "specifications": {
+        "seats": "3 chỗ",
+        "material": "Da PU cao cấp",
+        "dimensions": "200x90x85cm",
+        "color": "Xám, Nâu, Đen"
+      }
+    },
+    {
+      "id": "prod-9",
+      "name": "Giày chạy bộ thể thao",
+      "description": "Giày chạy bộ thể thao với công nghệ đệm khí, thoải mái, bền bỉ. Phù hợp cho chạy bộ và tập luyện.",
+      "price": 1299000,
+      "originalPrice": 1599000,
+      "category": "cat-5",
+      "images": [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&h=600&fit=crop"
+      ],
+      "stock": 25,
+      "rating": 4.5,
+      "reviewCount": 92,
+      "seller": {
+        "id": "seller-9",
+        "name": "Sports Zone",
+        "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["giay-chay-bo", "the-thao", "dem-khi", "thoai-mai"],
+      "specifications": {
+        "type": "Giày chạy bộ",
+        "size": "36-44",
+        "technology": "Đệm khí Air Max",
+        "weight": "280g"
+      }
+    },
+    {
+      "id": "prod-10",
+      "name": "Balô du lịch 40L",
+      "description": "Balô du lịch 40L chống nước, nhiều ngăn, thiết kế ergonomic, phù hợp cho du lịch dài ngày.",
+      "price": 899000,
+      "originalPrice": 1199000,
+      "category": "cat-5",
+      "images": [
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=600&fit=crop"
+      ],
+      "stock": 18,
+      "rating": 4.4,
+      "reviewCount": 67,
+      "seller": {
+        "id": "seller-10",
+        "name": "Travel Gear",
+        "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["balo", "du-lich", "chong-nuoc", "40l"],
+      "specifications": {
+        "capacity": "40L",
+        "material": "Nylon chống nước",
+        "compartments": "Nhiều ngăn",
+        "weight": "1.2kg"
+      }
+    },
+    {
+      "id": "prod-11",
+      "name": "Sách 'Đắc Nhân Tâm'",
+      "description": "Cuốn sách kinh điển về nghệ thuật giao tiếp và ứng xử, bản dịch tiếng Việt chất lượng cao.",
+      "price": 89000,
+      "originalPrice": 120000,
+      "category": "cat-6",
+      "images": [
+        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop"
+      ],
+      "stock": 45,
+      "rating": 4.9,
+      "reviewCount": 234,
+      "seller": {
+        "id": "seller-11",
+        "name": "Book Store",
+        "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["sach", "dac-nhan-tam", "giao-tiep", "kinh-dien"],
+      "specifications": {
+        "author": "Dale Carnegie",
+        "pages": "320 trang",
+        "language": "Tiếng Việt",
+        "publisher": "NXB Tổng hợp"
+      }
+    },
+    {
+      "id": "prod-12",
+      "name": "Bút bi cao cấp Parker",
+      "description": "Bút bi Parker cao cấp, thiết kế sang trọng, mực viết mượt mà, phù hợp cho công việc văn phòng.",
+      "price": 299000,
+      "originalPrice": 399000,
+      "category": "cat-6",
+      "images": [
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop"
+      ],
+      "stock": 30,
+      "rating": 4.6,
+      "reviewCount": 89,
+      "seller": {
+        "id": "seller-12",
+        "name": "Office Supplies",
+        "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["but-bi", "parker", "cao-cap", "van-phong"],
+      "specifications": {
+        "brand": "Parker",
+        "type": "Bút bi",
+        "material": "Kim loại mạ vàng",
+        "ink_color": "Xanh, Đen, Đỏ"
+      }
+    },
+    {
+      "id": "prod-13",
+      "name": "Đồ chơi LEGO Creator",
+      "description": "Bộ đồ chơi LEGO Creator với 1000+ mảnh ghép, kích thích sáng tạo và tư duy logic cho trẻ em.",
+      "price": 1299000,
+      "originalPrice": 1599000,
+      "category": "cat-7",
+      "images": [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop"
+      ],
+      "stock": 15,
+      "rating": 4.8,
+      "reviewCount": 156,
+      "seller": {
+        "id": "seller-13",
+        "name": "Toy World",
+        "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["lego", "do-choi", "sang-tao", "tre-em"],
+      "specifications": {
+        "brand": "LEGO",
+        "pieces": "1000+ mảnh",
+        "age": "8+ tuổi",
+        "type": "Creator"
+      }
+    },
+    {
+      "id": "prod-14",
+      "name": "Quần áo trẻ em bộ 3",
+      "description": "Bộ quần áo trẻ em 3 món chất liệu cotton mềm mại, thiết kế dễ thương, an toàn cho da bé.",
+      "price": 199000,
+      "originalPrice": 299000,
+      "category": "cat-7",
+      "images": [
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=600&fit=crop"
+      ],
+      "stock": 40,
+      "rating": 4.5,
+      "reviewCount": 78,
+      "seller": {
+        "id": "seller-14",
+        "name": "Kids Fashion",
+        "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["quan-ao-tre-em", "bo-3", "cotton", "an-toan"],
+      "specifications": {
+        "material": "Cotton 100%",
+        "size": "1-6 tuổi",
+        "pieces": "3 món",
+        "color": "Nhiều màu sắc"
+      }
+    },
+    {
+      "id": "prod-15",
+      "name": "Mũ bảo hiểm xe máy",
+      "description": "Mũ bảo hiểm xe máy đạt chuẩn quốc tế, thiết kế hiện đại, bảo vệ tối ưu cho người đi xe máy.",
+      "price": 599000,
+      "originalPrice": 799000,
+      "category": "cat-8",
+      "images": [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop"
+      ],
+      "stock": 22,
+      "rating": 4.7,
+      "reviewCount": 134,
+      "seller": {
+        "id": "seller-15",
+        "name": "Motor Gear",
+        "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["mu-bao-hiem", "xe-may", "bao-ve", "chuan-quoc-te"],
+      "specifications": {
+        "standard": "ECE 22.05",
+        "material": "ABS + EPS",
+        "size": "S, M, L, XL",
+        "weight": "1.2kg"
+      }
+    },
+    {
+      "id": "prod-16",
+      "name": "Xiaomi Redmi Note 13 Pro",
+      "description": "Xiaomi Redmi Note 13 Pro với camera 200MP, màn hình AMOLED 120Hz, pin 5000mAh, hiệu năng mạnh mẽ.",
+      "price": 6999000,
+      "originalPrice": 7999000,
+      "category": "cat-1",
+      "images": [
+        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&h=600&fit=crop"
+      ],
+      "stock": 12,
+      "rating": 4.6,
+      "reviewCount": 98,
+      "seller": {
+        "id": "seller-16",
+        "name": "Xiaomi Store",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["xiaomi", "redmi", "camera-200mp", "amoled"],
+      "specifications": {
+        "brand": "Xiaomi",
+        "model": "Redmi Note 13 Pro",
+        "storage": "256GB",
+        "camera": "200MP",
+        "screen": "6.67 inch AMOLED 120Hz"
+      }
+    },
+    {
+      "id": "prod-17",
+      "name": "Áo khoác nam bomber",
+      "description": "Áo khoác nam bomber style hiện đại, chất liệu polyester chống nước, thiết kế trẻ trung năng động.",
+      "price": 799000,
+      "originalPrice": 999000,
+      "category": "cat-2",
+      "images": [
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=600&fit=crop"
+      ],
+      "stock": 35,
+      "rating": 4.4,
+      "reviewCount": 56,
+      "seller": {
+        "id": "seller-17",
+        "name": "Urban Fashion",
+        "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["ao-khoac", "bomber", "chong-nuoc", "tre-trung"],
+      "specifications": {
+        "material": "Polyester chống nước",
+        "size": "S, M, L, XL, XXL",
+        "color": "Đen, Xám, Navy",
+        "style": "Bomber"
+      }
+    },
+    {
+      "id": "prod-18",
+      "name": "Serum vitamin C chống lão hóa",
+      "description": "Serum vitamin C 20% chống lão hóa, làm sáng da, giảm thâm nám, cải thiện kết cấu da.",
+      "price": 399000,
+      "originalPrice": 499000,
+      "category": "cat-3",
+      "images": [
+        "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=800&h=600&fit=crop"
+      ],
+      "stock": 28,
+      "rating": 4.8,
+      "reviewCount": 167,
+      "seller": {
+        "id": "seller-18",
+        "name": "Skin Care Plus",
+        "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["serum", "vitamin-c", "chong-lao-hoa", "lam-sang-da"],
+      "specifications": {
+        "ingredient": "Vitamin C 20%",
+        "volume": "30ml",
+        "benefits": "Chống lão hóa, làm sáng da",
+        "skin_type": "Mọi loại da"
+      }
+    },
+    {
+      "id": "prod-19",
+      "name": "Máy xay sinh tố đa năng",
+      "description": "Máy xay sinh tố đa năng 2L, công suất mạnh, nhiều chức năng, dễ vệ sinh, an toàn sử dụng.",
+      "price": 899000,
+      "originalPrice": 1199000,
+      "category": "cat-4",
+      "images": [
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
+      ],
+      "stock": 16,
+      "rating": 4.5,
+      "reviewCount": 89,
+      "seller": {
+        "id": "seller-19",
+        "name": "Kitchen Pro",
+        "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["may-xay", "sinh-to", "da-nang", "2l"],
+      "specifications": {
+        "capacity": "2L",
+        "power": "1000W",
+        "material": "Nhựa ABS + Inox",
+        "functions": "Xay, ép, trộn"
+      }
+    },
+    {
+      "id": "prod-20",
+      "name": "Túi đựng giày thể thao",
+      "description": "Túi đựng giày thể thao chống nước, thiết kế thông thoáng, dễ mang theo, bảo vệ giày tốt.",
+      "price": 149000,
+      "originalPrice": 199000,
+      "category": "cat-5",
+      "images": [
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&h=600&fit=crop"
+      ],
+      "stock": 42,
+      "rating": 4.3,
+      "reviewCount": 73,
+      "seller": {
+        "id": "seller-20",
+        "name": "Sports Accessories",
+        "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face"
+      },
+      "isActive": true,
+      "tags": ["tui-dung-giay", "the-thao", "chong-nuoc", "thong-thoang"],
+      "specifications": {
+        "material": "Nylon chống nước",
+        "size": "Phù hợp size 36-44",
+        "features": "Thông thoáng, dễ vệ sinh",
+        "weight": "200g"
+      }
     }
   ],
   "users": [
     {
-      "id": "user1",
+      "id": "user-1",
       "name": "Nguyễn Văn A",
-      "email": "user1@example.com",
-      "phone": "0901234567",
-      "avatar": "https://i.pravatar.cc/150?img=1",
-      "roles": ["buyer", "seller"],
-      "postCount": 5,
-      "storeInfo": {
-        "id": "store1",
-        "name": "Cửa hàng điện thoại A",
-        "description": "Chuyên bán điện thoại chính hãng",
-        "address": "123 Đường ABC, Quận 1, TP.HCM",
-        "phone": "0901234567",
-        "email": "store1@example.com",
-        "isVerified": true,
-        "rating": 4.8,
-        "reviewCount": 120,
-        "createdAt": "2024-01-01T10:00:00Z"
-      },
-      "createdAt": "2024-01-01T10:00:00Z",
-      "updatedAt": "2024-01-01T10:00:00Z"
+      "email": "nguyenvana@example.com",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      "role": "buyer",
+      "isActive": true,
+      "createdAt": "2024-01-15T10:30:00Z"
     },
     {
-      "id": "user2",
+      "id": "user-2", 
       "name": "Trần Thị B",
-      "email": "user2@example.com",
-      "phone": "0901234568",
-      "avatar": "https://i.pravatar.cc/150?img=2",
-      "roles": ["buyer"],
-      "postCount": 0,
-      "createdAt": "2024-01-01T10:00:00Z",
-      "updatedAt": "2024-01-01T10:00:00Z"
+      "email": "tranthib@example.com",
+      "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
+      "role": "seller",
+      "isActive": true,
+      "createdAt": "2024-01-10T14:20:00Z"
     }
   ],
   "orders": [
     {
-      "id": "order1",
-      "buyerId": "user2",
-      "sellerId": "user1",
-      "productId": "prod1",
-      "quantity": 1,
-      "totalAmount": 7990000,
-      "status": "delivered",
-      "orderDate": "2024-01-15T10:00:00Z",
-      "shippingAddress": "456 Đường XYZ, Quận 2, TP.HCM",
-      "paymentMethod": "credit_card",
-      "paymentStatus": "paid",
-      "createdAt": "2024-01-15T10:00:00Z",
-      "updatedAt": "2024-01-16T10:00:00Z"
+      "id": "order-1",
+      "userId": "user-1",
+      "items": [
+        {
+          "productId": "prod-1",
+          "quantity": 1,
+          "price": 29990000
+        }
+      ],
+      "total": 29990000,
+      "status": "completed",
+      "createdAt": "2024-01-20T09:15:00Z"
     }
   ]
 }

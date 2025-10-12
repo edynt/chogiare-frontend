@@ -14,10 +14,9 @@ import type { Product } from '@/types'
 interface ProductCardProps {
   product: Product
   className?: string
-  viewMode?: 'grid' | 'list'
 }
 
-export function ProductCard({ product, className, viewMode = 'grid' }: ProductCardProps) {
+export function ProductCard({ product, className }: ProductCardProps) {
   const dispatch = useAppDispatch()
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -39,27 +38,31 @@ export function ProductCard({ product, className, viewMode = 'grid' }: ProductCa
   }
 
   return (
-    <Card className={cn("group hover:shadow-lg transition-shadow duration-200", className, viewMode === 'list' && 'flex flex-row')}>
-      <Link to={`/product/${product.id}`}>
+    <Card className={cn("group hover:shadow-lg transition-shadow duration-200 flex flex-col h-full", className)}>
+      <Link to={`/product/${product.id}`} className="flex flex-col flex-1">
         <div className="relative aspect-square overflow-hidden rounded-t-lg">
           <img
             src={product.images[0]}
-            alt={product.title}
+            alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
             loading="lazy"
+            onError={(e) => {
+              e.currentTarget.src = 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop'
+            }}
           />
           
           {/* Badges */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
-            {product.badges.map((badge) => (
-              <Badge
-                key={badge}
-                variant={badge === 'NEW' ? 'default' : badge === 'SALE' ? 'destructive' : 'secondary'}
-                className="text-xs"
-              >
-                {badge}
+            {product.originalPrice && product.originalPrice > product.price && (
+              <Badge variant="destructive" className="text-xs">
+                SALE
               </Badge>
-            ))}
+            )}
+            {product.stock <= 5 && product.stock > 0 && (
+              <Badge variant="warning" className="text-xs">
+                SẮP HẾT
+              </Badge>
+            )}
           </div>
 
           {/* Quick Actions */}
@@ -83,18 +86,18 @@ export function ProductCard({ product, className, viewMode = 'grid' }: ProductCa
           </div>
 
           {/* Stock indicator */}
-          {product.stock <= 5 && product.stock > 0 && (
+          {product.stock === 0 && (
             <div className="absolute bottom-2 left-2">
-              <Badge variant="warning" className="text-xs">
-                Còn {product.stock} sản phẩm
+              <Badge variant="destructive" className="text-xs">
+                HẾT HÀNG
               </Badge>
             </div>
           )}
         </div>
 
-        <CardContent className="p-4">
+        <CardContent className="p-4 flex-1 flex flex-col">
           <h3 className="font-semibold text-sm line-clamp-2 mb-2 group-hover:text-primary transition-colors">
-            {product.title}
+            {product.name}
           </h3>
           
           <div className="flex items-center gap-2 mb-2">
@@ -104,12 +107,12 @@ export function ProductCard({ product, className, viewMode = 'grid' }: ProductCa
                 {product.seller?.name?.charAt(0)}
               </AvatarFallback>
             </Avatar>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground truncate">
               {product.seller?.name}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
             <span className="text-lg font-bold text-primary">
               {formatPrice(product.price)}
             </span>
@@ -118,24 +121,24 @@ export function ProductCard({ product, className, viewMode = 'grid' }: ProductCa
                 <span className="text-sm text-muted-foreground line-through">
                   {formatPrice(product.originalPrice)}
                 </span>
-                <Badge variant="destructive" className="text-xs">
+                <Badge variant="destructive" className="text-xs whitespace-nowrap">
                   -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
                 </Badge>
               </>
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-auto">
             <span>⭐ {product.rating}</span>
             <span>•</span>
             <span>{product.reviewCount} đánh giá</span>
             <span>•</span>
-            <span>{product.viewCount} lượt xem</span>
+            <span>Còn {product.stock} sản phẩm</span>
           </div>
         </CardContent>
       </Link>
 
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-4 pt-0 mt-auto">
         <Button
           className="w-full"
           onClick={handleAddToCart}

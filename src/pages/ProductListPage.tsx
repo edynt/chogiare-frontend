@@ -12,12 +12,11 @@ import { ProductGridSkeleton } from '@/components/skeleton/ProductCardSkeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useProducts, useCategories } from '@/hooks/useProducts'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { Search, Grid, List, SlidersHorizontal, Star, TrendingUp, Zap } from 'lucide-react'
+import { Search, SlidersHorizontal, Star, TrendingUp, Zap } from 'lucide-react'
 import type { SearchFilters } from '@/types'
 
 export default function ProductListPage() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showFilters, setShowFilters] = useState(false)
   const { t } = useLanguage()
   
@@ -152,25 +151,6 @@ export default function ProductListPage() {
             </SelectContent>
           </Select>
 
-          {/* View Mode */}
-          <div className="flex border rounded-lg">
-            <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('grid')}
-              className="rounded-r-none"
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-              className="rounded-l-none"
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
 
           {/* Filter Toggle */}
           <Button
@@ -294,10 +274,10 @@ export default function ProductListPage() {
 
           {/* Loading State */}
           {isLoading && (
-            <ProductGridSkeleton count={8} viewMode={viewMode} />
+            <ProductGridSkeleton count={8} />
           )}
 
-          {/* Products Grid/List */}
+          {/* Products Grid */}
           {!isLoading && productsData && (
             <>
               {productsData.items?.length === 0 ? (
@@ -313,17 +293,11 @@ export default function ProductListPage() {
                 </div>
               ) : (
                 <>
-                  <div className={`grid gap-6 ${
-                    viewMode === 'grid' 
-                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-                      : 'grid-cols-1'
-                  }`}>
+                  <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {productsData?.items?.map((product) => (
                       <ProductCard
                         key={product.id}
                         product={product}
-                        viewMode={viewMode}
-                        className={viewMode === 'list' ? 'flex flex-row' : ''}
                       />
                     ))}
                   </div>
