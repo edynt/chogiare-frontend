@@ -161,14 +161,9 @@ export interface SearchFilters {
 export interface PaginatedResponse<T> {
   total: number
   items: T[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-    hasNext: boolean
-    hasPrev: boolean
-  }
+  page: number
+  pageSize: number
+  totalPages: number
 }
 
 export interface ApiResponse<T> {

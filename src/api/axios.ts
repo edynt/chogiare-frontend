@@ -9,7 +9,7 @@ class ApiClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: import.meta.env['VITE_API_URL'] || '/api',
+      baseURL: import.meta.env['VITE_API_URL'] || 'http://localhost:8080/api',
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ class ApiClient {
     }
 
     try {
-      const response = await axios.post('/api/auth/refresh', {
+      const response = await axios.post('http://localhost:8080/api/v1/auth/refresh', {
         refreshToken: tokens.refreshToken,
       })
 

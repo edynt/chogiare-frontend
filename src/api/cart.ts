@@ -1,0 +1,72 @@
+import { apiClient } from './axios'
+import type { ApiResponse } from '@/types'
+
+export interface CartItem {
+  id: string
+  cartId: string
+  productId: string
+  quantity: number
+  price: number
+  productName: string
+  productImage: string
+  productPrice: number
+  productStock: number
+  productStatus: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Cart {
+  id: string
+  userId: number
+  items: CartItem[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CartStats {
+  totalItems: number
+  totalValue: number
+  uniqueProducts: number
+}
+
+export interface AddCartItemRequest {
+  productId: string
+  quantity: number
+}
+
+export interface UpdateCartItemQuantityRequest {
+  quantity: number
+}
+
+export const cartApi = {
+  // Cart operations
+  getCart: async (): Promise<Cart> => {
+    const response = await apiClient.get<ApiResponse<Cart>>('/v1/cart')
+    return response.data.data
+  },
+
+  clearCart: async (): Promise<void> => {
+    await apiClient.post('/v1/cart/clear')
+  },
+
+  getCartStats: async (): Promise<CartStats> => {
+    const response = await apiClient.get<ApiResponse<CartStats>>('/v1/cart/stats')
+    return response.data.data
+  },
+
+  // Cart item operations
+  addCartItem: async (data: AddCartItemRequest): Promise<CartItem> => {
+    const response = await apiClient.post<ApiResponse<CartItem>>('/v1/cart/items', data)
+    return response.data.data
+  },
+
+  updateCartItemQuantity: async (itemId: string, data: UpdateCartItemQuantityRequest): Promise<CartItem> => {
+    const response = await apiClient.put<ApiResponse<CartItem>>(`/v1/cart/items/${itemId}`, data)
+    return response.data.data
+  },
+
+  removeCartItem: async (itemId: string): Promise<void> => {
+    await apiClient.delete(`/v1/cart/items/${itemId}`)
+  },
+}
