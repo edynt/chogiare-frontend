@@ -93,6 +93,36 @@ export const ordersApi = {
     return response.data.data
   },
 
+  getOrders: async (filters?: { page?: number; pageSize?: number }): Promise<OrderListResponse> => {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/v1/orders', {
+      params: { 
+        page: filters?.page || 1, 
+        page_size: filters?.pageSize || 10 
+      }
+    })
+    return response.data.data
+  },
+
+  getUserOrders: async (filters?: { page?: number; pageSize?: number }): Promise<OrderListResponse> => {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/v1/orders/my', {
+      params: { 
+        page: filters?.page || 1, 
+        page_size: filters?.pageSize || 10 
+      }
+    })
+    return response.data.data
+  },
+
+  getStoreOrders: async (storeId: string, filters?: { page?: number; pageSize?: number }): Promise<OrderListResponse> => {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>(`/v1/orders/store/${storeId}`, {
+      params: { 
+        page: filters?.page || 1, 
+        page_size: filters?.pageSize || 10 
+      }
+    })
+    return response.data.data
+  },
+
   listOrders: async (page = 1, pageSize = 10): Promise<OrderListResponse> => {
     const response = await apiClient.get<ApiResponse<OrderListResponse>>('/v1/orders', {
       params: { page, page_size: pageSize }

@@ -26,8 +26,9 @@ export const useRegister = () => {
   return useMutation({
     mutationFn: authApi.register,
     onSuccess: (data) => {
-      dispatch(loginSuccess(data))
-      queryClient.setQueryData(['auth', 'profile'], data.user)
+      // Don't automatically login after registration
+      // Just show success message and let user confirm email first
+      console.log('Registration successful:', data)
     },
     onError: (error: Error) => {
       dispatch(loginFailure(error.message))

@@ -6,6 +6,7 @@ export { ordersApi } from './orders'
 export { reviewsApi } from './reviews'
 export { storesApi } from './stores'
 export { chatApi } from './chat'
+export { uploadApi } from './upload'
 export { apiClient } from './axios'
 
 // Re-export types for convenience

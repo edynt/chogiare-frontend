@@ -17,7 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Gift,
-  Menu
+  Menu,
+  Database
 } from 'lucide-react'
 
 const menuItems = [
@@ -79,6 +80,12 @@ const menuItems = [
     title: 'Email & Thông báo',
     href: '/admin/notifications',
     icon: Mail,
+    badge: null
+  },
+  {
+    title: 'Data Seeder',
+    href: '/admin/seeder',
+    icon: Database,
     badge: null
   }
 ]

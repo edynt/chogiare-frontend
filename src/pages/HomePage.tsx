@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Hero } from '@/components/home/Hero'
 import { CategoryScroller } from '@/components/home/CategoryScroller'
-import { ProductGrid } from '@/components/home/ProductGrid'
+import { ProductGridWithPagination } from '@/components/product/ProductGridWithPagination'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Shield, Truck, Headphones, Award } from 'lucide-react'
@@ -14,7 +14,23 @@ export default function HomePage() {
       <main>
         <Hero />
         <CategoryScroller />
-        <ProductGrid />
+        
+        {/* Featured Products Section */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Sản phẩm nổi bật</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                Khám phá những sản phẩm được yêu thích nhất
+              </p>
+            </div>
+            <ProductGridWithPagination
+              initialFilters={{ limit: 12 }}
+              showSearch={false}
+              showPagination={false}
+            />
+          </div>
+        </section>
         
         {/* Trust Section */}
         <section className="py-16 bg-muted/30">

@@ -81,7 +81,7 @@ const uiSlice = createSlice({
     },
     setModal: (state, action: PayloadAction<{ modal: keyof UIState['modals']; open: boolean; data?: unknown }>) => {
       const { modal, open, data } = action.payload
-      state.modals[modal] = open
+      state.modals[modal] = open as never
       
       if (modal === 'productQuickView' && data) {
         state.modals.productQuickViewId = data as string

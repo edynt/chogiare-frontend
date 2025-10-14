@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -9,6 +9,7 @@ import { useLogin } from '@/hooks/useAuth'
 import { useNotification } from '@/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
 import { Loader2 } from 'lucide-react'
+import { apiClient } from '@/api/axios'
 
 const schema = yup.object({
   email: yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
@@ -19,6 +20,7 @@ type FormData = yup.InferType<typeof schema>
 
 export function LoginForm() {
   const { notify } = useNotification()
+  const navigate = useNavigate()
   const loginMutation = useLogin()
   const { isLoading, execute } = useLoading({
     delay: 1000, // 1 second delay
@@ -28,6 +30,8 @@ export function LoginForm() {
         title: 'Đăng nhập thành công',
         message: 'Chào mừng bạn đến với Chogiare!',
       })
+      // Redirect to home page after successful login
+      navigate('/')
     },
     onError: (error: Error) => {
       notify({
@@ -50,7 +54,11 @@ export function LoginForm() {
     execute(async () => {
       await new Promise((resolve, reject) => {
         loginMutation.mutate(data, {
-          onSuccess: () => resolve(undefined),
+          onSuccess: (response) => {
+            // Store tokens in localStorage
+            apiClient.setAuthTokens(response.tokens)
+            resolve(undefined)
+          },
           onError: (error: Error) => reject(error),
         })
       })

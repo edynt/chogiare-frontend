@@ -47,7 +47,7 @@ export const cartApi = {
   },
 
   clearCart: async (): Promise<void> => {
-    await apiClient.post('/v1/cart/clear')
+    await apiClient.delete('/v1/cart')
   },
 
   getCartStats: async (): Promise<CartStats> => {
@@ -56,17 +56,17 @@ export const cartApi = {
   },
 
   // Cart item operations
-  addCartItem: async (data: AddCartItemRequest): Promise<CartItem> => {
+  addItem: async (data: AddCartItemRequest): Promise<CartItem> => {
     const response = await apiClient.post<ApiResponse<CartItem>>('/v1/cart/items', data)
     return response.data.data
   },
 
-  updateCartItemQuantity: async (itemId: string, data: UpdateCartItemQuantityRequest): Promise<CartItem> => {
-    const response = await apiClient.put<ApiResponse<CartItem>>(`/v1/cart/items/${itemId}`, data)
+  updateItemQuantity: async (itemId: string, data: UpdateCartItemQuantityRequest): Promise<CartItem> => {
+    const response = await apiClient.patch<ApiResponse<CartItem>>(`/v1/cart/items/${itemId}`, data)
     return response.data.data
   },
 
-  removeCartItem: async (itemId: string): Promise<void> => {
+  removeItem: async (itemId: string): Promise<void> => {
     await apiClient.delete(`/v1/cart/items/${itemId}`)
   },
 }

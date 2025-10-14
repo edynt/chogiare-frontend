@@ -13,6 +13,7 @@ import SystemSettingsPage from './SystemSettingsPage'
 import NotificationManagementPage from './NotificationManagementPage'
 import CustomerSupportPage from './CustomerSupportPage'
 import PromotionManagementPage from './PromotionManagementPage'
+import { DataSeeder } from '@/components/admin/DataSeeder'
 
 export default function AdminPage() {
   return (
@@ -26,10 +27,11 @@ export default function AdminPage() {
         <Route path="/reports" element={<ReportsAnalyticsPage />} />
         <Route path="/cms" element={<ContentManagementPage />} />
                 <Route path="/tickets" element={<SupportTicketsPage />} />
-                <Route path="/support" element={<CustomerSupportPage />} />
-                <Route path="/promotions" element={<PromotionManagementPage />} />
-                <Route path="/settings" element={<SystemSettingsPage />} />
-                <Route path="/notifications" element={<NotificationManagementPage />} />
+        <Route path="/support" element={<CustomerSupportPage />} />
+        <Route path="/promotions" element={<PromotionManagementPage />} />
+        <Route path="/settings" element={<SystemSettingsPage />} />
+        <Route path="/notifications" element={<NotificationManagementPage />} />
+        <Route path="/seeder" element={<DataSeeder />} />
       </Routes>
     </AdminLayout>
   )

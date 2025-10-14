@@ -6,7 +6,12 @@ interface ProductState {
   categories: Category[]
   featuredProducts: Product[]
   searchFilters: SearchFilters
-  pagination: PaginatedResponse<Product>['pagination'] | null
+  pagination: {
+    page: number
+    pageSize: number
+    total: number
+    totalPages: number
+  } | null
   isLoading: boolean
   error: string | null
 }

@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { useRegister } from '@/hooks/useAuth'
 import { useNotification } from '@/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
-import { Loader2 } from 'lucide-react'
+import { Loader2, CheckCircle } from 'lucide-react'
 
 const schema = yup.object({
   name: yup.string().min(2, 'Tên phải có ít nhất 2 ký tự').required('Tên là bắt buộc'),
@@ -23,7 +23,9 @@ type FormData = yup.InferType<typeof schema>
 
 export function RegisterForm() {
   const { notify } = useNotification()
+  const navigate = useNavigate()
   const registerMutation = useRegister()
+  const [isRegistered, setIsRegistered] = useState(false)
 
   const {
     register,
@@ -36,12 +38,14 @@ export function RegisterForm() {
   const onSubmit = (data: FormData) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...registerData } = data
-    registerMutation.mutate(registerData, {
+    const finalData = { ...registerData, roles: ['buyer'] as const }
+    registerMutation.mutate(finalData, {
       onSuccess: () => {
+        setIsRegistered(true)
         notify({
           type: 'success',
           title: 'Đăng ký thành công',
-          message: 'Chào mừng bạn đến với Chogiare!',
+          message: 'Vui lòng kiểm tra email để xác nhận tài khoản.',
         })
       },
       onError: (error) => {
@@ -52,6 +56,31 @@ export function RegisterForm() {
         })
       },
     })
+  }
+
+  // Show success message after registration
+  if (isRegistered) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardContent className="pt-6">
+          <div className="text-center space-y-4">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
+            <div>
+              <h3 className="text-lg font-semibold">Đăng ký thành công!</h3>
+              <p className="text-muted-foreground mt-2">
+                Vui lòng kiểm tra email để xác nhận tài khoản trước khi đăng nhập.
+              </p>
+            </div>
+            <Button 
+              onClick={() => navigate('/auth/login')} 
+              className="w-full"
+            >
+              Đi đến trang đăng nhập
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (

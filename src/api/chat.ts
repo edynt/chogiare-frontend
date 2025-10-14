@@ -86,6 +86,16 @@ export const chatApi = {
     return response.data.data
   },
 
+  getConversations: async (filters?: { page?: number; pageSize?: number }): Promise<ConversationListResponse> => {
+    const response = await apiClient.get<ApiResponse<ConversationListResponse>>('/v1/chat/conversations', {
+      params: { 
+        page: filters?.page || 1, 
+        page_size: filters?.pageSize || 10 
+      }
+    })
+    return response.data.data
+  },
+
   listUserConversations: async (page = 1, pageSize = 10): Promise<ConversationListResponse> => {
     const response = await apiClient.get<ApiResponse<ConversationListResponse>>('/v1/chat/conversations', {
       params: { page, page_size: pageSize }
@@ -103,19 +113,23 @@ export const chatApi = {
   },
 
   // Conversation participant operations
-  addParticipant: async (conversationId: string, userId: number, role: string): Promise<ConversationParticipant> => {
+  addParticipant: async (conversationId: string, userId: string): Promise<ConversationParticipant> => {
     const response = await apiClient.post<ApiResponse<ConversationParticipant>>(
-      `/v1/chat/conversations/${conversationId}/participants/${userId}`,
-      { role }
+      `/v1/chat/conversations/${conversationId}/participants/${userId}`
     )
     return response.data.data
   },
 
-  removeParticipant: async (conversationId: string, userId: number): Promise<void> => {
+  removeParticipant: async (conversationId: string, userId: string): Promise<void> => {
     await apiClient.delete(`/v1/chat/conversations/${conversationId}/participants/${userId}`)
   },
 
   // Chat message operations
+  sendMessage: async (conversationId: string, data: CreateChatMessageRequest): Promise<ChatMessage> => {
+    const response = await apiClient.post<ApiResponse<ChatMessage>>(`/v1/chat/conversations/${conversationId}/messages`, data)
+    return response.data.data
+  },
+
   createChatMessage: async (data: CreateChatMessageRequest): Promise<ChatMessage> => {
     const response = await apiClient.post<ApiResponse<ChatMessage>>('/v1/chat/messages', data)
     return response.data.data
@@ -126,6 +140,16 @@ export const chatApi = {
     return response.data.data
   },
 
+  getConversationMessages: async (conversationId: string, filters?: { page?: number; pageSize?: number }): Promise<ChatMessageListResponse> => {
+    const response = await apiClient.get<ApiResponse<ChatMessageListResponse>>(`/v1/chat/conversations/${conversationId}/messages`, {
+      params: { 
+        page: filters?.page || 1, 
+        page_size: filters?.pageSize || 50 
+      }
+    })
+    return response.data.data
+  },
+
   listConversationMessages: async (conversationId: string, page = 1, pageSize = 50): Promise<ChatMessageListResponse> => {
     const response = await apiClient.get<ApiResponse<ChatMessageListResponse>>(`/v1/chat/conversations/${conversationId}/messages`, {
       params: { page, page_size: pageSize }
@@ -133,12 +157,16 @@ export const chatApi = {
     return response.data.data
   },
 
-  markMessageAsRead: async (id: string): Promise<void> => {
-    await apiClient.post(`/v1/chat/messages/${id}/read`)
+  markMessageAsRead: async (conversationId: string, messageId: string): Promise<void> => {
+    await apiClient.post(`/v1/chat/conversations/${conversationId}/messages/${messageId}/read`)
   },
 
   markConversationAsRead: async (id: string): Promise<void> => {
     await apiClient.post(`/v1/chat/conversations/${id}/read`)
+  },
+
+  deleteMessage: async (conversationId: string, messageId: string): Promise<void> => {
+    await apiClient.delete(`/v1/chat/conversations/${conversationId}/messages/${messageId}`)
   },
 
   deleteChatMessage: async (id: string): Promise<void> => {

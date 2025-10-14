@@ -7,17 +7,19 @@ import { LanguageToggle } from '@/components/ui/language-toggle'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAppSelector, useAppDispatch } from '@/store'
 import { toggleMobileMenu } from '@/store/slices/uiSlice'
-import { openCart } from '@/store/slices/cartSlice'
 import { useCategories } from '@/hooks/useProducts'
+import { useCart } from '@/hooks'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { Search, ShoppingCart, Menu, User, MessageCircle, MessageSquare } from 'lucide-react'
+import { Search, ShoppingCart, Menu, User, MessageCircle } from 'lucide-react'
 
 export function Header() {
   const dispatch = useAppDispatch()
-  const { totalItems } = useAppSelector((state) => state.cart)
   const { isAuthenticated, user } = useAppSelector((state) => state.auth)
   const { data: categories } = useCategories()
+  const { data: cartData } = useCart()
   const { t } = useLanguage()
+  
+  const totalItems = cartData?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

@@ -96,6 +96,21 @@ export const storesApi = {
     return response.data.data
   },
 
+  getUserStore: async (): Promise<Store> => {
+    const response = await apiClient.get<ApiResponse<Store>>('/v1/stores/my')
+    return response.data.data
+  },
+
+  getStores: async (filters?: { page?: number; pageSize?: number }): Promise<StoreListResponse> => {
+    const response = await apiClient.get<ApiResponse<StoreListResponse>>('/v1/stores', {
+      params: { 
+        page: filters?.page || 1, 
+        page_size: filters?.pageSize || 10 
+      }
+    })
+    return response.data.data
+  },
+
   listStores: async (page = 1, pageSize = 10): Promise<StoreListResponse> => {
     const response = await apiClient.get<ApiResponse<StoreListResponse>>('/v1/stores', {
       params: { page, page_size: pageSize }
@@ -103,9 +118,13 @@ export const storesApi = {
     return response.data.data
   },
 
-  searchStores: async (query: string, page = 1, pageSize = 10): Promise<StoreListResponse> => {
+  searchStores: async (query: string, filters?: { page?: number; pageSize?: number }): Promise<StoreListResponse> => {
     const response = await apiClient.get<ApiResponse<StoreListResponse>>('/v1/stores/search', {
-      params: { q: query, page, page_size: pageSize }
+      params: { 
+        q: query, 
+        page: filters?.page || 1, 
+        page_size: filters?.pageSize || 10 
+      }
     })
     return response.data.data
   },
@@ -122,6 +141,16 @@ export const storesApi = {
   // Statistics
   getStoreStats: async (): Promise<StoreStats> => {
     const response = await apiClient.get<ApiResponse<StoreStats>>('/v1/stores/stats')
+    return response.data.data
+  },
+
+  getUserStoreStats: async (): Promise<StoreStats> => {
+    const response = await apiClient.get<ApiResponse<StoreStats>>('/v1/stores/stats/my')
+    return response.data.data
+  },
+
+  getStoreStatsById: async (storeId: string): Promise<StoreStats> => {
+    const response = await apiClient.get<ApiResponse<StoreStats>>(`/v1/stores/stats/${storeId}`)
     return response.data.data
   },
 }

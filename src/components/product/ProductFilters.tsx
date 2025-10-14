@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
-import { X, RotateCcw } from 'lucide-react'
+import { RotateCcw } from 'lucide-react'
 import type { SearchFilters, Category } from '@/types'
 
 interface ProductFiltersProps {
@@ -32,9 +32,9 @@ export function ProductFilters({ filters, onFilterChange, categories }: ProductF
 
   const handleConditionChange = (condition: string, checked: boolean) => {
     if (checked) {
-      onFilterChange({ condition: condition as any })
+      onFilterChange({ condition: condition as 'new' | 'like_new' | 'good' | 'fair' | 'poor' })
     } else {
-      onFilterChange({ condition: '' })
+      onFilterChange({ condition: undefined })
     }
   }
 
@@ -52,12 +52,12 @@ export function ProductFilters({ filters, onFilterChange, categories }: ProductF
 
   const clearAllFilters = () => {
     onFilterChange({
-      categoryId: '',
-      minPrice: '',
-      maxPrice: '',
-      condition: '',
-      location: '',
-      query: ''
+      categoryId: undefined,
+      minPrice: 0,
+      maxPrice: 10000000,
+      condition: undefined,
+      location: undefined,
+      query: undefined
     })
     setPriceRange([0, 1000000])
   }
@@ -169,12 +169,42 @@ export function ProductFilters({ filters, onFilterChange, categories }: ProductF
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox
-                id="condition-used"
-                checked={filters.condition === 'used'}
-                onCheckedChange={(checked) => handleConditionChange('used', checked as boolean)}
+                id="condition-like-new"
+                checked={filters.condition === 'like_new'}
+                onCheckedChange={(checked) => handleConditionChange('like_new', checked as boolean)}
               />
-              <Label htmlFor="condition-used" className="text-sm cursor-pointer">
-                Đã sử dụng
+              <Label htmlFor="condition-like-new" className="text-sm cursor-pointer">
+                Như mới
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="condition-good"
+                checked={filters.condition === 'good'}
+                onCheckedChange={(checked) => handleConditionChange('good', checked as boolean)}
+              />
+              <Label htmlFor="condition-good" className="text-sm cursor-pointer">
+                Tốt
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="condition-fair"
+                checked={filters.condition === 'fair'}
+                onCheckedChange={(checked) => handleConditionChange('fair', checked as boolean)}
+              />
+              <Label htmlFor="condition-fair" className="text-sm cursor-pointer">
+                Khá
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="condition-poor"
+                checked={filters.condition === 'poor'}
+                onCheckedChange={(checked) => handleConditionChange('poor', checked as boolean)}
+              />
+              <Label htmlFor="condition-poor" className="text-sm cursor-pointer">
+                Kém
               </Label>
             </div>
           </div>

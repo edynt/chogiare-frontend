@@ -108,7 +108,6 @@ export interface Translation {
     similarProducts: string
     productDetails: string
     specifications: string
-    reviews: string
     questions: string
     shipping: string
     warranty: string

@@ -1,71 +1,108 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
-import { useAppDispatch } from '@/store'
-import { addToCart } from '@/store/slices/cartSlice'
+import { AddToCartButton } from './AddToCartButton'
+import { useProduct, useProductReviews } from '@/hooks'
+import { LoadingSpinner } from '@/components/ui/loading'
+import { ErrorMessage } from '@/components/ui/error-boundary'
+import { formatCurrency, formatDate } from '@/lib/utils'
 import { 
+  Star, 
   Heart, 
   Share2, 
-  Star, 
   MapPin, 
-  Truck, 
+  Clock, 
   Shield, 
+  Truck, 
   MessageCircle,
-  ShoppingCart,
-  Minus,
-  Plus,
   Eye
 } from 'lucide-react'
-import { cn, formatPrice } from '@/lib/utils'
-import type { Product } from '@/types'
 
 interface ProductDetailsProps {
-  product: Product
+  productId?: string
+  className?: string
 }
 
-export function ProductDetails({ product }: ProductDetailsProps) {
-  const dispatch = useAppDispatch()
-  const [selectedImage, setSelectedImage] = useState(0)
-  const [quantity, setQuantity] = useState(1)
-  const [isLiked, setIsLiked] = useState(false)
+export function ProductDetails({ productId, className }: ProductDetailsProps) {
+  const { id } = useParams<{ id: string }>()
+  const productIdToUse = productId || id
+  
+  const { data: product, isLoading, error, refetch } = useProduct(productIdToUse!)
+  const { data: reviewsData } = useProductReviews(productIdToUse!, { page: 1, pageSize: 5 })
+  
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [isFavorite, setIsFavorite] = useState(false)
 
-  const handleAddToCart = () => {
-    dispatch(addToCart({ product, quantity }))
+  const handleRetry = () => {
+    refetch()
   }
 
-  const handleQuantityChange = (newQuantity: number) => {
-    if (newQuantity >= 1 && newQuantity <= product.stock) {
-      setQuantity(newQuantity)
-    }
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    )
   }
+
+  if (error) {
+    return (
+      <ErrorMessage
+        error={error}
+        onRetry={handleRetry}
+        className="min-h-[400px]"
+      />
+    )
+  }
+
+  if (!product) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold mb-4">Sản phẩm không tồn tại</h2>
+        <p className="text-muted-foreground mb-4">
+          Sản phẩm bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.
+        </p>
+        <Button asChild>
+          <Link to="/products">Quay lại danh sách sản phẩm</Link>
+        </Button>
+      </div>
+    )
+  }
+
+  const reviews = reviewsData?.items || []
+  const averageRating = reviews.length > 0 
+    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+    : 0
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
         key={i}
-        className={cn(
-          "h-4 w-4",
-          i < Math.floor(rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-        )}
+        className={`h-4 w-4 ${
+          i < Math.floor(rating)
+            ? 'fill-yellow-400 text-yellow-400'
+            : 'text-gray-300'
+        }`}
       />
     ))
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className={`space-y-8 ${className}`}>
+      {/* Product Header */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Product Images */}
         <div className="space-y-4">
-          <div className="aspect-square w-full overflow-hidden rounded-lg border">
+          <div className="aspect-square overflow-hidden rounded-lg bg-muted">
             <img
-              src={product.images[selectedImage]}
+              src={product.images[selectedImageIndex] || product.images[0]}
               alt={product.title}
-              className="h-full w-full object-cover"
+              className="w-full h-full object-cover"
             />
           </div>
           
@@ -74,16 +111,17 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               {product.images.map((image, index) => (
                 <button
                   key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={cn(
-                    "aspect-square overflow-hidden rounded-lg border-2 transition-colors",
-                    selectedImage === index ? "border-primary" : "border-muted"
-                  )}
+                  onClick={() => setSelectedImageIndex(index)}
+                  className={`aspect-square overflow-hidden rounded-md border-2 ${
+                    selectedImageIndex === index
+                      ? 'border-primary'
+                      : 'border-transparent'
+                  }`}
                 >
                   <img
                     src={image}
                     alt={`${product.title} ${index + 1}`}
-                    className="h-full w-full object-cover"
+                    className="w-full h-full object-cover"
                   />
                 </button>
               ))}
@@ -93,266 +131,242 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
         {/* Product Info */}
         <div className="space-y-6">
-          {/* Title and Badges */}
           <div>
-            <div className="flex items-start justify-between mb-2">
-              <h1 className="text-3xl font-bold">{product.title}</h1>
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsLiked(!isLiked)}
-                  className={cn(isLiked && "text-red-500")}
-                >
-                  <Heart className={cn("h-5 w-5", isLiked && "fill-current")} />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Share2 className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-2">
               {product.badges.map((badge) => (
-                <Badge
-                  key={badge}
-                  variant={badge === 'NEW' ? 'default' : badge === 'SALE' ? 'destructive' : 'secondary'}
-                >
+                <Badge key={badge} variant="secondary">
                   {badge}
                 </Badge>
               ))}
             </div>
+            <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1">
+                {renderStars(averageRating)}
+                <span>({product.reviewCount} đánh giá)</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Eye className="h-4 w-4" />
+                <span>{product.viewCount} lượt xem</span>
+              </div>
+            </div>
           </div>
 
-          {/* Price */}
           <div className="space-y-2">
-            <div className="flex items-baseline gap-3">
+            <div className="flex items-center gap-4">
               <span className="text-3xl font-bold text-primary">
-                {formatPrice(product.price)}
+                {formatCurrency(product.price)}
               </span>
-              {product.originalPrice && (
-                <span className="text-xl text-muted-foreground line-through">
-                  {formatPrice(product.originalPrice)}
-                </span>
+              {product.originalPrice && product.originalPrice > product.price && (
+                <>
+                  <span className="text-xl text-muted-foreground line-through">
+                    {formatCurrency(product.originalPrice)}
+                  </span>
+                  <Badge variant="destructive">
+                    -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                  </Badge>
+                </>
               )}
             </div>
-            {product.originalPrice && (
-              <div className="text-sm text-success">
-                Tiết kiệm {formatPrice(product.originalPrice - product.price)} 
-                ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%)
-              </div>
-            )}
+            <p className="text-sm text-muted-foreground">
+              Tình trạng: <span className="font-medium">{product.condition}</span>
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Còn lại: <span className="font-medium text-green-600">{product.stock} sản phẩm</span>
+            </p>
           </div>
 
-          {/* Rating and Reviews */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1">
-              {renderStars(product.rating)}
-              <span className="ml-2 text-sm font-medium">{product.rating}</span>
-            </div>
-            <Separator orientation="vertical" className="h-4" />
-            <span className="text-sm text-muted-foreground">
-              {product.reviewCount} đánh giá
-            </span>
-            <Separator orientation="vertical" className="h-4" />
-            <span className="text-sm text-muted-foreground">
-              {product.viewCount} lượt xem
-            </span>
-          </div>
-
-          {/* Description */}
-          <div>
-            <h3 className="font-semibold mb-2">Mô tả sản phẩm</h3>
-            <p className="text-muted-foreground">{product.description}</p>
-          </div>
-
-          {/* Product Details */}
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="font-medium">Tình trạng:</span>
-              <span className="ml-2 capitalize">
-                {product.condition === 'new' ? 'Mới' : 'Đã sử dụng'}
-              </span>
-            </div>
-            <div>
-              <span className="font-medium">Kho:</span>
-              <span className="ml-2">{product.stock} sản phẩm</span>
-            </div>
-            <div>
-              <span className="font-medium">Khu vực:</span>
-              <span className="ml-2 flex items-center gap-1">
-                <MapPin className="h-4 w-4" />
-                {product.location}
-              </span>
-            </div>
-            <div>
-              <span className="font-medium">Danh mục:</span>
-              <span className="ml-2">{product.category?.name}</span>
-            </div>
-          </div>
-
-          {/* Quantity and Add to Cart */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <span className="font-medium">Số lượng:</span>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handleQuantityChange(quantity - 1)}
-                  disabled={quantity <= 1}
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="w-12 text-center">{quantity}</span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handleQuantityChange(quantity + 1)}
-                  disabled={quantity >= product.stock}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <Button 
-                size="lg" 
-                className="flex-1"
-                onClick={handleAddToCart}
-              >
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                Thêm vào giỏ hàng
-              </Button>
-              <Button size="lg" variant="outline">
-                <MessageCircle className="mr-2 h-5 w-5" />
-                Chat với người bán
-              </Button>
-            </div>
-          </div>
+          <Separator />
 
           {/* Seller Info */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Thông tin người bán</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={product.seller?.avatar} />
-                  <AvatarFallback>{product.seller?.name?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <h4 className="font-semibold">{product.seller?.name}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {product.seller?.storeInfo?.name}
-                  </p>
-                  <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Star className="h-4 w-4" />
-                      4.8 (120 đánh giá)
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Truck className="h-4 w-4" />
-                      Giao hàng nhanh
-                    </span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <Eye className="mr-2 h-4 w-4" />
-                    Xem shop
-                  </Button>
-                  <Button size="sm">
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    Chat
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex items-center gap-4">
+            <Avatar className="h-12 w-12">
+              <AvatarImage src={product.seller?.avatar} />
+              <AvatarFallback>
+                {product.seller?.name?.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="font-medium">{product.seller?.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {product.store?.name || 'Cá nhân'}
+              </p>
+            </div>
+            <Button variant="outline" size="sm">
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Chat
+            </Button>
+          </div>
 
-          {/* Trust Badges */}
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+          <Separator />
+
+          {/* Actions */}
+          <div className="space-y-4">
+            <AddToCartButton
+              productId={product.id}
+              productName={product.title}
+              stock={product.stock}
+            />
+            
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsFavorite(!isFavorite)}
+                className="flex-1"
+              >
+                <Heart className={`h-4 w-4 mr-2 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                {isFavorite ? 'Đã yêu thích' : 'Yêu thích'}
+              </Button>
+              <Button variant="outline" className="flex-1">
+                <Share2 className="h-4 w-4 mr-2" />
+                Chia sẻ
+              </Button>
+            </div>
+          </div>
+
+          {/* Features */}
+          <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-success" />
+              <Shield className="h-4 w-4 text-green-500" />
               <span>Bảo hành chính hãng</span>
             </div>
             <div className="flex items-center gap-2">
-              <Truck className="h-5 w-5 text-success" />
-              <span>Miễn phí vận chuyển</span>
+              <Truck className="h-4 w-4 text-blue-500" />
+              <span>Giao hàng nhanh</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-orange-500" />
+              <span>{product.location}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-purple-500" />
+              <span>Đăng {formatDate(product.createdAt)}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Product Tabs */}
-      <div className="mt-12">
-        <Tabs defaultValue="description" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="description">Mô tả chi tiết</TabsTrigger>
-            <TabsTrigger value="reviews">Đánh giá ({product.reviewCount})</TabsTrigger>
-            <TabsTrigger value="shipping">Vận chuyển & Bảo hành</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="description" className="mt-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="prose max-w-none">
-                  <h3>Thông tin chi tiết</h3>
-                  <p>{product.description}</p>
-                  
-                  <h4>Thông số kỹ thuật</h4>
-                  <ul>
-                    <li>Tình trạng: {product.condition === 'new' ? 'Mới 100%' : 'Đã sử dụng'}</li>
-                    <li>Danh mục: {product.category?.name}</li>
-                    <li>Khu vực: {product.location}</li>
-                    <li>Số lượng còn lại: {product.stock} sản phẩm</li>
-                  </ul>
+      {/* Product Details Tabs */}
+      <Tabs defaultValue="description" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="description">Mô tả</TabsTrigger>
+          <TabsTrigger value="reviews">Đánh giá ({product.reviewCount})</TabsTrigger>
+          <TabsTrigger value="seller">Thông tin người bán</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="description" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Mô tả sản phẩm</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="whitespace-pre-wrap">{product.description}</p>
+              {product.tags.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-sm font-medium mb-2">Tags:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {product.tags.map((tag) => (
+                      <Badge key={tag} variant="outline">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="reviews" className="mt-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">Chưa có đánh giá nào</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="shipping" className="mt-6">
-            <Card>
-              <CardContent className="p-6">
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="reviews" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Đánh giá sản phẩm</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {reviews.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">
+                  Chưa có đánh giá nào cho sản phẩm này.
+                </p>
+              ) : (
                 <div className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold mb-2">Thông tin vận chuyển</h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>• Miễn phí vận chuyển cho đơn hàng từ 500.000đ</li>
-                      <li>• Giao hàng trong 24h tại TP.HCM</li>
-                      <li>• Giao hàng 2-3 ngày tại các tỉnh thành khác</li>
-                      <li>• Hỗ trợ đổi trả trong 7 ngày</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold mb-2">Chính sách bảo hành</h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>• Bảo hành 12 tháng cho sản phẩm mới</li>
-                      <li>• Bảo hành 6 tháng cho sản phẩm đã sử dụng</li>
-                      <li>• Hỗ trợ sửa chữa tại các trung tâm ủy quyền</li>
-                    </ul>
+                  {reviews.map((review) => (
+                    <div key={review.id} className="border-b pb-4 last:border-b-0">
+                      <div className="flex items-center gap-4 mb-2">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={review.buyer?.avatar} />
+                          <AvatarFallback>
+                            {review.buyer?.name?.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium text-sm">{review.buyer?.name}</p>
+                          <div className="flex items-center gap-1">
+                            {renderStars(review.rating)}
+                          </div>
+                        </div>
+                        <div className="ml-auto text-sm text-muted-foreground">
+                          {formatDate(review.createdAt)}
+                        </div>
+                      </div>
+                      {review.comment && (
+                        <p className="text-sm text-muted-foreground ml-12">
+                          {review.comment}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="seller" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Thông tin người bán</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4 mb-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage src={product.seller?.avatar} />
+                  <AvatarFallback>
+                    {product.seller?.name?.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="text-lg font-semibold">{product.seller?.name}</h3>
+                  <p className="text-muted-foreground">
+                    {product.store?.name || 'Người bán cá nhân'}
+                  </p>
+                  <div className="flex items-center gap-1 mt-1">
+                    {renderStars(4.5)}
+                    <span className="text-sm text-muted-foreground">(4.5/5)</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+              </div>
+              
+              {product.store && (
+                <div className="space-y-2">
+                  <p><strong>Địa chỉ:</strong> {product.store.address}</p>
+                  <p><strong>Email:</strong> {product.store.email}</p>
+                  <p><strong>Điện thoại:</strong> {product.store.phone}</p>
+                </div>
+              )}
+              
+              <div className="flex gap-2 mt-4">
+                <Button variant="outline" className="flex-1">
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Nhắn tin
+                </Button>
+                <Button variant="outline" className="flex-1">
+                  Xem shop
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

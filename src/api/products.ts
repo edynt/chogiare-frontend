@@ -62,6 +62,29 @@ export const productsApi = {
     return response.data.data
   },
 
+  // Featured products
+  getFeaturedProducts: async (limit = 10): Promise<Product[]> => {
+    const response = await apiClient.get<ApiResponse<Product[]>>('/v1/products/featured', {
+      params: { limit }
+    })
+    return response.data.data
+  },
+
+  // My products (seller's products)
+  getMyProducts: async (filters: Omit<SearchFilters, 'sellerId'> = {}): Promise<PaginatedResponse<Product>> => {
+    const response = await apiClient.get<ApiResponse<PaginatedResponse<Product>>>(
+      '/v1/products/my',
+      { params: filters }
+    )
+    return response.data.data
+  },
+
+  // Bulk operations
+  bulkUpdateProducts: async (updates: Array<{ id: string; data: Partial<Product> }>): Promise<Product[]> => {
+    const response = await apiClient.patch<ApiResponse<Product[]>>('/v1/products/bulk', { updates })
+    return response.data.data
+  },
+
   // Product management
   updateProductStatus: async (id: string, status: ProductStatus): Promise<Product> => {
     const response = await apiClient.patch<ApiResponse<Product>>(
@@ -127,3 +150,6 @@ export const categoriesApi = {
     return response.data.data
   },
 }
+
+// Add getCategories to productsApi for backward compatibility
+productsApi.getCategories = categoriesApi.getCategories

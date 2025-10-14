@@ -5,8 +5,10 @@ import { Provider } from 'react-redux'
 import { store } from '@/store'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { LanguageProvider } from '@/contexts/LanguageContext'
-import { Toaster } from '@/components/ui/toaster'
+import { Toaster } from '@/components/ui/sonner'
 import { NotificationProvider } from '@/components/notification-provider'
+import { Cart } from '@/components/cart/Cart'
+import { AuthProvider } from '@/components/auth/AuthProvider'
 
 // Lazy load pages
 const HomePage = React.lazy(() => import('@/pages/HomePage'))
@@ -59,8 +61,9 @@ function App() {
         <ThemeProvider>
           <LanguageProvider>
             <NotificationProvider>
-              <Router>
-                <div className="min-h-screen bg-background">
+              <AuthProvider>
+                <Router>
+                  <div className="min-h-screen bg-background">
                           <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
                             <Routes>
                               <Route path="/" element={<HomePage />} />
@@ -90,9 +93,11 @@ function App() {
                               <Route path="*" element={<NotFoundPage />} />
                             </Routes>
                           </Suspense>
-                  <Toaster />
-                </div>
-              </Router>
+                    <Cart />
+                    <Toaster />
+                  </div>
+                </Router>
+              </AuthProvider>
             </NotificationProvider>
           </LanguageProvider>
         </ThemeProvider>

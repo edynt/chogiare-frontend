@@ -61,7 +61,7 @@ export default function ProductPage() {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        <ProductDetails product={product} />
+        <ProductDetails productId={product.id} />
       </main>
       <Footer />
     </div>

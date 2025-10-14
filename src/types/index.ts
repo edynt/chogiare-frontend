@@ -151,6 +151,9 @@ export interface SearchFilters {
   sellerId?: string | undefined
   badges?: ProductBadge[] | undefined
   rating?: number | undefined
+  minRating?: number | undefined
+  featured?: boolean | undefined
+  promoted?: boolean | undefined
   sortBy?: string | undefined
   sortOrder?: 'asc' | 'desc' | undefined
   page?: number | undefined

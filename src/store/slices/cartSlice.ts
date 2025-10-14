@@ -1,71 +1,61 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { Product } from '@/types'
-
-interface CartItem {
-  product: Product
-  quantity: number
-  addedAt: string
-}
+import type { Cart, CartItem } from '@/api/cart'
 
 interface CartState {
-  items: CartItem[]
-  totalItems: number
-  totalAmount: number
+  cart: Cart | null
   isOpen: boolean
+  isLoading: boolean
+  error: string | null
 }
 
 const initialState: CartState = {
-  items: [],
-  totalItems: 0,
-  totalAmount: 0,
+  cart: null,
   isOpen: false,
+  isLoading: false,
+  error: null,
 }
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<{ product: Product; quantity?: number }>) => {
-      const { product, quantity = 1 } = action.payload
-      const existingItem = state.items.find(item => item.product.id === product.id)
-      
-      if (existingItem) {
-        existingItem.quantity += quantity
-      } else {
-        state.items.push({
-          product,
-          quantity,
-          addedAt: new Date().toISOString(),
-        })
+    setCart: (state, action: PayloadAction<Cart>) => {
+      state.cart = action.payload
+      state.error = null
+    },
+    addToCart: (state, action: PayloadAction<CartItem>) => {
+      if (state.cart) {
+        const existingItemIndex = state.cart.items.findIndex(item => item.id === action.payload.id)
+        if (existingItemIndex >= 0) {
+          state.cart.items[existingItemIndex] = action.payload
+        } else {
+          state.cart.items.push(action.payload)
+        }
       }
-      
-      state.totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0)
-      state.totalAmount = state.items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
     },
     removeFromCart: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter(item => item.product.id !== action.payload)
-      state.totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0)
-      state.totalAmount = state.items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
+      if (state.cart) {
+        state.cart.items = state.cart.items.filter(item => item.id !== action.payload)
+      }
     },
-    updateQuantity: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
-      const { productId, quantity } = action.payload
-      const item = state.items.find(item => item.product.id === productId)
-      
-      if (item) {
-        if (quantity <= 0) {
-          state.items = state.items.filter(item => item.product.id !== productId)
-        } else {
-          item.quantity = quantity
+    updateCartItem: (state, action: PayloadAction<CartItem>) => {
+      if (state.cart) {
+        const index = state.cart.items.findIndex(item => item.id === action.payload.id)
+        if (index >= 0) {
+          state.cart.items[index] = action.payload
         }
-        
-        state.totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0)
-        state.totalAmount = state.items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
       }
     },
     clearCart: (state) => {
-      state.items = []
-      state.totalItems = 0
-      state.totalAmount = 0
+      if (state.cart) {
+        state.cart.items = []
+      }
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload
     },
     toggleCart: (state) => {
       state.isOpen = !state.isOpen
@@ -80,10 +70,13 @@ const cartSlice = createSlice({
 })
 
 export const {
+  setCart,
   addToCart,
   removeFromCart,
-  updateQuantity,
+  updateCartItem,
   clearCart,
+  setLoading,
+  setError,
   toggleCart,
   openCart,
   closeCart,

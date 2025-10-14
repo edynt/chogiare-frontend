@@ -4,11 +4,11 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Heart, Eye, ShoppingCart } from 'lucide-react'
+import { Heart, Eye } from 'lucide-react'
 import { useAppDispatch } from '@/store'
-import { addToCart } from '@/store/slices/cartSlice'
 import { setModal } from '@/store/slices/uiSlice'
 import { cn, formatPrice } from '@/lib/utils'
+import { AddToCartButton } from './AddToCartButton'
 import type { Product } from '@/types'
 
 interface ProductCardProps {
@@ -18,12 +18,6 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const dispatch = useAppDispatch()
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    dispatch(addToCart({ product, quantity: 1 }))
-  }
 
   const handleQuickView = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -43,7 +37,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         <div className="relative aspect-square overflow-hidden rounded-t-lg">
           <img
             src={product.images[0]}
-            alt={product.name}
+            alt={product.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
             loading="lazy"
             onError={(e) => {
@@ -97,18 +91,18 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
         <CardContent className="p-4 flex-1 flex flex-col">
           <h3 className="font-semibold text-sm line-clamp-2 mb-2 group-hover:text-primary transition-colors">
-            {product.name}
+            {product.title}
           </h3>
           
           <div className="flex items-center gap-2 mb-2">
             <Avatar className="h-5 w-5">
               <AvatarImage src={product.seller?.avatar} />
               <AvatarFallback className="text-xs">
-                {product.seller?.name?.charAt(0)}
+                {product.seller?.name?.charAt(0) || 'U'}
               </AvatarFallback>
             </Avatar>
             <span className="text-xs text-muted-foreground truncate">
-              {product.seller?.name}
+              {product.seller?.name || 'Unknown Seller'}
             </span>
           </div>
 
@@ -139,14 +133,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
       </Link>
 
       <CardFooter className="p-4 pt-0 mt-auto">
-        <Button
+        <AddToCartButton
+          productId={product.id}
+          productName={product.title}
+          stock={product.stock}
           className="w-full"
-          onClick={handleAddToCart}
-          disabled={product.stock === 0}
-        >
-          <ShoppingCart className="h-4 w-4 mr-2" />
-          {product.stock === 0 ? 'Hết hàng' : 'Thêm vào giỏ'}
-        </Button>
+        />
       </CardFooter>
     </Card>
   )
