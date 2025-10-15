@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Hero } from '@/components/home/Hero'
-import { CategoryScroller } from '@/components/home/CategoryScroller'
+import { CategoryGrid } from '@/components/home/CategoryGrid'
 import { ProductGridWithPagination } from '@/components/product/ProductGridWithPagination'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/button'
@@ -13,7 +13,7 @@ export default function HomePage() {
       <Header />
       <main>
         <Hero />
-        <CategoryScroller />
+        <CategoryGrid />
         
         {/* Featured Products Section */}
         <section className="py-16">

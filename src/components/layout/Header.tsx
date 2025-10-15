@@ -7,7 +7,6 @@ import { LanguageToggle } from '@/components/ui/language-toggle'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAppSelector, useAppDispatch } from '@/store'
 import { toggleMobileMenu } from '@/store/slices/uiSlice'
-import { useCategories } from '@/hooks/useProducts'
 import { useCart } from '@/hooks'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Search, ShoppingCart, Menu, User, MessageCircle } from 'lucide-react'
@@ -15,7 +14,6 @@ import { Search, ShoppingCart, Menu, User, MessageCircle } from 'lucide-react'
 export function Header() {
   const dispatch = useAppDispatch()
   const { isAuthenticated, user } = useAppSelector((state) => state.auth)
-  const { data: categories } = useCategories()
   const { data: cartData } = useCart()
   const { t } = useLanguage()
   
@@ -130,22 +128,6 @@ export function Header() {
           </Button>
         </div>
 
-        {/* Category Scroller - Desktop */}
-        {categories && categories.length > 0 && (
-          <div className="hidden md:block py-4">
-            <div className="flex space-x-6 overflow-x-auto scrollbar-hide">
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  to={`/category/${category.slug}`}
-                  className="flex-shrink-0 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {category.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </header>
   )
