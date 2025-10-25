@@ -132,9 +132,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
       <CardFooter className="p-4 pt-0 mt-auto">
         <AddToCartButton
-          productId={product.id}
-          productName={product.title}
-          stock={product.stock}
+          product={product}
           className="w-full"
         />
       </CardFooter>

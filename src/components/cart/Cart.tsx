@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '@/stores/cartStore'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -8,8 +9,8 @@ import { Minus, Plus, Trash2, ShoppingBag, X } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 
 export function Cart() {
-  const { items, totalItems, totalValue, updateQuantity, removeItem, clearCart } = useCartStore()
-  const [isOpen, setIsOpen] = useState(false)
+  const { items, totalItems, totalValue, isOpen, updateQuantity, removeItem, clearCart, closeCart } = useCartStore()
+  const navigate = useNavigate()
 
   const handleUpdateQuantity = (productId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -27,11 +28,16 @@ export function Cart() {
     clearCart()
   }
 
+  const handleCheckout = () => {
+    closeCart()
+    navigate('/payment')
+  }
+
   if (!isOpen) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
         <Button
-          onClick={() => setIsOpen(true)}
+          onClick={() => useCartStore.getState().openCart()}
           className="rounded-full p-3 shadow-lg"
           size="lg"
         >
@@ -47,8 +53,14 @@ export function Cart() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl">
+    <div 
+      className="fixed inset-0 z-50 bg-black bg-opacity-50"
+      onClick={closeCart}
+    >
+      <div 
+        className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex h-full flex-col">
           {/* Header */}
           <div className="flex items-center justify-between border-b p-4">
@@ -58,7 +70,7 @@ export function Cart() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setIsOpen(false)}
+              onClick={closeCart}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -130,7 +142,7 @@ export function Cart() {
                 </span>
               </div>
               <div className="space-y-2">
-                <Button className="w-full" size="lg">
+                <Button className="w-full" size="lg" onClick={handleCheckout}>
                   Thanh toán
                 </Button>
                 <Button

@@ -6,6 +6,7 @@ interface CartState {
   items: CartItem[]
   totalItems: number
   totalValue: number
+  isOpen: boolean
   isLoading: boolean
   error: string | null
 }
@@ -15,6 +16,8 @@ interface CartActions {
   updateQuantity: (productId: string, quantity: number) => void
   removeItem: (productId: string) => void
   clearCart: () => void
+  openCart: () => void
+  closeCart: () => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
   clearError: () => void
@@ -29,6 +32,7 @@ export const useCartStore = create<CartStore>()(
       items: [],
       totalItems: 0,
       totalValue: 0,
+      isOpen: false,
       isLoading: false,
       error: null,
 
@@ -46,6 +50,7 @@ export const useCartStore = create<CartStore>()(
             ),
             totalItems: state.totalItems + quantity,
             totalValue: state.totalValue + (product.price * quantity),
+            isOpen: true, // Auto-open cart when adding item
           }))
         } else {
           const newItem: CartItem = {
@@ -67,6 +72,7 @@ export const useCartStore = create<CartStore>()(
             items: [...state.items, newItem],
             totalItems: state.totalItems + quantity,
             totalValue: state.totalValue + (product.price * quantity),
+            isOpen: true, // Auto-open cart when adding item
           }))
         }
       },
@@ -114,6 +120,9 @@ export const useCartStore = create<CartStore>()(
         totalItems: 0,
         totalValue: 0,
       }),
+
+      openCart: () => set({ isOpen: true }),
+      closeCart: () => set({ isOpen: false }),
 
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => set({ error }),

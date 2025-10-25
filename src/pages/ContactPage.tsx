@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
+import { SEOHead } from '@/components/seo/SEOHead'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   Phone,
@@ -137,6 +138,27 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Liên hệ - Chogiare"
+        description="Liên hệ với Chogiare để được hỗ trợ, tư vấn hoặc báo cáo vấn đề. Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7."
+        keywords="liên hệ, hỗ trợ, tư vấn, chogiare, customer service"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "name": "Liên hệ Chogiare",
+          "description": "Trang liên hệ và hỗ trợ khách hàng của Chogiare",
+          "mainEntity": {
+            "@type": "Organization",
+            "name": "Chogiare",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+84-xxx-xxx-xxx",
+              "contactType": "customer service",
+              "availableLanguage": "Vietnamese"
+            }
+          }
+        }}
+      />
       <Header />
       <main className="container mx-auto px-4 py-8">
         {/* Header */}

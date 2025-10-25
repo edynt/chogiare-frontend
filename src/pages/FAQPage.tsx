@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { SEOHead } from '@/components/seo/SEOHead'
 import { 
   HelpCircle,
   Search,
@@ -168,6 +169,25 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Câu hỏi thường gặp - FAQ"
+        description="Tìm câu trả lời cho các câu hỏi thường gặp về Chogiare. Hướng dẫn sử dụng, chính sách, thanh toán và nhiều thông tin hữu ích khác."
+        keywords="câu hỏi thường gặp, FAQ, hướng dẫn, hỗ trợ, chogiare"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "name": "Câu hỏi thường gặp - Chogiare",
+          "description": "Trang câu hỏi thường gặp của Chogiare",
+          "mainEntity": faqData.map(faq => ({
+            "@type": "Question",
+            "name": faq.question,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": faq.answer
+            }
+          }))
+        }}
+      />
       <Header />
       <main className="container mx-auto px-4 py-8">
         {/* Header */}

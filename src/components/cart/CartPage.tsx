@@ -1,74 +1,59 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { useCart, useUpdateCartItem, useRemoveFromCart, useClearCart } from '@/hooks'
-import { LoadingSpinner } from '@/components/ui/loading'
-import { ErrorMessage } from '@/components/ui/error-boundary'
+import { useCartStore } from '@/stores/cartStore'
 import { EmptyCart } from '@/components/ui/empty-state'
+import { SEOHead } from '@/components/seo/SEOHead'
 import { formatCurrency } from '@/lib/utils'
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from 'lucide-react'
 
 export function CartPage() {
-  const { data: cartData, isLoading, error, refetch } = useCart()
-  const updateCartItem = useUpdateCartItem()
-  const removeFromCart = useRemoveFromCart()
-  const clearCart = useClearCart()
+  const { items, totalItems, totalValue, updateQuantity, removeItem, clearCart } = useCartStore()
+  const navigate = useNavigate()
 
-  const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
+  const handleUpdateQuantity = (productId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
-      removeFromCart.mutate(itemId)
+      removeItem(productId)
     } else {
-      updateCartItem.mutate({ itemId, data: { quantity: newQuantity } })
+      updateQuantity(productId, newQuantity)
     }
   }
 
-  const handleRemoveItem = (itemId: string) => {
-    removeFromCart.mutate(itemId)
+  const handleRemoveItem = (productId: string) => {
+    removeItem(productId)
   }
 
   const handleClearCart = () => {
-    clearCart.mutate()
+    clearCart()
   }
 
   const handleCheckout = () => {
-    // Navigate to payment page
-    window.location.href = '/payment'
+    navigate('/payment')
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <LoadingSpinner size="lg" />
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <ErrorMessage
-        error={error}
-        onRetry={() => refetch()}
-        className="min-h-[400px]"
-      />
-    )
-  }
-
-  const cartItems = cartData?.items || []
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0)
-  const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-
-  if (cartItems.length === 0) {
+  if (items.length === 0) {
     return (
       <EmptyCart
-        onContinueShopping={() => window.location.href = '/products'}
+        onContinueShopping={() => navigate('/products')}
       />
     )
   }
 
   return (
     <div className="space-y-6">
+      <SEOHead
+        title="Giỏ hàng của bạn"
+        description="Xem và quản lý các sản phẩm trong giỏ hàng của bạn. Cập nhật số lượng, xóa sản phẩm và tiến hành thanh toán an toàn."
+        keywords="giỏ hàng, mua sắm, thanh toán, chogiare"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "ShoppingCart",
+          "name": "Giỏ hàng Chogiare",
+          "description": "Giỏ hàng mua sắm trực tuyến"
+        }}
+      />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -88,7 +73,6 @@ export function CartPage() {
         <Button
           variant="outline"
           onClick={handleClearCart}
-          disabled={clearCart.isPending}
         >
           <Trash2 className="h-4 w-4 mr-2" />
           Xóa tất cả
@@ -98,7 +82,7 @@ export function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
-          {cartItems.map((item) => (
+          {items.map((item) => (
             <Card key={item.id}>
               <CardContent className="p-4">
                 <div className="flex gap-4">
@@ -131,8 +115,7 @@ export function CartPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                        disabled={updateCartItem.isPending}
+                        onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
@@ -142,8 +125,8 @@ export function CartPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                        disabled={updateCartItem.isPending || item.quantity >= item.productStock}
+                        onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
+                        disabled={item.quantity >= item.productStock}
                       >
                         <Plus className="h-3 w-3" />
                       </Button>
@@ -158,8 +141,7 @@ export function CartPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleRemoveItem(item.id)}
-                      disabled={removeFromCart.isPending}
+                      onClick={() => handleRemoveItem(item.productId)}
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
@@ -180,7 +162,7 @@ export function CartPage() {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Tạm tính ({totalItems} sản phẩm):</span>
-                  <span>{formatCurrency(totalAmount)}</span>
+                  <span>{formatCurrency(totalValue)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Phí vận chuyển:</span>
@@ -193,7 +175,7 @@ export function CartPage() {
                 <Separator />
                 <div className="flex justify-between font-semibold">
                   <span>Tổng cộng:</span>
-                  <span className="text-primary">{formatCurrency(totalAmount)}</span>
+                  <span className="text-primary">{formatCurrency(totalValue)}</span>
                 </div>
               </div>
 
@@ -201,7 +183,6 @@ export function CartPage() {
                 className="w-full" 
                 size="lg"
                 onClick={handleCheckout}
-                disabled={clearCart.isPending}
               >
                 Tiến hành thanh toán
               </Button>

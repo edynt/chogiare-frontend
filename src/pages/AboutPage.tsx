@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { SEOHead } from '@/components/seo/SEOHead'
 import { 
   Heart,
   Users,
@@ -113,6 +114,23 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Về chúng tôi - Chogiare"
+        description="Tìm hiểu về Chogiare - nền tảng mua sắm trực tuyến hàng đầu Việt Nam với sứ mệnh kết nối người mua và người bán một cách an toàn, tiện lợi."
+        keywords="về chogiare, giới thiệu, công ty, mua sắm online, thương mại điện tử"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Chogiare",
+          "url": "https://chogiare.com",
+          "description": "Nền tảng mua sắm trực tuyến hàng đầu Việt Nam",
+          "foundingDate": "2024",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "VN"
+          }
+        }}
+      />
       <Header />
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}

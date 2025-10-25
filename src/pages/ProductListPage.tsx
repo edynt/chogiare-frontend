@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/Footer'
 import { ProductGridWithPagination } from '@/components/product/ProductGridWithPagination'
 import { ProductFilters } from '@/components/product/ProductFilters'
 import { useCategories } from '@/hooks'
+import { SEOHead } from '@/components/seo/SEOHead'
 import type { SearchFilters } from '@/types'
 
 export default function ProductListPage() {
@@ -52,6 +53,11 @@ export default function ProductListPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Danh sách sản phẩm"
+        description="Khám phá hàng ngàn sản phẩm chất lượng với giá cả hợp lý tại Chogiare. Tìm kiếm và lọc sản phẩm theo danh mục, giá cả, thương hiệu và nhiều tiêu chí khác."
+        keywords="danh sách sản phẩm, mua sắm online, tìm kiếm sản phẩm, lọc sản phẩm, chogiare"
+      />
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">

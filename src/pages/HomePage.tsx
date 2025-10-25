@@ -5,10 +5,28 @@ import { ProductGridWithPagination } from '@/components/product/ProductGridWithP
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Shield, Truck, Headphones, Award } from 'lucide-react'
+import { SEOHead } from '@/components/seo/SEOHead'
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Chogiare - Mua sắm trực tuyến giá rẻ"
+        description="Chogiare - Nền tảng mua sắm trực tuyến hàng đầu Việt Nam với hàng triệu sản phẩm chất lượng, giá cả hợp lý và giao hàng nhanh chóng."
+        keywords="mua sắm online, thương mại điện tử, sản phẩm giá rẻ, giao hàng nhanh, Việt Nam, chogiare"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Chogiare",
+          "url": "https://chogiare.com",
+          "description": "Nền tảng mua sắm trực tuyến hàng đầu Việt Nam",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://chogiare.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }}
+      />
       <Header />
       <main>
         <Hero />

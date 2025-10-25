@@ -205,9 +205,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           {/* Actions */}
           <div className="space-y-4">
             <AddToCartButton
-              productId={product.id}
-              productName={product.title}
-              stock={product.stock}
+              product={product}
             />
             
             <div className="flex gap-2">

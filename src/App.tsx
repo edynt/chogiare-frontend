@@ -7,6 +7,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { NotificationProvider } from '@/components/notification-provider'
 import { Cart } from '@/components/cart/Cart'
 import { AuthProvider } from '@/components/auth/AuthProvider'
+import { PerformanceOptimizer } from '@/components/seo/PerformanceOptimizer'
 
 // Lazy load pages
 const HomePage = React.lazy(() => import('@/pages/HomePage'))
@@ -50,10 +51,11 @@ function App() {
         <LanguageProvider>
           <NotificationProvider>
             <AuthProvider>
-              <Router>
-                <div className="min-h-screen bg-background">
-                  <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
-                    <Routes>
+              <PerformanceOptimizer>
+                <Router>
+                  <div className="min-h-screen bg-background">
+                    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+                      <Routes>
                       <Route path="/" element={<HomePage />} />
                       <Route path="/products" element={<ProductListPage />} />
                       <Route path="/product/:id" element={<ProductDetailPage />} />
@@ -80,11 +82,12 @@ function App() {
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>
-                  </Suspense>
-                  <Cart />
-                  <Toaster />
-                </div>
-              </Router>
+                    </Suspense>
+                    <Cart />
+                    <Toaster />
+                  </div>
+                </Router>
+              </PerformanceOptimizer>
             </AuthProvider>
           </NotificationProvider>
         </LanguageProvider>
