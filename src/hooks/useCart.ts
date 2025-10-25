@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { cartApi } from '@/api/cart'
-import { useAppDispatch } from '@/store'
-import { addToCart, removeFromCart, updateCartItem, clearCart } from '@/store/slices/cartSlice'
+import { useCartStore } from '@/stores/cartStore'
 import type { UpdateCartItemQuantityRequest } from '@/api/cart'
 
 export const useCart = () => {
@@ -13,53 +12,53 @@ export const useCart = () => {
 }
 
 export const useAddToCart = () => {
-  const dispatch = useAppDispatch()
+  const { addItem } = useCartStore()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: cartApi.addItem,
     onSuccess: (data) => {
-      dispatch(addToCart(data))
+      // The cart store will be updated by the mutation
       queryClient.invalidateQueries({ queryKey: ['cart'] })
     },
   })
 }
 
 export const useUpdateCartItem = () => {
-  const dispatch = useAppDispatch()
+  const { updateQuantity } = useCartStore()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: ({ itemId, data }: { itemId: string; data: UpdateCartItemQuantityRequest }) =>
       cartApi.updateItemQuantity(itemId, data),
     onSuccess: (data) => {
-      dispatch(updateCartItem(data))
+      updateQuantity(data.productId, data.quantity)
       queryClient.invalidateQueries({ queryKey: ['cart'] })
     },
   })
 }
 
 export const useRemoveFromCart = () => {
-  const dispatch = useAppDispatch()
+  const { removeItem } = useCartStore()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: cartApi.removeItem,
     onSuccess: (_, itemId) => {
-      dispatch(removeFromCart(itemId))
+      removeItem(itemId)
       queryClient.invalidateQueries({ queryKey: ['cart'] })
     },
   })
 }
 
 export const useClearCart = () => {
-  const dispatch = useAppDispatch()
+  const { clearCart } = useCartStore()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: cartApi.clearCart,
     onSuccess: () => {
-      dispatch(clearCart())
+      clearCart()
       queryClient.invalidateQueries({ queryKey: ['cart'] })
     },
   })

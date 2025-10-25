@@ -42,31 +42,31 @@ export interface UpdateCartItemQuantityRequest {
 export const cartApi = {
   // Cart operations
   getCart: async (): Promise<Cart> => {
-    const response = await apiClient.get<ApiResponse<Cart>>('/v1/cart')
+    const response = await apiClient.get<ApiResponse<Cart>>('/cart')
     return response.data.data
   },
 
   clearCart: async (): Promise<void> => {
-    await apiClient.delete('/v1/cart')
+    await apiClient.delete('/cart')
   },
 
   getCartStats: async (): Promise<CartStats> => {
-    const response = await apiClient.get<ApiResponse<CartStats>>('/v1/cart/stats')
+    const response = await apiClient.get<ApiResponse<CartStats>>('/cart/stats')
     return response.data.data
   },
 
   // Cart item operations
   addItem: async (data: AddCartItemRequest): Promise<CartItem> => {
-    const response = await apiClient.post<ApiResponse<CartItem>>('/v1/cart/items', data)
+    const response = await apiClient.post<ApiResponse<CartItem>>('/cart/items', data)
     return response.data.data
   },
 
   updateItemQuantity: async (itemId: string, data: UpdateCartItemQuantityRequest): Promise<CartItem> => {
-    const response = await apiClient.patch<ApiResponse<CartItem>>(`/v1/cart/items/${itemId}`, data)
+    const response = await apiClient.patch<ApiResponse<CartItem>>(`/cart/items/${itemId}`, data)
     return response.data.data
   },
 
   removeItem: async (itemId: string): Promise<void> => {
-    await apiClient.delete(`/v1/cart/items/${itemId}`)
+    await apiClient.delete(`/cart/items/${itemId}`)
   },
 }

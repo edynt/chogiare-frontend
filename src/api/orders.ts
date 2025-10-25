@@ -84,17 +84,17 @@ export interface UpdateOrderRequest {
 export const ordersApi = {
   // Order CRUD operations
   createOrder: async (data: CreateOrderRequest): Promise<Order> => {
-    const response = await apiClient.post<ApiResponse<Order>>('/v1/orders', data)
+    const response = await apiClient.post<ApiResponse<Order>>('/orders', data)
     return response.data.data
   },
 
   getOrder: async (id: string): Promise<Order> => {
-    const response = await apiClient.get<ApiResponse<Order>>(`/v1/orders/${id}`)
+    const response = await apiClient.get<ApiResponse<Order>>(`/orders/${id}`)
     return response.data.data
   },
 
   getOrders: async (filters?: { page?: number; pageSize?: number }): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/v1/orders', {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders', {
       params: { 
         page: filters?.page || 1, 
         page_size: filters?.pageSize || 10 
@@ -104,7 +104,7 @@ export const ordersApi = {
   },
 
   getUserOrders: async (filters?: { page?: number; pageSize?: number }): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/v1/orders/my', {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders/my', {
       params: { 
         page: filters?.page || 1, 
         page_size: filters?.pageSize || 10 
@@ -114,7 +114,7 @@ export const ordersApi = {
   },
 
   getStoreOrders: async (storeId: string, filters?: { page?: number; pageSize?: number }): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>(`/v1/orders/store/${storeId}`, {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>(`/orders/store/${storeId}`, {
       params: { 
         page: filters?.page || 1, 
         page_size: filters?.pageSize || 10 
@@ -124,58 +124,58 @@ export const ordersApi = {
   },
 
   listOrders: async (page = 1, pageSize = 10): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/v1/orders', {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders', {
       params: { page, page_size: pageSize }
     })
     return response.data.data
   },
 
   listUserOrders: async (page = 1, pageSize = 10): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/v1/orders/my', {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders/my', {
       params: { page, page_size: pageSize }
     })
     return response.data.data
   },
 
   listStoreOrders: async (storeId: string, page = 1, pageSize = 10): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>(`/v1/orders/store/${storeId}`, {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>(`/orders/store/${storeId}`, {
       params: { page, page_size: pageSize }
     })
     return response.data.data
   },
 
   updateOrder: async (id: string, data: UpdateOrderRequest): Promise<Order> => {
-    const response = await apiClient.put<ApiResponse<Order>>(`/v1/orders/${id}`, data)
+    const response = await apiClient.put<ApiResponse<Order>>(`/orders/${id}`, data)
     return response.data.data
   },
 
   updateOrderStatus: async (id: string, status: string): Promise<Order> => {
-    const response = await apiClient.patch<ApiResponse<Order>>(`/v1/orders/${id}/status`, { status })
+    const response = await apiClient.patch<ApiResponse<Order>>(`/orders/${id}/status`, { status })
     return response.data.data
   },
 
   updateOrderPaymentStatus: async (id: string, paymentStatus: string): Promise<Order> => {
-    const response = await apiClient.patch<ApiResponse<Order>>(`/v1/orders/${id}/payment-status`, { paymentStatus })
+    const response = await apiClient.patch<ApiResponse<Order>>(`/orders/${id}/payment-status`, { paymentStatus })
     return response.data.data
   },
 
   deleteOrder: async (id: string): Promise<void> => {
-    await apiClient.delete(`/v1/orders/${id}`)
+    await apiClient.delete(`/orders/${id}`)
   },
 
   // Statistics
   getOrderStats: async (): Promise<OrderStats> => {
-    const response = await apiClient.get<ApiResponse<OrderStats>>('/v1/orders/stats')
+    const response = await apiClient.get<ApiResponse<OrderStats>>('/orders/stats')
     return response.data.data
   },
 
   getStoreOrderStats: async (storeId: string): Promise<OrderStats> => {
-    const response = await apiClient.get<ApiResponse<OrderStats>>(`/v1/orders/stats/store/${storeId}`)
+    const response = await apiClient.get<ApiResponse<OrderStats>>(`/orders/stats/store/${storeId}`)
     return response.data.data
   },
 
   getUserOrderStats: async (): Promise<OrderStats> => {
-    const response = await apiClient.get<ApiResponse<OrderStats>>('/v1/orders/stats/my')
+    const response = await apiClient.get<ApiResponse<OrderStats>>('/orders/stats/my')
     return response.data.data
   },
 }

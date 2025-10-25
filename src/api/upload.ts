@@ -45,7 +45,7 @@ export const uploadApi = {
     const formData = new FormData()
     formData.append('file', file)
 
-    const response = await apiClient.post<ApiResponse<UploadResult>>('/v1/upload/file', formData, {
+    const response = await apiClient.post<ApiResponse<UploadResult>>('/upload/file', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -71,7 +71,7 @@ export const uploadApi = {
       formData.append(`files`, file)
     })
 
-    const response = await apiClient.post<ApiResponse<UploadResult[]>>('/v1/upload/files', formData, {
+    const response = await apiClient.post<ApiResponse<UploadResult[]>>('/upload/files', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -102,7 +102,7 @@ export const uploadApi = {
       formData.append('images', file)
     })
 
-    const response = await apiClient.post<ApiResponse<UploadResult[]>>('/v1/upload/product-images', formData, {
+    const response = await apiClient.post<ApiResponse<UploadResult[]>>('/upload/product-images', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -130,7 +130,7 @@ export const uploadApi = {
     formData.append('type', type)
     formData.append('file', file)
 
-    const response = await apiClient.post<ApiResponse<UploadResult>>('/v1/upload/store-image', formData, {
+    const response = await apiClient.post<ApiResponse<UploadResult>>('/upload/store-image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -154,7 +154,7 @@ export const uploadApi = {
     const formData = new FormData()
     formData.append('avatar', file)
 
-    const response = await apiClient.post<ApiResponse<UploadResult>>('/v1/upload/avatar', formData, {
+    const response = await apiClient.post<ApiResponse<UploadResult>>('/upload/avatar', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -175,18 +175,18 @@ export const uploadApi = {
 
   // Delete file
   deleteFile: async (fileId: string): Promise<void> => {
-    await apiClient.delete(`/v1/upload/files/${fileId}`)
+    await apiClient.delete(`/upload/files/${fileId}`)
   },
 
   // Get file info
   getFileInfo: async (fileId: string): Promise<UploadResult> => {
-    const response = await apiClient.get<ApiResponse<UploadResult>>(`/v1/upload/files/${fileId}`)
+    const response = await apiClient.get<ApiResponse<UploadResult>>(`/upload/files/${fileId}`)
     return response.data.data
   },
 
   // List user files
   getUserFiles: async (page = 1, pageSize = 20): Promise<{ files: UploadResult[]; total: number; page: number; pageSize: number; totalPages: number }> => {
-    const response = await apiClient.get<ApiResponse<{ files: UploadResult[]; total: number; page: number; pageSize: number; totalPages: number }>>('/v1/upload/files', {
+    const response = await apiClient.get<ApiResponse<{ files: UploadResult[]; total: number; page: number; pageSize: number; totalPages: number }>>('/upload/files', {
       params: { page, page_size: pageSize }
     })
     return response.data.data

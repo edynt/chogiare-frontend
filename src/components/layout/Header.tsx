@@ -5,19 +5,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { LanguageToggle } from '@/components/ui/language-toggle'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { useAppSelector, useAppDispatch } from '@/store'
-import { toggleMobileMenu } from '@/store/slices/uiSlice'
-import { useCart } from '@/hooks'
+import { useAuthStore } from '@/stores/authStore'
+import { useCartStore } from '@/stores/cartStore'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Search, ShoppingCart, Menu, User, MessageCircle } from 'lucide-react'
 
 export function Header() {
-  const dispatch = useAppDispatch()
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth)
-  const { data: cartData } = useCart()
+  const { isAuthenticated, user } = useAuthStore()
+  const { totalItems } = useCartStore()
   const { t } = useLanguage()
-  
-  const totalItems = cartData?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -122,7 +118,7 @@ export function Header() {
             variant="ghost"
             size="icon"
             className="md:hidden"
-            onClick={() => dispatch(toggleMobileMenu())}
+            onClick={() => {/* Mobile menu toggle can be implemented later */}}
           >
             <Menu className="h-4 w-4" />
           </Button>

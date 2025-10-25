@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { productUpdateSchema, type ProductUpdateFormData } from '@/lib/schemas'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,21 +32,7 @@ import {
 } from 'lucide-react'
 import type { Product, ProductCondition, ProductStatus } from '@/types'
 
-const schema = yup.object({
-  title: yup.string().required('Tên sản phẩm là bắt buộc').min(5, 'Tên sản phẩm phải có ít nhất 5 ký tự'),
-  description: yup.string().required('Mô tả là bắt buộc').min(20, 'Mô tả phải có ít nhất 20 ký tự'),
-  price: yup.number().required('Giá là bắt buộc').min(1000, 'Giá tối thiểu là 1,000 VNĐ'),
-  originalPrice: yup.number().optional(),
-  categoryId: yup.string().required('Danh mục là bắt buộc'),
-  condition: yup.string().required('Tình trạng là bắt buộc'),
-  location: yup.string().required('Địa điểm là bắt buộc'),
-  stock: yup.number().required('Số lượng là bắt buộc').min(1, 'Số lượng tối thiểu là 1'),
-  tags: yup.string().optional(),
-  badges: yup.array().optional(),
-  status: yup.string().required('Trạng thái là bắt buộc'),
-})
-
-type FormData = yup.InferType<typeof schema>
+// Using Zod schema from lib/schemas.ts
 
 export default function EditProductPage() {
   const navigate = useNavigate()
@@ -84,8 +70,8 @@ export default function EditProductPage() {
     watch,
     reset,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<ProductUpdateFormData>({
+    resolver: zodResolver(productUpdateSchema),
   })
 
   const availableBadges = ['NEW', 'FEATURED', 'PROMO', 'HOT', 'SALE']
@@ -145,7 +131,7 @@ export default function EditProductPage() {
     )
   }
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: ProductUpdateFormData) => {
     if (!id) return
 
     execute(async () => {

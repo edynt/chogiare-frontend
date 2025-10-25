@@ -74,7 +74,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
     )
   }
 
-  const reviews = reviewsData?.items || []
+  const reviews = reviewsData?.reviews || []
   const averageRating = reviews.length > 0 
     ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
     : 0
@@ -100,13 +100,13 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         <div className="space-y-4">
           <div className="aspect-square overflow-hidden rounded-lg bg-muted">
             <img
-              src={product.images[selectedImageIndex] || product.images[0]}
+              src={product.images?.[selectedImageIndex] || product.images?.[0] || '/placeholder.jpg'}
               alt={product.title}
               className="w-full h-full object-cover"
             />
           </div>
           
-          {product.images.length > 1 && (
+          {product.images && product.images.length > 1 && (
             <div className="grid grid-cols-4 gap-2">
               {product.images.map((image, index) => (
                 <button
@@ -132,13 +132,15 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         {/* Product Info */}
         <div className="space-y-6">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              {product.badges.map((badge) => (
-                <Badge key={badge} variant="secondary">
-                  {badge}
-                </Badge>
-              ))}
-            </div>
+            {product.badges && product.badges.length > 0 && (
+              <div className="flex items-center gap-2 mb-2">
+                {product.badges.map((badge) => (
+                  <Badge key={badge} variant="secondary">
+                    {badge}
+                  </Badge>
+                ))}
+              </div>
+            )}
             <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
@@ -261,7 +263,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
             </CardHeader>
             <CardContent>
               <p className="whitespace-pre-wrap">{product.description}</p>
-              {product.tags.length > 0 && (
+              {product.tags && product.tags.length > 0 && (
                 <div className="mt-4">
                   <p className="text-sm font-medium mb-2">Tags:</p>
                   <div className="flex flex-wrap gap-2">
@@ -293,13 +295,13 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                     <div key={review.id} className="border-b pb-4 last:border-b-0">
                       <div className="flex items-center gap-4 mb-2">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={review.buyer?.avatar} />
+                          <AvatarImage src={(review as any).buyer?.avatar} />
                           <AvatarFallback>
-                            {review.buyer?.name?.charAt(0)}
+                            {(review as any).buyer?.name?.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium text-sm">{review.buyer?.name}</p>
+                          <p className="font-medium text-sm">{(review as any).buyer?.name}</p>
                           <div className="flex items-center gap-1">
                             {renderStars(review.rating)}
                           </div>

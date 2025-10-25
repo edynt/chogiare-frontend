@@ -77,17 +77,17 @@ export interface CreateChatMessageRequest {
 export const chatApi = {
   // Conversation operations
   createConversation: async (data: CreateConversationRequest): Promise<Conversation> => {
-    const response = await apiClient.post<ApiResponse<Conversation>>('/v1/chat/conversations', data)
+    const response = await apiClient.post<ApiResponse<Conversation>>('/chat/conversations', data)
     return response.data.data
   },
 
   getConversation: async (id: string): Promise<Conversation> => {
-    const response = await apiClient.get<ApiResponse<Conversation>>(`/v1/chat/conversations/${id}`)
+    const response = await apiClient.get<ApiResponse<Conversation>>(`/chat/conversations/${id}`)
     return response.data.data
   },
 
   getConversations: async (filters?: { page?: number; pageSize?: number }): Promise<ConversationListResponse> => {
-    const response = await apiClient.get<ApiResponse<ConversationListResponse>>('/v1/chat/conversations', {
+    const response = await apiClient.get<ApiResponse<ConversationListResponse>>('/chat/conversations', {
       params: { 
         page: filters?.page || 1, 
         page_size: filters?.pageSize || 10 
@@ -97,51 +97,51 @@ export const chatApi = {
   },
 
   listUserConversations: async (page = 1, pageSize = 10): Promise<ConversationListResponse> => {
-    const response = await apiClient.get<ApiResponse<ConversationListResponse>>('/v1/chat/conversations', {
+    const response = await apiClient.get<ApiResponse<ConversationListResponse>>('/chat/conversations', {
       params: { page, page_size: pageSize }
     })
     return response.data.data
   },
 
   updateConversation: async (id: string, data: UpdateConversationRequest): Promise<Conversation> => {
-    const response = await apiClient.put<ApiResponse<Conversation>>(`/v1/chat/conversations/${id}`, data)
+    const response = await apiClient.put<ApiResponse<Conversation>>(`/chat/conversations/${id}`, data)
     return response.data.data
   },
 
   deleteConversation: async (id: string): Promise<void> => {
-    await apiClient.delete(`/v1/chat/conversations/${id}`)
+    await apiClient.delete(`/chat/conversations/${id}`)
   },
 
   // Conversation participant operations
   addParticipant: async (conversationId: string, userId: string): Promise<ConversationParticipant> => {
     const response = await apiClient.post<ApiResponse<ConversationParticipant>>(
-      `/v1/chat/conversations/${conversationId}/participants/${userId}`
+      `/chat/conversations/${conversationId}/participants/${userId}`
     )
     return response.data.data
   },
 
   removeParticipant: async (conversationId: string, userId: string): Promise<void> => {
-    await apiClient.delete(`/v1/chat/conversations/${conversationId}/participants/${userId}`)
+    await apiClient.delete(`/chat/conversations/${conversationId}/participants/${userId}`)
   },
 
   // Chat message operations
   sendMessage: async (conversationId: string, data: CreateChatMessageRequest): Promise<ChatMessage> => {
-    const response = await apiClient.post<ApiResponse<ChatMessage>>(`/v1/chat/conversations/${conversationId}/messages`, data)
+    const response = await apiClient.post<ApiResponse<ChatMessage>>(`/chat/conversations/${conversationId}/messages`, data)
     return response.data.data
   },
 
   createChatMessage: async (data: CreateChatMessageRequest): Promise<ChatMessage> => {
-    const response = await apiClient.post<ApiResponse<ChatMessage>>('/v1/chat/messages', data)
+    const response = await apiClient.post<ApiResponse<ChatMessage>>('/chat/messages', data)
     return response.data.data
   },
 
   getChatMessage: async (id: string): Promise<ChatMessage> => {
-    const response = await apiClient.get<ApiResponse<ChatMessage>>(`/v1/chat/messages/${id}`)
+    const response = await apiClient.get<ApiResponse<ChatMessage>>(`/chat/messages/${id}`)
     return response.data.data
   },
 
   getConversationMessages: async (conversationId: string, filters?: { page?: number; pageSize?: number }): Promise<ChatMessageListResponse> => {
-    const response = await apiClient.get<ApiResponse<ChatMessageListResponse>>(`/v1/chat/conversations/${conversationId}/messages`, {
+    const response = await apiClient.get<ApiResponse<ChatMessageListResponse>>(`/chat/conversations/${conversationId}/messages`, {
       params: { 
         page: filters?.page || 1, 
         page_size: filters?.pageSize || 50 
@@ -151,31 +151,31 @@ export const chatApi = {
   },
 
   listConversationMessages: async (conversationId: string, page = 1, pageSize = 50): Promise<ChatMessageListResponse> => {
-    const response = await apiClient.get<ApiResponse<ChatMessageListResponse>>(`/v1/chat/conversations/${conversationId}/messages`, {
+    const response = await apiClient.get<ApiResponse<ChatMessageListResponse>>(`/chat/conversations/${conversationId}/messages`, {
       params: { page, page_size: pageSize }
     })
     return response.data.data
   },
 
   markMessageAsRead: async (conversationId: string, messageId: string): Promise<void> => {
-    await apiClient.post(`/v1/chat/conversations/${conversationId}/messages/${messageId}/read`)
+    await apiClient.post(`/chat/conversations/${conversationId}/messages/${messageId}/read`)
   },
 
   markConversationAsRead: async (id: string): Promise<void> => {
-    await apiClient.post(`/v1/chat/conversations/${id}/read`)
+    await apiClient.post(`/chat/conversations/${id}/read`)
   },
 
   deleteMessage: async (conversationId: string, messageId: string): Promise<void> => {
-    await apiClient.delete(`/v1/chat/conversations/${conversationId}/messages/${messageId}`)
+    await apiClient.delete(`/chat/conversations/${conversationId}/messages/${messageId}`)
   },
 
   deleteChatMessage: async (id: string): Promise<void> => {
-    await apiClient.delete(`/v1/chat/messages/${id}`)
+    await apiClient.delete(`/chat/messages/${id}`)
   },
 
   // Statistics
   getChatStats: async (): Promise<ChatStats> => {
-    const response = await apiClient.get<ApiResponse<ChatStats>>('/v1/chat/stats')
+    const response = await apiClient.get<ApiResponse<ChatStats>>('/chat/stats')
     return response.data.data
   },
 }

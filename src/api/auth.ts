@@ -4,7 +4,7 @@ import type { LoginCredentials, RegisterData, AuthTokens, User, ApiResponse } fr
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> => {
     const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
-      '/v1/auth/login',
+      '/auth/login',
       credentials
     )
     return response.data.data
@@ -12,45 +12,45 @@ export const authApi = {
 
   register: async (data: RegisterData): Promise<{ user: User; tokens: AuthTokens }> => {
     const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
-      '/v1/auth/register',
+      '/auth/register',
       data
     )
     return response.data.data
   },
 
   logout: async (): Promise<void> => {
-    await apiClient.post('/v1/auth/logout')
+    await apiClient.post('/auth/logout')
     apiClient.clearAuthTokens()
   },
 
   refreshToken: async (refreshToken: string): Promise<AuthTokens> => {
     const response = await apiClient.post<ApiResponse<AuthTokens>>(
-      '/v1/auth/refresh',
+      '/auth/refresh',
       { refreshToken }
     )
     return response.data.data
   },
 
   forgotPassword: async (email: string): Promise<void> => {
-    await apiClient.post('/v1/auth/forgot-password', { email })
+    await apiClient.post('/auth/forgot-password', { email })
   },
 
   resetPassword: async (token: string, password: string): Promise<void> => {
-    await apiClient.post('/v1/auth/reset-password', { token, password })
+    await apiClient.post('/auth/reset-password', { token, password })
   },
 
   getProfile: async (): Promise<User> => {
-    const response = await apiClient.get<ApiResponse<User>>('/v1/auth/profile')
+    const response = await apiClient.get<ApiResponse<User>>('/auth/profile')
     return response.data.data
   },
 
   updateProfile: async (data: Partial<User>): Promise<User> => {
-    const response = await apiClient.patch<ApiResponse<User>>('/v1/auth/profile', data)
+    const response = await apiClient.patch<ApiResponse<User>>('/auth/profile', data)
     return response.data.data
   },
 
   changePassword: async (currentPassword: string, newPassword: string): Promise<void> => {
-    await apiClient.post('/v1/auth/change-password', {
+    await apiClient.post('/auth/change-password', {
       currentPassword,
       newPassword,
     })
@@ -59,14 +59,14 @@ export const authApi = {
   // OAuth methods
   googleAuth: async (): Promise<{ user: User; tokens: AuthTokens }> => {
     const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
-      '/v1/auth/google'
+      '/auth/google'
     )
     return response.data.data
   },
 
   facebookAuth: async (): Promise<{ user: User; tokens: AuthTokens }> => {
     const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
-      '/v1/auth/facebook'
+      '/auth/facebook'
     )
     return response.data.data
   },

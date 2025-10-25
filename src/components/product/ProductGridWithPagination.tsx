@@ -13,6 +13,7 @@ interface ProductGridWithPaginationProps {
   initialFilters?: SearchFilters
   showSearch?: boolean
   showPagination?: boolean
+  showSidebar?: boolean
   className?: string
 }
 
@@ -20,6 +21,7 @@ export function ProductGridWithPagination({
   initialFilters = {},
   showSearch = true,
   showPagination = true,
+  showSidebar = false,
   className,
 }: ProductGridWithPaginationProps) {
   const [filters, setFilters] = useState<SearchFilters>({
@@ -62,6 +64,20 @@ export function ProductGridWithPagination({
   const totalItems = productsData?.total || 0
   const currentPage = filters.page || 1
   const pageSize = filters.limit || 20
+
+  // If showing sidebar, only render the search component
+  if (showSidebar) {
+    return (
+      <div className={cn('space-y-4', className)}>
+        <ProductSearch
+          onSearch={handleSearch}
+          initialFilters={filters}
+          categories={categories || []}
+          compact={true}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className={cn('space-y-6', className)}>

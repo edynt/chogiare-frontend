@@ -39,7 +39,6 @@ export default function SellerProductsPage() {
 
   const { data: productsData, isLoading, error } = useMyProducts({
     query: searchQuery || undefined,
-    status: statusFilter !== 'all' ? statusFilter as ProductStatus : undefined,
     sortBy: sortBy as 'createdAt' | 'price' | 'rating' | 'viewCount',
   })
 

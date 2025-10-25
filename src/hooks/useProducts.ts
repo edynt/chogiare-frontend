@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { productsApi } from '@/api/products'
+import { productsApi, getCategories } from '@/api/products'
+import { useProductStore } from '@/stores/productStore'
 import type { Product, SearchFilters } from '@/types'
 
 export const useProducts = (filters: SearchFilters = {}) => {
@@ -29,7 +30,7 @@ export const useFeaturedProducts = (limit = 10) => {
 export const useCategories = () => {
   return useQuery({
     queryKey: ['categories'],
-    queryFn: () => productsApi.getCategories(),
+    queryFn: () => getCategories(),
     staleTime: 30 * 60 * 1000, // 30 minutes
   })
 }

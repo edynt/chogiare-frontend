@@ -15,9 +15,10 @@ interface ProductSearchProps {
   initialFilters?: SearchFilters
   categories?: Array<{ id: string; name: string }>
   className?: string
+  compact?: boolean
 }
 
-export function ProductSearch({ onSearch, initialFilters = {}, categories = [], className }: ProductSearchProps) {
+export function ProductSearch({ onSearch, initialFilters = {}, categories = [], className, compact = false }: ProductSearchProps) {
   const [filters, setFilters] = useState<SearchFilters>({
     query: '',
     categoryId: '',
@@ -34,7 +35,7 @@ export function ProductSearch({ onSearch, initialFilters = {}, categories = [], 
     ...initialFilters,
   })
 
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(true)
 
   // Debounced search
   const debouncedSearch = debounce((searchFilters: SearchFilters) => {
@@ -120,30 +121,60 @@ export function ProductSearch({ onSearch, initialFilters = {}, categories = [], 
   return (
     <div className={cn('space-y-4', className)}>
       {/* Search Bar */}
-      <div className="flex gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Tìm kiếm sản phẩm..."
-            value={filters.query || ''}
-            onChange={(e) => handleFilterChange('query', e.target.value)}
-            className="pl-10"
-          />
+      {!compact && (
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Tìm kiếm sản phẩm..."
+              value={filters.query || ''}
+              onChange={(e) => handleFilterChange('query', e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => setShowFilters(!showFilters)}
+            className="relative"
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            {showFilters ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
+            {activeFiltersCount > 0 && (
+              <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                {activeFiltersCount}
+              </Badge>
+            )}
+          </Button>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => setShowFilters(!showFilters)}
-          className="relative"
-        >
-          <Filter className="h-4 w-4 mr-2" />
-          Bộ lọc
-          {activeFiltersCount > 0 && (
-            <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
-              {activeFiltersCount}
-            </Badge>
-          )}
-        </Button>
-      </div>
+      )}
+
+      {/* Compact Search Bar */}
+      {compact && (
+        <div className="space-y-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Tìm kiếm sản phẩm..."
+              value={filters.query || ''}
+              onChange={(e) => handleFilterChange('query', e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => setShowFilters(!showFilters)}
+            className="w-full relative"
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            {showFilters ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
+            {activeFiltersCount > 0 && (
+              <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                {activeFiltersCount}
+              </Badge>
+            )}
+          </Button>
+        </div>
+      )}
 
       {/* Filters Panel */}
       {showFilters && (

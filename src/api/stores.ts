@@ -82,27 +82,27 @@ export interface UpdateStoreRequest {
 export const storesApi = {
   // Store CRUD operations
   createStore: async (data: CreateStoreRequest): Promise<Store> => {
-    const response = await apiClient.post<ApiResponse<Store>>('/v1/stores', data)
+    const response = await apiClient.post<ApiResponse<Store>>('/stores', data)
     return response.data.data
   },
 
   getStore: async (id: string): Promise<Store> => {
-    const response = await apiClient.get<ApiResponse<Store>>(`/v1/stores/${id}`)
+    const response = await apiClient.get<ApiResponse<Store>>(`/stores/${id}`)
     return response.data.data
   },
 
   getMyStore: async (): Promise<Store> => {
-    const response = await apiClient.get<ApiResponse<Store>>('/v1/stores/my')
+    const response = await apiClient.get<ApiResponse<Store>>('/stores/my')
     return response.data.data
   },
 
   getUserStore: async (): Promise<Store> => {
-    const response = await apiClient.get<ApiResponse<Store>>('/v1/stores/my')
+    const response = await apiClient.get<ApiResponse<Store>>('/stores/my')
     return response.data.data
   },
 
   getStores: async (filters?: { page?: number; pageSize?: number }): Promise<StoreListResponse> => {
-    const response = await apiClient.get<ApiResponse<StoreListResponse>>('/v1/stores', {
+    const response = await apiClient.get<ApiResponse<StoreListResponse>>('/stores', {
       params: { 
         page: filters?.page || 1, 
         page_size: filters?.pageSize || 10 
@@ -112,14 +112,14 @@ export const storesApi = {
   },
 
   listStores: async (page = 1, pageSize = 10): Promise<StoreListResponse> => {
-    const response = await apiClient.get<ApiResponse<StoreListResponse>>('/v1/stores', {
+    const response = await apiClient.get<ApiResponse<StoreListResponse>>('/stores', {
       params: { page, page_size: pageSize }
     })
     return response.data.data
   },
 
   searchStores: async (query: string, filters?: { page?: number; pageSize?: number }): Promise<StoreListResponse> => {
-    const response = await apiClient.get<ApiResponse<StoreListResponse>>('/v1/stores/search', {
+    const response = await apiClient.get<ApiResponse<StoreListResponse>>('/stores/search', {
       params: { 
         q: query, 
         page: filters?.page || 1, 
@@ -130,27 +130,27 @@ export const storesApi = {
   },
 
   updateStore: async (id: string, data: UpdateStoreRequest): Promise<Store> => {
-    const response = await apiClient.put<ApiResponse<Store>>(`/v1/stores/${id}`, data)
+    const response = await apiClient.put<ApiResponse<Store>>(`/stores/${id}`, data)
     return response.data.data
   },
 
   deleteStore: async (id: string): Promise<void> => {
-    await apiClient.delete(`/v1/stores/${id}`)
+    await apiClient.delete(`/stores/${id}`)
   },
 
   // Statistics
   getStoreStats: async (): Promise<StoreStats> => {
-    const response = await apiClient.get<ApiResponse<StoreStats>>('/v1/stores/stats')
+    const response = await apiClient.get<ApiResponse<StoreStats>>('/stores/stats')
     return response.data.data
   },
 
   getUserStoreStats: async (): Promise<StoreStats> => {
-    const response = await apiClient.get<ApiResponse<StoreStats>>('/v1/stores/stats/my')
+    const response = await apiClient.get<ApiResponse<StoreStats>>('/stores/stats/my')
     return response.data.data
   },
 
   getStoreStatsById: async (storeId: string): Promise<StoreStats> => {
-    const response = await apiClient.get<ApiResponse<StoreStats>>(`/v1/stores/stats/${storeId}`)
+    const response = await apiClient.get<ApiResponse<StoreStats>>(`/stores/stats/${storeId}`)
     return response.data.data
   },
 }

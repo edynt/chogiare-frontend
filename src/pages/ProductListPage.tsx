@@ -2,10 +2,13 @@ import { useSearchParams } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { ProductGridWithPagination } from '@/components/product/ProductGridWithPagination'
+import { ProductFilters } from '@/components/product/ProductFilters'
+import { useCategories } from '@/hooks'
 import type { SearchFilters } from '@/types'
 
 export default function ProductListPage() {
   const [searchParams] = useSearchParams()
+  const { data: categories } = useCategories()
   
   // Lấy tham số từ URL
   const query = searchParams.get('q') || ''
@@ -31,6 +34,22 @@ export default function ProductListPage() {
     limit: 20,
   }
 
+  const handleFilterChange = (filters: SearchFilters) => {
+    // Update URL with new filters
+    const params = new URLSearchParams()
+    if (filters.query) params.set('q', filters.query)
+    if (filters.categoryId) params.set('category', filters.categoryId)
+    if (filters.minPrice) params.set('minPrice', filters.minPrice.toString())
+    if (filters.maxPrice) params.set('maxPrice', filters.maxPrice.toString())
+    if (filters.condition) params.set('condition', filters.condition)
+    if (filters.location) params.set('location', filters.location)
+    if (filters.sortBy) params.set('sortBy', filters.sortBy)
+    if (filters.sortOrder) params.set('sortOrder', filters.sortOrder)
+    if (filters.page && filters.page > 1) params.set('page', filters.page.toString())
+    
+    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`)
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -42,11 +61,27 @@ export default function ProductListPage() {
           </p>
         </div>
         
-        <ProductGridWithPagination
-          initialFilters={initialFilters}
-          showSearch={true}
-          showPagination={true}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Sidebar Filters */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <ProductFilters
+                onSearch={handleFilterChange}
+                initialFilters={initialFilters}
+                categories={categories || []}
+              />
+            </div>
+          </div>
+          
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <ProductGridWithPagination
+              initialFilters={initialFilters}
+              showSearch={false}
+              showPagination={true}
+            />
+          </div>
+        </div>
       </main>
       <Footer />
     </div>

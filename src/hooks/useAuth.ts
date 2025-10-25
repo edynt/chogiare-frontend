@@ -1,27 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { authApi } from '@/api/auth'
-import { useAppDispatch } from '@/store'
-import { loginSuccess, loginFailure, logout } from '@/store/slices/authSlice'
+import { useAuthStore } from '@/stores/authStore'
 
 export const useLogin = () => {
-  const dispatch = useAppDispatch()
+  const { login, setError } = useAuthStore()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
-      dispatch(loginSuccess(data))
+      login(data.user, data.tokens)
       queryClient.setQueryData(['auth', 'profile'], data.user)
     },
     onError: (error: Error) => {
-      dispatch(loginFailure(error.message))
+      setError(error.message)
     },
   })
 }
 
 export const useRegister = () => {
-  const dispatch = useAppDispatch()
-  const queryClient = useQueryClient()
+  const { setError } = useAuthStore()
 
   return useMutation({
     mutationFn: authApi.register,
@@ -31,19 +29,19 @@ export const useRegister = () => {
       console.log('Registration successful:', data)
     },
     onError: (error: Error) => {
-      dispatch(loginFailure(error.message))
+      setError(error.message)
     },
   })
 }
 
 export const useLogout = () => {
-  const dispatch = useAppDispatch()
+  const { logout } = useAuthStore()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-      dispatch(logout())
+      logout()
       queryClient.clear()
     },
   })
@@ -89,33 +87,33 @@ export const useResetPassword = () => {
 }
 
 export const useGoogleAuth = () => {
-  const dispatch = useAppDispatch()
+  const { login, setError } = useAuthStore()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: authApi.googleAuth,
     onSuccess: (data) => {
-      dispatch(loginSuccess(data))
+      login(data.user, data.tokens)
       queryClient.setQueryData(['auth', 'profile'], data.user)
     },
     onError: (error: Error) => {
-      dispatch(loginFailure(error.message))
+      setError(error.message)
     },
   })
 }
 
 export const useFacebookAuth = () => {
-  const dispatch = useAppDispatch()
+  const { login, setError } = useAuthStore()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: authApi.facebookAuth,
     onSuccess: (data) => {
-      dispatch(loginSuccess(data))
+      login(data.user, data.tokens)
       queryClient.setQueryData(['auth', 'profile'], data.user)
     },
     onError: (error: Error) => {
-      dispatch(loginFailure(error.message))
+      setError(error.message)
     },
   })
 }

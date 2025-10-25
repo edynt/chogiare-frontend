@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,13 +9,7 @@ import { useNotification } from '@/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
 import { Loader2 } from 'lucide-react'
 import { apiClient } from '@/api/axios'
-
-const schema = yup.object({
-  email: yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
-  password: yup.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự').required('Mật khẩu là bắt buộc'),
-})
-
-type FormData = yup.InferType<typeof schema>
+import { loginSchema, type LoginFormData } from '@/lib/schemas'
 
 export function LoginForm() {
   const { notify } = useNotification()
@@ -46,11 +39,11 @@ export function LoginForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: LoginFormData) => {
     execute(async () => {
       await new Promise((resolve, reject) => {
         loginMutation.mutate(data, {

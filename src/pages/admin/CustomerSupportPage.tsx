@@ -28,6 +28,8 @@ import {
   Clock,
   User,
   Calendar,
+  CreditCard,
+  Settings,
   Mail,
   Phone,
   Flag,

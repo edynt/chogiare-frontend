@@ -1,11 +1,19 @@
 import React from 'react'
-import { useAppSelector, useAppDispatch } from '@/store'
-import { removeNotification } from '@/store/slices/uiSlice'
 import { cn } from '@/lib/utils'
 
-export function Toaster() {
-  const notifications = useAppSelector((state) => state.ui.notifications)
-  const dispatch = useAppDispatch()
+interface Notification {
+  id: string
+  type: 'success' | 'error' | 'warning' | 'info'
+  title: string
+  message?: string
+}
+
+interface ToasterProps {
+  notifications: Notification[]
+  onRemove: (id: string) => void
+}
+
+export function Toaster({ notifications, onRemove }: ToasterProps) {
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">
@@ -34,7 +42,7 @@ export function Toaster() {
             )}
           </div>
           <button
-            onClick={() => dispatch(removeNotification(notification.id))}
+            onClick={() => onRemove(notification.id)}
             className="ml-2 rounded-full p-1 hover:bg-black/10 dark:hover:bg-white/10"
           >
             <span className="sr-only">Close</span>

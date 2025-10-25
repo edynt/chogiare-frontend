@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,16 +9,8 @@ import { useRegister } from '@/hooks/useAuth'
 import { useNotification } from '@/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
 import { Loader2, CheckCircle } from 'lucide-react'
-
-const schema = yup.object({
-  name: yup.string().min(2, 'Tên phải có ít nhất 2 ký tự').required('Tên là bắt buộc'),
-  email: yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
-  password: yup.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự').required('Mật khẩu là bắt buộc'),
-  confirmPassword: yup.string().oneOf([yup.ref('password')], 'Mật khẩu xác nhận không khớp').required('Xác nhận mật khẩu là bắt buộc'),
-  phone: yup.string().optional(),
-})
-
-type FormData = yup.InferType<typeof schema>
+import { registerSchema, type RegisterFormData } from '@/lib/schemas'
+import type { UserRole } from '@/types'
 
 export function RegisterForm() {
   const { notify } = useNotification()
@@ -31,14 +22,14 @@ export function RegisterForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
   })
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: RegisterFormData) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...registerData } = data
-    const finalData = { ...registerData, roles: ['buyer'] as const }
+    const finalData = { ...registerData, roles: ['buyer'] as UserRole[] }
     registerMutation.mutate(finalData, {
       onSuccess: () => {
         setIsRegistered(true)

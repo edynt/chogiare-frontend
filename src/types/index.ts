@@ -72,6 +72,21 @@ export type ProductCondition = 'new' | 'like_new' | 'good' | 'fair' | 'poor'
 export type ProductStatus = 'draft' | 'active' | 'sold' | 'archived' | 'suspended'
 export type ProductBadge = 'NEW' | 'FEATURED' | 'PROMO' | 'HOT' | 'SALE'
 
+export interface CartItem {
+  id: string
+  cartId: string
+  productId: string
+  quantity: number
+  price: number
+  productName: string
+  productImage: string
+  productPrice: number
+  productStock: number
+  productStatus: string
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Order {
   id: string
   buyerId: string

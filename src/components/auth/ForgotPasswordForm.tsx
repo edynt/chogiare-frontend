@@ -1,19 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useForgotPassword } from '@/hooks/useAuth'
 import { useNotification } from '@/components/notification-provider'
-
-const schema = yup.object({
-  email: yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
-})
-
-type FormData = yup.InferType<typeof schema>
+import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/lib/schemas'
 
 export function ForgotPasswordForm() {
   const { notify } = useNotification()
@@ -23,11 +17,11 @@ export function ForgotPasswordForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
   })
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: ForgotPasswordFormData) => {
     forgotPasswordMutation.mutate(data.email, {
       onSuccess: () => {
         notify({

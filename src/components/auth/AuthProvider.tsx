@@ -1,16 +1,13 @@
 import React, { useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from '@/store'
+import { useAuthStore } from '@/stores/authStore'
 import { useProfile } from '@/hooks'
-import { loginSuccess, logout } from '@/store/slices/authSlice'
 
 interface AuthProviderProps {
   children: React.ReactNode
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const dispatch = useAppDispatch()
-  const { isAuthenticated, tokens } = useAppSelector((state) => state.auth)
-  
+  const { isAuthenticated, tokens, setUser, setTokens, setLoading, setError } = useAuthStore()
   const { data: profile, error, isLoading } = useProfile()
 
   useEffect(() => {
@@ -21,6 +18,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const parsedTokens = JSON.parse(storedTokens)
         // Check if token is not expired
         if (parsedTokens.expiresIn && Date.now() < parsedTokens.expiresIn) {
+          setTokens(parsedTokens)
           // We have valid tokens, but no user data yet
           // The useProfile hook will fetch user data
         } else {
@@ -32,17 +30,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
         localStorage.removeItem('auth_tokens')
       }
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, setTokens])
 
   useEffect(() => {
     if (profile && tokens) {
       // User is authenticated and we have profile data
-      dispatch(loginSuccess({ user: profile, tokens }))
+      setUser(profile)
     } else if (error && isAuthenticated) {
       // Profile fetch failed, user might not be authenticated anymore
-      dispatch(logout())
+      setUser(null)
+      setTokens(null)
     }
-  }, [profile, tokens, error, isAuthenticated, dispatch])
+  }, [profile, tokens, error, isAuthenticated, setUser, setTokens])
+
+  useEffect(() => {
+    setLoading(isLoading)
+  }, [isLoading, setLoading])
+
+  useEffect(() => {
+    if (error) {
+      setError(error.message || 'Có lỗi xảy ra')
+    }
+  }, [error, setError])
 
   // Show loading state while checking authentication
   if (isLoading && !isAuthenticated) {

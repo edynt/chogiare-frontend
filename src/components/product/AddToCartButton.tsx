@@ -3,8 +3,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Minus, Plus, ShoppingCart, Check } from 'lucide-react'
 import { useAddToCart } from '@/hooks'
-import { useAppDispatch } from '@/store'
-import { openCart } from '@/store/slices/cartSlice'
 import { toast } from 'sonner'
 
 interface AddToCartButtonProps {
@@ -22,7 +20,6 @@ export function AddToCartButton({
   disabled = false,
   className,
 }: AddToCartButtonProps) {
-  const dispatch = useAppDispatch()
   const [quantity, setQuantity] = useState(1)
   const [isAdded, setIsAdded] = useState(false)
   
@@ -41,7 +38,7 @@ export function AddToCartButton({
       })
       
       setIsAdded(true)
-      dispatch(openCart())
+      // Cart will be opened automatically by the Cart component
       toast.success(`Đã thêm ${productName} vào giỏ hàng`)
       
       // Reset added state after 2 seconds

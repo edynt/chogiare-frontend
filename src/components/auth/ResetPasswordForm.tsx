@@ -1,20 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useResetPassword } from '@/hooks/useAuth'
 import { useNotification } from '@/components/notification-provider'
-
-const schema = yup.object({
-  password: yup.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự').required('Mật khẩu là bắt buộc'),
-  confirmPassword: yup.string().oneOf([yup.ref('password')], 'Mật khẩu xác nhận không khớp').required('Xác nhận mật khẩu là bắt buộc'),
-})
-
-type FormData = yup.InferType<typeof schema>
+import { resetPasswordSchema, type ResetPasswordFormData } from '@/lib/schemas'
 
 export function ResetPasswordForm() {
   const { notify } = useNotification()
@@ -24,11 +17,11 @@ export function ResetPasswordForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
   })
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: ResetPasswordFormData) => {
     // In a real app, you'd get the token from URL params
     const token = 'mock-reset-token'
     resetPasswordMutation.mutate({ token, password: data.password }, {

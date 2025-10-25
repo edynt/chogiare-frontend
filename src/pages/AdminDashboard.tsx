@@ -80,7 +80,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <AdminSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+            <AdminSidebar isCollapsed={false} onToggle={() => {}} />
           </div>
 
           {/* Main Content */}

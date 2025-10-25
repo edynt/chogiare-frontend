@@ -39,24 +39,24 @@ export function DemoDataLoader({ onDataLoaded }: DemoDataLoaderProps) {
 
     const products: Product[] = data.map((row, index) => ({
       id: generateId(),
-      title: row.title || row.name || `Product ${index + 1}`,
-      description: row.description || '',
-      price: parseFloat(row.price) || 0,
-      originalPrice: row.originalPrice ? parseFloat(row.originalPrice) : undefined,
-      categoryId: row.categoryId || '1',
-      images: row.images ? row.images.split(',').map((img: string) => img.trim()) : ['https://via.placeholder.com/400'],
-      condition: (row.condition as string) || 'new',
-      tags: row.tags ? row.tags.split(',').map((tag: string) => tag.trim()) : [],
-      location: row.location || 'Hà Nội',
-      stock: parseInt(row.stock) || 1,
-      sellerId: row.sellerId || '1',
+      title: (row.title as string) || (row.name as string) || `Product ${index + 1}`,
+      description: (row.description as string) || '',
+      price: parseFloat(row.price as string) || 0,
+      originalPrice: row.originalPrice ? parseFloat(row.originalPrice as string) : undefined,
+      categoryId: (row.categoryId as string) || '1',
+      images: row.images ? (row.images as string).split(',').map((img: string) => img.trim()) : ['https://via.placeholder.com/400'],
+      condition: ((row.condition as string) || 'new') as 'new' | 'like_new' | 'good' | 'fair' | 'poor',
+      tags: row.tags ? (row.tags as string).split(',').map((tag: string) => tag.trim()) : [],
+      location: (row.location as string) || 'Hà Nội',
+      stock: parseInt(row.stock as string) || 1,
+      sellerId: (row.sellerId as string) || '1',
       status: 'active' as const,
-      badges: row.badges ? row.badges.split(',').map((badge: string) => badge.trim()) as string[] : [],
-      rating: parseFloat(row.rating) || 4.5,
-      reviewCount: parseInt(row.reviewCount) || 0,
-      viewCount: parseInt(row.viewCount) || 0,
-      isFeatured: row.isFeatured === 'true' || false,
-      isPromoted: row.isPromoted === 'true' || false,
+      badges: row.badges ? (row.badges as string).split(',').map((badge: string) => badge.trim()) as ('NEW' | 'FEATURED' | 'PROMO' | 'HOT' | 'SALE')[] : [],
+      rating: parseFloat(row.rating as string) || 4.5,
+      reviewCount: parseInt(row.reviewCount as string) || 0,
+      viewCount: parseInt(row.viewCount as string) || 0,
+      isFeatured: (row.isFeatured as string) === 'true' || false,
+      isPromoted: (row.isPromoted as string) === 'true' || false,
       createdAt: generateDate(),
       updatedAt: generateDate(),
     }))
@@ -94,8 +94,8 @@ export function DemoDataLoader({ onDataLoaded }: DemoDataLoaderProps) {
   const parseJSON = useCallback((jsonText: string): ParsedData => {
     const data = JSON.parse(jsonText) as Record<string, unknown> | Record<string, unknown>[]
     
-    if (data.products) {
-      return data as ParsedData
+    if ((data as any).products) {
+      return data as unknown as ParsedData
     }
 
     // If it's an array of products
@@ -103,24 +103,24 @@ export function DemoDataLoader({ onDataLoaded }: DemoDataLoaderProps) {
       return {
         products: data.map((item: Record<string, unknown>, index) => ({
           id: generateId(),
-          title: item.title || item.name || `Product ${index + 1}`,
-          description: item.description || '',
-          price: parseFloat(item.price) || 0,
-          originalPrice: item.originalPrice ? parseFloat(item.originalPrice) : undefined,
-          categoryId: item.categoryId || '1',
-          images: item.images || ['https://via.placeholder.com/400'],
-          condition: item.condition || 'new',
-          tags: item.tags || [],
-          location: item.location || 'Hà Nội',
-          stock: parseInt(item.stock) || 1,
-          sellerId: item.sellerId || '1',
+          title: (item.title as string) || (item.name as string) || `Product ${index + 1}`,
+          description: (item.description as string) || '',
+          price: parseFloat(item.price as string) || 0,
+          originalPrice: item.originalPrice ? parseFloat(item.originalPrice as string) : undefined,
+          categoryId: (item.categoryId as string) || '1',
+          images: (item.images as string[]) || ['https://via.placeholder.com/400'],
+          condition: ((item.condition as string) || 'new') as 'new' | 'like_new' | 'good' | 'fair' | 'poor',
+          tags: (item.tags as string[]) || [],
+          location: (item.location as string) || 'Hà Nội',
+          stock: parseInt(item.stock as string) || 1,
+          sellerId: (item.sellerId as string) || '1',
           status: 'active' as const,
-          badges: item.badges || [],
-          rating: parseFloat(item.rating) || 4.5,
-          reviewCount: parseInt(item.reviewCount) || 0,
-          viewCount: parseInt(item.viewCount) || 0,
-          isFeatured: item.isFeatured || false,
-          isPromoted: item.isPromoted || false,
+          badges: (item.badges as ('NEW' | 'FEATURED' | 'PROMO' | 'HOT' | 'SALE')[]) || [],
+          rating: parseFloat(item.rating as string) || 4.5,
+          reviewCount: parseInt(item.reviewCount as string) || 0,
+          viewCount: parseInt(item.viewCount as string) || 0,
+          isFeatured: (item.isFeatured as boolean) || false,
+          isPromoted: (item.isPromoted as boolean) || false,
           createdAt: generateDate(),
           updatedAt: generateDate(),
         })),
@@ -156,7 +156,7 @@ export function DemoDataLoader({ onDataLoaded }: DemoDataLoaderProps) {
         }
 
         setParsedData(data)
-        setPreviewData(data.products.slice(0, 5))
+        setPreviewData(data.products.slice(0, 5) as any)
         notify({
           type: 'success',
           title: 'File parsed successfully',
@@ -202,7 +202,7 @@ export function DemoDataLoader({ onDataLoaded }: DemoDataLoaderProps) {
       }
 
       setParsedData(data)
-      setPreviewData(data.products.slice(0, 5))
+      setPreviewData(data.products.slice(0, 5) as any)
       notify({
         type: 'success',
         title: 'Data parsed successfully',
@@ -335,9 +335,9 @@ export function DemoDataLoader({ onDataLoaded }: DemoDataLoaderProps) {
                   {previewData.map((item, index) => (
                     <div key={index} className="flex items-center gap-2 p-2 bg-muted rounded">
                       <Badge variant="outline">{index + 1}</Badge>
-                      <span className="text-sm">{item.title}</span>
+                      <span className="text-sm">{(item as any).title}</span>
                       <span className="text-sm text-muted-foreground ml-auto">
-                        {item.price ? `$${item.price}` : 'No price'}
+                        {(item as any).price ? `$${(item as any).price}` : 'No price'}
                       </span>
                     </div>
                   ))}

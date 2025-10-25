@@ -57,18 +57,18 @@ export interface UpdateReviewRequest {
 export const reviewsApi = {
   // Review CRUD operations
   createReview: async (data: CreateReviewRequest): Promise<Review> => {
-    const response = await apiClient.post<ApiResponse<Review>>('/v1/reviews', data)
+    const response = await apiClient.post<ApiResponse<Review>>('/reviews', data)
     return response.data.data
   },
 
   getReview: async (id: string): Promise<Review> => {
-    const response = await apiClient.get<ApiResponse<Review>>(`/v1/reviews/${id}`)
+    const response = await apiClient.get<ApiResponse<Review>>(`/reviews/${id}`)
     return response.data.data
   },
 
   // List reviews with filters
   getReviews: async (filters?: { page?: number; pageSize?: number }): Promise<ReviewListResponse> => {
-    const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/v1/reviews', {
+    const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/reviews', {
       params: { 
         page: filters?.page || 1, 
         page_size: filters?.pageSize || 10 
@@ -78,7 +78,7 @@ export const reviewsApi = {
   },
 
   listReviews: async (page = 1, pageSize = 10): Promise<ReviewListResponse> => {
-    const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/v1/reviews', {
+    const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/reviews', {
       params: { page, page_size: pageSize }
     })
     return response.data.data
@@ -86,7 +86,7 @@ export const reviewsApi = {
 
   // Product reviews
   getProductReviews: async (productId: string, filters?: { page?: number; pageSize?: number }): Promise<ReviewListResponse> => {
-    const response = await apiClient.get<ApiResponse<ReviewListResponse>>(`/v1/reviews/product/${productId}`, {
+    const response = await apiClient.get<ApiResponse<ReviewListResponse>>(`/reviews/product/${productId}`, {
       params: { 
         page: filters?.page || 1, 
         page_size: filters?.pageSize || 10 
@@ -96,7 +96,7 @@ export const reviewsApi = {
   },
 
   listReviewsByProduct: async (productId: string, page = 1, pageSize = 10): Promise<ReviewListResponse> => {
-    const response = await apiClient.get<ApiResponse<ReviewListResponse>>(`/v1/reviews/product/${productId}`, {
+    const response = await apiClient.get<ApiResponse<ReviewListResponse>>(`/reviews/product/${productId}`, {
       params: { page, page_size: pageSize }
     })
     return response.data.data
@@ -104,7 +104,7 @@ export const reviewsApi = {
 
   // User reviews
   getUserReviews: async (filters?: { page?: number; pageSize?: number }): Promise<ReviewListResponse> => {
-    const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/v1/reviews/my', {
+    const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/reviews/my', {
       params: { 
         page: filters?.page || 1, 
         page_size: filters?.pageSize || 10 
@@ -114,7 +114,7 @@ export const reviewsApi = {
   },
 
   listUserReviews: async (page = 1, pageSize = 10): Promise<ReviewListResponse> => {
-    const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/v1/reviews/my', {
+    const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/reviews/my', {
       params: { page, page_size: pageSize }
     })
     return response.data.data
@@ -122,7 +122,7 @@ export const reviewsApi = {
 
   // Store reviews
   getStoreReviews: async (storeId: string, filters?: { page?: number; pageSize?: number }): Promise<ReviewListResponse> => {
-    const response = await apiClient.get<ApiResponse<ReviewListResponse>>(`/v1/reviews/store/${storeId}`, {
+    const response = await apiClient.get<ApiResponse<ReviewListResponse>>(`/reviews/store/${storeId}`, {
       params: { 
         page: filters?.page || 1, 
         page_size: filters?.pageSize || 10 
@@ -132,45 +132,45 @@ export const reviewsApi = {
   },
 
   updateReview: async (id: string, data: UpdateReviewRequest): Promise<Review> => {
-    const response = await apiClient.put<ApiResponse<Review>>(`/v1/reviews/${id}`, data)
+    const response = await apiClient.put<ApiResponse<Review>>(`/reviews/${id}`, data)
     return response.data.data
   },
 
   deleteReview: async (id: string): Promise<void> => {
-    await apiClient.delete(`/v1/reviews/${id}`)
+    await apiClient.delete(`/reviews/${id}`)
   },
 
   // Review interactions
   markHelpful: async (id: string): Promise<void> => {
-    await apiClient.post(`/v1/reviews/${id}/helpful`)
+    await apiClient.post(`/reviews/${id}/helpful`)
   },
 
   markReviewHelpful: async (id: string): Promise<void> => {
-    await apiClient.post(`/v1/reviews/${id}/helpful`)
+    await apiClient.post(`/reviews/${id}/helpful`)
   },
 
   unmarkReviewHelpful: async (id: string): Promise<void> => {
-    await apiClient.delete(`/v1/reviews/${id}/helpful`)
+    await apiClient.delete(`/reviews/${id}/helpful`)
   },
 
   // Statistics
   getReviewStats: async (): Promise<ReviewStats> => {
-    const response = await apiClient.get<ApiResponse<ReviewStats>>('/v1/reviews/stats')
+    const response = await apiClient.get<ApiResponse<ReviewStats>>('/reviews/stats')
     return response.data.data
   },
 
   getProductReviewStats: async (productId: string): Promise<ReviewStats> => {
-    const response = await apiClient.get<ApiResponse<ReviewStats>>(`/v1/reviews/stats/product/${productId}`)
+    const response = await apiClient.get<ApiResponse<ReviewStats>>(`/reviews/stats/product/${productId}`)
     return response.data.data
   },
 
   getStoreReviewStats: async (storeId: string): Promise<ReviewStats> => {
-    const response = await apiClient.get<ApiResponse<ReviewStats>>(`/v1/reviews/stats/store/${storeId}`)
+    const response = await apiClient.get<ApiResponse<ReviewStats>>(`/reviews/stats/store/${storeId}`)
     return response.data.data
   },
 
   getUserReviewStats: async (): Promise<ReviewStats> => {
-    const response = await apiClient.get<ApiResponse<ReviewStats>>('/v1/reviews/stats/my')
+    const response = await apiClient.get<ApiResponse<ReviewStats>>('/reviews/stats/my')
     return response.data.data
   },
 }

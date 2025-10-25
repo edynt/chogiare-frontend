@@ -1,289 +1,310 @@
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Slider } from '@/components/ui/slider'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { RotateCcw } from 'lucide-react'
-import type { SearchFilters, Category } from '@/types'
+import { Slider } from '@/components/ui/slider'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Search, Filter, X, MapPin } from 'lucide-react'
+import { cn, debounce } from '@/lib/utils'
+import type { SearchFilters, ProductCondition, ProductBadge } from '@/types'
 
 interface ProductFiltersProps {
-  filters: SearchFilters
-  onFilterChange: (filters: Partial<SearchFilters>) => void
-  categories: Category[]
+  onSearch: (filters: SearchFilters) => void
+  initialFilters?: SearchFilters
+  categories?: Array<{ id: string; name: string }>
+  className?: string
 }
 
-export function ProductFilters({ filters, onFilterChange, categories }: ProductFiltersProps) {
-  const [priceRange, setPriceRange] = useState<[number, number]>([
-    filters.minPrice || 0,
-    filters.maxPrice || 1000000
-  ])
+export function ProductFilters({ onSearch, initialFilters = {}, categories = [], className }: ProductFiltersProps) {
+  const [filters, setFilters] = useState<SearchFilters>({
+    query: '',
+    categoryId: undefined,
+    minPrice: 0,
+    maxPrice: 10000000,
+    condition: undefined,
+    location: '',
+    badges: [],
+    rating: 0,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+    page: 1,
+    limit: 20,
+    ...initialFilters,
+  })
 
-  const handlePriceRangeChange = (value: [number, number]) => {
-    setPriceRange(value)
-    onFilterChange({
+  const [showFilters, setShowFilters] = useState(true)
+
+  // Debounced search
+  const debouncedSearch = debounce((searchFilters: SearchFilters) => {
+    onSearch(searchFilters)
+  }, 500)
+
+  useEffect(() => {
+    debouncedSearch(filters)
+  }, [filters, debouncedSearch])
+
+  const handleFilterChange = (key: keyof SearchFilters, value: unknown) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value,
+      page: 1, // Reset to first page when filters change
+    }))
+  }
+
+  const handlePriceRangeChange = (value: number[]) => {
+    setFilters(prev => ({
+      ...prev,
       minPrice: value[0],
-      maxPrice: value[1]
-    })
+      maxPrice: value[1],
+      page: 1,
+    }))
   }
 
-  const handleConditionChange = (condition: string, checked: boolean) => {
-    if (checked) {
-      onFilterChange({ condition: condition as 'new' | 'like_new' | 'good' | 'fair' | 'poor' })
-    } else {
-      onFilterChange({ condition: undefined })
-    }
+  const handleBadgeToggle = (badge: ProductBadge) => {
+    setFilters(prev => ({
+      ...prev,
+      badges: prev.badges?.includes(badge)
+        ? prev.badges.filter(b => b !== badge)
+        : [...(prev.badges || []), badge],
+      page: 1,
+    }))
   }
 
-  const handleLocationChange = (location: string, checked: boolean) => {
-    const currentLocations = filters.location ? filters.location.split(',') : []
-    
-    if (checked) {
-      const newLocations = [...currentLocations, location]
-      onFilterChange({ location: newLocations.join(',') })
-    } else {
-      const newLocations = currentLocations.filter(loc => loc !== location)
-      onFilterChange({ location: newLocations.join(',') })
-    }
-  }
-
-  const clearAllFilters = () => {
-    onFilterChange({
+  const clearFilters = () => {
+    setFilters({
+      query: '',
       categoryId: undefined,
       minPrice: 0,
       maxPrice: 10000000,
       condition: undefined,
-      location: undefined,
-      query: undefined
+      location: '',
+      badges: [],
+      rating: 0,
+      sortBy: 'createdAt',
+      sortOrder: 'desc',
+      page: 1,
+      limit: 20,
     })
-    setPriceRange([0, 1000000])
   }
 
-  const locations = ['Hà Nội', 'TP.HCM', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'An Giang']
+  const conditionOptions: { value: ProductCondition; label: string }[] = [
+    { value: 'new', label: 'Mới' },
+    { value: 'like_new', label: 'Như mới' },
+    { value: 'good', label: 'Tốt' },
+    { value: 'fair', label: 'Khá' },
+    { value: 'poor', label: 'Cũ' },
+  ]
+
+  const badgeOptions: { value: ProductBadge; label: string }[] = [
+    { value: 'NEW', label: 'Mới' },
+    { value: 'FEATURED', label: 'Nổi bật' },
+    { value: 'PROMO', label: 'Khuyến mãi' },
+    { value: 'HOT', label: 'Hot' },
+    { value: 'SALE', label: 'Giảm giá' },
+  ]
+
+  const sortOptions = [
+    { value: 'createdAt', label: 'Mới nhất' },
+    { value: 'price', label: 'Giá' },
+    { value: 'rating', label: 'Đánh giá' },
+    { value: 'viewCount', label: 'Lượt xem' },
+  ]
+
+  const activeFiltersCount = Object.values(filters).filter(value => 
+    value !== undefined && value !== '' && value !== 0 && 
+    (Array.isArray(value) ? value.length > 0 : true)
+  ).length - 3 // Exclude page, limit, sortBy, sortOrder
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Bộ lọc</CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearAllFilters}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <RotateCcw className="h-4 w-4 mr-1" />
-            Xóa tất cả
-          </Button>
+    <div className={cn('space-y-4', className)}>
+      {/* Search Bar */}
+      <div className="space-y-2">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Tìm kiếm sản phẩm..."
+            value={filters.query || ''}
+            onChange={(e) => handleFilterChange('query', e.target.value)}
+            className="pl-10"
+          />
         </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Categories */}
-        <div>
-          <Label className="text-sm font-medium mb-3 block">Danh mục</Label>
-          <div className="space-y-2">
-            {categories.map((category) => (
-              <div key={category.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`category-${category.id}`}
-                  checked={filters.categoryId === category.id}
-                  onCheckedChange={(checked) => 
-                    onFilterChange({ 
-                      categoryId: checked ? category.id : '' 
-                    })
-                  }
-                />
-                <Label
-                  htmlFor={`category-${category.id}`}
-                  className="text-sm cursor-pointer flex-1"
-                >
-                  {category.name}
-                </Label>
-                <Badge variant="secondary" className="text-xs">
-                  {category.productCount}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        </div>
+        <Button
+          variant="outline"
+          onClick={() => setShowFilters(!showFilters)}
+          className="w-full relative"
+        >
+          <Filter className="h-4 w-4 mr-2" />
+          {showFilters ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
+          {activeFiltersCount > 0 && (
+            <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+              {activeFiltersCount}
+            </Badge>
+          )}
+        </Button>
+      </div>
 
-        {/* Price Range */}
-        <div>
-          <Label className="text-sm font-medium mb-3 block">
-            Khoảng giá: {priceRange[0].toLocaleString()}đ - {priceRange[1].toLocaleString()}đ
-          </Label>
-          <div className="space-y-3">
-            <Slider
-              value={priceRange}
-              onValueChange={handlePriceRangeChange}
-              min={0}
-              max={1000000}
-              step={10000}
-              className="w-full"
-            />
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <Label htmlFor="min-price" className="text-xs text-muted-foreground">
-                  Từ (đ)
-                </Label>
+      {/* Filters Panel */}
+      {showFilters && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Bộ lọc</CardTitle>
+              <Button variant="ghost" size="sm" onClick={clearFilters}>
+                <X className="h-4 w-4 mr-2" />
+                Xóa tất cả
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Category */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Danh mục</label>
+              <Select
+                value={filters.categoryId || 'all'}
+                onValueChange={(value) => handleFilterChange('categoryId', value === 'all' ? undefined : value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Chọn danh mục" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả danh mục</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Price Range */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Khoảng giá: {filters.minPrice?.toLocaleString()} - {filters.maxPrice?.toLocaleString()} VNĐ
+              </label>
+              <Slider
+                value={[filters.minPrice || 0, filters.maxPrice || 10000000]}
+                onValueChange={handlePriceRangeChange}
+                max={10000000}
+                min={0}
+                step={100000}
+                className="w-full"
+              />
+            </div>
+
+            {/* Condition */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Tình trạng</label>
+              <Select
+                value={filters.condition || 'all'}
+                onValueChange={(value) => handleFilterChange('condition', value === 'all' ? undefined : value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Chọn tình trạng" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả</SelectItem>
+                  {conditionOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Location */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Vị trí</label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  id="min-price"
-                  type="number"
-                  value={priceRange[0]}
-                  onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
-                  className="text-sm"
-                />
-              </div>
-              <div className="flex-1">
-                <Label htmlFor="max-price" className="text-xs text-muted-foreground">
-                  Đến (đ)
-                </Label>
-                <Input
-                  id="max-price"
-                  type="number"
-                  value={priceRange[1]}
-                  onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 1000000])}
-                  className="text-sm"
+                  placeholder="Nhập địa điểm..."
+                  value={filters.location || ''}
+                  onChange={(e) => handleFilterChange('location', e.target.value || undefined)}
+                  className="pl-10"
                 />
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Condition */}
-        <div>
-          <Label className="text-sm font-medium mb-3 block">Tình trạng</Label>
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="condition-new"
-                checked={filters.condition === 'new'}
-                onCheckedChange={(checked) => handleConditionChange('new', checked as boolean)}
-              />
-              <Label htmlFor="condition-new" className="text-sm cursor-pointer">
-                Mới
-              </Label>
+            {/* Badges */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Nhãn sản phẩm</label>
+              <div className="space-y-2">
+                {badgeOptions.map((option) => (
+                  <div key={option.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={option.value}
+                      checked={filters.badges?.includes(option.value) || false}
+                      onCheckedChange={() => handleBadgeToggle(option.value)}
+                    />
+                    <label
+                      htmlFor={option.value}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {option.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="condition-like-new"
-                checked={filters.condition === 'like_new'}
-                onCheckedChange={(checked) => handleConditionChange('like_new', checked as boolean)}
-              />
-              <Label htmlFor="condition-like-new" className="text-sm cursor-pointer">
-                Như mới
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="condition-good"
-                checked={filters.condition === 'good'}
-                onCheckedChange={(checked) => handleConditionChange('good', checked as boolean)}
-              />
-              <Label htmlFor="condition-good" className="text-sm cursor-pointer">
-                Tốt
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="condition-fair"
-                checked={filters.condition === 'fair'}
-                onCheckedChange={(checked) => handleConditionChange('fair', checked as boolean)}
-              />
-              <Label htmlFor="condition-fair" className="text-sm cursor-pointer">
-                Khá
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="condition-poor"
-                checked={filters.condition === 'poor'}
-                onCheckedChange={(checked) => handleConditionChange('poor', checked as boolean)}
-              />
-              <Label htmlFor="condition-poor" className="text-sm cursor-pointer">
-                Kém
-              </Label>
-            </div>
-          </div>
-        </div>
 
-        {/* Location */}
-        <div>
-          <Label className="text-sm font-medium mb-3 block">Khu vực</Label>
-          <div className="space-y-2">
-            {locations.map((location) => (
-              <div key={location} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`location-${location}`}
-                  checked={filters.location?.includes(location) || false}
-                  onCheckedChange={(checked) => handleLocationChange(location, checked as boolean)}
-                />
-                <Label
-                  htmlFor={`location-${location}`}
-                  className="text-sm cursor-pointer"
+            {/* Rating */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Đánh giá tối thiểu: {filters.rating} sao
+              </label>
+              <Slider
+                value={[filters.rating || 0]}
+                onValueChange={(value) => handleFilterChange('rating', value[0])}
+                max={5}
+                min={0}
+                step={0.5}
+                className="w-full"
+              />
+            </div>
+
+            {/* Sort */}
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Sắp xếp theo</label>
+                <Select
+                  value={filters.sortBy || 'createdAt'}
+                  onValueChange={(value) => handleFilterChange('sortBy', value)}
                 >
-                  {location}
-                </Label>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sortOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Features */}
-        <div>
-          <Label className="text-sm font-medium mb-3 block">Tính năng</Label>
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="featured"
-                checked={filters.featured === true}
-                onCheckedChange={(checked) => 
-                  onFilterChange({ featured: checked as boolean })
-                }
-              />
-              <Label htmlFor="featured" className="text-sm cursor-pointer">
-                Sản phẩm nổi bật
-              </Label>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Thứ tự</label>
+                <Select
+                  value={filters.sortOrder || 'desc'}
+                  onValueChange={(value) => handleFilterChange('sortOrder', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="asc">Tăng dần</SelectItem>
+                    <SelectItem value="desc">Giảm dần</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="promoted"
-                checked={filters.promoted === true}
-                onCheckedChange={(checked) => 
-                  onFilterChange({ promoted: checked as boolean })
-                }
-              />
-              <Label htmlFor="promoted" className="text-sm cursor-pointer">
-                Sản phẩm quảng cáo
-              </Label>
-            </div>
-          </div>
-        </div>
-
-        {/* Rating */}
-        <div>
-          <Label className="text-sm font-medium mb-3 block">Đánh giá tối thiểu</Label>
-          <Select
-            value={filters.minRating?.toString() || ''}
-            onValueChange={(value) => 
-              onFilterChange({ minRating: value ? parseFloat(value) : undefined })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Chọn đánh giá" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="4.5">4.5 sao trở lên</SelectItem>
-              <SelectItem value="4.0">4.0 sao trở lên</SelectItem>
-              <SelectItem value="3.5">3.5 sao trở lên</SelectItem>
-              <SelectItem value="3.0">3.0 sao trở lên</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   )
 }

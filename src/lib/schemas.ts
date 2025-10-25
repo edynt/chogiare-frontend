@@ -1,0 +1,136 @@
+import { z } from 'zod'
+
+// Auth schemas
+export const loginSchema = z.object({
+  email: z.string().email('Email không hợp lệ'),
+  password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+})
+
+export const registerSchema = z.object({
+  name: z.string().min(2, 'Tên phải có ít nhất 2 ký tự'),
+  email: z.string().email('Email không hợp lệ'),
+  password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+  confirmPassword: z.string(),
+  phone: z.string().min(10, 'Số điện thoại không hợp lệ'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Mật khẩu xác nhận không khớp',
+  path: ['confirmPassword'],
+})
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('Email không hợp lệ'),
+})
+
+export const resetPasswordSchema = z.object({
+  password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Mật khẩu xác nhận không khớp',
+  path: ['confirmPassword'],
+})
+
+// Product schemas
+export const productSchema = z.object({
+  title: z.string().min(1, 'Tên sản phẩm là bắt buộc'),
+  description: z.string().min(10, 'Mô tả phải có ít nhất 10 ký tự'),
+  price: z.number().min(0, 'Giá phải lớn hơn 0'),
+  originalPrice: z.number().min(0, 'Giá gốc phải lớn hơn 0').optional(),
+  categoryId: z.string().min(1, 'Danh mục là bắt buộc'),
+  condition: z.enum(['new', 'like_new', 'good', 'fair', 'poor']),
+  location: z.string().min(1, 'Vị trí là bắt buộc'),
+  stock: z.number().min(0, 'Số lượng phải lớn hơn hoặc bằng 0'),
+  tags: z.string().optional(),
+  badges: z.array(z.string()).optional(),
+  images: z.array(z.string()).min(1, 'Phải có ít nhất 1 hình ảnh'),
+})
+
+export const productUpdateSchema = productSchema.partial().extend({
+  status: z.enum(['draft', 'active', 'sold', 'archived', 'suspended']).optional(),
+})
+
+// Search filters schema
+export const searchFiltersSchema = z.object({
+  query: z.string().optional(),
+  categoryId: z.string().optional(),
+  minPrice: z.number().optional(),
+  maxPrice: z.number().optional(),
+  condition: z.enum(['new', 'like_new', 'good', 'fair', 'poor']).optional(),
+  location: z.string().optional(),
+  badges: z.array(z.string()).optional(),
+  rating: z.number().min(0).max(5).optional(),
+  sortBy: z.enum(['createdAt', 'price', 'rating', 'viewCount']).optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional(),
+  page: z.number().min(1).optional(),
+  limit: z.number().min(1).max(100).optional(),
+})
+
+// Review schemas
+export const reviewSchema = z.object({
+  productId: z.string().min(1, 'Sản phẩm là bắt buộc'),
+  rating: z.number().min(1).max(5, 'Đánh giá phải từ 1 đến 5 sao'),
+  title: z.string().optional(),
+  comment: z.string().optional(),
+  images: z.array(z.string()).optional(),
+})
+
+// Cart schemas
+export const addToCartSchema = z.object({
+  productId: z.string().min(1, 'Sản phẩm là bắt buộc'),
+  quantity: z.number().min(1, 'Số lượng phải lớn hơn 0'),
+})
+
+// Order schemas
+export const orderSchema = z.object({
+  storeId: z.string().min(1, 'Cửa hàng là bắt buộc'),
+  paymentMethod: z.string().min(1, 'Phương thức thanh toán là bắt buộc'),
+  shippingAddress: z.string().min(1, 'Địa chỉ giao hàng là bắt buộc'),
+  billingAddress: z.string().min(1, 'Địa chỉ thanh toán là bắt buộc'),
+  notes: z.string().optional(),
+  items: z.array(z.object({
+    productId: z.string(),
+    quantity: z.number().min(1),
+  })).min(1, 'Phải có ít nhất 1 sản phẩm'),
+})
+
+// Store schemas
+export const storeSchema = z.object({
+  name: z.string().min(1, 'Tên cửa hàng là bắt buộc'),
+  description: z.string().optional(),
+  logo: z.string().optional(),
+  banner: z.string().optional(),
+  website: z.string().url().optional(),
+  phone: z.string().optional(),
+  email: z.string().email().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  country: z.string().optional(),
+  postalCode: z.string().optional(),
+})
+
+// Chat schemas
+export const chatMessageSchema = z.object({
+  conversationId: z.string().min(1, 'Cuộc trò chuyện là bắt buộc'),
+  messageType: z.string().min(1, 'Loại tin nhắn là bắt buộc'),
+  content: z.string().min(1, 'Nội dung tin nhắn là bắt buộc'),
+})
+
+// Upload schemas
+export const uploadSchema = z.object({
+  file: z.instanceof(File),
+})
+
+// Type exports
+export type LoginFormData = z.infer<typeof loginSchema>
+export type RegisterFormData = z.infer<typeof registerSchema>
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>
+export type ProductFormData = z.infer<typeof productSchema>
+export type ProductUpdateFormData = z.infer<typeof productUpdateSchema>
+export type SearchFiltersFormData = z.infer<typeof searchFiltersSchema>
+export type ReviewFormData = z.infer<typeof reviewSchema>
+export type AddToCartFormData = z.infer<typeof addToCartSchema>
+export type OrderFormData = z.infer<typeof orderSchema>
+export type StoreFormData = z.infer<typeof storeSchema>
+export type ChatMessageFormData = z.infer<typeof chatMessageSchema>
+export type UploadFormData = z.infer<typeof uploadSchema>

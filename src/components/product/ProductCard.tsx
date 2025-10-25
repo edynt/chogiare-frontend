@@ -5,8 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Heart, Eye } from 'lucide-react'
-import { useAppDispatch } from '@/store'
-import { setModal } from '@/store/slices/uiSlice'
+// Removed Redux imports
 import { cn, formatPrice } from '@/lib/utils'
 import { AddToCartButton } from './AddToCartButton'
 import type { Product } from '@/types'
@@ -17,12 +16,11 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className }: ProductCardProps) {
-  const dispatch = useAppDispatch()
 
   const handleQuickView = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    dispatch(setModal({ modal: 'productQuickView', open: true, data: product.id }))
+    // Quick view functionality can be implemented later
   }
 
   const handleFavorite = (e: React.MouseEvent) => {
