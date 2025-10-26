@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useSellerProducts } from '@/hooks/useProducts'
+import { useStoreOrders } from '@/hooks/useOrders'
+import { formatPrice, formatDate } from '@/lib/utils'
 import { 
   Plus, 
   Package, 
@@ -32,6 +34,7 @@ import {
 
 export function SellerDashboardContent() {
   const { data: products, isLoading } = useSellerProducts()
+  const { data: ordersData, isLoading: isLoadingOrders } = useStoreOrders('store-1', { page: 1, pageSize: 10 })
   const [activeTab, setActiveTab] = useState('overview')
 
   // Mock data for enhanced dashboard
@@ -70,32 +73,8 @@ export function SellerDashboardContent() {
     },
   ]
 
-  const recentOrders = [
-    {
-      id: 'ORD-001',
-      customer: 'Nguyễn Văn A',
-      product: 'iPhone 14 Pro Max',
-      amount: 25000000,
-      status: 'pending',
-      date: '2024-01-15T14:30:00Z'
-    },
-    {
-      id: 'ORD-002',
-      customer: 'Trần Thị B',
-      product: 'AirPods Pro 2nd Gen',
-      amount: 4500000,
-      status: 'shipped',
-      date: '2024-01-15T12:15:00Z'
-    },
-    {
-      id: 'ORD-003',
-      customer: 'Lê Văn C',
-      product: 'MacBook Air M2',
-      amount: 28000000,
-      status: 'delivered',
-      date: '2024-01-14T16:45:00Z'
-    }
-  ]
+  // Get recent orders from API data
+  const recentOrders = ordersData?.items || []
 
   const lowStockProducts = [
     {
@@ -321,22 +300,33 @@ export function SellerDashboardContent() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {recentOrders.map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{order.customer}</p>
-                      <p className="text-sm text-muted-foreground">{order.product}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(order.date)}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold">{formatPrice(order.amount)}</p>
-                      <Badge className={`${getStatusColor(order.status)} text-white text-xs`}>
-                        {getStatusLabel(order.status)}
-                      </Badge>
-                    </div>
+                {isLoadingOrders ? (
+                  <div className="text-center py-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                    <p className="mt-2 text-sm text-muted-foreground">Đang tải...</p>
                   </div>
-                ))}
-                <Button variant="outline" className="w-full">
+                ) : recentOrders.length > 0 ? (
+                  recentOrders.slice(0, 3).map((order) => (
+                    <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <p className="font-medium">{order.userName}</p>
+                        <p className="text-sm text-muted-foreground">{order.items[0]?.productName || 'N/A'}</p>
+                        <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold">{formatPrice(order.total)}</p>
+                        <Badge className={`${getStatusColor(order.status)} text-white text-xs`}>
+                          {getStatusLabel(order.status)}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-4 text-muted-foreground">
+                    <p className="text-sm">Chưa có đơn hàng nào</p>
+                  </div>
+                )}
+                <Button variant="outline" className="w-full" onClick={() => setActiveTab('orders')}>
                   Xem tất cả đơn hàng
                 </Button>
               </CardContent>
@@ -381,31 +371,49 @@ export function SellerDashboardContent() {
               <CardTitle>Đơn hàng</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {recentOrders.map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-4">
-                      <div>
-                        <p className="font-medium">{order.id}</p>
-                        <p className="text-sm text-muted-foreground">{order.customer}</p>
+              {isLoadingOrders ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  <p className="mt-2 text-muted-foreground">Đang tải đơn hàng...</p>
+                </div>
+              ) : recentOrders.length > 0 ? (
+                <div className="space-y-4">
+                  {recentOrders.map((order) => (
+                    <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
+                      <div className="flex items-center gap-4">
+                        <div>
+                          <p className="font-medium">{order.id}</p>
+                          <p className="text-sm text-muted-foreground">{order.userName}</p>
+                        </div>
+                        <div>
+                          <p className="font-medium">{order.items[0]?.productName || 'N/A'}</p>
+                          <p className="text-sm text-muted-foreground">{formatDate(order.createdAt)}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{order.product}</p>
-                        <p className="text-sm text-muted-foreground">{formatDate(order.date)}</p>
+                      <div className="flex items-center gap-4">
+                        <p className="font-semibold text-lg">{formatPrice(order.total)}</p>
+                        <Badge className={`${getStatusColor(order.status)} text-white`}>
+                          {getStatusLabel(order.status)}
+                        </Badge>
+                        <Button variant="outline" size="sm" asChild>
+                          <Link to={`/orders/${order.id}`}>Chi tiết</Link>
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <p className="font-semibold text-lg">{formatPrice(order.amount)}</p>
-                      <Badge className={`${getStatusColor(order.status)} text-white`}>
-                        {getStatusLabel(order.status)}
-                      </Badge>
-                      <Button variant="outline" size="sm">
-                        Chi tiết
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Chưa có đơn hàng nào</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Bạn chưa có đơn hàng nào. Hãy bắt đầu bán hàng!
+                  </p>
+                  <Button asChild>
+                    <Link to="/seller/products/add">Thêm sản phẩm</Link>
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

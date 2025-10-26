@@ -189,8 +189,8 @@ export default function OrderDetailPage() {
   }
 
   const handleTrackOrder = () => {
-    // Implement track order logic
-    console.log('Track order:', order.id)
+    // Navigate to shipping tracking page
+    navigate(`/shipping/${order.id}`)
   }
 
   const handleContactSeller = () => {

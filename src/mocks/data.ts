@@ -78,5 +78,5 @@ export const demoData: DemoData = {
     })),
     createdAt: order.createdAt,
     updatedAt: new Date().toISOString(),
-  })),
+  })) as any,
 }

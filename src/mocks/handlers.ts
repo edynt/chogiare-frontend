@@ -473,6 +473,26 @@ export const handlers = [
     })
   }),
 
+  http.get('/api/orders/store/:storeId', ({ params, request }) => {
+    const url = new URL(request.url)
+    const page = parseInt(url.searchParams.get('page') || '1')
+    const pageSize = parseInt(url.searchParams.get('page_size') || '10')
+    
+    // Filter orders by storeId
+    const storeOrders = demoData.orders.filter(order => (order as any).storeId === params.storeId)
+    
+    return HttpResponse.json({
+      success: true,
+      data: {
+        items: storeOrders.slice((page - 1) * pageSize, page * pageSize),
+        total: storeOrders.length,
+        page,
+        pageSize,
+        totalPages: Math.ceil(storeOrders.length / pageSize),
+      },
+    })
+  }),
+
   http.get('/api/orders/:id', ({ params }) => {
     const order = demoData.orders.find(o => o.id === params.id)
     
@@ -1018,4 +1038,188 @@ export const handlers = [
       message: 'Demo data seeded successfully',
     })
   }),
+
+  // Shipping endpoints
+  http.get('/api/shipping/:orderId', ({ params }) => {
+    const orderId = params.orderId as string
+    
+    // Mock shipping data based on order status
+    const mockShippingData = {
+      orderId,
+      trackingNumber: `VN${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      carrier: 'Viettel Post',
+      status: 'in_transit' as const,
+      currentLocation: 'Trung tâm phân phối TP.HCM',
+      estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
+      steps: [
+        {
+          id: '1',
+          status: 'completed' as const,
+          title: 'Đơn hàng đã được xác nhận',
+          description: 'Đơn hàng đã được xác nhận và chuẩn bị xuất kho',
+          timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+          location: 'Kho hàng TechStore Pro',
+          icon: null,
+          estimatedTime: '30 phút'
+        },
+        {
+          id: '2',
+          status: 'completed' as const,
+          title: 'Đã xuất kho',
+          description: 'Đơn hàng đã được đóng gói và xuất kho',
+          timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+          location: 'Kho hàng TechStore Pro',
+          icon: null,
+          estimatedTime: '2 giờ'
+        },
+        {
+          id: '3',
+          status: 'completed' as const,
+          title: 'Đang vận chuyển',
+          description: 'Đơn hàng đang được vận chuyển đến trung tâm phân phối',
+          timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+          location: 'Trung tâm phân phối TP.HCM',
+          icon: null,
+          estimatedTime: '4 giờ'
+        },
+        {
+          id: '4',
+          status: 'current' as const,
+          title: 'Đang phân loại',
+          description: 'Đơn hàng đang được phân loại để giao hàng',
+          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+          location: 'Trung tâm phân phối TP.HCM',
+          icon: null,
+          estimatedTime: '1 giờ'
+        },
+        {
+          id: '5',
+          status: 'pending' as const,
+          title: 'Đang giao hàng',
+          description: 'Đơn hàng đang được giao đến địa chỉ của bạn',
+          timestamp: '',
+          location: 'Quận 1, TP.HCM',
+          icon: null,
+          estimatedTime: '30 phút'
+        },
+        {
+          id: '6',
+          status: 'pending' as const,
+          title: 'Đã giao hàng',
+          description: 'Đơn hàng đã được giao thành công',
+          timestamp: '',
+          location: 'Địa chỉ giao hàng',
+          icon: null,
+          estimatedTime: 'Hoàn thành'
+        }
+      ],
+      deliveryAddress: {
+        recipient: 'Nguyễn Văn A',
+        phone: '0901234567',
+        address: '123 Đường ABC',
+        city: 'TP.HCM',
+        district: 'Quận 1',
+        ward: 'Phường Bến Nghé'
+      },
+      carrierInfo: {
+        name: 'Viettel Post',
+        phone: '19008088',
+        website: 'https://viettelpost.vn'
+      }
+    }
+
+    return HttpResponse.json({
+      success: true,
+      data: mockShippingData
+    })
+  }),
+
+  http.get('/api/shipping/:orderId/history', ({ params }) => {
+    const orderId = params.orderId as string
+    
+    const mockHistory = [
+      {
+        id: '1',
+        orderId,
+        status: 'processing',
+        location: 'Kho hàng TechStore Pro',
+        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        description: 'Đơn hàng đã được xác nhận',
+        carrier: 'Viettel Post'
+      },
+      {
+        id: '2',
+        orderId,
+        status: 'shipped',
+        location: 'Kho hàng TechStore Pro',
+        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        description: 'Đơn hàng đã xuất kho',
+        carrier: 'Viettel Post'
+      },
+      {
+        id: '3',
+        orderId,
+        status: 'in_transit',
+        location: 'Trung tâm phân phối TP.HCM',
+        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        description: 'Đơn hàng đang vận chuyển',
+        carrier: 'Viettel Post'
+      }
+    ]
+
+    return HttpResponse.json({
+      success: true,
+      data: mockHistory
+    })
+  }),
+
+  http.get('/api/shipping/track/:trackingNumber', ({ params }) => {
+    const trackingNumber = params.trackingNumber as string
+    
+    // Return same mock data for tracking number lookup
+    return HttpResponse.json({
+      success: true,
+      data: {
+        orderId: 'ORD-001',
+        trackingNumber,
+        carrier: 'Viettel Post',
+        status: 'in_transit',
+        currentLocation: 'Trung tâm phân phối TP.HCM',
+        estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+        steps: [],
+        deliveryAddress: {
+          recipient: 'Nguyễn Văn A',
+          phone: '0901234567',
+          address: '123 Đường ABC',
+          city: 'TP.HCM',
+          district: 'Quận 1',
+          ward: 'Phường Bến Nghé'
+        },
+        carrierInfo: {
+          name: 'Viettel Post',
+          phone: '19008088',
+          website: 'https://viettelpost.vn'
+        }
+      }
+    })
+  }),
+
+  http.patch('/api/shipping/:orderId', async ({ params, request }) => {
+    const orderId = params.orderId as string
+    const data = await request.json() as { status: string }
+    
+    return HttpResponse.json({
+      success: true,
+      data: {
+        id: `update-${Date.now()}`,
+        orderId,
+        status: data.status,
+        location: 'Trung tâm phân phối TP.HCM',
+        timestamp: new Date().toISOString(),
+        description: `Cập nhật trạng thái: ${data.status}`,
+        estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    })
+  }),
+
 ]

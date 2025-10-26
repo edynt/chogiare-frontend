@@ -209,7 +209,7 @@ export default function ShopProfileSettingsPage() {
     }))
   }
 
-  const handleNestedInputChange = (parent: string, field: string, value: string | number | boolean) => {
+  const handleNestedInputChange = (parent: string, field: string, value: string | number | boolean | Record<string, unknown>) => {
     setFormData(prev => ({
       ...prev,
       [parent]: {

@@ -812,13 +812,13 @@ export const translations: Record<Language, Translation> = {
 
 export const getTranslation = (language: Language, key: string): string => {
   const keys = key.split('.')
-  let value: Record<string, unknown> | string = translations[language]
+  let value: any = translations[language]
   
   for (const k of keys) {
     value = value?.[k]
   }
   
-  return value || key
+  return typeof value === 'string' ? value : key
 }
 
 export const useTranslation = (language: Language) => {

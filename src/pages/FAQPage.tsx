@@ -176,7 +176,7 @@ export default function FAQPage() {
           "@type": "FAQPage",
           "name": "Câu hỏi thường gặp - Chogiare",
           "description": "Trang câu hỏi thường gặp của Chogiare",
-          "mainEntity": faqData.map(faq => ({
+          "mainEntity": faqs.map(faq => ({
             "@type": "Question",
             "name": faq.question,
             "acceptedAnswer": {
