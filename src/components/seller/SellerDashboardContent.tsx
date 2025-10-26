@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useSellerProducts } from '@/hooks/useProducts'
-import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   Plus, 
   Package, 
@@ -33,7 +32,6 @@ import {
 
 export function SellerDashboardContent() {
   const { data: products, isLoading } = useSellerProducts()
-  const { t } = useLanguage()
   const [activeTab, setActiveTab] = useState('overview')
 
   // Mock data for enhanced dashboard

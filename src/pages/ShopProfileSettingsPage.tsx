@@ -10,7 +10,6 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   Store,
   Upload,
@@ -118,7 +117,6 @@ interface ShopProfile {
 }
 
 export default function ShopProfileSettingsPage() {
-  const { t } = useLanguage()
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('basic')
 
@@ -204,18 +202,18 @@ export default function ShopProfileSettingsPage() {
 
   const [formData, setFormData] = useState(shopProfile)
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | number | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }))
   }
 
-  const handleNestedInputChange = (parent: string, field: string, value: any) => {
+  const handleNestedInputChange = (parent: string, field: string, value: string | number | boolean) => {
     setFormData(prev => ({
       ...prev,
       [parent]: {
-        ...(prev[parent as keyof typeof prev] as any),
+        ...(prev[parent as keyof typeof prev] as Record<string, unknown>),
         [field]: value
       }
     }))

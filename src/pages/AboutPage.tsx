@@ -4,7 +4,6 @@ import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { useLanguage } from '@/contexts/LanguageContext'
 import { SEOHead } from '@/components/seo/SEOHead'
 import { 
   Heart,
@@ -25,7 +24,6 @@ import {
 } from 'lucide-react'
 
 export default function AboutPage() {
-  const { t } = useLanguage()
 
   const stats = [
     { label: 'Người dùng', value: '1M+', icon: Users },

@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   Truck,
   Package,
@@ -82,7 +81,6 @@ interface Shipment {
 }
 
 export default function ShipmentPage() {
-  const { t } = useLanguage()
   const { shipmentId } = useParams<{ shipmentId?: string }>()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')

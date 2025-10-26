@@ -40,7 +40,7 @@ export interface Order {
 }
 
 export interface OrderListResponse {
-  orders: Order[]
+  items: Order[]
   total: number
   page: number
   pageSize: number

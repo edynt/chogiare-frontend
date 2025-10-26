@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { useLanguage } from '@/contexts/LanguageContext'
 import { SEOHead } from '@/components/seo/SEOHead'
 import { 
   HelpCircle,
@@ -36,7 +35,6 @@ interface FAQItem {
 }
 
 export default function FAQPage() {
-  const { t } = useLanguage()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())

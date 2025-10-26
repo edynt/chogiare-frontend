@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   CreditCard,
   Wallet,
@@ -82,7 +81,6 @@ interface BankAccount {
 }
 
 export default function WithdrawBalancePage() {
-  const { t } = useLanguage()
   const [showBalance, setShowBalance] = useState(true)
   const [withdrawAmount, setWithdrawAmount] = useState('')
   const [selectedBankAccount, setSelectedBankAccount] = useState('')

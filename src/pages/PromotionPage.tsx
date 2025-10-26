@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   Gift,
   Tag,
@@ -68,7 +67,6 @@ interface Coupon {
 }
 
 export default function PromotionPage() {
-  const { t } = useLanguage()
   const [searchQuery, setSearchQuery] = useState('')
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
 

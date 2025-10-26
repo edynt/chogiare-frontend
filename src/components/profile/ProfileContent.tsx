@@ -9,9 +9,9 @@ import { Separator } from '@/components/ui/separator'
 import { useProfile } from '@/hooks/useAuth'
 import { useUserOrders } from '@/hooks/useOrders'
 import { 
-  User, Mail, Phone, MapPin, Package, Eye, Calendar, DollarSign, 
-  Star, Heart, ShoppingBag, CreditCard, Shield, Award, TrendingUp,
-  MessageCircle, Settings, Edit, Camera, Bell, Lock, Globe, Users
+  User, Mail, Phone, MapPin, Package, Eye, Calendar, 
+  Star, Heart, ShoppingBag, Shield, Award, TrendingUp,
+  Settings, Edit, Camera, Lock, Globe
 } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 
@@ -279,9 +279,9 @@ export function ProfileContent() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                 <p className="mt-2 text-muted-foreground">Đang tải đơn hàng...</p>
               </div>
-            ) : ordersData && ordersData.orders && ordersData.orders.length > 0 ? (
+            ) : ordersData && ordersData.items && ordersData.items.length > 0 ? (
               <div className="space-y-4">
-                {ordersData.orders.map((order) => (
+                {ordersData.items.map((order) => (
                   <div key={order.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
@@ -332,7 +332,7 @@ export function ProfileContent() {
                   </div>
                 ))}
                 
-                {ordersData.total > ordersData.orders.length && (
+                {ordersData.total > ordersData.items.length && (
                   <div className="text-center pt-4">
                     <Button variant="outline">
                       Xem thêm đơn hàng

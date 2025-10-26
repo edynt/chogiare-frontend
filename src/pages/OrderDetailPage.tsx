@@ -11,26 +11,21 @@ import {
   MapPin,
   Phone,
   Mail,
-  Calendar,
   CreditCard,
   DollarSign,
   Clock,
   CheckCircle,
   XCircle,
-  AlertTriangle,
   MessageCircle,
   Download,
-  RefreshCw,
   Star,
   Eye,
   ShoppingBag,
-  User,
   Store,
   FileText,
   Navigation
 } from 'lucide-react'
 import { useOrder } from '@/hooks/useOrders'
-import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorBoundary } from '@/components/ui/error-boundary'
 
 interface OrderTimelineItem {
@@ -425,7 +420,7 @@ export default function OrderDetailPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-6">
-                      {timelineItems.map((item, index) => (
+                      {timelineItems.map((item) => (
                         <div key={item.id} className="flex gap-4">
                           <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                             item.completed ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
