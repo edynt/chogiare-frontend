@@ -20,7 +20,8 @@ import {
   Shield, 
   Truck, 
   MessageCircle,
-  Eye
+  Eye,
+  ShoppingCart
 } from 'lucide-react'
 
 interface ProductDetailsProps {
@@ -37,6 +38,11 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [isFavorite, setIsFavorite] = useState(false)
+  
+  // Product variant states
+  const [selectedColor, setSelectedColor] = useState<string>('')
+  const [selectedSize, setSelectedSize] = useState<string>('')
+  const [selectedStorage, setSelectedStorage] = useState<string>('')
 
   const handleRetry = () => {
     refetch()
@@ -194,19 +200,87 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 {product.store?.name || 'Cá nhân'}
               </p>
             </div>
-            <Button variant="outline" size="sm">
-              <MessageCircle className="h-4 w-4 mr-2" />
-              Chat
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/chat">
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Chat
+              </Link>
             </Button>
+          </div>
+
+          <Separator />
+
+          {/* Product Variants */}
+          <div className="space-y-4">
+            {/* Color Variants */}
+            <div>
+              <h4 className="font-medium mb-3">Màu sắc:</h4>
+              <div className="flex gap-2 flex-wrap">
+                {['Đen', 'Trắng', 'Xanh', 'Đỏ', 'Vàng'].map((color) => (
+                  <Button
+                    key={color}
+                    variant={selectedColor === color ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedColor(color)}
+                    className={selectedColor === color ? "bg-primary text-primary-foreground" : "hover:bg-primary hover:text-primary-foreground"}
+                  >
+                    {color}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Size Variants */}
+            <div>
+              <h4 className="font-medium mb-3">Kích thước:</h4>
+              <div className="flex gap-2 flex-wrap">
+                {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                  <Button
+                    key={size}
+                    variant={selectedSize === size ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedSize(size)}
+                    className={selectedSize === size ? "bg-primary text-primary-foreground" : "hover:bg-primary hover:text-primary-foreground"}
+                  >
+                    {size}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Storage Variants */}
+            <div>
+              <h4 className="font-medium mb-3">Dung lượng:</h4>
+              <div className="flex gap-2 flex-wrap">
+                {['64GB', '128GB', '256GB', '512GB'].map((storage) => (
+                  <Button
+                    key={storage}
+                    variant={selectedStorage === storage ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedStorage(storage)}
+                    className={selectedStorage === storage ? "bg-primary text-primary-foreground" : "hover:bg-primary hover:text-primary-foreground"}
+                  >
+                    {storage}
+                  </Button>
+                ))}
+              </div>
+            </div>
           </div>
 
           <Separator />
 
           {/* Actions */}
           <div className="space-y-4">
-            <AddToCartButton
-              product={product}
-            />
+            <div className="flex gap-2">
+              <AddToCartButton
+                product={product}
+                className="flex-1"
+              />
+              <Button className="flex-1 bg-green-600 hover:bg-green-700">
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Mua ngay
+              </Button>
+            </div>
             
             <div className="flex gap-2">
               <Button

@@ -52,7 +52,14 @@ export default function AuthPage() {
       />
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Chogiare</h1>
+          <div className="flex items-center justify-center mb-4">
+            <img
+              src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=80&h=80&fit=crop"
+              alt="Chogiare Logo"
+              className="w-16 h-16 rounded-full object-cover"
+            />
+          </div>
+          <h1 className="text-3xl font-bold text-primary">Chogiare</h1>
           <p className="text-muted-foreground">Nền tảng rao bán uy tín</p>
         </div>
         

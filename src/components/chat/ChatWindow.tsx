@@ -227,9 +227,12 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
           <CardContent className="p-3">
             <div className="flex items-center space-x-3">
               <img
-                src="https://via.placeholder.com/60x60"
+                src="https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=60&h=60&fit=crop"
                 alt="Product"
                 className="w-12 h-12 rounded object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = 'https://via.placeholder.com/60x60'
+                }}
               />
               <div className="flex-1">
                 <h4 className="font-medium text-sm">iPhone 14 Pro Max 256GB</h4>

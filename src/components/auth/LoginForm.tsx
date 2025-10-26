@@ -18,12 +18,7 @@ export function LoginForm() {
   const { isLoading, execute } = useLoading({
     delay: 1000, // 1 second delay
     onSuccess: () => {
-      notify({
-        type: 'success',
-        title: 'Đăng nhập thành công',
-        message: 'Chào mừng bạn đến với Chogiare!',
-      })
-      // Redirect to home page after successful login
+      // Redirect to home page after successful login without notification
       navigate('/')
     },
     onError: (error: Error) => {

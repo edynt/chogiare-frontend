@@ -94,13 +94,13 @@ export default function SellerProductsPage() {
     }
   }
 
-  // Calculate stats
+  // Calculate stats with proper null checks
   const stats = {
     total: productsData?.total || 0,
     active: productsData?.items?.filter(p => p.status === 'active').length || 0,
     draft: productsData?.items?.filter(p => p.status === 'draft').length || 0,
     sold: productsData?.items?.filter(p => p.status === 'sold').length || 0,
-    totalViews: productsData?.items?.reduce((sum, p) => sum + p.viewCount, 0) || 0,
+    totalViews: productsData?.items?.reduce((sum, p) => sum + (p.viewCount || 0), 0) || 0,
     totalRevenue: productsData?.items?.reduce((sum, p) => sum + (p.price * (p.stock || 0)), 0) || 0,
   }
 
@@ -256,9 +256,9 @@ export default function SellerProductsPage() {
           </div>
 
           {/* Results Count */}
-          {productsData && (
+          {productsData && productsData.items && (
             <div className="mb-4 text-sm text-muted-foreground">
-              Hiển thị {productsData.items?.length} trong tổng số {productsData.total} sản phẩm
+              Hiển thị {productsData.items.length} trong tổng số {productsData.total} sản phẩm
             </div>
           )}
 
@@ -281,7 +281,7 @@ export default function SellerProductsPage() {
           {/* Products Grid/List */}
           {!isLoading && productsData && (
             <>
-              {productsData.items?.length === 0 ? (
+              {!productsData.items || productsData.items.length === 0 ? (
                 <Card>
                   <CardContent className="text-center py-12">
                     <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -303,7 +303,7 @@ export default function SellerProductsPage() {
                       : 'grid-cols-1'
                   }`}
                 >
-                  {productsData.items?.map((product) => (
+                  {productsData.items.map((product) => (
                     <Card key={product.id} className="group hover:shadow-lg transition-shadow">
                       <div className="relative">
                         <img

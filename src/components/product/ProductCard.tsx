@@ -88,24 +88,32 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
 
         <CardContent className="p-4 flex-1 flex flex-col">
-          <h3 className="font-semibold text-sm line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+          <h3 className="font-semibold text-base line-clamp-2 mb-3 group-hover:text-primary transition-colors">
             {product.title}
           </h3>
           
-          <div className="flex items-center gap-2 mb-2">
-            <Avatar className="h-5 w-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Avatar className="h-6 w-6">
               <AvatarImage src={product.seller?.avatar} />
               <AvatarFallback className="text-xs">
                 {product.seller?.name?.charAt(0) || 'U'}
               </AvatarFallback>
             </Avatar>
-            <span className="text-xs text-muted-foreground truncate">
+            <span className="text-sm text-muted-foreground truncate">
               {product.seller?.name || 'Unknown Seller'}
             </span>
+            {product.location && (
+              <>
+                <span className="text-muted-foreground">•</span>
+                <span className="text-xs text-muted-foreground truncate">
+                  {product.location}
+                </span>
+              </>
+            )}
           </div>
 
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <span className="text-lg font-bold text-primary">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <span className="text-xl font-bold text-primary">
               {formatPrice(product.price)}
             </span>
             {product.originalPrice && product.originalPrice > product.price && (
@@ -120,12 +128,18 @@ export function ProductCard({ product, className }: ProductCardProps) {
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-auto">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-auto">
             <span>⭐ {product.rating}</span>
             <span>•</span>
             <span>{product.reviewCount} đánh giá</span>
             <span>•</span>
+            <span>{product.viewCount} lượt xem</span>
+          </div>
+          
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
             <span>Còn {product.stock} sản phẩm</span>
+            <span>•</span>
+            <span className="capitalize">{product.condition}</span>
           </div>
         </CardContent>
       </Link>

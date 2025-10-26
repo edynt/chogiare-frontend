@@ -470,8 +470,8 @@ export function SellerDashboardContent() {
                       </div>
                       <p className="text-sm text-muted-foreground">{message.message}</p>
                     </div>
-                    <Button variant="outline" size="sm">
-                      Trả lời
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/chat">Trả lời</Link>
                     </Button>
                   </div>
                 ))}

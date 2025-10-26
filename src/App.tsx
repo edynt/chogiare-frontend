@@ -31,6 +31,7 @@ const AddProductPage = React.lazy(() => import('@/pages/AddProductPage'))
 const EditProductPage = React.lazy(() => import('@/pages/EditProductPage'))
 const AuthPage = React.lazy(() => import('@/pages/AuthPage'))
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'))
+const OrderDetailPage = React.lazy(() => import('@/pages/OrderDetailPage'))
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'))
 
 // Create a client
@@ -80,6 +81,7 @@ function App() {
                       <Route path="/seller/products/edit/:id" element={<EditProductPage />} />
                       <Route path="/auth/*" element={<AuthPage />} />
                       <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/orders/:orderId" element={<OrderDetailPage />} />
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                     </Suspense>
