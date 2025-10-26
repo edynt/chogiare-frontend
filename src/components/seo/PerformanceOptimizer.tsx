@@ -62,25 +62,3 @@ export function PerformanceOptimizer({ children }: PerformanceOptimizerProps) {
 
   return <>{children}</>
 }
-
-// Hook for performance monitoring
-export function usePerformanceMonitoring() {
-  useEffect(() => {
-    // Monitor Core Web Vitals
-    if ('web-vital' in window) {
-      import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-        getCLS(console.log)
-        getFID(console.log)
-        getFCP(console.log)
-        getLCP(console.log)
-        getTTFB(console.log)
-      })
-    }
-
-    // Monitor page load time
-    window.addEventListener('load', () => {
-      const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart
-      console.log(`Page load time: ${loadTime}ms`)
-    })
-  }, [])
-}

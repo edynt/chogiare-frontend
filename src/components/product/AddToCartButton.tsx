@@ -92,9 +92,6 @@ export function AddToCartButton({
               <Plus className="h-3 w-3" />
             </Button>
           </div>
-          <span className="text-xs text-muted-foreground">
-            Còn {product.stock} sản phẩm
-          </span>
         </div>
       )}
 

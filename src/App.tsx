@@ -2,7 +2,6 @@ import React, { Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@/contexts/ThemeContext'
-import { LanguageProvider } from '@/contexts/LanguageContext'
 import { Toaster } from '@/components/ui/sonner'
 import { NotificationProvider } from '@/components/notification-provider'
 import { Cart } from '@/components/cart/Cart'
@@ -49,10 +48,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <LanguageProvider>
-          <NotificationProvider>
-            <AuthProvider>
-              <PerformanceOptimizer>
+        <NotificationProvider>
+          <AuthProvider>
+            <PerformanceOptimizer>
                 <Router>
                   <div className="min-h-screen bg-background">
                     <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
@@ -89,10 +87,9 @@ function App() {
                     <Toaster />
                   </div>
                 </Router>
-              </PerformanceOptimizer>
-            </AuthProvider>
-          </NotificationProvider>
-        </LanguageProvider>
+            </PerformanceOptimizer>
+          </AuthProvider>
+        </NotificationProvider>
       </ThemeProvider>
     </QueryClientProvider>
   )

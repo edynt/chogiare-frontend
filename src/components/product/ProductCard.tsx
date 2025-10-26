@@ -7,7 +7,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Heart, Eye } from 'lucide-react'
 // Removed Redux imports
 import { cn, formatPrice } from '@/lib/utils'
-import { AddToCartButton } from './AddToCartButton'
 import type { Product } from '@/types'
 
 interface ProductCardProps {
@@ -32,7 +31,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
   return (
     <Card className={cn("group hover:shadow-lg transition-shadow duration-200 flex flex-col h-full", className)}>
       <Link to={`/product/${product.id}`} className="flex flex-col flex-1">
-        <div className="relative aspect-square overflow-hidden rounded-t-lg">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-t-lg">
           <img
             src={product.images[0]}
             alt={product.title}
@@ -87,69 +86,29 @@ export function ProductCard({ product, className }: ProductCardProps) {
           )}
         </div>
 
-        <CardContent className="p-4 flex-1 flex flex-col">
-          <h3 className="font-semibold text-base line-clamp-2 mb-3 group-hover:text-primary transition-colors">
+        <CardContent className="p-3 flex-1 flex flex-col">
+          <h3 className="font-semibold text-sm line-clamp-2 mb-2 group-hover:text-primary transition-colors">
             {product.title}
           </h3>
           
-          <div className="flex items-center gap-2 mb-3">
-            <Avatar className="h-6 w-6">
-              <AvatarImage src={product.seller?.avatar} />
-              <AvatarFallback className="text-xs">
-                {product.seller?.name?.charAt(0) || 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm text-muted-foreground truncate">
-              {product.seller?.name || 'Unknown Seller'}
-            </span>
-            {product.location && (
-              <>
-                <span className="text-muted-foreground">•</span>
-                <span className="text-xs text-muted-foreground truncate">
-                  {product.location}
-                </span>
-              </>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <span className="text-xl font-bold text-primary">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <span className="text-lg font-bold text-primary">
               {formatPrice(product.price)}
             </span>
             {product.originalPrice && product.originalPrice > product.price && (
-              <>
-                <span className="text-sm text-muted-foreground line-through">
-                  {formatPrice(product.originalPrice)}
-                </span>
-                <Badge variant="destructive" className="text-xs whitespace-nowrap">
-                  -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                </Badge>
-              </>
+              <span className="text-sm text-muted-foreground line-through">
+                {formatPrice(product.originalPrice)}
+              </span>
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-auto">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-auto">
             <span>⭐ {product.rating}</span>
             <span>•</span>
-            <span>{product.reviewCount} đánh giá</span>
-            <span>•</span>
-            <span>{product.viewCount} lượt xem</span>
-          </div>
-          
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-            <span>Còn {product.stock} sản phẩm</span>
-            <span>•</span>
-            <span className="capitalize">{product.condition}</span>
+            <span>Còn {product.stock}</span>
           </div>
         </CardContent>
       </Link>
-
-      <CardFooter className="p-4 pt-0 mt-auto">
-        <AddToCartButton
-          product={product}
-          className="w-full"
-        />
-      </CardFooter>
     </Card>
   )
 }

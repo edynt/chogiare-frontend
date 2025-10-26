@@ -5,14 +5,19 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Separator } from '@/components/ui/separator'
 import { useProfile } from '@/hooks/useAuth'
 import { useUserOrders } from '@/hooks/useOrders'
-import { User, Mail, Phone, MapPin, Package, Eye, Calendar, DollarSign } from 'lucide-react'
+import { 
+  User, Mail, Phone, MapPin, Package, Eye, Calendar, DollarSign, 
+  Star, Heart, ShoppingBag, CreditCard, Shield, Award, TrendingUp,
+  MessageCircle, Settings, Edit, Camera, Bell, Lock, Globe, Users
+} from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 
 export function ProfileContent() {
   const { data: profile, isLoading } = useProfile()
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'favorites' | 'settings'>('profile')
   const { data: ordersData, isLoading: isLoadingOrders } = useUserOrders({ page: 1, pageSize: 10 })
 
   if (isLoading) {
@@ -83,6 +88,28 @@ export function ProfileContent() {
               <Package className="h-4 w-4 mr-2 inline" />
               Lịch sử đơn hàng
             </button>
+            <button
+              onClick={() => setActiveTab('favorites')}
+              className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'favorites'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Heart className="h-4 w-4 mr-2 inline" />
+              Yêu thích
+            </button>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'settings'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Settings className="h-4 w-4 mr-2 inline" />
+              Cài đặt
+            </button>
           </div>
         </CardContent>
       </Card>
@@ -96,12 +123,17 @@ export function ProfileContent() {
             </CardHeader>
         <CardContent>
           <div className="flex items-center gap-6">
-            <Avatar className="h-24 w-24">
-              <AvatarImage src={profile.avatar} />
-              <AvatarFallback>
-                <User className="h-8 w-8" />
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar className="h-24 w-24">
+                <AvatarImage src={profile.avatar} />
+                <AvatarFallback>
+                  <User className="h-8 w-8" />
+                </AvatarFallback>
+              </Avatar>
+              <Button size="icon" className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full">
+                <Camera className="h-4 w-4" />
+              </Button>
+            </div>
             <div className="space-y-2">
               <h2 className="text-2xl font-bold">{profile.name}</h2>
               <div className="flex items-center gap-2 text-muted-foreground">
@@ -117,6 +149,16 @@ export function ProfileContent() {
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
                 <span>Việt Nam</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="flex items-center gap-1">
+                  <Award className="h-3 w-3" />
+                  Thành viên VIP
+                </Badge>
+                <Badge variant="outline" className="flex items-center gap-1">
+                  <Shield className="h-3 w-3" />
+                  Đã xác thực
+                </Badge>
               </div>
             </div>
           </div>
@@ -147,22 +189,47 @@ export function ProfileContent() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Thống kê</CardTitle>
+            <CardTitle>Thống kê hoạt động</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-between">
-              <span>Số bài đăng:</span>
-              <span className="font-medium">{profile.postCount}</span>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-3 bg-blue-50 rounded-lg">
+                <ShoppingBag className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-blue-600">{profile.postCount}</p>
+                <p className="text-sm text-muted-foreground">Sản phẩm đã bán</p>
+              </div>
+              <div className="text-center p-3 bg-green-50 rounded-lg">
+                <Star className="h-6 w-6 text-green-600 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-green-600">4.8</p>
+                <p className="text-sm text-muted-foreground">Đánh giá trung bình</p>
+              </div>
+              <div className="text-center p-3 bg-purple-50 rounded-lg">
+                <Heart className="h-6 w-6 text-purple-600 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-purple-600">156</p>
+                <p className="text-sm text-muted-foreground">Sản phẩm yêu thích</p>
+              </div>
+              <div className="text-center p-3 bg-orange-50 rounded-lg">
+                <TrendingUp className="h-6 w-6 text-orange-600 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-orange-600">98%</p>
+                <p className="text-sm text-muted-foreground">Tỷ lệ hài lòng</p>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span>Vai trò:</span>
-              <span className="font-medium">{profile.roles.join(', ')}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Ngày tham gia:</span>
-              <span className="font-medium">
-                {new Date(profile.createdAt).toLocaleDateString('vi-VN')}
-              </span>
+            <Separator />
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span>Vai trò:</span>
+                <span className="font-medium">{profile.roles.join(', ')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Ngày tham gia:</span>
+                <span className="font-medium">
+                  {new Date(profile.createdAt).toLocaleDateString('vi-VN')}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Lần đăng nhập cuối:</span>
+                <span className="font-medium">2 giờ trước</span>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -287,6 +354,118 @@ export function ProfileContent() {
             )}
           </CardContent>
         </Card>
+      )}
+
+      {/* Favorites Tab */}
+      {activeTab === 'favorites' && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Heart className="h-5 w-5" />
+              Sản phẩm yêu thích
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-12">
+              <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Chưa có sản phẩm yêu thích</h3>
+              <p className="text-muted-foreground mb-6">
+                Hãy bắt đầu yêu thích những sản phẩm bạn quan tâm!
+              </p>
+              <Button asChild>
+                <Link to="/products">Khám phá sản phẩm</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Settings Tab */}
+      {activeTab === 'settings' && (
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Cài đặt tài khoản
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Thông báo email</h4>
+                  <p className="text-sm text-muted-foreground">Nhận thông báo về đơn hàng và khuyến mãi</p>
+                </div>
+                <Button variant="outline" size="sm">Bật</Button>
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Thông báo push</h4>
+                  <p className="text-sm text-muted-foreground">Nhận thông báo trực tiếp trên thiết bị</p>
+                </div>
+                <Button variant="outline" size="sm">Bật</Button>
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Chế độ riêng tư</h4>
+                  <p className="text-sm text-muted-foreground">Ẩn thông tin cá nhân khỏi người khác</p>
+                </div>
+                <Button variant="outline" size="sm">Tắt</Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lock className="h-5 w-5" />
+                Bảo mật
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button variant="outline" className="w-full justify-start">
+                <Edit className="h-4 w-4 mr-2" />
+                Đổi mật khẩu
+              </Button>
+              <Button variant="outline" className="w-full justify-start">
+                <Phone className="h-4 w-4 mr-2" />
+                Xác thực số điện thoại
+              </Button>
+              <Button variant="outline" className="w-full justify-start">
+                <Mail className="h-4 w-4 mr-2" />
+                Xác thực email
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                Quyền riêng tư
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Hiển thị email công khai</h4>
+                  <p className="text-sm text-muted-foreground">Cho phép người khác xem email của bạn</p>
+                </div>
+                <Button variant="outline" size="sm">Tắt</Button>
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Hiển thị số điện thoại</h4>
+                  <p className="text-sm text-muted-foreground">Cho phép người khác xem số điện thoại</p>
+                </div>
+                <Button variant="outline" size="sm">Tắt</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   )

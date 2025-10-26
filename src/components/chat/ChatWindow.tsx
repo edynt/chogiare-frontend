@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -241,8 +242,10 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
                   {formatPrice(25000000)}
                 </p>
               </div>
-              <Button size="sm" variant="outline">
-                Xem sản phẩm
+              <Button size="sm" variant="outline" asChild>
+                <Link to="/product/1">
+                  Xem sản phẩm
+                </Link>
               </Button>
             </div>
           </CardContent>

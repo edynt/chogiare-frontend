@@ -21,7 +21,8 @@ import {
   Truck, 
   MessageCircle,
   Eye,
-  ShoppingCart
+  ShoppingCart,
+  Zap
 } from 'lucide-react'
 
 interface ProductDetailsProps {
@@ -277,7 +278,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 className="flex-1"
               />
               <Button className="flex-1 bg-green-600 hover:bg-green-700">
-                <ShoppingCart className="h-4 w-4 mr-2" />
+                <Zap className="h-4 w-4 mr-2" />
                 Mua ngay
               </Button>
             </div>

@@ -30,7 +30,7 @@ import {
   Navigation
 } from 'lucide-react'
 import { useOrder } from '@/hooks/useOrders'
-import { Loading } from '@/components/ui/loading'
+import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorBoundary } from '@/components/ui/error-boundary'
 
 interface OrderTimelineItem {
@@ -51,12 +51,19 @@ export default function OrderDetailPage() {
   const { data: order, isLoading, error } = useOrder(orderId || '')
 
   if (isLoading) {
-    return <Loading />
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Đang tải thông tin đơn hàng...</p>
+        </div>
+      </div>
+    )
   }
 
   if (error || !order) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Card className="w-full max-w-md">
           <CardContent className="p-6 text-center">
             <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
@@ -64,9 +71,9 @@ export default function OrderDetailPage() {
             <p className="text-gray-600 mb-4">
               Đơn hàng bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.
             </p>
-            <Button onClick={() => navigate('/orders')}>
+            <Button onClick={() => navigate(-1)}>
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Quay lại danh sách đơn hàng
+              Quay lại
             </Button>
           </CardContent>
         </Card>
@@ -193,7 +200,7 @@ export default function OrderDetailPage() {
 
   const handleContactSeller = () => {
     // Implement contact seller logic
-    console.log('Contact seller:', order.sellerId)
+    console.log('Contact seller:', order.storeId)
   }
 
   const handleDownloadInvoice = () => {
