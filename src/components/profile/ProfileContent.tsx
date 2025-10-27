@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,6 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { useProfile } from '@/hooks/useAuth'
 import { useUserOrders } from '@/hooks/useOrders'
+import { useMultipleShippingProgress } from '@/hooks/useShippingProgress'
+import { CompactShippingProgress } from '@/components/shipping/CompactShippingProgress'
 import { 
   User, Mail, Phone, MapPin, Package, Eye, Calendar, 
   Star, Heart, ShoppingBag, Shield, Award, TrendingUp,
@@ -17,8 +19,27 @@ import { formatPrice } from '@/lib/utils'
 
 export function ProfileContent() {
   const { data: profile, isLoading } = useProfile()
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'favorites' | 'settings'>('profile')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const tabFromUrl = searchParams.get('tab') as 'profile' | 'orders' | 'favorites' | 'settings' | null
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'favorites' | 'settings'>(tabFromUrl || 'profile')
   const { data: ordersData, isLoading: isLoadingOrders } = useUserOrders({ page: 1, pageSize: 10 })
+  
+  // Get shipping progress for all orders
+  const orderIds = ordersData?.items?.map(order => order.id) || []
+  const { data: shippingProgressData } = useMultipleShippingProgress(orderIds)
+
+  // Update active tab when URL changes
+  useEffect(() => {
+    if (tabFromUrl && ['profile', 'orders', 'favorites', 'settings'].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl)
+    }
+  }, [tabFromUrl])
+
+  // Update URL when tab changes
+  const handleTabChange = (tab: 'profile' | 'orders' | 'favorites' | 'settings') => {
+    setActiveTab(tab)
+    setSearchParams({ tab })
+  }
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -67,7 +88,7 @@ export function ProfileContent() {
         <CardContent className="p-0">
           <div className="flex border-b">
             <button
-              onClick={() => setActiveTab('profile')}
+              onClick={() => handleTabChange('profile')}
               className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'profile'
                   ? 'border-blue-500 text-blue-600'
@@ -78,7 +99,7 @@ export function ProfileContent() {
               Thông tin cá nhân
             </button>
             <button
-              onClick={() => setActiveTab('orders')}
+              onClick={() => handleTabChange('orders')}
               className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'orders'
                   ? 'border-blue-500 text-blue-600'
@@ -89,7 +110,7 @@ export function ProfileContent() {
               Lịch sử đơn hàng
             </button>
             <button
-              onClick={() => setActiveTab('favorites')}
+              onClick={() => handleTabChange('favorites')}
               className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'favorites'
                   ? 'border-blue-500 text-blue-600'
@@ -100,7 +121,7 @@ export function ProfileContent() {
               Yêu thích
             </button>
             <button
-              onClick={() => setActiveTab('settings')}
+              onClick={() => handleTabChange('settings')}
               className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'settings'
                   ? 'border-blue-500 text-blue-600'
@@ -314,6 +335,16 @@ export function ProfileContent() {
                         </div>
                       ))}
                     </div>
+
+                    {/* Shipping Progress Bar */}
+                    {shippingProgressData && shippingProgressData[order.id] && (
+                      <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                        <CompactShippingProgress 
+                          shippingData={shippingProgressData[order.id]}
+                          onTrackClick={() => window.open(`/shipping/${order.id}`, '_blank')}
+                        />
+                      </div>
+                    )}
                     
                     <div className="flex items-center justify-between mt-4 pt-3 border-t">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">

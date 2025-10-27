@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -7,17 +7,25 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAuthStore } from '@/stores/authStore'
 import { useCartStore } from '@/stores/cartStore'
-import { Search, ShoppingCart, Menu, User, MessageCircle, Settings, Bell, Clock } from 'lucide-react'
+import { Search, ShoppingCart, Menu, User, MessageCircle, Settings, Bell, Clock, Package, Heart, LogOut, Store, CreditCard, HelpCircle, Shield } from 'lucide-react'
 
 export function Header() {
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated, user, logout } = useAuthStore()
   const { totalItems } = useCartStore()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
   // Mock notifications data
   const notifications = [
@@ -194,14 +202,121 @@ export function Header() {
                     Quản lý sản phẩm
                   </Button>
                 </Link>
-                <Link to="/profile">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.avatar} />
-                    <AvatarFallback>
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                </Link>
+                
+                {/* Profile Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user?.avatar} alt={user?.name} />
+                        <AvatarFallback>
+                          <User className="h-4 w-4" />
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{user?.name}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    
+                    {/* Personal Section */}
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile" className="flex items-center">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Thông tin cá nhân</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile?tab=orders" className="flex items-center">
+                          <Package className="mr-2 h-4 w-4" />
+                          <span>Lịch sử đơn hàng</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile?tab=favorites" className="flex items-center">
+                          <Heart className="mr-2 h-4 w-4" />
+                          <span>Sản phẩm yêu thích</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    
+                    <DropdownMenuSeparator />
+                    
+                    {/* Communication Section */}
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem asChild>
+                        <Link to="/chat" className="flex items-center">
+                          <MessageCircle className="mr-2 h-4 w-4" />
+                          <span>Tin nhắn</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/notifications" className="flex items-center">
+                          <Bell className="mr-2 h-4 w-4" />
+                          <span>Thông báo</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    
+                    <DropdownMenuSeparator />
+                    
+                    {/* Business Section */}
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem asChild>
+                        <Link to="/seller" className="flex items-center">
+                          <Store className="mr-2 h-4 w-4" />
+                          <span>Quản lý cửa hàng</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/seller/products" className="flex items-center">
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Quản lý sản phẩm</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    
+                    <DropdownMenuSeparator />
+                    
+                    {/* Settings & Support Section */}
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile?tab=settings" className="flex items-center">
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Cài đặt</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/payment" className="flex items-center">
+                          <CreditCard className="mr-2 h-4 w-4" />
+                          <span>Thanh toán</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/help" className="flex items-center">
+                          <HelpCircle className="mr-2 h-4 w-4" />
+                          <span>Trợ giúp</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    
+                    <DropdownMenuSeparator />
+                    
+                    {/* Logout */}
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Đăng xuất</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ) : (
               <div className="flex items-center space-x-2">
