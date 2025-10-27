@@ -10,7 +10,30 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { StockInModal } from '@/components/stock/StockInModal'
+import { ProductDetailModal } from '@/components/stock/ProductDetailModal'
+import { EditProductModal } from '@/components/stock/EditProductModal'
 import { useNotification } from '@/components/notification-provider'
+import { 
+  CheckCircle, 
+  AlertTriangle, 
+  Package, 
+  TrendingDown, 
+  TrendingUp, 
+  Clock, 
+  Bell, 
+  ShoppingCart, 
+  Eye, 
+  Star, 
+  Edit, 
+  Plus, 
+  Search, 
+  Filter, 
+  Upload, 
+  Download, 
+  Settings, 
+  BarChart3, 
+  DollarSign 
+} from 'lucide-react'
 
 interface InventoryItem {
   id: string
@@ -63,7 +86,9 @@ export default function InventoryManagementPage() {
   const [sortBy, setSortBy] = useState('name')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
   const [isStockInModalOpen, setIsStockInModalOpen] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<any>(null)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<InventoryItem | null>(null)
 
   const handleStockIn = async (data: any) => {
     // Simulate API call
@@ -79,9 +104,33 @@ export default function InventoryManagementPage() {
     setSelectedProduct(null)
   }
 
-  const handleOpenStockInModal = (product: any) => {
+  const handleOpenStockInModal = (product: InventoryItem | null) => {
     setSelectedProduct(product)
     setIsStockInModalOpen(true)
+  }
+
+  const handleOpenDetailModal = (product: InventoryItem) => {
+    setSelectedProduct(product)
+    setIsDetailModalOpen(true)
+  }
+
+  const handleOpenEditModal = (product: InventoryItem) => {
+    setSelectedProduct(product)
+    setIsEditModalOpen(true)
+  }
+
+  const handleSaveProduct = async (updatedProduct: InventoryItem) => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    notify({
+      type: 'success',
+      title: 'Thành công',
+      message: 'Đã cập nhật thông tin sản phẩm'
+    })
+    
+    setIsEditModalOpen(false)
+    setSelectedProduct(null)
   }
 
   // Mock data
@@ -352,15 +401,27 @@ export default function InventoryManagementPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleOpenDetailModal(item)}
+                  >
                     <Eye className="h-4 w-4 mr-1" />
                     Xem
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleOpenEditModal(item)}
+                  >
                     <Edit className="h-4 w-4 mr-1" />
                     Sửa
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleOpenStockInModal(item)}
+                  >
                     <Plus className="h-4 w-4 mr-1" />
                     Nhập
                   </Button>
@@ -591,6 +652,29 @@ export default function InventoryManagementPage() {
         }}
         product={selectedProduct}
         onStockIn={handleStockIn}
+      />
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => {
+          setIsDetailModalOpen(false)
+          setSelectedProduct(null)
+        }}
+        product={selectedProduct}
+        onEdit={handleOpenEditModal}
+        onStockIn={handleOpenStockInModal}
+      />
+
+      {/* Edit Product Modal */}
+      <EditProductModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false)
+          setSelectedProduct(null)
+        }}
+        product={selectedProduct}
+        onSave={handleSaveProduct}
       />
     </div>
   )
