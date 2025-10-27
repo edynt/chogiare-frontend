@@ -66,12 +66,12 @@ export function Header() {
   const unreadCount = notifications.filter(n => n.unread).length
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 animate-in slide-in-from-top duration-500">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
+          <Link to="/" className="flex items-center space-x-2 hover:scale-105 transition-transform duration-200">
+            <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center hover:rotate-12 transition-transform duration-300">
               <span className="text-primary-foreground font-bold text-lg">C</span>
             </div>
             <span className="text-xl font-bold">Chogiare</span>
@@ -79,10 +79,10 @@ export function Header() {
 
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-200">
               Sản phẩm
             </Link>
-            <Link to="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-200">
               Người bán
             </Link>
           </nav>
@@ -102,7 +102,7 @@ export function Header() {
           <div className="hidden md:flex items-center space-x-4">
             {/* Chat Icon */}
             <Link to="/chat">
-              <Button variant="ghost" size="icon" aria-label="Chat">
+              <Button variant="ghost" size="icon" aria-label="Chat" className="hover:scale-110 hover:bg-blue-100 dark:hover:bg-blue-900 transition-all duration-200">
                 <MessageCircle className="h-4 w-4" />
               </Button>
             </Link>
@@ -110,12 +110,12 @@ export function Header() {
             {/* Notification Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Thông báo" className="relative">
+                <Button variant="ghost" size="icon" aria-label="Thông báo" className="relative hover:scale-110 hover:bg-orange-100 dark:hover:bg-orange-900 transition-all duration-200">
                   <Bell className="h-4 w-4" />
                   {unreadCount > 0 && (
                     <Badge
                       variant="destructive"
-                      className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                      className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs animate-pulse"
                     >
                       {unreadCount}
                     </Badge>
@@ -134,24 +134,24 @@ export function Header() {
                     </div>
                   ) : (
                     notifications.map((notification) => (
-                      <DropdownMenuItem key={notification.id} className="p-3 cursor-pointer">
+                      <DropdownMenuItem key={notification.id} className="p-3 cursor-pointer hover:bg-red-500 group transition-colors">
                         <div className="flex items-start gap-3 w-full">
                           <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
                             notification.unread ? 'bg-blue-500' : 'bg-gray-300'
                           }`} />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-1">
-                              <h4 className={`text-sm font-medium ${
+                              <h4 className={`text-sm font-medium group-hover:text-white ${
                                 notification.unread ? 'text-gray-900' : 'text-gray-600'
                               }`}>
                                 {notification.title}
                               </h4>
-                              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                              <span className="text-xs text-muted-foreground group-hover:text-white flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
                                 {notification.time}
                               </span>
                             </div>
-                            <p className="text-xs text-muted-foreground line-clamp-2">
+                            <p className="text-xs text-muted-foreground group-hover:text-white line-clamp-2">
                               {notification.message}
                             </p>
                           </div>
@@ -161,8 +161,8 @@ export function Header() {
                   )}
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="p-3 text-center">
-                  <Link to="/notifications" className="text-sm text-blue-600 hover:text-blue-700">
+                <DropdownMenuItem className="p-3 text-center hover:bg-red-500 group transition-colors">
+                  <Link to="/notifications" className="text-sm text-blue-600 group-hover:text-white">
                     Xem tất cả thông báo
                   </Link>
                 </DropdownMenuItem>
@@ -178,14 +178,14 @@ export function Header() {
               variant="ghost"
               size="icon"
               asChild
-              className="relative"
+              className="relative hover:scale-110 hover:bg-green-100 dark:hover:bg-green-900 transition-all duration-200"
             >
               <Link to="/cart">
                 <ShoppingCart className="h-4 w-4" />
                 {totalItems > 0 && (
                   <Badge
                     variant="destructive"
-                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs animate-bounce"
                   >
                     {totalItems}
                   </Badge>
@@ -229,19 +229,19 @@ export function Header() {
                     {/* Personal Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
-                        <Link to="/profile" className="flex items-center">
+                        <Link to="/profile" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <User className="mr-2 h-4 w-4" />
                           <span>Thông tin cá nhân</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/profile?tab=orders" className="flex items-center">
+                        <Link to="/profile?tab=orders" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <Package className="mr-2 h-4 w-4" />
                           <span>Lịch sử đơn hàng</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/profile?tab=favorites" className="flex items-center">
+                        <Link to="/profile?tab=favorites" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <Heart className="mr-2 h-4 w-4" />
                           <span>Sản phẩm yêu thích</span>
                         </Link>
@@ -253,13 +253,13 @@ export function Header() {
                     {/* Communication Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
-                        <Link to="/chat" className="flex items-center">
+                        <Link to="/chat" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <MessageCircle className="mr-2 h-4 w-4" />
                           <span>Tin nhắn</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/notifications" className="flex items-center">
+                        <Link to="/notifications" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <Bell className="mr-2 h-4 w-4" />
                           <span>Thông báo</span>
                         </Link>
@@ -271,13 +271,13 @@ export function Header() {
                     {/* Business Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
-                        <Link to="/shop-settings" className="flex items-center">
+                        <Link to="/shop-settings" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <Store className="mr-2 h-4 w-4" />
                           <span>Quản lý cửa hàng</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/seller/products" className="flex items-center">
+                        <Link to="/seller/products" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <Settings className="mr-2 h-4 w-4" />
                           <span>Quản lý sản phẩm</span>
                         </Link>
@@ -289,19 +289,19 @@ export function Header() {
                     {/* Settings & Support Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
-                        <Link to="/profile?tab=settings" className="flex items-center">
+                        <Link to="/profile?tab=settings" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <Settings className="mr-2 h-4 w-4" />
                           <span>Cài đặt</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/payment" className="flex items-center">
+                        <Link to="/payment" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <CreditCard className="mr-2 h-4 w-4" />
                           <span>Thanh toán</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/help" className="flex items-center">
+                        <Link to="/help" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <HelpCircle className="mr-2 h-4 w-4" />
                           <span>Trợ giúp</span>
                         </Link>
@@ -311,7 +311,7 @@ export function Header() {
                     <DropdownMenuSeparator />
                     
                     {/* Logout */}
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 hover:bg-red-500 hover:text-white transition-colors">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Đăng xuất</span>
                     </DropdownMenuItem>
