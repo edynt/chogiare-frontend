@@ -116,7 +116,7 @@ export default function AddProductPage() {
         images:
           images.length > 0
             ? images
-            : ['https://via.placeholder.com/400x400?text=No+Image'],
+            : ['https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=400&h=400&fit=crop'],
         badges: selectedBadges as any[],
         sellerId: 'current-user-id', // TODO: Get from auth context
         status: 'draft' as ProductStatus,

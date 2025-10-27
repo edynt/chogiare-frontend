@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { StockInModal } from '@/components/stock/StockInModal'
+import { useNotification } from '@/components/notification-provider'
 import { useSellerProducts } from '@/hooks/useProducts'
 import { useStoreOrders } from '@/hooks/useOrders'
 import { formatPrice, formatDate } from '@/lib/utils'
@@ -35,7 +37,29 @@ import {
 export function SellerDashboardContent() {
   const { data: products, isLoading } = useSellerProducts()
   const { data: ordersData, isLoading: isLoadingOrders } = useStoreOrders('store-1', { page: 1, pageSize: 10 })
+  const { notify } = useNotification()
   const [activeTab, setActiveTab] = useState('overview')
+  const [isStockInModalOpen, setIsStockInModalOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<any>(null)
+
+  const handleStockIn = async (data: any) => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    notify({
+      type: 'success',
+      title: 'Nhập kho thành công',
+      message: `Đã nhập ${data.quantity} sản phẩm vào kho`,
+    })
+    
+    setIsStockInModalOpen(false)
+    setSelectedProduct(null)
+  }
+
+  const handleOpenStockInModal = (product: any) => {
+    setSelectedProduct(product)
+    setIsStockInModalOpen(true)
+  }
 
   // Mock data for enhanced dashboard
   const stats = [
@@ -440,7 +464,11 @@ export function SellerDashboardContent() {
                       <Badge className={`${getStatusColor(product.status)} text-white`}>
                         {getStatusLabel(product.status)}
                       </Badge>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleOpenStockInModal(product)}
+                      >
                         Nhập hàng
                       </Button>
                     </div>
@@ -489,6 +517,17 @@ export function SellerDashboardContent() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Stock In Modal */}
+      <StockInModal
+        isOpen={isStockInModalOpen}
+        onClose={() => {
+          setIsStockInModalOpen(false)
+          setSelectedProduct(null)
+        }}
+        product={selectedProduct}
+        onStockIn={handleStockIn}
+      />
     </div>
   )
 }

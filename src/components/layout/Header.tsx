@@ -82,7 +82,7 @@ export function Header() {
             <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Sản phẩm
             </Link>
-            <Link to="/seller/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Người bán
             </Link>
           </nav>
@@ -271,7 +271,7 @@ export function Header() {
                     {/* Business Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
-                        <Link to="/seller" className="flex items-center">
+                        <Link to="/shop-settings" className="flex items-center">
                           <Store className="mr-2 h-4 w-4" />
                           <span>Quản lý cửa hàng</span>
                         </Link>

@@ -100,7 +100,7 @@ export default function ShipmentPage() {
       progress: 75,
       estimatedDelivery: '2024-01-20T10:00:00Z',
       carrier: 'Viettel Post',
-      carrierLogo: 'https://via.placeholder.com/40x40',
+      carrierLogo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=40&h=40&fit=crop',
       origin: {
         name: 'TechStore Pro',
         address: '123 Đường ABC, Quận 1, TP.HCM',
@@ -173,7 +173,7 @@ export default function ShipmentPage() {
       estimatedDelivery: '2024-01-18T15:00:00Z',
       actualDelivery: '2024-01-18T14:30:00Z',
       carrier: 'Giao Hàng Nhanh',
-      carrierLogo: 'https://via.placeholder.com/40x40',
+      carrierLogo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=40&h=40&fit=crop',
       origin: {
         name: 'Audio World',
         address: '789 Đường DEF, Quận 3, TP.HCM',

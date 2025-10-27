@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,30 +9,8 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { 
-  Package,
-  AlertTriangle,
-  CheckCircle,
-  Search,
-  Filter,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  TrendingUp,
-  TrendingDown,
-  BarChart3,
-  RefreshCw,
-  Download,
-  Upload,
-  Settings,
-  Bell,
-  Clock,
-  DollarSign,
-  ShoppingCart,
-  Star,
-  Zap
-} from 'lucide-react'
+import { StockInModal } from '@/components/stock/StockInModal'
+import { useNotification } from '@/components/notification-provider'
 
 interface InventoryItem {
   id: string
@@ -77,11 +56,33 @@ interface StockAlert {
 }
 
 export default function InventoryManagementPage() {
+  const { notify } = useNotification()
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
   const [sortBy, setSortBy] = useState('name')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [isStockInModalOpen, setIsStockInModalOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<any>(null)
+
+  const handleStockIn = async (data: any) => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    notify({
+      type: 'success',
+      title: 'Nhập kho thành công',
+      message: `Đã nhập ${data.quantity} sản phẩm vào kho`,
+    })
+    
+    setIsStockInModalOpen(false)
+    setSelectedProduct(null)
+  }
+
+  const handleOpenStockInModal = (product: any) => {
+    setSelectedProduct(product)
+    setIsStockInModalOpen(true)
+  }
 
   // Mock data
   const inventoryItems: InventoryItem[] = [
@@ -456,13 +457,15 @@ export default function InventoryManagementPage() {
                 <Plus className="h-4 w-4 mr-2" />
                 Thêm sản phẩm
               </Button>
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => handleOpenStockInModal(null)}>
                 <Upload className="h-4 w-4 mr-2" />
                 Nhập hàng
               </Button>
-              <Button variant="outline">
-                <Download className="h-4 w-4 mr-2" />
-                Xuất báo cáo
+              <Button variant="outline" asChild>
+                <Link to="/inventory/reports">
+                  <Download className="h-4 w-4 mr-2" />
+                  Xuất báo cáo
+                </Link>
               </Button>
               <Button variant="outline">
                 <Settings className="h-4 w-4 mr-2" />
@@ -578,6 +581,17 @@ export default function InventoryManagementPage() {
         </Tabs>
       </main>
       <Footer />
+
+      {/* Stock In Modal */}
+      <StockInModal
+        isOpen={isStockInModalOpen}
+        onClose={() => {
+          setIsStockInModalOpen(false)
+          setSelectedProduct(null)
+        }}
+        product={selectedProduct}
+        onStockIn={handleStockIn}
+      />
     </div>
   )
 }

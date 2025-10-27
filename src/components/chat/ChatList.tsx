@@ -59,7 +59,7 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
         product: {
           id: '1',
           title: 'iPhone 14 Pro Max 256GB',
-          image: 'https://via.placeholder.com/60x60',
+          image: 'https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=60&h=60&fit=crop',
           price: 25000000
         }
       },
@@ -81,7 +81,7 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
         product: {
           id: '2',
           title: 'MacBook Pro M2 13 inch',
-          image: 'https://via.placeholder.com/60x60',
+          image: 'https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=60&h=60&fit=crop',
           price: 35000000
         }
       },
@@ -103,7 +103,7 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
         product: {
           id: '3',
           title: 'Samsung Galaxy S23 Ultra',
-          image: 'https://via.placeholder.com/60x60',
+          image: 'https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=60&h=60&fit=crop',
           price: 28000000
         }
       }

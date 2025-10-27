@@ -47,7 +47,7 @@ export default function PaymentPage() {
       name: 'iPhone 14 Pro Max 256GB',
       price: 25000000,
       quantity: 1,
-      image: 'https://via.placeholder.com/80x80',
+      image: 'https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=80&h=80&fit=crop',
       seller: 'Nguyễn Văn A'
     },
     {
@@ -55,7 +55,7 @@ export default function PaymentPage() {
       name: 'MacBook Pro M2 13 inch',
       price: 35000000,
       quantity: 1,
-      image: 'https://via.placeholder.com/80x80',
+      image: 'https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=80&h=80&fit=crop',
       seller: 'Trần Thị B'
     }
   ]
@@ -301,11 +301,11 @@ export default function PaymentPage() {
                     <div className="space-y-1">
                       <Label htmlFor="terms" className="text-sm cursor-pointer">
                         Tôi đồng ý với{' '}
-                        <a href="#" className="text-primary underline">
+                        <a href="/terms" className="text-primary underline">
                           Điều khoản sử dụng
                         </a>{' '}
                         và{' '}
-                        <a href="#" className="text-primary underline">
+                        <a href="/privacy" className="text-primary underline">
                           Chính sách bảo mật
                         </a>
                       </Label>

@@ -232,7 +232,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
                 alt="Product"
                 className="w-12 h-12 rounded object-cover"
                 onError={(e) => {
-                  e.currentTarget.src = 'https://via.placeholder.com/60x60'
+                  e.currentTarget.src = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face'
                 }}
               />
               <div className="flex-1">
