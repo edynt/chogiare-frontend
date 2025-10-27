@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { useProfile } from '@/hooks/useAuth'
@@ -20,8 +22,18 @@ import { formatPrice } from '@/lib/utils'
 export function ProfileContent() {
   const { data: profile, isLoading } = useProfile()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const tabFromUrl = searchParams.get('tab') as 'profile' | 'orders' | 'favorites' | 'settings' | null
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'favorites' | 'settings'>(tabFromUrl || 'profile')
+  
+  // Settings state
+  const [settings, setSettings] = useState({
+    emailNotifications: true,
+    pushNotifications: true,
+    privacyMode: false,
+    showEmail: false,
+    showPhone: false
+  })
   const { data: ordersData, isLoading: isLoadingOrders } = useUserOrders({ page: 1, pageSize: 10 })
   
   // Get shipping progress for all orders
@@ -39,6 +51,10 @@ export function ProfileContent() {
   const handleTabChange = (tab: 'profile' | 'orders' | 'favorites' | 'settings') => {
     setActiveTab(tab)
     setSearchParams({ tab })
+  }
+
+  const handleTrackOrder = (orderId: string) => {
+    navigate(`/shipping/${orderId}`)
   }
 
   if (isLoading) {
@@ -341,7 +357,7 @@ export function ProfileContent() {
                       <div className="mt-3 p-3 bg-gray-50 rounded-lg">
                         <CompactShippingProgress 
                           shippingData={shippingProgressData[order.id]}
-                          onTrackClick={() => window.open(`/shipping/${order.id}`, '_blank')}
+                          onTrackClick={() => handleTrackOrder(order.id)}
                         />
                       </div>
                     )}
@@ -424,26 +440,38 @@ export function ProfileContent() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium">Thông báo email</h4>
+                  <Label htmlFor="email-notifications" className="font-medium">Thông báo email</Label>
                   <p className="text-sm text-muted-foreground">Nhận thông báo về đơn hàng và khuyến mãi</p>
                 </div>
-                <Button variant="outline" size="sm">Bật</Button>
+                <Switch
+                  id="email-notifications"
+                  checked={settings.emailNotifications}
+                  onCheckedChange={(checked) => setSettings(prev => ({ ...prev, emailNotifications: checked }))}
+                />
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium">Thông báo push</h4>
+                  <Label htmlFor="push-notifications" className="font-medium">Thông báo push</Label>
                   <p className="text-sm text-muted-foreground">Nhận thông báo trực tiếp trên thiết bị</p>
                 </div>
-                <Button variant="outline" size="sm">Bật</Button>
+                <Switch
+                  id="push-notifications"
+                  checked={settings.pushNotifications}
+                  onCheckedChange={(checked) => setSettings(prev => ({ ...prev, pushNotifications: checked }))}
+                />
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium">Chế độ riêng tư</h4>
+                  <Label htmlFor="privacy-mode" className="font-medium">Chế độ riêng tư</Label>
                   <p className="text-sm text-muted-foreground">Ẩn thông tin cá nhân khỏi người khác</p>
                 </div>
-                <Button variant="outline" size="sm">Tắt</Button>
+                <Switch
+                  id="privacy-mode"
+                  checked={settings.privacyMode}
+                  onCheckedChange={(checked) => setSettings(prev => ({ ...prev, privacyMode: checked }))}
+                />
               </div>
             </CardContent>
           </Card>
@@ -481,18 +509,26 @@ export function ProfileContent() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium">Hiển thị email công khai</h4>
+                  <Label htmlFor="show-email" className="font-medium">Hiển thị email công khai</Label>
                   <p className="text-sm text-muted-foreground">Cho phép người khác xem email của bạn</p>
                 </div>
-                <Button variant="outline" size="sm">Tắt</Button>
+                <Switch
+                  id="show-email"
+                  checked={settings.showEmail}
+                  onCheckedChange={(checked) => setSettings(prev => ({ ...prev, showEmail: checked }))}
+                />
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium">Hiển thị số điện thoại</h4>
+                  <Label htmlFor="show-phone" className="font-medium">Hiển thị số điện thoại</Label>
                   <p className="text-sm text-muted-foreground">Cho phép người khác xem số điện thoại</p>
                 </div>
-                <Button variant="outline" size="sm">Tắt</Button>
+                <Switch
+                  id="show-phone"
+                  checked={settings.showPhone}
+                  onCheckedChange={(checked) => setSettings(prev => ({ ...prev, showPhone: checked }))}
+                />
               </div>
             </CardContent>
           </Card>

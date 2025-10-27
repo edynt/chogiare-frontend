@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -85,6 +86,8 @@ export default function WithdrawBalancePage() {
   const [withdrawAmount, setWithdrawAmount] = useState('')
   const [selectedBankAccount, setSelectedBankAccount] = useState('')
   const [withdrawNote, setWithdrawNote] = useState('')
+  const [emailNotifications, setEmailNotifications] = useState(true)
+  const [smsNotifications, setSmsNotifications] = useState(true)
 
   // Mock data
   const balance = {
@@ -685,23 +688,25 @@ export default function WithdrawBalancePage() {
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">Thông báo email</p>
+                        <Label htmlFor="email-notifications" className="font-medium">Thông báo email</Label>
                         <p className="text-sm text-muted-foreground">Nhận thông báo qua email khi có giao dịch</p>
                       </div>
-                      <Button variant="outline" size="sm">
-                        <Bell className="h-4 w-4 mr-2" />
-                        Bật
-                      </Button>
+                      <Switch
+                        id="email-notifications"
+                        checked={emailNotifications}
+                        onCheckedChange={setEmailNotifications}
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">Thông báo SMS</p>
+                        <Label htmlFor="sms-notifications" className="font-medium">Thông báo SMS</Label>
                         <p className="text-sm text-muted-foreground">Nhận thông báo qua SMS khi có giao dịch</p>
                       </div>
-                      <Button variant="outline" size="sm">
-                        <Bell className="h-4 w-4 mr-2" />
-                        Bật
-                      </Button>
+                      <Switch
+                        id="sms-notifications"
+                        checked={smsNotifications}
+                        onCheckedChange={setSmsNotifications}
+                      />
                     </div>
                   </CardContent>
                 </Card>

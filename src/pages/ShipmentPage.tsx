@@ -5,6 +5,8 @@ import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
@@ -85,6 +87,7 @@ export default function ShipmentPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [isSellerView, setIsSellerView] = useState(false)
+  const [autoNotifications, setAutoNotifications] = useState(false)
 
   // Mock data
   const shipments: Shipment[] = [
@@ -561,9 +564,16 @@ export default function ShipmentPage() {
                 <p className="text-sm text-primary-foreground/80 mb-3">
                   Nhận thông báo khi có cập nhật mới
                 </p>
-                <Button variant="secondary" size="sm">
-                  Bật thông báo
-                </Button>
+                <div className="flex items-center justify-center gap-2">
+                  <Switch
+                    id="auto-notifications"
+                    checked={autoNotifications}
+                    onCheckedChange={setAutoNotifications}
+                  />
+                  <Label htmlFor="auto-notifications" className="text-sm">
+                    {autoNotifications ? 'Đã bật' : 'Chưa bật'}
+                  </Label>
+                </div>
               </div>
             </div>
           </CardContent>
