@@ -19,6 +19,7 @@ const PromotionPage = React.lazy(() => import('@/pages/PromotionPage'))
 const AboutPage = React.lazy(() => import('@/pages/AboutPage'))
         const ContactPage = React.lazy(() => import('@/pages/ContactPage'))
         const FAQPage = React.lazy(() => import('@/pages/FAQPage'))
+        const HelpPage = React.lazy(() => import('@/pages/HelpPage'))
         const ShipmentPage = React.lazy(() => import('@/pages/ShipmentPage'))
 const InventoryManagementPage = React.lazy(() => import('@/pages/InventoryManagementPage'))
 const ShopProfileSettingsPage = React.lazy(() => import('@/pages/ShopProfileSettingsPage'))
@@ -67,6 +68,7 @@ function App() {
                       <Route path="/about" element={<AboutPage />} />
                       <Route path="/contact" element={<ContactPage />} />
                       <Route path="/faq" element={<FAQPage />} />
+                      <Route path="/help" element={<HelpPage />} />
                       <Route path="/shipment" element={<ShipmentPage />} />
                       <Route path="/shipment/:shipmentId" element={<ShipmentPage />} />
                       <Route path="/inventory" element={<InventoryManagementPage />} />

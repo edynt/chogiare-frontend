@@ -43,7 +43,7 @@ export function Toaster({ notifications, onRemove }: ToasterProps) {
           </div>
           <button
             onClick={() => onRemove(notification.id)}
-            className="ml-2 rounded-full p-1 hover:bg-black/10 dark:hover:bg-white/10"
+            className="ml-2 rounded-full p-1 hover:bg-black/10 dark:hover:bg-white/10 hover:text-white dark:hover:text-white transition-colors"
           >
             <span className="sr-only">Close</span>
             <svg

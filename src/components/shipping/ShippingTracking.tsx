@@ -143,24 +143,25 @@ export function ShippingTracking({ shippingInfo, className }: ShippingTrackingPr
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center gap-2">
-              <Truck className="h-4 w-4 text-muted-foreground" />
+        <CardContent className="space-y-6">
+          {/* Vertical layout for tracking info */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <Truck className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm font-medium">{shippingInfo.carrier}</p>
                 <p className="text-xs text-muted-foreground">Nhà vận chuyển</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Navigation className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <Navigation className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm font-medium">{shippingInfo.trackingNumber}</p>
                 <p className="text-xs text-muted-foreground">Mã theo dõi</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <MapPin className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm font-medium">{shippingInfo.currentLocation}</p>
                 <p className="text-xs text-muted-foreground">Vị trí hiện tại</p>
@@ -189,7 +190,7 @@ export function ShippingTracking({ shippingInfo, className }: ShippingTrackingPr
               <span className="text-sm font-medium text-blue-800">Dự kiến giao hàng</span>
             </div>
             <p className="text-lg font-bold text-blue-900">
-              {getEstimatedDeliveryTime()} - {formatDate(shippingInfo.estimatedDelivery)}
+              {getEstimatedDeliveryTime()} - {shippingInfo.estimatedDelivery ? formatDate(shippingInfo.estimatedDelivery) : 'Chưa có thông tin'}
             </p>
             {shippingInfo.status === 'delayed' && (
               <p className="text-sm text-red-600 mt-1">
@@ -232,7 +233,7 @@ export function ShippingTracking({ shippingInfo, className }: ShippingTrackingPr
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        <span>{formatDate(step.timestamp)}</span>
+                        <span>{step.timestamp ? formatDate(step.timestamp) : 'Chưa có thông tin'}</span>
                       </div>
                       {step.location && (
                         <div className="flex items-center gap-1">
@@ -324,13 +325,13 @@ export function ShippingTracking({ shippingInfo, className }: ShippingTrackingPr
         </CardContent>
       </Card>
 
-      {/* Action buttons */}
-      <div className="flex gap-3">
-        <Button variant="outline" className="flex-1">
+      {/* Action buttons - Vertical layout */}
+      <div className="space-y-3">
+        <Button variant="outline" className="w-full">
           <Phone className="h-4 w-4 mr-2" />
           Liên hệ nhà vận chuyển
         </Button>
-        <Button variant="outline" className="flex-1">
+        <Button variant="outline" className="w-full">
           <Navigation className="h-4 w-4 mr-2" />
           Theo dõi trên website
         </Button>

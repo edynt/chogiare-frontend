@@ -20,11 +20,23 @@ export function formatCurrency(price: number): string {
 }
 
 export function formatDate(date: string | Date): string {
-  return new Intl.DateTimeFormat('vi-VN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(date))
+  try {
+    const dateObj = new Date(date)
+    
+    // Check if the date is valid
+    if (isNaN(dateObj.getTime())) {
+      return 'Ngày không hợp lệ'
+    }
+    
+    return new Intl.DateTimeFormat('vi-VN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(dateObj)
+  } catch (error) {
+    console.warn('Error formatting date:', error)
+    return 'Ngày không hợp lệ'
+  }
 }
 
 export function debounce<T extends (...args: unknown[]) => unknown>(
