@@ -84,8 +84,11 @@ interface BankAccount {
 export default function WithdrawBalancePage() {
   const [showBalance, setShowBalance] = useState(true)
   const [withdrawAmount, setWithdrawAmount] = useState('')
+  const [depositAmount, setDepositAmount] = useState('')
   const [selectedBankAccount, setSelectedBankAccount] = useState('')
   const [withdrawNote, setWithdrawNote] = useState('')
+  const [depositNote, setDepositNote] = useState('')
+  const [depositMethod, setDepositMethod] = useState<string>('bank_transfer')
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [smsNotifications, setSmsNotifications] = useState(true)
 
@@ -439,10 +442,14 @@ export default function WithdrawBalancePage() {
           {/* Main Content */}
           <div className="lg:col-span-2">
             <Tabs defaultValue="transactions" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="transactions" id="transactions-tab">
                   <History className="h-4 w-4 mr-2" />
                   Giao dịch
+                </TabsTrigger>
+                <TabsTrigger value="deposit" id="deposit-tab">
+                  <ArrowDownLeft className="h-4 w-4 mr-2" />
+                  Nạp tiền
                 </TabsTrigger>
                 <TabsTrigger value="withdraw" id="withdraw-tab">
                   <ArrowUpRight className="h-4 w-4 mr-2" />
@@ -503,6 +510,126 @@ export default function WithdrawBalancePage() {
                     <TransactionCard key={transaction.id} transaction={transaction} />
                   ))}
                 </div>
+              </TabsContent>
+
+              <TabsContent value="deposit" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Nạp tiền vào ví</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div>
+                      <Label htmlFor="deposit-amount">Số tiền nạp (VND)</Label>
+                      <Input
+                        id="deposit-amount"
+                        type="number"
+                        value={depositAmount}
+                        onChange={(e) => setDepositAmount(e.target.value)}
+                        placeholder="Nhập số tiền muốn nạp"
+                        className="text-lg"
+                      />
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Số tiền tối thiểu: 50,000 VNĐ
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="deposit-method">Phương thức thanh toán</Label>
+                      <Select value={depositMethod} onValueChange={setDepositMethod}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn phương thức thanh toán" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="bank_transfer">Chuyển khoản ngân hàng</SelectItem>
+                          <SelectItem value="momo">Ví MoMo</SelectItem>
+                          <SelectItem value="zalopay">Ví ZaloPay</SelectItem>
+                          <SelectItem value="vnpay">VNPay</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {depositMethod === 'bank_transfer' && (
+                      <div>
+                        <Label htmlFor="deposit-bank-account">Tài khoản ngân hàng nguồn</Label>
+                        <Select value={selectedBankAccount} onValueChange={setSelectedBankAccount}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn tài khoản ngân hàng" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {bankAccounts.map((account) => (
+                              <SelectItem key={account.id} value={account.id}>
+                                <div className="flex items-center gap-2">
+                                  <span>{account.bankName}</span>
+                                  <span>•</span>
+                                  <span>{account.accountNumber}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    <div>
+                      <Label htmlFor="deposit-note">Ghi chú (tùy chọn)</Label>
+                      <Input
+                        id="deposit-note"
+                        value={depositNote}
+                        onChange={(e) => setDepositNote(e.target.value)}
+                        placeholder="Ghi chú cho giao dịch nạp tiền"
+                      />
+                    </div>
+
+                    {depositAmount && parseFloat(depositAmount) >= 50000 && (
+                      <Card className="bg-muted/50">
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold mb-3">Thông tin giao dịch</h3>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span>Số tiền nạp:</span>
+                              <span className="font-medium">{formatPrice(parseFloat(depositAmount) || 0)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Phương thức:</span>
+                              <span className="font-medium">
+                                {depositMethod === 'bank_transfer' && 'Chuyển khoản ngân hàng'}
+                                {depositMethod === 'momo' && 'Ví MoMo'}
+                                {depositMethod === 'zalopay' && 'Ví ZaloPay'}
+                                {depositMethod === 'vnpay' && 'VNPay'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between font-semibold text-lg pt-2 border-t">
+                              <span>Số tiền sẽ nạp:</span>
+                              <span className="text-primary">{formatPrice(parseFloat(depositAmount) || 0)}</span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    <Button 
+                      onClick={() => {
+                        notify({
+                          type: 'success',
+                          title: 'Nạp tiền thành công',
+                          message: `Đã nạp ${formatPrice(parseFloat(depositAmount) || 0)} vào ví. Số dư sẽ được cập nhật sau khi xác nhận từ ngân hàng.`,
+                        })
+                        setDepositAmount('')
+                        setDepositNote('')
+                      }}
+                      disabled={!depositAmount || parseFloat(depositAmount) < 50000}
+                      className="w-full"
+                    >
+                      <ArrowDownLeft className="h-4 w-4 mr-2" />
+                      Xác nhận nạp tiền
+                    </Button>
+
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Info className="h-4 w-4" />
+                      <span>Thời gian xử lý: Ngay lập tức (với ví điện tử) hoặc 1-2 giờ (với chuyển khoản ngân hàng)</span>
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               <TabsContent value="withdraw" className="space-y-6">

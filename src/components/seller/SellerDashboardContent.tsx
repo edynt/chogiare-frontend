@@ -31,7 +31,10 @@ import {
   ArrowDownLeft,
   Activity,
   Target,
-  Zap
+  Zap,
+  FileSpreadsheet,
+  Upload,
+  ArrowDownLeft as ArrowDownLeftIcon
 } from 'lucide-react'
 
 export function SellerDashboardContent() {
@@ -168,9 +171,13 @@ export function SellerDashboardContent() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-500'
-      case 'shipped': return 'bg-blue-500'
-      case 'delivered': return 'bg-green-500'
+      case 'confirmed': return 'bg-blue-500'
+      case 'ready_for_pickup': return 'bg-purple-500'
+      case 'completed': return 'bg-green-500'
       case 'cancelled': return 'bg-red-500'
+      case 'refunded': return 'bg-gray-500'
+      case 'shipped': return 'bg-blue-500' // Keep for backward compatibility
+      case 'delivered': return 'bg-green-500' // Keep for backward compatibility
       case 'low_stock': return 'bg-yellow-500'
       case 'out_of_stock': return 'bg-red-500'
       case 'in_stock': return 'bg-green-500'
@@ -180,10 +187,14 @@ export function SellerDashboardContent() {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'pending': return 'Chờ xử lý'
-      case 'shipped': return 'Đã giao'
-      case 'delivered': return 'Đã nhận'
+      case 'pending': return 'Chờ xác nhận'
+      case 'confirmed': return 'Đã xác nhận'
+      case 'ready_for_pickup': return 'Sẵn sàng lấy'
+      case 'completed': return 'Hoàn thành'
       case 'cancelled': return 'Đã hủy'
+      case 'refunded': return 'Đã hoàn tiền'
+      case 'shipped': return 'Đã giao' // Keep for backward compatibility
+      case 'delivered': return 'Đã nhận' // Keep for backward compatibility
       case 'low_stock': return 'Sắp hết'
       case 'out_of_stock': return 'Hết hàng'
       case 'in_stock': return 'Còn hàng'
@@ -199,7 +210,13 @@ export function SellerDashboardContent() {
           <h1 className="text-3xl font-bold">Dashboard người bán</h1>
           <p className="text-muted-foreground">Tổng quan hoạt động kinh doanh của bạn</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button variant="outline" asChild>
+            <Link to="/seller/products/import">
+              <Upload className="h-4 w-4 mr-2" />
+              Import Excel/CSV
+            </Link>
+          </Button>
           <Button variant="outline" asChild>
             <Link to="/inventory">
               <Package className="h-4 w-4 mr-2" />
@@ -218,9 +235,23 @@ export function SellerDashboardContent() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Tổng quan</TabsTrigger>
-          <TabsTrigger value="orders">Đơn hàng</TabsTrigger>
+          <TabsTrigger value="orders">
+            Đơn hàng
+            {recentOrders.filter((o: any) => o.status === 'pending').length > 0 && (
+              <Badge variant="destructive" className="ml-2 text-xs">
+                {recentOrders.filter((o: any) => o.status === 'pending').length}
+              </Badge>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="inventory">Tồn kho</TabsTrigger>
-          <TabsTrigger value="messages">Tin nhắn</TabsTrigger>
+          <TabsTrigger value="messages">
+            Tin nhắn
+            {recentMessages.filter(m => m.unread).length > 0 && (
+              <Badge variant="destructive" className="ml-2 text-xs">
+                {recentMessages.filter(m => m.unread).length}
+              </Badge>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -276,13 +307,26 @@ export function SellerDashboardContent() {
 
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="p-4 text-center">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Truck className="h-6 w-6 text-green-600" />
+                <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <FileSpreadsheet className="h-6 w-6 text-indigo-600" />
                 </div>
-                <h3 className="font-semibold mb-1">Vận chuyển</h3>
-                <p className="text-sm text-muted-foreground mb-3">Theo dõi đơn hàng</p>
-                <Button variant="outline" size="sm" onClick={() => setActiveTab('orders')}>
-                  Xem
+                <h3 className="font-semibold mb-1">Import sản phẩm</h3>
+                <p className="text-sm text-muted-foreground mb-3">Import Excel/CSV hàng loạt</p>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/seller/products/import">Import</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4 text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Users className="h-6 w-6 text-green-600" />
+                </div>
+                <h3 className="font-semibold mb-1">Quản lý khách hàng</h3>
+                <p className="text-sm text-muted-foreground mb-3">Xem danh sách khách hàng</p>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/seller/customers">Xem</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -292,10 +336,49 @@ export function SellerDashboardContent() {
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Wallet className="h-6 w-6 text-purple-600" />
                 </div>
-                <h3 className="font-semibold mb-1">Ví & Rút tiền</h3>
-                <p className="text-sm text-muted-foreground mb-3">Quản lý tài chính</p>
+                <h3 className="font-semibold mb-1">Ví & Tài chính</h3>
+                <p className="text-sm text-muted-foreground mb-3">Nạp tiền & Rút tiền</p>
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/withdraw">Xem</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4 text-center">
+                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <ShoppingCart className="h-6 w-6 text-yellow-600" />
+                </div>
+                <h3 className="font-semibold mb-1">Đơn hàng</h3>
+                <p className="text-sm text-muted-foreground mb-3">Quản lý đơn hàng</p>
+                <Button variant="outline" size="sm" onClick={() => setActiveTab('orders')}>
+                  Xem
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4 text-center">
+                <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <MessageCircle className="h-6 w-6 text-pink-600" />
+                </div>
+                <h3 className="font-semibold mb-1">Tin nhắn</h3>
+                <p className="text-sm text-muted-foreground mb-3">Chat với khách hàng</p>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/chat">Chat</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4 text-center">
+                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <BarChart3 className="h-6 w-6 text-teal-600" />
+                </div>
+                <h3 className="font-semibold mb-1">Doanh thu & Báo cáo</h3>
+                <p className="text-sm text-muted-foreground mb-3">Thống kê & Báo cáo</p>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/seller/revenue">Xem</Link>
                 </Button>
               </CardContent>
             </Card>

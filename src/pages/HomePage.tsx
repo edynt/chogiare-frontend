@@ -5,6 +5,7 @@ import { SEOHead } from '@/components/seo/SEOHead'
 import { LazySection } from '@/components/home/LazySection'
 
 // Lazy load components for better performance
+const Hero = lazy(() => import('@/components/home/Hero').then(module => ({ default: module.Hero })))
 const SystemsSection = lazy(() => import('@/components/home/SystemsSection').then(module => ({ default: module.SystemsSection })))
 
 export default function HomePage() {
@@ -29,8 +30,9 @@ export default function HomePage() {
       />
       <Header />
       <main>
+        <Hero />
         
-        {/* Systems Section - Admin & Seller */}
+        {/* Systems Section - Seller */}
         <LazySection>
           <SystemsSection />
         </LazySection>

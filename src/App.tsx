@@ -18,6 +18,9 @@ const SellerDashboard = React.lazy(() => import('@/pages/SellerDashboard'))
 const SellerProductsPage = React.lazy(() => import('@/pages/SellerProductsPage'))
 const AddProductPage = React.lazy(() => import('@/pages/AddProductPage'))
 const EditProductPage = React.lazy(() => import('@/pages/EditProductPage'))
+const ImportProductsPage = React.lazy(() => import('@/pages/ImportProductsPage'))
+const CustomerManagementPage = React.lazy(() => import('@/pages/CustomerManagementPage'))
+const RevenueReportsPage = React.lazy(() => import('@/pages/RevenueReportsPage'))
 const StockInPage = React.lazy(() => import('@/pages/StockInPage'))
 const ProductDetailSellerPage = React.lazy(() => import('@/pages/ProductDetailSellerPage'))
 const InventoryReportPage = React.lazy(() => import('@/pages/InventoryReportPage'))
@@ -62,8 +65,11 @@ function App() {
                       <Route path="/dashboard" element={<SellerDashboard />} />
                       <Route path="/seller/products" element={<SellerProductsPage />} />
                       <Route path="/seller/products/add" element={<AddProductPage />} />
+                      <Route path="/seller/products/import" element={<ImportProductsPage />} />
                       <Route path="/seller/products/edit/:id" element={<EditProductPage />} />
                       <Route path="/seller/products/detail/:id" element={<ProductDetailSellerPage />} />
+                      <Route path="/seller/customers" element={<CustomerManagementPage />} />
+                      <Route path="/seller/revenue" element={<RevenueReportsPage />} />
                       <Route path="/stock-in" element={<StockInPage />} />
                       <Route path="/stock-in/:productId" element={<StockInPage />} />
                       <Route path="/inventory/reports" element={<InventoryReportPage />} />

@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ProductCard } from '@/components/product/ProductCard'
-import { useMyProducts } from '@/hooks/useProducts'
+import { useMyProducts, useDeleteProduct } from '@/hooks/useProducts'
 import { useNotification } from '@/components/notification-provider'
 import { 
   Plus, 
@@ -42,13 +42,27 @@ export default function SellerProductsPage() {
     sortBy: sortBy as 'createdAt' | 'price' | 'rating' | 'viewCount',
   })
 
+  const { mutate: deleteProduct } = useDeleteProduct()
+
   const handleDeleteProduct = (productId: string) => {
-    // TODO: Implement delete functionality
-    notify({
-      type: 'warning',
-      title: 'Chức năng chưa hoàn thiện',
-      message: 'Chức năng xóa sản phẩm sẽ được thêm sau.',
-    })
+    if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.')) {
+      deleteProduct(productId, {
+        onSuccess: () => {
+          notify({
+            type: 'success',
+            title: 'Xóa thành công',
+            message: 'Sản phẩm đã được xóa khỏi hệ thống.',
+          })
+        },
+        onError: (error) => {
+          notify({
+            type: 'error',
+            title: 'Xóa thất bại',
+            message: error instanceof Error ? error.message : 'Có lỗi xảy ra khi xóa sản phẩm.',
+          })
+        },
+      })
+    }
   }
 
   const handleStatusChange = (productId: string, newStatus: ProductStatus) => {

@@ -106,7 +106,7 @@ export interface Order {
   updatedAt: string
 }
 
-export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
+export type OrderStatus = 'pending' | 'confirmed' | 'ready_for_pickup' | 'completed' | 'cancelled' | 'refunded'
 export type PaymentMethod = 'momo' | 'zalopay' | 'stripe' | 'paypal' | 'bank_transfer'
 export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded'
 
@@ -215,10 +215,6 @@ export interface DemoData {
   categories: Category[]
   users: User[]
   orders: Order[]
-}
-
-export interface DemoDataLoaderProps {
-  onDataLoaded: (data: DemoData) => void
 }
 
 export interface PaymentData {
