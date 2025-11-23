@@ -39,7 +39,7 @@ export function SystemsSection() {
     {
       icon: Wallet,
       title: 'Ví điện tử',
-      description: 'Nạp tiền, rút tiền và theo dõi số dư. Quản lý tài chính cửa hàng dễ dàng'
+      description: 'Nạp tiền và theo dõi số dư. Thanh toán các gói đẩy bài để tăng doanh số'
     },
     {
       icon: MessageCircle,

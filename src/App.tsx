@@ -12,7 +12,9 @@ const HomePage = React.lazy(() => import('@/pages/HomePage'))
 const ChatPage = React.lazy(() => import('@/pages/ChatPage'))
 const InventoryManagementPage = React.lazy(() => import('@/pages/InventoryManagementPage'))
 const ShopProfileSettingsPage = React.lazy(() => import('@/pages/ShopProfileSettingsPage'))
-const WithdrawBalancePage = React.lazy(() => import('@/pages/WithdrawBalancePage'))
+const TopUpPage = React.lazy(() => import('@/pages/TopUpPage'))
+const PaymentQRPage = React.lazy(() => import('@/pages/PaymentQRPage'))
+const BoostPostPage = React.lazy(() => import('@/pages/BoostPostPage'))
 const AdminPage = React.lazy(() => import('@/pages/admin/AdminPage'))
 const SellerDashboard = React.lazy(() => import('@/pages/SellerDashboard'))
 const SellerProductsPage = React.lazy(() => import('@/pages/SellerProductsPage'))
@@ -59,7 +61,9 @@ function App() {
                       <Route path="/chat/:chatId" element={<ChatPage />} />
                       <Route path="/inventory" element={<InventoryManagementPage />} />
                       <Route path="/shop-settings" element={<ShopProfileSettingsPage />} />
-                      <Route path="/withdraw" element={<WithdrawBalancePage />} />
+                      <Route path="/top-up" element={<TopUpPage />} />
+                      <Route path="/payment-qr" element={<PaymentQRPage />} />
+                      <Route path="/boost-post" element={<BoostPostPage />} />
                       <Route path="/admin/*" element={<AdminPage />} />
                       <Route path="/seller/:id" element={<SellerDashboard />} />
                       <Route path="/dashboard" element={<SellerDashboard />} />

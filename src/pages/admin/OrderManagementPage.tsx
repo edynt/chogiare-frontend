@@ -303,7 +303,7 @@ export default function OrderManagementPage() {
           </Button>
           <Button>
             <DollarSign className="h-4 w-4 mr-2" />
-            Quản lý rút tiền
+            Quản lý thanh toán
           </Button>
         </div>
       </div>

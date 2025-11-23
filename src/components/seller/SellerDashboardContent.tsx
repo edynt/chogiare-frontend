@@ -336,10 +336,10 @@ export function SellerDashboardContent() {
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Wallet className="h-6 w-6 text-purple-600" />
                 </div>
-                <h3 className="font-semibold mb-1">Ví & Tài chính</h3>
-                <p className="text-sm text-muted-foreground mb-3">Nạp tiền & Rút tiền</p>
+                <h3 className="font-semibold mb-1">Ví & Nạp tiền</h3>
+                <p className="text-sm text-muted-foreground mb-3">Nạp tiền để đẩy bài</p>
                 <Button variant="outline" size="sm" asChild>
-                  <Link to="/withdraw">Xem</Link>
+                  <Link to="/top-up">Xem</Link>
                 </Button>
               </CardContent>
             </Card>

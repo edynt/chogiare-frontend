@@ -58,9 +58,8 @@ export default function SystemSettingsPage() {
       supportedCurrencies: ['VND', 'USD'],
       paymentMethods: ['credit_card', 'momo', 'zalopay', 'bank_transfer'],
       commissionRate: 5.0,
-      minimumWithdrawal: 100000,
-      maximumWithdrawal: 10000000,
-      withdrawalFee: 5000,
+      minimumTopUp: 10000,
+      maximumTopUp: 50000000,
       paymentTimeout: 15,
       refundPeriod: 7
     },
@@ -393,17 +392,17 @@ export default function SystemSettingsPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Rút tiền tối thiểu (VNĐ)</label>
+                <label className="text-sm font-medium text-gray-700">Nạp tiền tối thiểu (VNĐ)</label>
                 <Input
-                  value={systemSettings.payment.minimumWithdrawal}
+                  value={systemSettings.payment.minimumTopUp}
                   disabled={!isEditing}
                   className="mt-1"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Phí rút tiền (VNĐ)</label>
+                <label className="text-sm font-medium text-gray-700">Nạp tiền tối đa (VNĐ)</label>
                 <Input
-                  value={systemSettings.payment.withdrawalFee}
+                  value={systemSettings.payment.maximumTopUp}
                   disabled={!isEditing}
                   className="mt-1"
                 />

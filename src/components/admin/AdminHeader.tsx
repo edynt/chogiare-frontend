@@ -21,7 +21,7 @@ export function AdminHeader({ onMenuClick, sidebarOpen }: AdminHeaderProps) {
   const [notifications] = useState([
     { id: 1, title: 'Tài khoản mới cần duyệt', time: '2 phút trước', unread: true },
     { id: 2, title: 'Sản phẩm vi phạm báo cáo', time: '15 phút trước', unread: true },
-    { id: 3, title: 'Yêu cầu rút tiền mới', time: '1 giờ trước', unread: false },
+    { id: 3, title: 'Yêu cầu hỗ trợ mới', time: '1 giờ trước', unread: false },
   ])
 
   const unreadCount = notifications.filter(n => n.unread).length
