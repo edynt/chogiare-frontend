@@ -1,6 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { 
@@ -14,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAuthStore } from '@/stores/authStore'
-import { Search, Menu, User, MessageCircle, Settings, Bell, Clock, Package, Heart, LogOut, Store, Shield } from 'lucide-react'
+import { Menu, User, MessageCircle, Settings, Bell, Clock, Package, LogOut, Store, Droplet } from 'lucide-react'
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuthStore()
@@ -70,31 +69,12 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 hover:scale-105 transition-transform duration-200">
             <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center hover:rotate-12 transition-transform duration-300">
-              <span className="text-primary-foreground font-bold text-lg">C</span>
+              <Droplet className="h-5 w-5 text-primary-foreground" fill="currentColor" />
             </div>
             <span className="text-xl font-bold">Chogiare</span>
           </Link>
 
-          {/* Navigation - Desktop */}
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-200">
-              Sản phẩm
-            </Link>
-            <Link to="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-200">
-              Người bán
-            </Link>
-          </nav>
-
-          {/* Search Bar - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Tìm kiếm sản phẩm..."
-                className="pl-10 pr-4"
-              />
-            </div>
-          </div>
+          {/* Navigation - Desktop - Removed products and seller links */}
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">

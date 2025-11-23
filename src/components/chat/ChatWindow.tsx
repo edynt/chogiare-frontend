@@ -243,7 +243,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
                 </p>
               </div>
               <Button size="sm" variant="outline" asChild>
-                <Link to="/product/1">
+                <Link to="/seller/products">
                   Xem sản phẩm
                 </Link>
               </Button>

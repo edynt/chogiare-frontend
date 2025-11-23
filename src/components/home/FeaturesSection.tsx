@@ -17,8 +17,7 @@ import {
   CheckCircle,
   Clock,
   Truck,
-  Shield,
-  Settings
+  Shield
 } from 'lucide-react'
 
 const features = [
@@ -98,13 +97,6 @@ const features = [
     description: 'Hệ thống được mã hóa SSL, bảo vệ thông tin tài chính và dữ liệu kinh doanh của bạn một cách an toàn tuyệt đối.',
     color: 'from-emerald-500 to-emerald-600',
     bgColor: 'bg-emerald-50'
-  },
-  {
-    icon: Settings,
-    title: 'Quản lý hệ thống Admin',
-    description: 'Quản lý người dùng, xử lý khiếu nại, và điều hành toàn bộ hệ thống một cách chuyên nghiệp và hiệu quả.',
-    color: 'from-violet-500 to-violet-600',
-    bgColor: 'bg-violet-50'
   }
 ]
 

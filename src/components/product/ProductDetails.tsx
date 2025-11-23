@@ -74,7 +74,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           Sản phẩm bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.
         </p>
         <Button asChild>
-          <Link to="/products">Quay lại danh sách sản phẩm</Link>
+          <Link to="/seller/products">Quay lại danh sách sản phẩm</Link>
         </Button>
       </div>
     )

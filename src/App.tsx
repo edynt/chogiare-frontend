@@ -9,8 +9,6 @@ import { PerformanceOptimizer } from '@/components/seo/PerformanceOptimizer'
 
 // Lazy load pages
 const HomePage = React.lazy(() => import('@/pages/HomePage'))
-const ProductListPage = React.lazy(() => import('@/pages/ProductListPage'))
-const ProductDetailPage = React.lazy(() => import('@/pages/ProductDetailPage'))
 const ChatPage = React.lazy(() => import('@/pages/ChatPage'))
 const InventoryManagementPage = React.lazy(() => import('@/pages/InventoryManagementPage'))
 const ShopProfileSettingsPage = React.lazy(() => import('@/pages/ShopProfileSettingsPage'))
@@ -54,8 +52,6 @@ function App() {
                     <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
                       <Routes>
                       <Route path="/" element={<HomePage />} />
-                      <Route path="/products" element={<ProductListPage />} />
-                      <Route path="/product/:id" element={<ProductDetailPage />} />
                       <Route path="/chat" element={<ChatPage />} />
                       <Route path="/chat/:chatId" element={<ChatPage />} />
                       <Route path="/inventory" element={<InventoryManagementPage />} />

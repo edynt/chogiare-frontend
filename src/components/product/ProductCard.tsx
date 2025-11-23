@@ -30,7 +30,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   return (
     <Card className={cn("group hover:shadow-lg transition-shadow duration-200 flex flex-col h-full", className)}>
-      <Link to={`/product/${product.id}`} className="flex flex-col flex-1">
+      <Link to={`/seller/products/detail/${product.id}`} className="flex flex-col flex-1">
         <div className="relative aspect-[4/3] overflow-hidden rounded-t-lg">
           <img
             src={product.images[0]}

@@ -349,7 +349,7 @@ export default function SellerProductsPage() {
                               variant="outline"
                               size="sm"
                               className="flex-1"
-                              onClick={() => navigate(`/product/${product.id}`)}
+                              onClick={() => navigate(`/seller/products/detail/${product.id}`)}
                             >
                               <Eye className="h-3 w-3 mr-1" />
                               Xem

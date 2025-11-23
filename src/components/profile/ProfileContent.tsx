@@ -395,7 +395,7 @@ export function ProfileContent() {
                   Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm ngay!
                 </p>
                 <Button asChild>
-                  <Link to="/products">Mua sắm ngay</Link>
+                  <Link to="/dashboard">Vào Dashboard</Link>
                 </Button>
               </div>
             )}
@@ -420,7 +420,7 @@ export function ProfileContent() {
                 Hãy bắt đầu yêu thích những sản phẩm bạn quan tâm!
               </p>
               <Button asChild>
-                <Link to="/products">Khám phá sản phẩm</Link>
+                <Link to="/seller/products">Quản lý sản phẩm</Link>
               </Button>
             </div>
           </CardContent>

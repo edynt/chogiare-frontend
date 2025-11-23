@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { Droplet } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -9,7 +10,9 @@ export function Footer() {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded bg-primary"></div>
+              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+                <Droplet className="h-5 w-5 text-primary-foreground" fill="currentColor" />
+              </div>
               <span className="text-xl font-bold">Chogiare</span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -27,18 +30,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/products" className="text-muted-foreground hover:text-foreground">
-                  Sản phẩm
-                </Link>
-              </li>
-              <li>
                 <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
                   Dashboard Seller
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin" className="text-muted-foreground hover:text-foreground">
-                  Admin Panel
                 </Link>
               </li>
             </ul>

@@ -3,9 +3,6 @@ import { Link } from 'react-router-dom'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { Button } from '@/components/ui/button'
 import { 
-  Shield, 
-  Users, 
-  AlertTriangle, 
   Store, 
   Upload, 
   Package, 
@@ -14,38 +11,14 @@ import {
   MessageCircle, 
   TrendingUp,
   BarChart3,
-  CheckCircle,
   ArrowRight,
   FileSpreadsheet,
-  Edit,
-  DollarSign
+  DollarSign,
+  Users
 } from 'lucide-react'
 
 export function SystemsSection() {
   const { ref, isIntersecting } = useIntersectionObserver({ threshold: 0.1 })
-
-  const adminFeatures = [
-    {
-      icon: Users,
-      title: 'Quản lý người dùng',
-      description: 'Quản lý toàn bộ người dùng, phân quyền và kiểm soát truy cập hệ thống'
-    },
-    {
-      icon: AlertTriangle,
-      title: 'Xử lý khiếu nại',
-      description: 'Tiếp nhận và xử lý các khiếu nại từ người dùng, đảm bảo chất lượng dịch vụ'
-    },
-    {
-      icon: Store,
-      title: 'Quản lý chủ sản phẩm',
-      description: 'Quản lý thông tin các chủ sản phẩm, kiểm duyệt và phê duyệt đăng ký'
-    },
-    {
-      icon: Shield,
-      title: 'Bảo mật hệ thống',
-      description: 'Giám sát và bảo vệ hệ thống, phát hiện và ngăn chặn các hoạt động bất thường'
-    }
-  ]
 
   const sellerFeatures = [
     {
@@ -97,93 +70,15 @@ export function SystemsSection() {
           isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
           <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Hai hệ thống mạnh mẽ cho mọi nhu cầu
+            Hệ thống quản lý bán sỉ chuyên nghiệp
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Hệ thống được thiết kế với 2 phân hệ riêng biệt để tối ưu hóa quy trình quản lý
+            Nền tảng quản lý bán hàng toàn diện với đầy đủ công cụ cần thiết cho người bán
           </p>
         </div>
 
-        {/* Admin System */}
-        <div className={`mb-20 transition-all duration-1000 delay-200 ${
-          isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}>
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 md:p-12">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div>
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                    <Shield className="h-8 w-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-bold">Hệ thống Admin</h3>
-                    <p className="text-muted-foreground">Quản lý và điều hành hệ thống</p>
-                  </div>
-                </div>
-                
-                <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                  Hệ thống quản lý toàn diện dành cho quản trị viên, cho phép quản lý người dùng, 
-                  xử lý khiếu nại và điều hành toàn bộ hệ thống một cách hiệu quả.
-                </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                  {adminFeatures.map((feature, index) => {
-                    const IconComponent = feature.icon
-                    return (
-                      <div key={index} className="flex items-start gap-3 bg-white/60 rounded-lg p-4">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <IconComponent className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold mb-1">{feature.title}</h4>
-                          <p className="text-sm text-muted-foreground">{feature.description}</p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-
-                <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
-                  <Link to="/admin">
-                    Truy cập hệ thống Admin
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              </div>
-
-              <div className="hidden md:block">
-                <div className="bg-white rounded-xl p-8 shadow-xl">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
-                      <Users className="h-6 w-6 text-blue-600" />
-                      <div>
-                        <div className="font-semibold">Quản lý người dùng</div>
-                        <div className="text-sm text-muted-foreground">5,000+ người dùng đang hoạt động</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 bg-orange-50 rounded-lg">
-                      <AlertTriangle className="h-6 w-6 text-orange-600" />
-                      <div>
-                        <div className="font-semibold">Khiếu nại đang xử lý</div>
-                        <div className="text-sm text-muted-foreground">12 khiếu nại cần giải quyết</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-                      <Store className="h-6 w-6 text-green-600" />
-                      <div>
-                        <div className="font-semibold">Chủ sản phẩm</div>
-                        <div className="text-sm text-muted-foreground">150+ chủ sản phẩm đã đăng ký</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Seller System */}
-        <div className={`transition-all duration-1000 delay-400 ${
+        <div className={`transition-all duration-1000 delay-200 ${
           isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-8 md:p-12">
@@ -257,8 +152,8 @@ export function SystemsSection() {
                 </div>
 
                 <Button size="lg" asChild className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700">
-                  <Link to="/auth/register">
-                    Đăng ký làm Seller ngay
+                  <Link to="/dashboard">
+                    Vào Dashboard Seller
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
