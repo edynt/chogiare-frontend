@@ -14,12 +14,10 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAuthStore } from '@/stores/authStore'
-import { useCartStore } from '@/stores/cartStore'
-import { Search, ShoppingCart, Menu, User, MessageCircle, Settings, Bell, Clock, Package, Heart, LogOut, Store, CreditCard, HelpCircle, Shield } from 'lucide-react'
+import { Search, Menu, User, MessageCircle, Settings, Bell, Clock, Package, Heart, LogOut, Store, Shield } from 'lucide-react'
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuthStore()
-  const { totalItems } = useCartStore()
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -173,26 +171,6 @@ export function Header() {
             {/* Theme Toggle */}
             <ThemeToggle />
 
-            {/* Cart */}
-            <Button
-              variant="ghost"
-              size="icon"
-              asChild
-              className="relative hover:scale-110 hover:bg-green-100 dark:hover:bg-green-900 transition-all duration-200"
-            >
-              <Link to="/cart">
-                <ShoppingCart className="h-4 w-4" />
-                {totalItems > 0 && (
-                  <Badge
-                    variant="destructive"
-                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs animate-bounce"
-                  >
-                    {totalItems}
-                  </Badge>
-                )}
-              </Link>
-            </Button>
-
             {/* User Menu */}
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
@@ -240,12 +218,6 @@ export function Header() {
                           <span>Lịch sử đơn hàng</span>
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/profile?tab=favorites" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
-                          <Heart className="mr-2 h-4 w-4" />
-                          <span>Sản phẩm yêu thích</span>
-                        </Link>
-                      </DropdownMenuItem>
                     </DropdownMenuGroup>
                     
                     <DropdownMenuSeparator />
@@ -286,24 +258,12 @@ export function Header() {
                     
                     <DropdownMenuSeparator />
                     
-                    {/* Settings & Support Section */}
+                    {/* Settings Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
                         <Link to="/profile?tab=settings" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <Settings className="mr-2 h-4 w-4" />
                           <span>Cài đặt</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/payment" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
-                          <CreditCard className="mr-2 h-4 w-4" />
-                          <span>Thanh toán</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/help" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
-                          <HelpCircle className="mr-2 h-4 w-4" />
-                          <span>Trợ giúp</span>
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuGroup>

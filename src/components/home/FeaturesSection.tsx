@@ -1,102 +1,108 @@
 import React from 'react'
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
 import { 
-  Shield, 
-  Truck, 
-  Headphones, 
-  Award, 
-  CreditCard, 
-  Smartphone,
-  Globe,
-  Zap,
-  Lock,
-  RefreshCw,
+  Upload, 
+  FileSpreadsheet,
+  ShoppingCart, 
+  Wallet, 
+  MessageCircle, 
+  TrendingUp,
   Users,
-  TrendingUp
+  Package,
+  Edit,
+  Trash2,
+  BarChart3,
+  CreditCard,
+  Download,
+  CheckCircle,
+  Clock,
+  Truck,
+  Shield,
+  Settings
 } from 'lucide-react'
 
 const features = [
   {
-    icon: Shield,
-    title: 'Bảo mật tuyệt đối',
-    description: 'Thông tin cá nhân và thanh toán được mã hóa SSL 256-bit, đảm bảo an toàn tuyệt đối.',
+    icon: Upload,
+    title: 'Import sản phẩm Excel/CSV',
+    description: 'Nhập hàng loạt sản phẩm từ file Excel hoặc CSV một cách nhanh chóng và tiện lợi, tiết kiệm thời gian quản lý.',
     color: 'from-blue-500 to-blue-600',
     bgColor: 'bg-blue-50'
   },
   {
-    icon: Truck,
-    title: 'Giao hàng siêu tốc',
-    description: 'Giao hàng trong 2h tại TP.HCM, 24h tại các thành phố lớn, 2-3 ngày toàn quốc.',
+    icon: Package,
+    title: 'Quản lý sản phẩm đầy đủ',
+    description: 'Tạo, chỉnh sửa và xóa sản phẩm dễ dàng. Quản lý tồn kho, giá cả và thông tin chi tiết sản phẩm.',
     color: 'from-green-500 to-green-600',
     bgColor: 'bg-green-50'
   },
   {
-    icon: Headphones,
-    title: 'Hỗ trợ 24/7',
-    description: 'Đội ngũ chăm sóc khách hàng chuyên nghiệp, sẵn sàng hỗ trợ mọi lúc, mọi nơi.',
+    icon: ShoppingCart,
+    title: 'Quản lý đơn hàng thông minh',
+    description: 'Theo dõi đơn hàng với các trạng thái: Chờ xác nhận, Đã xác nhận, Sẵn sàng lấy, Hoàn thành. Cập nhật trạng thái đơn hàng chỉ với một click.',
     color: 'from-purple-500 to-purple-600',
     bgColor: 'bg-purple-50'
   },
   {
-    icon: Award,
-    title: 'Chất lượng đảm bảo',
-    description: 'Tất cả sản phẩm đều được kiểm tra chất lượng kỹ lưỡng trước khi giao đến tay khách hàng.',
+    icon: Wallet,
+    title: 'Ví điện tử tích hợp',
+    description: 'Nạp tiền vào ví, theo dõi số dư và lịch sử giao dịch. Rút tiền dễ dàng với nhiều phương thức thanh toán.',
     color: 'from-yellow-500 to-yellow-600',
     bgColor: 'bg-yellow-50'
   },
   {
-    icon: CreditCard,
-    title: 'Thanh toán đa dạng',
-    description: 'Hỗ trợ thanh toán qua thẻ, ví điện tử, chuyển khoản và trả góp 0% lãi suất.',
-    color: 'from-indigo-500 to-indigo-600',
-    bgColor: 'bg-indigo-50'
-  },
-  {
-    icon: Smartphone,
-    title: 'Ứng dụng di động',
-    description: 'Tải ứng dụng Chogiare để mua sắm mọi lúc mọi nơi với trải nghiệm tối ưu.',
+    icon: MessageCircle,
+    title: 'Hệ thống tin nhắn',
+    description: 'Giao tiếp trực tiếp với khách hàng qua hệ thống tin nhắn tích hợp, hỗ trợ tư vấn và giải đáp thắc mắc nhanh chóng.',
     color: 'from-pink-500 to-pink-600',
     bgColor: 'bg-pink-50'
   },
   {
-    icon: Globe,
-    title: 'Giao hàng toàn quốc',
-    description: 'Mạng lưới giao hàng rộng khắp 63 tỉnh thành, đảm bảo sản phẩm đến tay bạn nhanh nhất.',
+    icon: TrendingUp,
+    title: 'Quản lý doanh thu',
+    description: 'Theo dõi doanh thu theo ngày, tuần, tháng. Phân tích xu hướng bán hàng và hiệu quả kinh doanh với biểu đồ trực quan.',
+    color: 'from-indigo-500 to-indigo-600',
+    bgColor: 'bg-indigo-50'
+  },
+  {
+    icon: Users,
+    title: 'Quản lý khách hàng',
+    description: 'Lưu trữ thông tin khách hàng, lịch sử mua hàng và tương tác. Xây dựng mối quan hệ lâu dài với khách hàng.',
     color: 'from-teal-500 to-teal-600',
     bgColor: 'bg-teal-50'
   },
   {
-    icon: Zap,
-    title: 'Tốc độ tải nhanh',
-    description: 'Website được tối ưu hóa để tải nhanh nhất, mang đến trải nghiệm mua sắm mượt mà.',
+    icon: FileSpreadsheet,
+    title: 'Xuất báo cáo Excel',
+    description: 'Xuất báo cáo doanh thu, đơn hàng, sản phẩm ra file Excel để phân tích chi tiết và lưu trữ.',
     color: 'from-orange-500 to-orange-600',
     bgColor: 'bg-orange-50'
   },
   {
-    icon: Lock,
-    title: 'Bảo hành chính hãng',
-    description: 'Tất cả sản phẩm đều có bảo hành chính hãng từ nhà sản xuất, đảm bảo quyền lợi khách hàng.',
+    icon: BarChart3,
+    title: 'Thống kê & Báo cáo',
+    description: 'Dashboard với các chỉ số KPI quan trọng: số lượng đơn hàng, doanh thu, sản phẩm bán chạy và hiệu suất kinh doanh.',
     color: 'from-red-500 to-red-600',
     bgColor: 'bg-red-50'
   },
   {
-    icon: RefreshCw,
-    title: 'Đổi trả dễ dàng',
-    description: 'Chính sách đổi trả linh hoạt trong 30 ngày, hoàn tiền 100% nếu không hài lòng.',
+    icon: Clock,
+    title: 'Trạng thái đơn hàng chi tiết',
+    description: 'Quản lý trạng thái đơn hàng từ Chờ xác nhận → Đã xác nhận → Sẵn sàng lấy → Hoàn thành với thời gian thực.',
     color: 'from-cyan-500 to-cyan-600',
     bgColor: 'bg-cyan-50'
   },
   {
-    icon: Users,
-    title: 'Cộng đồng lớn',
-    description: 'Hơn 10 triệu thành viên tin tưởng và sử dụng dịch vụ của Chogiare mỗi tháng.',
+    icon: Shield,
+    title: 'Bảo mật & An toàn',
+    description: 'Hệ thống được mã hóa SSL, bảo vệ thông tin tài chính và dữ liệu kinh doanh của bạn một cách an toàn tuyệt đối.',
     color: 'from-emerald-500 to-emerald-600',
     bgColor: 'bg-emerald-50'
   },
   {
-    icon: TrendingUp,
-    title: 'Giá cả cạnh tranh',
-    description: 'So sánh giá từ hàng nghìn nhà bán, đảm bảo bạn luôn mua được với giá tốt nhất.',
+    icon: Settings,
+    title: 'Quản lý hệ thống Admin',
+    description: 'Quản lý người dùng, xử lý khiếu nại, và điều hành toàn bộ hệ thống một cách chuyên nghiệp và hiệu quả.',
     color: 'from-violet-500 to-violet-600',
     bgColor: 'bg-violet-50'
   }
@@ -112,10 +118,10 @@ export function FeaturesSection() {
           isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
           <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-            Tại sao chọn Chogiare?
+            Tính năng nổi bật
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Chúng tôi cam kết mang đến trải nghiệm mua sắm tốt nhất với những tính năng vượt trội
+            Hệ thống quản lý bán sỉ với đầy đủ công cụ cần thiết để vận hành kinh doanh hiệu quả
           </p>
         </div>
 
@@ -157,33 +163,42 @@ export function FeaturesSection() {
           isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
           <div className="bg-white rounded-2xl p-8 shadow-lg max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold mb-6">Cam kết của chúng tôi</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <h3 className="text-2xl font-bold mb-6">Quy trình quản lý đơn hàng</h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Shield className="h-8 w-8 text-white" />
+                <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Clock className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="font-semibold text-lg mb-2">100% Chính hãng</h4>
+                <h4 className="font-semibold text-lg mb-2">Chờ xác nhận</h4>
                 <p className="text-muted-foreground text-sm">
-                  Tất cả sản phẩm đều được đảm bảo chính hãng từ nhà sản xuất
+                  Đơn hàng mới được đặt, đang chờ người bán xác nhận
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <RefreshCw className="h-8 w-8 text-white" />
+                  <CheckCircle className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="font-semibold text-lg mb-2">Đổi trả miễn phí</h4>
+                <h4 className="font-semibold text-lg mb-2">Đã xác nhận</h4>
                 <p className="text-muted-foreground text-sm">
-                  Đổi trả trong 30 ngày với chi phí vận chuyển miễn phí
+                  Người bán đã xác nhận và chuẩn bị hàng
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Headphones className="h-8 w-8 text-white" />
+                  <Truck className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="font-semibold text-lg mb-2">Hỗ trợ tận tình</h4>
+                <h4 className="font-semibold text-lg mb-2">Sẵn sàng lấy</h4>
                 <p className="text-muted-foreground text-sm">
-                  Đội ngũ chăm sóc khách hàng chuyên nghiệp, sẵn sàng hỗ trợ 24/7
+                  Hàng đã sẵn sàng để khách hàng đến lấy hoặc giao hàng
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ShoppingCart className="h-8 w-8 text-white" />
+                </div>
+                <h4 className="font-semibold text-lg mb-2">Hoàn thành</h4>
+                <p className="text-muted-foreground text-sm">
+                  Đơn hàng đã được giao thành công và hoàn tất
                 </p>
               </div>
             </div>

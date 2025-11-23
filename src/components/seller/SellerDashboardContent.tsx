@@ -281,8 +281,8 @@ export function SellerDashboardContent() {
                 </div>
                 <h3 className="font-semibold mb-1">Vận chuyển</h3>
                 <p className="text-sm text-muted-foreground mb-3">Theo dõi đơn hàng</p>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/shipment">Xem</Link>
+                <Button variant="outline" size="sm" onClick={() => setActiveTab('orders')}>
+                  Xem
                 </Button>
               </CardContent>
             </Card>

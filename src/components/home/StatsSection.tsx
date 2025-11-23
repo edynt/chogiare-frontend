@@ -23,39 +23,39 @@ interface StatItem {
 const stats: StatItem[] = [
   {
     icon: Users,
-    value: 10000000,
+    value: 5000,
     suffix: '+',
-    label: 'Thành viên',
+    label: 'Người bán đang hoạt động',
     color: 'from-blue-500 to-blue-600',
     bgColor: 'bg-blue-50'
   },
   {
     icon: Package,
-    value: 5000000,
+    value: 500000,
     suffix: '+',
-    label: 'Sản phẩm',
+    label: 'Sản phẩm bán sỉ',
     color: 'from-green-500 to-green-600',
     bgColor: 'bg-green-50'
   },
   {
     icon: ShoppingCart,
-    value: 50000000,
+    value: 100000,
     suffix: '+',
-    label: 'Giao dịch',
+    label: 'Đơn hàng đã xử lý',
     color: 'from-purple-500 to-purple-600',
     bgColor: 'bg-purple-50'
   },
   {
     icon: TrendingUp,
-    value: 99.9,
-    suffix: '%',
-    label: 'Tỷ lệ thành công',
+    value: 500,
+    suffix: '+',
+    label: 'Tỷ VNĐ doanh thu',
     color: 'from-yellow-500 to-yellow-600',
     bgColor: 'bg-yellow-50'
   },
   {
     icon: Star,
-    value: 4.9,
+    value: 4.8,
     suffix: '/5',
     label: 'Đánh giá trung bình',
     color: 'from-pink-500 to-pink-600',
@@ -65,23 +65,23 @@ const stats: StatItem[] = [
     icon: Globe,
     value: 63,
     suffix: '',
-    label: 'Tỉnh thành',
+    label: 'Tỉnh thành phục vụ',
     color: 'from-indigo-500 to-indigo-600',
     bgColor: 'bg-indigo-50'
   },
   {
     icon: Award,
-    value: 1000,
+    value: 150,
     suffix: '+',
-    label: 'Đối tác',
+    label: 'Nhãn hiệu hợp tác',
     color: 'from-teal-500 to-teal-600',
     bgColor: 'bg-teal-50'
   },
   {
     icon: Heart,
-    value: 98,
+    value: 97,
     suffix: '%',
-    label: 'Khách hàng hài lòng',
+    label: 'Tỷ lệ hài lòng',
     color: 'from-red-500 to-red-600',
     bgColor: 'bg-red-50'
   }
@@ -138,10 +138,10 @@ export function StatsSection() {
           isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
           <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Chogiare trong con số
+            Hệ thống bán sỉ trong con số
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Những con số ấn tượng thể hiện sự tin tưởng và thành công của chúng tôi
+            Những con số ấn tượng thể hiện sự phát triển và tin cậy của nền tảng bán sỉ
           </p>
         </div>
 
@@ -191,24 +191,24 @@ export function StatsSection() {
           isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
           <div className="bg-white rounded-2xl p-8 shadow-lg max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold mb-6">Thành tựu nổi bật</h3>
+            <h3 className="text-2xl font-bold mb-6">Lợi ích khi sử dụng hệ thống</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Award className="h-10 w-10 text-white" />
+                <div className="w-20 h-20 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="h-10 w-10 text-white" />
                 </div>
-                <h4 className="font-semibold text-xl mb-2">Top 1 E-commerce</h4>
+                <h4 className="font-semibold text-xl mb-2">Tăng hiệu quả kinh doanh</h4>
                 <p className="text-muted-foreground">
-                  Nền tảng thương mại điện tử hàng đầu Việt Nam năm 2024
+                  Quản lý đơn hàng, sản phẩm và khách hàng tự động hóa, tiết kiệm 70% thời gian
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-20 h-20 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <TrendingUp className="h-10 w-10 text-white" />
+                  <Package className="h-10 w-10 text-white" />
                 </div>
-                <h4 className="font-semibold text-xl mb-2">Tăng trưởng 300%</h4>
+                <h4 className="font-semibold text-xl mb-2">Nhập hàng nhanh chóng</h4>
                 <p className="text-muted-foreground">
-                  Tốc độ tăng trưởng doanh thu năm 2024 so với năm trước
+                  Import hàng loạt sản phẩm từ Excel/CSV, giảm 90% thời gian nhập liệu
                 </p>
               </div>
             </div>

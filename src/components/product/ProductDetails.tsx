@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
-import { AddToCartButton } from './AddToCartButton'
 import { useProduct, useProductReviews } from '@/hooks'
 import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorMessage } from '@/components/ui/error-boundary'
@@ -273,10 +272,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           {/* Actions */}
           <div className="space-y-4">
             <div className="flex gap-2">
-              <AddToCartButton
-                product={product}
-                className="flex-1"
-              />
               <Button className="flex-1 bg-green-600 hover:bg-green-700">
                 <Zap className="h-4 w-4 mr-2" />
                 Mua ngay

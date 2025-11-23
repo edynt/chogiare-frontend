@@ -27,45 +27,45 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-muted-foreground hover:text-foreground">
-                  Về chúng tôi
+                <Link to="/products" className="text-muted-foreground hover:text-foreground">
+                  Sản phẩm
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-muted-foreground hover:text-foreground">
-                  Liên hệ
+                <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
+                  Dashboard Seller
                 </Link>
               </li>
               <li>
-                <Link to="/help" className="text-muted-foreground hover:text-foreground">
-                  Trợ giúp
+                <Link to="/admin" className="text-muted-foreground hover:text-foreground">
+                  Admin Panel
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Categories */}
+          {/* Services */}
           <div className="space-y-4">
-            <h3 className="font-semibold">Danh mục</h3>
+            <h3 className="font-semibold">Dịch vụ</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/category/dien-thoai-phu-kien" className="text-muted-foreground hover:text-foreground">
-                  Điện thoại & Phụ kiện
+                <Link to="/seller/products" className="text-muted-foreground hover:text-foreground">
+                  Quản lý sản phẩm
                 </Link>
               </li>
               <li>
-                <Link to="/category/laptop-may-tinh" className="text-muted-foreground hover:text-foreground">
-                  Laptop & Máy tính
+                <Link to="/inventory" className="text-muted-foreground hover:text-foreground">
+                  Quản lý kho
                 </Link>
               </li>
               <li>
-                <Link to="/category/thoi-trang" className="text-muted-foreground hover:text-foreground">
-                  Thời trang
+                <Link to="/chat" className="text-muted-foreground hover:text-foreground">
+                  Tin nhắn
                 </Link>
               </li>
               <li>
-                <Link to="/category/nha-cua-doi-song" className="text-muted-foreground hover:text-foreground">
-                  Nhà cửa & Đời sống
+                <Link to="/notifications" className="text-muted-foreground hover:text-foreground">
+                  Thông báo
                 </Link>
               </li>
             </ul>

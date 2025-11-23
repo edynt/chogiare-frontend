@@ -10,18 +10,18 @@ import { SEOHead } from '@/components/seo/SEOHead'
 import { LazySection } from '@/components/home/LazySection'
 
 // Lazy load components for better performance
-const CategoriesSection = lazy(() => import('@/components/home/CategoriesSection').then(module => ({ default: module.CategoriesSection })))
 const TestimonialsSection = lazy(() => import('@/components/home/TestimonialsSection').then(module => ({ default: module.TestimonialsSection })))
 const FeaturesSection = lazy(() => import('@/components/home/FeaturesSection').then(module => ({ default: module.FeaturesSection })))
 const StatsSection = lazy(() => import('@/components/home/StatsSection').then(module => ({ default: module.StatsSection })))
+const SystemsSection = lazy(() => import('@/components/home/SystemsSection').then(module => ({ default: module.SystemsSection })))
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Chogiare - Mua sắm trực tuyến giá rẻ"
-        description="Chogiare - Nền tảng mua sắm trực tuyến hàng đầu Việt Nam với hàng triệu sản phẩm chất lượng, giá cả hợp lý và giao hàng nhanh chóng."
-        keywords="mua sắm online, thương mại điện tử, sản phẩm giá rẻ, giao hàng nhanh, Việt Nam, chogiare"
+        title="Chogiare - Hệ thống quản lý bán sỉ chuyên nghiệp"
+        description="Hệ thống quản lý bán sỉ với 2 phân hệ Admin và Seller. Quản lý đơn hàng, sản phẩm, khách hàng, doanh thu và ví điện tử một cách hiệu quả."
+        keywords="hệ thống bán sỉ, quản lý bán hàng, admin seller, import excel, quản lý đơn hàng, ví điện tử, chogiare"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "WebSite",
@@ -39,18 +39,13 @@ export default function HomePage() {
       <main>
         <Hero />
         
-        {/* Categories Section */}
-        <LazySection>
-          <CategoriesSection />
-        </LazySection>
-        
         {/* Featured Products Section */}
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom duration-700">
-              <h2 className="text-3xl font-bold mb-4">Sản phẩm nổi bật</h2>
+              <h2 className="text-3xl font-bold mb-4">Sản phẩm bán sỉ nổi bật</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Khám phá những sản phẩm được yêu thích nhất
+                Khám phá những sản phẩm bán sỉ được yêu thích và có giá tốt nhất
               </p>
             </div>
             <ProductGridWithPagination
@@ -66,6 +61,11 @@ export default function HomePage() {
           <StatsSection />
         </LazySection>
         
+        {/* Systems Section - Admin & Seller */}
+        <LazySection>
+          <SystemsSection />
+        </LazySection>
+
         {/* Features Section */}
         <LazySection>
           <FeaturesSection />
@@ -81,30 +81,31 @@ export default function HomePage() {
           <div className="container mx-auto px-4 text-center">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Bắt đầu mua sắm ngay hôm nay
+                Bắt đầu kinh doanh bán sỉ ngay hôm nay
               </h2>
               <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
-                Khám phá hàng triệu sản phẩm chất lượng từ hàng nghìn người bán uy tín. 
-                Trải nghiệm mua sắm tuyệt vời với giá cả cạnh tranh và dịch vụ chuyên nghiệp.
+                Tham gia hệ thống bán sỉ với đầy đủ công cụ quản lý chuyên nghiệp. 
+                Import sản phẩm hàng loạt, quản lý đơn hàng tự động và theo dõi doanh thu chi tiết. 
+                Đăng ký ngay để trải nghiệm miễn phí!
               </p>
               
               <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-                <Link to="/products">
+                <Link to="/auth/register">
                   <Button 
                     size="lg" 
                     className="w-full sm:w-auto px-8 py-4 text-lg hover:scale-105 transition-all duration-300 hover:shadow-xl bg-gradient-to-r from-primary to-secondary"
                   >
-                    Khám phá sản phẩm
+                    Đăng ký làm Seller
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" />
                   </Button>
                 </Link>
-                <Link to="/auth/register">
+                <Link to="/dashboard">
                   <Button 
                     variant="outline" 
                     size="lg" 
                     className="w-full sm:w-auto px-8 py-4 text-lg hover:scale-105 transition-all duration-300 hover:shadow-xl border-2"
                   >
-                    Đăng ký ngay
+                    Vào Dashboard
                   </Button>
                 </Link>
               </div>
@@ -113,17 +114,17 @@ export default function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Shield className="h-6 w-6 text-green-600" />
+                    <Award className="h-6 w-6 text-green-600" />
                   </div>
-                  <h3 className="font-semibold mb-1">Mua sắm an toàn</h3>
-                  <p className="text-sm text-muted-foreground">Bảo mật tuyệt đối</p>
+                  <h3 className="font-semibold mb-1">Dễ sử dụng</h3>
+                  <p className="text-sm text-muted-foreground">Giao diện trực quan, dễ thao tác</p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Truck className="h-6 w-6 text-blue-600" />
+                    <Shield className="h-6 w-6 text-blue-600" />
                   </div>
-                  <h3 className="font-semibold mb-1">Giao hàng nhanh</h3>
-                  <p className="text-sm text-muted-foreground">Trong 24h</p>
+                  <h3 className="font-semibold mb-1">Bảo mật cao</h3>
+                  <p className="text-sm text-muted-foreground">An toàn dữ liệu</p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">

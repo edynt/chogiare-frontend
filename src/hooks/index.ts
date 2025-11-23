@@ -1,6 +1,6 @@
 // Export all hooks for easy importing
 export * from './useAuth'
-export * from './useCart'
+// Cart hooks removed - not needed for wholesale system
 export * from './useOrders'
 export * from './useReviews'
 export * from './useStores'

@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { Toaster } from '@/components/ui/sonner'
 import { NotificationProvider } from '@/components/notification-provider'
-import { Cart } from '@/components/cart/Cart'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import { PerformanceOptimizer } from '@/components/seo/PerformanceOptimizer'
 
@@ -12,15 +11,7 @@ import { PerformanceOptimizer } from '@/components/seo/PerformanceOptimizer'
 const HomePage = React.lazy(() => import('@/pages/HomePage'))
 const ProductListPage = React.lazy(() => import('@/pages/ProductListPage'))
 const ProductDetailPage = React.lazy(() => import('@/pages/ProductDetailPage'))
-const CartPage = React.lazy(() => import('@/pages/CartPage'))
 const ChatPage = React.lazy(() => import('@/pages/ChatPage'))
-const PaymentPage = React.lazy(() => import('@/pages/PaymentPage'))
-const PromotionPage = React.lazy(() => import('@/pages/PromotionPage'))
-const AboutPage = React.lazy(() => import('@/pages/AboutPage'))
-        const ContactPage = React.lazy(() => import('@/pages/ContactPage'))
-        const FAQPage = React.lazy(() => import('@/pages/FAQPage'))
-        const HelpPage = React.lazy(() => import('@/pages/HelpPage'))
-        const ShipmentPage = React.lazy(() => import('@/pages/ShipmentPage'))
 const InventoryManagementPage = React.lazy(() => import('@/pages/InventoryManagementPage'))
 const ShopProfileSettingsPage = React.lazy(() => import('@/pages/ShopProfileSettingsPage'))
 const WithdrawBalancePage = React.lazy(() => import('@/pages/WithdrawBalancePage'))
@@ -65,17 +56,8 @@ function App() {
                       <Route path="/" element={<HomePage />} />
                       <Route path="/products" element={<ProductListPage />} />
                       <Route path="/product/:id" element={<ProductDetailPage />} />
-                      <Route path="/cart" element={<CartPage />} />
                       <Route path="/chat" element={<ChatPage />} />
                       <Route path="/chat/:chatId" element={<ChatPage />} />
-                      <Route path="/payment" element={<PaymentPage />} />
-                      <Route path="/promotions" element={<PromotionPage />} />
-                      <Route path="/about" element={<AboutPage />} />
-                      <Route path="/contact" element={<ContactPage />} />
-                      <Route path="/faq" element={<FAQPage />} />
-                      <Route path="/help" element={<HelpPage />} />
-                      <Route path="/shipment" element={<ShipmentPage />} />
-                      <Route path="/shipment/:shipmentId" element={<ShipmentPage />} />
                       <Route path="/inventory" element={<InventoryManagementPage />} />
                       <Route path="/shop-settings" element={<ShopProfileSettingsPage />} />
                       <Route path="/withdraw" element={<WithdrawBalancePage />} />
@@ -99,7 +81,6 @@ function App() {
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                     </Suspense>
-                    <Cart />
                     <Toaster />
                   </div>
                 </Router>
