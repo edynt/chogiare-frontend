@@ -351,8 +351,8 @@ export function SellerDashboardContent() {
                 </div>
                 <h3 className="font-semibold mb-1">Đơn hàng</h3>
                 <p className="text-sm text-muted-foreground mb-3">Quản lý đơn hàng</p>
-                <Button variant="outline" size="sm" onClick={() => setActiveTab('orders')}>
-                  Xem
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/orders">Xem</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -433,8 +433,8 @@ export function SellerDashboardContent() {
                     <p className="text-sm">Chưa có đơn hàng nào</p>
                   </div>
                 )}
-                <Button variant="outline" className="w-full" onClick={() => setActiveTab('orders')}>
-                  Xem tất cả đơn hàng
+                <Button variant="outline" className="w-full" asChild>
+                  <Link to="/orders">Xem tất cả đơn hàng</Link>
                 </Button>
               </CardContent>
             </Card>

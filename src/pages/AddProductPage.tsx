@@ -65,6 +65,26 @@ export default function AddProductPage() {
 
   const [images, setImages] = useState<string[]>([])
   const [selectedBadges, setSelectedBadges] = useState<string[]>([])
+  const [status, setStatus] = useState<ProductStatus>('draft')
+  const [inStock, setInStock] = useState(true)
+  const [moq, setMoq] = useState(1)
+  const [sku, setSku] = useState('')
+  const [warehouseStock, setWarehouseStock] = useState('')
+  const [warehouseLocation, setWarehouseLocation] = useState('')
+  const [material, setMaterial] = useState('')
+  const [dimensions, setDimensions] = useState('')
+  const [color, setColor] = useState('')
+  const [packaging, setPackaging] = useState('')
+  const [suggestedRetailPrice, setSuggestedRetailPrice] = useState('')
+  const [origin, setOrigin] = useState('')
+  const [certificates, setCertificates] = useState('')
+  const [videoUrl, setVideoUrl] = useState('')
+  const [isFactory, setIsFactory] = useState(false)
+  const [isWarranty, setIsWarranty] = useState(false)
+  const [isReturnable, setIsReturnable] = useState(false)
+  const [shippingNationwide, setShippingNationwide] = useState(false)
+  const [deliveryTime, setDeliveryTime] = useState('')
+  const [returnPolicy, setReturnPolicy] = useState('')
 
   const {
     register,
@@ -165,6 +185,40 @@ export default function AddProductPage() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            {/* Status Selector */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Trạng thái</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { value: 'draft', label: 'Bản nháp' },
+                    { value: 'active', label: 'Đang bán' },
+                    { value: 'sold', label: 'Đã bán' },
+                    { value: 'archived', label: 'Lưu trữ' },
+                  ].map((s) => (
+                    <Button
+                      key={s.value}
+                      type="button"
+                      variant={status === s.value ? 'default' : 'outline'}
+                      onClick={() => setStatus(s.value as ProductStatus)}
+                    >
+                      {s.label}
+                    </Button>
+                  ))}
+                </div>
+                <div className="flex items-center space-x-2 mt-4">
+                  <Checkbox
+                    id="inStock"
+                    checked={inStock}
+                    onCheckedChange={(checked) => setInStock(checked as boolean)}
+                  />
+                  <Label htmlFor="inStock">Sản phẩm còn hàng</Label>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Basic Information */}
             <Card>
               <CardHeader>
@@ -277,7 +331,7 @@ export default function AddProductPage() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="price">Giá bán * (VNĐ)</Label>
+                    <Label htmlFor="price">Giá sỉ * (VNĐ)</Label>
                     <Input
                       id="price"
                       type="number"
@@ -303,6 +357,55 @@ export default function AddProductPage() {
                     <p className="text-sm text-muted-foreground mt-1">
                       Để trống nếu không có giá gốc
                     </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="moq">Mua tối thiểu (MOQ) *</Label>
+                    <Input
+                      id="moq"
+                      type="number"
+                      placeholder="1"
+                      value={moq}
+                      onChange={(e) => setMoq(parseInt(e.target.value) || 1)}
+                    />
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Số lượng tối thiểu khách hàng phải mua
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="sku">SKU</Label>
+                    <Input
+                      id="sku"
+                      placeholder="Mã SKU"
+                      value={sku}
+                      onChange={(e) => setSku(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="warehouseStock">Tồn kho</Label>
+                    <Input
+                      id="warehouseStock"
+                      type="number"
+                      placeholder="Số lượng"
+                      value={warehouseStock}
+                      onChange={(e) => setWarehouseStock(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="warehouseLocation">Vị trí kho</Label>
+                    <Input
+                      id="warehouseLocation"
+                      placeholder="Vị trí kho hàng"
+                      value={warehouseLocation}
+                      onChange={(e) => setWarehouseLocation(e.target.value)}
+                    />
                   </div>
                 </div>
 
@@ -337,6 +440,17 @@ export default function AddProductPage() {
                       </p>
                     )}
                   </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="suggestedRetailPrice">Giá thực tế thị trường (VNĐ)</Label>
+                  <Input
+                    id="suggestedRetailPrice"
+                    type="number"
+                    placeholder="Giá bán lẻ trung bình trên thị trường"
+                    value={suggestedRetailPrice}
+                    onChange={(e) => setSuggestedRetailPrice(e.target.value)}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -395,6 +509,154 @@ export default function AddProductPage() {
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Product Details */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Chi tiết sản phẩm</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="material">Chất liệu</Label>
+                    <Input
+                      id="material"
+                      placeholder="Chất liệu sản phẩm"
+                      value={material}
+                      onChange={(e) => setMaterial(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="dimensions">Kích thước</Label>
+                    <Input
+                      id="dimensions"
+                      placeholder="Kích thước"
+                      value={dimensions}
+                      onChange={(e) => setDimensions(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="color">Màu sắc</Label>
+                    <Input
+                      id="color"
+                      placeholder="Mô tả màu sắc"
+                      value={color}
+                      onChange={(e) => setColor(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="packaging">Đóng gói</Label>
+                    <Input
+                      id="packaging"
+                      placeholder="Cách đóng gói"
+                      value={packaging}
+                      onChange={(e) => setPackaging(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Guarantee Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Thông tin đảm bảo</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="origin">Nguồn gốc xuất xứ</Label>
+                  <Input
+                    id="origin"
+                    placeholder="Ví dụ: Việt Nam, Trung Quốc, ..."
+                    value={origin}
+                    onChange={(e) => setOrigin(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="certificates">Giấy chứng nhận</Label>
+                  <Textarea
+                    id="certificates"
+                    placeholder="Nhập các chứng nhận, phân cách bằng dấu phẩy (VD: ISO 9001, HACCP, ...)"
+                    rows={3}
+                    value={certificates}
+                    onChange={(e) => setCertificates(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isWarranty"
+                    checked={isWarranty}
+                    onCheckedChange={(checked) => setIsWarranty(checked as boolean)}
+                  />
+                  <Label htmlFor="isWarranty">Bảo hành</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isReturnable"
+                    checked={isReturnable}
+                    onCheckedChange={(checked) => setIsReturnable(checked as boolean)}
+                  />
+                  <Label htmlFor="isReturnable">Đổi trả</Label>
+                </div>
+                {isReturnable && (
+                  <div>
+                    <Label htmlFor="returnPolicy">Chính sách đổi trả</Label>
+                    <Textarea
+                      id="returnPolicy"
+                      placeholder="Chính sách đổi trả chi tiết"
+                      rows={3}
+                      value={returnPolicy}
+                      onChange={(e) => setReturnPolicy(e.target.value)}
+                    />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Video and Options */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Tùy chọn</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="videoUrl">Video sản phẩm</Label>
+                  <Input
+                    id="videoUrl"
+                    placeholder="URL video từ kho (YouTube, Vimeo, ...)"
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isFactory"
+                    checked={isFactory}
+                    onCheckedChange={(checked) => setIsFactory(checked as boolean)}
+                  />
+                  <Label htmlFor="isFactory">Là xưởng sản xuất</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="shippingNationwide"
+                    checked={shippingNationwide}
+                    onCheckedChange={(checked) => setShippingNationwide(checked as boolean)}
+                  />
+                  <Label htmlFor="shippingNationwide">Giao hàng toàn quốc</Label>
+                </div>
+                <div>
+                  <Label htmlFor="deliveryTime">Thời gian giao hàng dự kiến</Label>
+                  <Input
+                    id="deliveryTime"
+                    placeholder="VD: 3-5 ngày"
+                    value={deliveryTime}
+                    onChange={(e) => setDeliveryTime(e.target.value)}
+                  />
+                </div>
               </CardContent>
             </Card>
 

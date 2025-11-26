@@ -30,6 +30,7 @@ const StockManagementPage = React.lazy(() => import('@/pages/StockManagementPage
 const NotificationsPage = React.lazy(() => import('@/pages/NotificationsPage'))
 const AuthPage = React.lazy(() => import('@/pages/AuthPage'))
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'))
+const OrdersPage = React.lazy(() => import('@/pages/OrdersPage'))
 const OrderDetailPage = React.lazy(() => import('@/pages/OrderDetailPage'))
 const ShippingTrackingPage = React.lazy(() => import('@/pages/ShippingTrackingPage'))
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'))
@@ -79,6 +80,7 @@ function App() {
                       <Route path="/inventory/reports" element={<InventoryReportPage />} />
                       <Route path="/stock-management" element={<StockManagementPage />} />
                       <Route path="/notifications" element={<NotificationsPage />} />
+                      <Route path="/orders" element={<OrdersPage />} />
                       <Route path="/auth/*" element={<AuthPage />} />
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/orders/:orderId" element={<OrderDetailPage />} />

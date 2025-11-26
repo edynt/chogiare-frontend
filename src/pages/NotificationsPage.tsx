@@ -1,21 +1,36 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Bell, Check, X, AlertCircle, Info, ShoppingCart, Package, MessageCircle } from 'lucide-react'
+import { 
+  Bell, 
+  Search, 
+  X, 
+  ShoppingBag,
+  LocalOffer,
+  Inventory2,
+  Info,
+  Payment,
+  CheckCircle,
+  RefreshCw
+} from 'lucide-react'
+import { toast } from 'sonner'
 
 interface Notification {
   id: string
-  type: 'order' | 'product' | 'message' | 'system'
+  type: 'order' | 'promo' | 'product' | 'system' | 'payment'
   title: string
   message: string
+  detailMessage?: string
   isRead: boolean
   createdAt: string
   actionUrl?: string
+  imageUrl?: string
+  metadata?: Record<string, any>
 }
 
 // Mock data
@@ -23,73 +38,150 @@ const mockNotifications: Notification[] = [
   {
     id: '1',
     type: 'order',
-    title: 'Đơn hàng mới',
-    message: 'Bạn có đơn hàng mới #ORD001 từ khách hàng Nguyễn Văn A',
+    title: 'Đơn hàng của bạn đã được xác nhận',
+    message: 'Đơn hàng #ORD001 đã được xác nhận và đang được chuẩn bị',
+    detailMessage: 'Đơn hàng #ORD001 của bạn đã được xác nhận thành công. Chúng tôi đang chuẩn bị hàng và sẽ giao đến bạn trong 2-3 ngày tới.',
     isRead: false,
-    createdAt: '2024-03-10T10:30:00Z',
-    actionUrl: '/orders/ORD001'
+    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+    actionUrl: '/orders/ORD001',
+    metadata: { orderId: 'ORD001' }
   },
   {
     id: '2',
-    type: 'product',
-    title: 'Sản phẩm sắp hết hàng',
-    message: 'iPhone 14 Pro Max chỉ còn 2 sản phẩm trong kho',
+    type: 'promo',
+    title: 'Khuyến mãi đặc biệt - Giảm 50%',
+    message: 'Giảm giá lên đến 50% cho tất cả sản phẩm điện tử',
+    detailMessage: 'Chương trình khuyến mãi đặc biệt dành cho bạn! Giảm giá lên đến 50% cho tất cả sản phẩm điện tử.',
     isRead: false,
-    createdAt: '2024-03-10T09:15:00Z',
-    actionUrl: '/inventory'
+    createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+    imageUrl: 'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=600'
   },
   {
     id: '3',
-    type: 'message',
-    title: 'Tin nhắn mới',
-    message: 'Khách hàng Trần Thị B đã gửi tin nhắn về sản phẩm MacBook Pro',
+    type: 'product',
+    title: 'Sản phẩm đã có hàng trở lại',
+    message: 'iPhone 15 Pro Max đã có hàng trở lại trong kho',
+    detailMessage: 'Sản phẩm iPhone 15 Pro Max mà bạn đã quan tâm hiện đã có hàng trở lại trong kho.',
     isRead: true,
-    createdAt: '2024-03-09T16:45:00Z',
-    actionUrl: '/chat'
+    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    imageUrl: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600'
   },
   {
     id: '4',
+    type: 'order',
+    title: 'Đơn hàng đang được giao',
+    message: 'Đơn hàng #ORD002 đang được giao đến bạn',
+    detailMessage: 'Đơn hàng #ORD002 của bạn đã được đóng gói và đang trên đường giao đến bạn.',
+    isRead: true,
+    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    actionUrl: '/orders/ORD002',
+    metadata: { orderId: 'ORD002', trackingNumber: 'VN123456789' }
+  },
+  {
+    id: '5',
+    type: 'promo',
+    title: 'Chúc mừng sinh nhật!',
+    message: 'Bạn có phiếu giảm giá 20% cho đơn hàng tiếp theo',
+    detailMessage: 'Chúc mừng sinh nhật bạn! Chúng tôi gửi tặng bạn phiếu giảm giá 20% cho đơn hàng tiếp theo.',
+    isRead: true,
+    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: '6',
+    type: 'payment',
+    title: 'Thanh toán thành công',
+    message: 'Đơn hàng #ORD003 đã được thanh toán thành công',
+    detailMessage: 'Đơn hàng #ORD003 của bạn đã được thanh toán thành công qua chuyển khoản ngân hàng.',
+    isRead: true,
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    metadata: { orderId: 'ORD003', amount: 1250000, transactionId: 'TXN001234' }
+  },
+  {
+    id: '7',
     type: 'system',
     title: 'Cập nhật hệ thống',
-    message: 'Hệ thống đã được cập nhật với các tính năng mới',
+    message: 'Ứng dụng đã được cập nhật với nhiều tính năng mới',
+    detailMessage: 'Chúng tôi đã cập nhật ứng dụng với nhiều tính năng mới và cải thiện hiệu suất.',
     isRead: true,
-    createdAt: '2024-03-09T14:20:00Z'
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
   }
 ]
 
+const TYPE_INFO = {
+  order: {
+    icon: ShoppingBag,
+    label: 'Đơn hàng',
+    color: '#C81E1E'
+  },
+  promo: {
+    icon: LocalOffer,
+    label: 'Khuyến mãi',
+    color: '#F59E0B'
+  },
+  product: {
+    icon: Inventory2,
+    label: 'Sản phẩm',
+    color: '#10B981'
+  },
+  system: {
+    icon: Info,
+    label: 'Hệ thống',
+    color: '#3B82F6'
+  },
+  payment: {
+    icon: Payment,
+    label: 'Thanh toán',
+    color: '#8B5CF6'
+  }
+}
+
 export default function NotificationsPage() {
+  const navigate = useNavigate()
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications)
-  const [activeTab, setActiveTab] = useState('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedFilter, setSelectedFilter] = useState('Tất cả')
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
-  const getNotificationIcon = (type: Notification['type']) => {
-    switch (type) {
-      case 'order':
-        return <ShoppingCart className="h-4 w-4 text-blue-500" />
-      case 'product':
-        return <Package className="h-4 w-4 text-orange-500" />
-      case 'message':
-        return <MessageCircle className="h-4 w-4 text-green-500" />
-      case 'system':
-        return <Info className="h-4 w-4 text-purple-500" />
-      default:
-        return <Bell className="h-4 w-4 text-gray-500" />
-    }
+  const getTimeAgo = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+
+    if (diffMins < 1) return 'Vừa xong'
+    if (diffMins < 60) return `${diffMins} phút trước`
+    if (diffHours < 24) return `${diffHours} giờ trước`
+    return `${diffDays} ngày trước`
   }
 
-  const getNotificationTypeLabel = (type: Notification['type']) => {
-    switch (type) {
-      case 'order':
-        return 'Đơn hàng'
-      case 'product':
-        return 'Sản phẩm'
-      case 'message':
-        return 'Tin nhắn'
-      case 'system':
-        return 'Hệ thống'
-      default:
-        return 'Khác'
+  const filteredNotifications = notifications.filter(notification => {
+    // Filter by search
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      if (!notification.title.toLowerCase().includes(query) && 
+          !notification.message.toLowerCase().includes(query)) {
+        return false
+      }
     }
-  }
+
+    // Filter by type
+    if (selectedFilter !== 'Tất cả') {
+      const filterMap: Record<string, Notification['type']> = {
+        'Đơn hàng': 'order',
+        'Khuyến mãi': 'promo',
+        'Sản phẩm': 'product',
+        'Thanh toán': 'payment',
+        'Hệ thống': 'system'
+      }
+      return notification.type === filterMap[selectedFilter]
+    }
+
+    return true
+  })
+
+  const unreadCount = notifications.filter(n => !n.isRead).length
 
   const markAsRead = (id: string) => {
     setNotifications(prev => 
@@ -99,126 +191,199 @@ export default function NotificationsPage() {
           : notification
       )
     )
+    toast.success('Đã đánh dấu là đã đọc')
   }
 
   const markAllAsRead = () => {
     setNotifications(prev => 
       prev.map(notification => ({ ...notification, isRead: true }))
     )
+    toast.success('Đã đánh dấu tất cả là đã đọc')
   }
 
-  const deleteNotification = (id: string) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id))
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    setIsRefreshing(false)
   }
 
-  const filteredNotifications = notifications.filter(notification => {
-    if (activeTab === 'all') return true
-    if (activeTab === 'unread') return !notification.isRead
-    return notification.type === activeTab
-  })
-
-  const unreadCount = notifications.filter(n => !n.isRead).length
+  const handleNotificationClick = (notification: Notification) => {
+    if (!notification.isRead) {
+      markAsRead(notification.id)
+    }
+    if (notification.actionUrl) {
+      navigate(notification.actionUrl)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <div>
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
               <h1 className="text-3xl font-bold">Thông báo</h1>
-              <p className="text-muted-foreground">
-                {unreadCount > 0 ? `${unreadCount} thông báo chưa đọc` : 'Tất cả thông báo đã được đọc'}
-              </p>
+              {unreadCount > 0 && (
+                <Badge className="bg-primary text-white px-3 py-1">
+                  {unreadCount}
+                </Badge>
+              )}
             </div>
             {unreadCount > 0 && (
-              <Button onClick={markAllAsRead} variant="outline">
-                <Check className="h-4 w-4 mr-2" />
-                Đánh dấu tất cả đã đọc
+              <Button onClick={markAllAsRead} variant="outline" size="sm">
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Đọc tất cả
               </Button>
             )}
           </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="all">Tất cả</TabsTrigger>
-              <TabsTrigger value="unread">Chưa đọc</TabsTrigger>
-              <TabsTrigger value="order">Đơn hàng</TabsTrigger>
-              <TabsTrigger value="product">Sản phẩm</TabsTrigger>
-              <TabsTrigger value="message">Tin nhắn</TabsTrigger>
-            </TabsList>
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input
+              placeholder="Tìm kiếm thông báo..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-10"
+            />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
+                onClick={() => setSearchQuery('')}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
 
-            <TabsContent value={activeTab} className="space-y-4">
-              {filteredNotifications.length === 0 ? (
-                <Card>
-                  <CardContent className="flex flex-col items-center justify-center py-12">
-                    <Bell className="h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Không có thông báo</h3>
-                    <p className="text-muted-foreground text-center">
-                      {activeTab === 'unread' 
-                        ? 'Tất cả thông báo đã được đọc'
-                        : 'Chưa có thông báo nào trong danh mục này'
-                      }
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                filteredNotifications.map(notification => (
-                  <Card key={notification.id} className={`${!notification.isRead ? 'border-primary/50 bg-primary/5' : ''}`}>
+          {/* Filter Chips */}
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {['Tất cả', 'Đơn hàng', 'Khuyến mãi', 'Sản phẩm', 'Thanh toán', 'Hệ thống'].map((filter) => {
+              const isSelected = selectedFilter === filter
+              return (
+                <Button
+                  key={filter}
+                  variant={isSelected ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedFilter(filter)}
+                  className={`whitespace-nowrap ${
+                    isSelected ? 'bg-primary text-white' : ''
+                  }`}
+                >
+                  {filter}
+                </Button>
+              )
+            })}
+          </div>
+
+          {/* Notifications List */}
+          <div className="space-y-3">
+            {filteredNotifications.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
+                    {searchQuery ? (
+                      <Search className="h-12 w-12 text-muted-foreground" />
+                    ) : (
+                      <Bell className="h-12 w-12 text-muted-foreground" />
+                    )}
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {searchQuery ? 'Không tìm thấy thông báo' : 'Chưa có thông báo'}
+                  </h3>
+                  <p className="text-muted-foreground text-center">
+                    {searchQuery 
+                      ? 'Thử tìm kiếm với từ khóa khác'
+                      : 'Các thông báo mới sẽ hiển thị ở đây'
+                    }
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              filteredNotifications.map(notification => {
+                const typeInfo = TYPE_INFO[notification.type]
+                const Icon = typeInfo.icon
+                return (
+                  <Card
+                    key={notification.id}
+                    className={`cursor-pointer transition-all hover:shadow-md ${
+                      !notification.isRead 
+                        ? 'border-2 border-primary/30 bg-primary/5' 
+                        : ''
+                    }`}
+                    onClick={() => handleNotificationClick(notification)}
+                  >
                     <CardContent className="p-4">
                       <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 mt-1">
-                          {getNotificationIcon(notification.type)}
+                        {/* Icon */}
+                        <div
+                          className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
+                          style={{
+                            backgroundColor: `${typeInfo.color}15`,
+                            color: typeInfo.color
+                          }}
+                        >
+                          <Icon className="h-6 w-6" />
                         </div>
+
+                        {/* Content */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className={`font-semibold ${!notification.isRead ? 'text-primary' : ''}`}>
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <h3 className={`font-semibold text-base ${
+                              !notification.isRead ? 'text-primary' : ''
+                            }`}>
                               {notification.title}
                             </h3>
-                            <Badge variant="secondary" className="text-xs">
-                              {getNotificationTypeLabel(notification.type)}
-                            </Badge>
                             {!notification.isRead && (
-                              <div className="w-2 h-2 bg-primary rounded-full"></div>
+                              <div
+                                className="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-2"
+                                style={{ backgroundColor: typeInfo.color }}
+                              />
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground mb-2">
+                          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                             {notification.message}
                           </p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(notification.createdAt).toLocaleString('vi-VN')}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {notification.actionUrl && (
-                            <Button size="sm" variant="outline" asChild>
-                              <Link to={notification.actionUrl}>Xem</Link>
-                            </Button>
-                          )}
-                          {!notification.isRead && (
-                            <Button 
-                              size="sm" 
-                              variant="ghost"
-                              onClick={() => markAsRead(notification.id)}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge
+                              variant="secondary"
+                              className="text-xs"
+                              style={{
+                                backgroundColor: `${typeInfo.color}15`,
+                                color: typeInfo.color,
+                                borderColor: `${typeInfo.color}30`
+                              }}
                             >
-                              <Check className="h-4 w-4" />
-                            </Button>
-                          )}
-                          <Button 
-                            size="sm" 
-                            variant="ghost"
-                            onClick={() => deleteNotification(notification.id)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
+                              {typeInfo.label}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              {getTimeAgo(notification.createdAt)}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
-                ))
-              )}
-            </TabsContent>
-          </Tabs>
+                )
+              })
+            )}
+          </div>
+
+          {/* Refresh Button */}
+          <div className="flex justify-center pt-4">
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Làm mới
+            </Button>
+          </div>
         </div>
       </main>
       <Footer />
