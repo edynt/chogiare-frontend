@@ -25,7 +25,6 @@ import {
   Truck,
   Wallet,
   Star,
-  MessageCircle,
   RefreshCw,
   ArrowUpRight,
   ArrowDownLeft,
@@ -127,29 +126,6 @@ export function SellerDashboardContent() {
     }
   ]
 
-  const recentMessages = [
-    {
-      id: '1',
-      customer: 'Nguyễn Văn A',
-      message: 'Sản phẩm có còn hàng không?',
-      time: '2 phút trước',
-      unread: true
-    },
-    {
-      id: '2',
-      customer: 'Trần Thị B',
-      message: 'Khi nào giao hàng?',
-      time: '15 phút trước',
-      unread: true
-    },
-    {
-      id: '3',
-      customer: 'Lê Văn C',
-      message: 'Cảm ơn shop, sản phẩm rất tốt!',
-      time: '1 giờ trước',
-      unread: false
-    }
-  ]
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -220,7 +196,7 @@ export function SellerDashboardContent() {
           <Button variant="outline" asChild>
             <Link to="/seller/products/import">
               <Upload className="h-4 w-4 mr-2" />
-              Import Excel/CSV
+              Import Excel
             </Link>
           </Button>
           <Button variant="outline" asChild>
@@ -250,14 +226,6 @@ export function SellerDashboardContent() {
             )}
           </TabsTrigger>
           <TabsTrigger value="inventory">Tồn kho</TabsTrigger>
-          <TabsTrigger value="messages">
-            Tin nhắn
-            {recentMessages.filter(m => m.unread).length > 0 && (
-              <Badge variant="destructive" className="ml-2 text-xs">
-                {recentMessages.filter(m => m.unread).length}
-              </Badge>
-            )}
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -363,18 +331,6 @@ export function SellerDashboardContent() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-4 text-center">
-                <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <MessageCircle className="h-6 w-6 text-pink-600" />
-                </div>
-                <h3 className="font-semibold mb-1">Tin nhắn</h3>
-                <p className="text-sm text-muted-foreground mb-3">Chat với khách hàng</p>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/chat">Chat</Link>
-                </Button>
-              </CardContent>
-            </Card>
 
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="p-4 text-center">
@@ -445,36 +401,6 @@ export function SellerDashboardContent() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5" />
-                  Tin nhắn mới
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {recentMessages.map((message) => (
-                  <div key={message.id} className={`flex items-start gap-3 p-3 border rounded-lg ${message.unread ? 'bg-blue-50' : ''}`}>
-                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                      <MessageCircle className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-sm">{message.customer}</p>
-                        {message.unread && (
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{message.message}</p>
-                      <p className="text-xs text-muted-foreground">{message.time}</p>
-                    </div>
-                  </div>
-                ))}
-                <Button variant="outline" className="w-full" asChild>
-                  <Link to="/chat">Xem tất cả tin nhắn</Link>
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </TabsContent>
 
@@ -592,40 +518,6 @@ export function SellerDashboardContent() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="messages" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Tin nhắn khách hàng</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentMessages.map((message) => (
-                  <div key={message.id} className={`flex items-start gap-3 p-4 border rounded-lg ${message.unread ? 'bg-blue-50 border-blue-200' : ''}`}>
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                      <MessageCircle className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium">{message.customer}</p>
-                        {message.unread && (
-                          <Badge variant="destructive" className="text-xs">Mới</Badge>
-                        )}
-                        <span className="text-xs text-muted-foreground">{message.time}</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{message.message}</p>
-                    </div>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to="/chat">Trả lời</Link>
-                    </Button>
-                  </div>
-                ))}
-                <Button variant="outline" className="w-full" asChild>
-                  <Link to="/chat">Xem tất cả tin nhắn</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
 
       {/* Stock In Modal */}

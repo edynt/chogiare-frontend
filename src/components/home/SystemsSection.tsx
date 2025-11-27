@@ -89,7 +89,7 @@ export function SystemsSection() {
                     <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
                       <FileSpreadsheet className="h-6 w-6 text-blue-600" />
                       <div>
-                        <div className="font-semibold">Import Excel/CSV</div>
+                        <div className="font-semibold">Import Excel</div>
                         <div className="text-sm text-muted-foreground">Nhập 100+ sản phẩm trong vài phút</div>
                       </div>
                     </div>

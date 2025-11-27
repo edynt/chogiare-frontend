@@ -336,6 +336,7 @@ export default function OrdersPage() {
                                       e.stopPropagation()
                                       handleConfirm(order.id)
                                     }}
+                                    disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
                                   >
                                     <CheckCircle className="h-4 w-4 mr-2" />
                                     Xác nhận đơn hàng
@@ -347,26 +348,41 @@ export default function OrdersPage() {
                                       e.stopPropagation()
                                       handleCancel(order.id)
                                     }}
+                                    disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
                                   >
                                     <XCircle className="h-4 w-4 mr-2" />
                                     Hủy đơn
                                   </Button>
                                 </>
                               )}
-                              {order.status === 'confirmed' && (
-                                <Button
-                                  variant="outline"
-                                  className="flex-1 border-blue-500 text-blue-700 hover:bg-blue-50"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    navigate(`/orders/${order.id}`)
-                                  }}
-                                >
-                                  <Package className="h-4 w-4 mr-2" />
-                                  Xem chi tiết
-                                </Button>
+                              {(order.status === 'confirmed' || order.status === 'preparing' || order.status === 'ready') && (
+                                <>
+                                  <Button
+                                    variant="outline"
+                                    className="flex-1 border-red-500 text-red-700 hover:bg-red-50"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleCancel(order.id)
+                                    }}
+                                    disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                                  >
+                                    <XCircle className="h-4 w-4 mr-2" />
+                                    Hủy đơn
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    className="flex-1"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      navigate(`/orders/${order.id}`)
+                                    }}
+                                  >
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    Xem chi tiết
+                                  </Button>
+                                </>
                               )}
-                              {(order.status === 'preparing' || order.status === 'ready' || order.status === 'completed') && (
+                              {(order.status === 'completed' || order.status === 'cancelled') && (
                                 <Button
                                   variant="outline"
                                   className="flex-1"

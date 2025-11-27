@@ -10,7 +10,6 @@ import { PerformanceOptimizer } from '@/components/seo/PerformanceOptimizer'
 // Lazy load pages
 const HomePage = React.lazy(() => import('@/pages/HomePage'))
 const ChatPage = React.lazy(() => import('@/pages/ChatPage'))
-const InventoryManagementPage = React.lazy(() => import('@/pages/InventoryManagementPage'))
 const ShopProfileSettingsPage = React.lazy(() => import('@/pages/ShopProfileSettingsPage'))
 const TopUpPage = React.lazy(() => import('@/pages/TopUpPage'))
 const PaymentQRPage = React.lazy(() => import('@/pages/PaymentQRPage'))
@@ -23,10 +22,7 @@ const EditProductPage = React.lazy(() => import('@/pages/EditProductPage'))
 const ImportProductsPage = React.lazy(() => import('@/pages/ImportProductsPage'))
 const CustomerManagementPage = React.lazy(() => import('@/pages/CustomerManagementPage'))
 const RevenueReportsPage = React.lazy(() => import('@/pages/RevenueReportsPage'))
-const StockInPage = React.lazy(() => import('@/pages/StockInPage'))
 const ProductDetailSellerPage = React.lazy(() => import('@/pages/ProductDetailSellerPage'))
-const InventoryReportPage = React.lazy(() => import('@/pages/InventoryReportPage'))
-const StockManagementPage = React.lazy(() => import('@/pages/StockManagementPage'))
 const NotificationsPage = React.lazy(() => import('@/pages/NotificationsPage'))
 const AuthPage = React.lazy(() => import('@/pages/AuthPage'))
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'))
@@ -60,7 +56,6 @@ function App() {
                       <Route path="/" element={<HomePage />} />
                       <Route path="/chat" element={<ChatPage />} />
                       <Route path="/chat/:chatId" element={<ChatPage />} />
-                      <Route path="/inventory" element={<InventoryManagementPage />} />
                       <Route path="/shop-settings" element={<ShopProfileSettingsPage />} />
                       <Route path="/top-up" element={<TopUpPage />} />
                       <Route path="/payment-qr" element={<PaymentQRPage />} />
@@ -75,10 +70,6 @@ function App() {
                       <Route path="/seller/products/detail/:id" element={<ProductDetailSellerPage />} />
                       <Route path="/seller/customers" element={<CustomerManagementPage />} />
                       <Route path="/seller/revenue" element={<RevenueReportsPage />} />
-                      <Route path="/stock-in" element={<StockInPage />} />
-                      <Route path="/stock-in/:productId" element={<StockInPage />} />
-                      <Route path="/inventory/reports" element={<InventoryReportPage />} />
-                      <Route path="/stock-management" element={<StockManagementPage />} />
                       <Route path="/notifications" element={<NotificationsPage />} />
                       <Route path="/orders" element={<OrdersPage />} />
                       <Route path="/auth/*" element={<AuthPage />} />

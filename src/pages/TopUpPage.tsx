@@ -13,8 +13,6 @@ import {
   TrendingUp,
   TrendingDown,
   ArrowDownLeft,
-  Clock,
-  CheckCircle,
   Eye,
   EyeOff,
   Download,
@@ -49,7 +47,6 @@ export default function TopUpPage() {
   const [showBalance, setShowBalance] = useState(true)
   const [depositAmount, setDepositAmount] = useState('')
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null)
-  const [depositNote, setDepositNote] = useState('')
   const [depositMethod, setDepositMethod] = useState<string>('bank_transfer')
 
   // Mock data
@@ -215,7 +212,6 @@ export default function TopUpPage() {
     toast.success(`Đã tạo yêu cầu nạp tiền ${formatPrice(amount)}. Vui lòng hoàn tất thanh toán.`)
     setDepositAmount('')
     setSelectedPreset(null)
-    setDepositNote('')
   }
 
   const TransactionCard = ({ transaction }: { transaction: Transaction }) => (
