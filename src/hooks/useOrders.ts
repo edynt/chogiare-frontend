@@ -122,3 +122,16 @@ export const useUserOrderStats = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
+
+export const useConfirmOrder = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id, sellerNotes }: { id: string; sellerNotes?: string }) =>
+      ordersApi.confirmOrder(id, sellerNotes),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+      queryClient.invalidateQueries({ queryKey: ['orders', id] })
+    },
+  })
+}

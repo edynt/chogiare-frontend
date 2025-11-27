@@ -154,6 +154,13 @@ export const ordersApi = {
     return response.data.data
   },
 
+  confirmOrder: async (id: string, sellerNotes?: string): Promise<Order> => {
+    const response = await apiClient.patch<ApiResponse<Order>>(`/orders/${id}/confirm`, { 
+      sellerNotes 
+    })
+    return response.data.data
+  },
+
   updateOrderPaymentStatus: async (id: string, paymentStatus: string): Promise<Order> => {
     const response = await apiClient.patch<ApiResponse<Order>>(`/orders/${id}/payment-status`, { paymentStatus })
     return response.data.data

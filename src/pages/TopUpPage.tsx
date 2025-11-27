@@ -423,7 +423,7 @@ export default function TopUpPage() {
                           <CreditCard className="h-5 w-5 mr-3" />
                           <div className="text-left">
                             <div className="font-medium">Chuyển khoản ngân hàng</div>
-                            <div className="text-sm text-muted-foreground">Thẻ ATM, Internet Banking</div>
+                            <div className="text-sm">Thẻ ATM, Internet Banking</div>
                           </div>
                         </Button>
                       </div>

@@ -9,11 +9,10 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Upload, FileSpreadsheet, FileText, CheckCircle, XCircle, AlertCircle, Download, ArrowLeft } from 'lucide-react'
+import { Upload, FileSpreadsheet, FileText, CheckCircle, AlertCircle, Download, ArrowLeft } from 'lucide-react'
 import { useNotification } from '@/components/notification-provider'
-import { parse } from 'papaparse'
+import * as XLSX from 'xlsx'
 import { useCreateProduct } from '@/hooks/useProducts'
-import type { Product } from '@/types'
 
 interface ParsedProduct {
   title: string
@@ -41,55 +40,76 @@ export default function ImportProductsPage() {
   const [errors, setErrors] = useState<string[]>([])
   const [successCount, setSuccessCount] = useState(0)
 
-  const generateId = () => Math.random().toString(36).substr(2, 9)
+  const parseExcel = useCallback((file: File): Promise<ParsedProduct[]> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      
+      reader.onload = (e) => {
+        try {
+          const data = e.target?.result
+          const workbook = XLSX.read(data, { type: 'binary' })
+          
+          // Get first sheet
+          const firstSheetName = workbook.SheetNames[0]
+          const worksheet = workbook.Sheets[firstSheetName]
+          
+          // Convert to JSON
+          const jsonData = XLSX.utils.sheet_to_json(worksheet) as Record<string, unknown>[]
+          
+          const products: ParsedProduct[] = []
+          const parseErrors: string[] = []
 
-  const parseCSV = useCallback((csvText: string): ParsedProduct[] => {
-    const results = parse(csvText, { header: true, skipEmptyLines: true })
-    const data = results.data as Record<string, unknown>[]
-    
-    const products: ParsedProduct[] = []
-    const parseErrors: string[] = []
+          jsonData.forEach((row, index) => {
+            try {
+              const product: ParsedProduct = {
+                title: (row.title as string) || (row.name as string) || '',
+                description: (row.description as string) || '',
+                price: typeof row.price === 'number' ? row.price : parseFloat(String(row.price || '0')) || 0,
+                originalPrice: row.originalPrice ? (typeof row.originalPrice === 'number' ? row.originalPrice : parseFloat(String(row.originalPrice)) || undefined) : undefined,
+                stock: typeof row.stock === 'number' ? row.stock : parseInt(String(row.stock || '1')) || 1,
+                categoryId: String(row.categoryId || '1'),
+                images: row.images ? String(row.images).split(',').map((img: string) => img.trim()).filter(Boolean) : [],
+                condition: ((row.condition as string) || 'new') as 'new' | 'like_new' | 'good' | 'fair' | 'poor',
+                tags: row.tags ? String(row.tags).split(',').map((tag: string) => tag.trim()).filter(Boolean) : [],
+                location: (row.location as string) || 'Hà Nội',
+              }
 
-    data.forEach((row, index) => {
-      try {
-        const product: ParsedProduct = {
-          title: (row.title as string) || (row.name as string) || '',
-          description: (row.description as string) || '',
-          price: parseFloat((row.price as string) || '0') || 0,
-          originalPrice: row.originalPrice ? parseFloat((row.originalPrice as string) || '0') : undefined,
-          stock: parseInt((row.stock as string) || '1') || 1,
-          categoryId: (row.categoryId as string) || '1',
-          images: row.images ? (row.images as string).split(',').map((img: string) => img.trim()).filter(Boolean) : [],
-          condition: ((row.condition as string) || 'new') as 'new' | 'like_new' | 'good' | 'fair' | 'poor',
-          tags: row.tags ? (row.tags as string).split(',').map((tag: string) => tag.trim()).filter(Boolean) : [],
-          location: (row.location as string) || 'Hà Nội',
+              // Validate required fields
+              if (!product.title || product.price <= 0) {
+                parseErrors.push(`Dòng ${index + 2}: Thiếu tên sản phẩm hoặc giá không hợp lệ`)
+                return
+              }
+
+              products.push(product)
+            } catch (error) {
+              parseErrors.push(`Dòng ${index + 2}: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`)
+            }
+          })
+
+          if (parseErrors.length > 0) {
+            setErrors(parseErrors)
+          }
+
+          if (products.length === 0) {
+            reject(new Error('Không tìm thấy sản phẩm nào trong file. Vui lòng kiểm tra lại file Excel.'))
+            return
+          }
+
+          resolve(products)
+        } catch (error) {
+          reject(new Error(`Lỗi đọc file Excel: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`))
         }
-
-        // Validate required fields
-        if (!product.title || product.price <= 0) {
-          parseErrors.push(`Dòng ${index + 2}: Thiếu tên sản phẩm hoặc giá không hợp lệ`)
-          return
-        }
-
-        products.push(product)
-      } catch (error) {
-        parseErrors.push(`Dòng ${index + 2}: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`)
       }
+
+      reader.onerror = () => {
+        reject(new Error('Không thể đọc file. Vui lòng thử lại.'))
+      }
+
+      reader.readAsBinaryString(file)
     })
-
-    if (parseErrors.length > 0) {
-      setErrors(parseErrors)
-    }
-
-    return products
   }, [])
 
-  const parseExcel = useCallback((csvText: string): ParsedProduct[] => {
-    // Excel files are typically CSV or TSV when read as text
-    return parseCSV(csvText)
-  }, [parseCSV])
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
     if (!file) return
 
@@ -99,55 +119,38 @@ export default function ImportProductsPage() {
     setParsedProducts([])
     setPreviewData([])
 
-    const reader = new FileReader()
-    
-    reader.onload = (e) => {
-      try {
-        const text = e.target?.result as string
-        let products: ParsedProduct[]
-
-        if (file.name.endsWith('.csv') || file.name.endsWith('.tsv')) {
-          products = parseCSV(text)
-        } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
-          products = parseExcel(text)
-        } else {
-          throw new Error('Định dạng file không được hỗ trợ. Vui lòng sử dụng CSV hoặc Excel.')
-        }
-
-        if (products.length === 0) {
-          throw new Error('Không tìm thấy sản phẩm nào trong file.')
-        }
-
-        setParsedProducts(products)
-        setPreviewData(products.slice(0, 10))
-        
-        notify({
-          type: 'success',
-          title: 'Phân tích file thành công',
-          message: `Đã tìm thấy ${products.length} sản phẩm. Vui lòng kiểm tra và xác nhận import.`,
-        })
-      } catch (error) {
-        notify({
-          type: 'error',
-          title: 'Lỗi phân tích file',
-          message: error instanceof Error ? error.message : 'Không thể đọc file.',
-        })
-        setImportStatus('error')
-      } finally {
-        setIsProcessing(false)
+    try {
+      if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+        throw new Error('Chỉ hỗ trợ file Excel (.xlsx, .xls). Vui lòng chọn file Excel.')
       }
-    }
 
-    reader.readAsText(file)
-  }, [parseCSV, parseExcel, notify])
+      const products = await parseExcel(file)
+
+      setParsedProducts(products)
+      setPreviewData(products.slice(0, 10))
+      
+      notify({
+        type: 'success',
+        title: 'Phân tích file thành công',
+        message: `Đã tìm thấy ${products.length} sản phẩm. Vui lòng kiểm tra và xác nhận import.`,
+      })
+    } catch (error) {
+      notify({
+        type: 'error',
+        title: 'Lỗi phân tích file',
+        message: error instanceof Error ? error.message : 'Không thể đọc file.',
+      })
+      setImportStatus('error')
+    } finally {
+      setIsProcessing(false)
+    }
+  }, [parseExcel, notify])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'text/csv': ['.csv'],
       'application/vnd.ms-excel': ['.xls'],
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-      'text/tab-separated-values': ['.tsv'],
     },
     multiple: false,
   })
@@ -171,7 +174,7 @@ export default function ImportProductsPage() {
         
         try {
           // Convert to Product type
-          const productData: Partial<Product> = {
+          const productData = {
             title: product.title,
             description: product.description,
             price: product.price,
@@ -182,10 +185,17 @@ export default function ImportProductsPage() {
             condition: product.condition,
             tags: product.tags,
             location: product.location,
-            status: 'active',
+            status: 'active' as const,
+            sellerId: '', // Will be set by backend
+            badges: [],
+            rating: 0,
+            reviewCount: 0,
+            viewCount: 0,
+            isFeatured: false,
+            isPromoted: false,
           }
 
-          await createProduct.mutateAsync(productData as any)
+          await createProduct.mutateAsync(productData as Parameters<typeof createProduct.mutateAsync>[0])
           success++
           setSuccessCount(success)
         } catch (error) {
@@ -230,19 +240,41 @@ export default function ImportProductsPage() {
   }
 
   const downloadTemplate = () => {
-    const template = `title,description,price,originalPrice,stock,categoryId,condition,location,tags,images
-iPhone 14 Pro Max,Điện thoại iPhone 14 Pro Max 256GB,25000000,28000000,10,1,new,Hà Nội,smartphone,https://example.com/image1.jpg
-Samsung Galaxy S23 Ultra,Điện thoại Samsung Galaxy S23 Ultra 512GB,22000000,25000000,8,1,new,TP.HCM,smartphone,https://example.com/image2.jpg`
+    // Create template data
+    const templateData = [
+      {
+        title: 'iPhone 14 Pro Max',
+        description: 'Điện thoại iPhone 14 Pro Max 256GB',
+        price: 25000000,
+        originalPrice: 28000000,
+        stock: 10,
+        categoryId: '1',
+        condition: 'new',
+        location: 'Hà Nội',
+        tags: 'smartphone,iphone',
+        images: 'https://example.com/image1.jpg'
+      },
+      {
+        title: 'Samsung Galaxy S23 Ultra',
+        description: 'Điện thoại Samsung Galaxy S23 Ultra 512GB',
+        price: 22000000,
+        originalPrice: 25000000,
+        stock: 8,
+        categoryId: '1',
+        condition: 'new',
+        location: 'TP.HCM',
+        tags: 'smartphone,samsung',
+        images: 'https://example.com/image2.jpg'
+      }
+    ]
 
-    const blob = new Blob([template], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-    link.setAttribute('href', url)
-    link.setAttribute('download', 'product_import_template.csv')
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    // Create workbook
+    const wb = XLSX.utils.book_new()
+    const ws = XLSX.utils.json_to_sheet(templateData)
+    XLSX.utils.book_append_sheet(wb, ws, 'Products')
+
+    // Download file
+    XLSX.writeFile(wb, 'product_import_template.xlsx')
   }
 
   return (
@@ -254,9 +286,9 @@ Samsung Galaxy S23 Ultra,Điện thoại Samsung Galaxy S23 Ultra 512GB,22000000
             <ArrowLeft className="h-4 w-4 mr-2" />
             Quay lại
           </Button>
-          <h1 className="text-3xl font-bold mb-2">Import sản phẩm từ file</h1>
+          <h1 className="text-3xl font-bold mb-2">Import sản phẩm từ file Excel</h1>
           <p className="text-muted-foreground">
-            Upload file Excel hoặc CSV để import hàng loạt sản phẩm vào hệ thống
+            Upload file Excel (.xlsx, .xls) để import hàng loạt sản phẩm vào hệ thống
           </p>
         </div>
 
@@ -265,9 +297,9 @@ Samsung Galaxy S23 Ultra,Điện thoại Samsung Galaxy S23 Ultra 512GB,22000000
           <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Upload file</CardTitle>
+                <CardTitle>Upload file Excel</CardTitle>
                 <CardDescription>
-                  Hỗ trợ định dạng: CSV, XLS, XLSX. File phải có header row.
+                  Hỗ trợ định dạng: XLS, XLSX. File phải có header row (dòng đầu tiên chứa tên cột).
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -297,7 +329,7 @@ Samsung Galaxy S23 Ultra,Điện thoại Samsung Galaxy S23 Ultra 512GB,22000000
                           {isDragActive ? 'Thả file vào đây' : 'Kéo thả file vào đây hoặc click để chọn'}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          Hỗ trợ CSV, XLS, XLSX (tối đa 10MB)
+                          Chỉ hỗ trợ file Excel (.xlsx, .xls) - tối đa 10MB
                         </p>
                       </div>
                       <Button variant="outline" onClick={(e) => e.stopPropagation()}>
@@ -310,7 +342,7 @@ Samsung Galaxy S23 Ultra,Điện thoại Samsung Galaxy S23 Ultra 512GB,22000000
                 <div className="mt-4 flex items-center justify-between">
                   <Button variant="outline" onClick={downloadTemplate} className="text-sm">
                     <Download className="h-4 w-4 mr-2" />
-                    Tải mẫu file CSV
+                    Tải mẫu file Excel
                   </Button>
                   {parsedProducts.length > 0 && (
                     <Badge variant="outline" className="text-sm">
@@ -423,9 +455,10 @@ Samsung Galaxy S23 Ultra,Điện thoại Samsung Galaxy S23 Ultra 512GB,22000000
                     Định dạng file
                   </h4>
                   <ul className="space-y-1 text-muted-foreground list-disc list-inside">
-                    <li>CSV: Dùng dấu phẩy phân cách</li>
-                    <li>Excel: XLS hoặc XLSX</li>
-                    <li>Bắt buộc có header row</li>
+                    <li>Chỉ hỗ trợ file Excel: XLS hoặc XLSX</li>
+                    <li>Bắt buộc có header row (dòng đầu tiên)</li>
+                    <li>File phải có ít nhất 1 sheet</li>
+                    <li>Dữ liệu bắt đầu từ dòng thứ 2</li>
                   </ul>
                 </div>
 

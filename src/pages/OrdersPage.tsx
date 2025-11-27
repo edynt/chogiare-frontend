@@ -6,6 +6,15 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
 import { 
   ShoppingBag,
   User,
@@ -16,91 +25,17 @@ import {
   Clock,
   Package,
   Truck,
-  RefreshCw
+  RefreshCw,
+  Eye
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useStoreOrders, useConfirmOrder, useUpdateOrderStatus } from '@/hooks/useOrders'
+import type { Order as OrderType } from '@/api/orders'
 
-interface Order {
-  id: string
-  orderNumber: string
-  buyerName: string
-  buyerPhone: string
-  fullAddress: string
-  totalQuantity: number
-  total: number
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled'
-  createdAt: string
+// Helper function to get total quantity from order items
+const getTotalQuantity = (order: OrderType) => {
+  return order.items.reduce((sum, item) => sum + item.quantity, 0)
 }
-
-// Mock data
-const allOrders: Order[] = [
-  {
-    id: '1',
-    orderNumber: 'ORD001',
-    buyerName: 'Nguyễn Văn A',
-    buyerPhone: '0901234567',
-    fullAddress: '123 Đường ABC, Phường 1, Quận 1, TP.HCM',
-    totalQuantity: 2,
-    total: 29500000,
-    status: 'pending',
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: '2',
-    orderNumber: 'ORD002',
-    buyerName: 'Trần Thị B',
-    buyerPhone: '0987654321',
-    fullAddress: '456 Đường XYZ, Phường 2, Quận 3, TP.HCM',
-    totalQuantity: 1,
-    total: 4500000,
-    status: 'confirmed',
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: '3',
-    orderNumber: 'ORD003',
-    buyerName: 'Lê Văn C',
-    buyerPhone: '0912345678',
-    fullAddress: '789 Đường DEF, Phường 3, Quận 5, TP.HCM',
-    totalQuantity: 3,
-    total: 7500000,
-    status: 'preparing',
-    createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: '4',
-    orderNumber: 'ORD004',
-    buyerName: 'Phạm Thị D',
-    buyerPhone: '0923456789',
-    fullAddress: '321 Đường GHI, Phường 4, Quận 7, TP.HCM',
-    totalQuantity: 1,
-    total: 2500000,
-    status: 'ready',
-    createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: '5',
-    orderNumber: 'ORD005',
-    buyerName: 'Hoàng Văn E',
-    buyerPhone: '0934567890',
-    fullAddress: '654 Đường JKL, Phường 5, Quận 10, TP.HCM',
-    totalQuantity: 2,
-    total: 18000000,
-    status: 'completed',
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: '6',
-    orderNumber: 'ORD006',
-    buyerName: 'Vũ Thị F',
-    buyerPhone: '0945678901',
-    fullAddress: '987 Đường MNO, Phường 6, Quận Bình Thạnh, TP.HCM',
-    totalQuantity: 1,
-    total: 3200000,
-    status: 'cancelled',
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-  }
-]
 
 const STATUS_CONFIG = {
   pending: {
@@ -155,9 +90,22 @@ const STATUS_CONFIG = {
 
 export default function OrdersPage() {
   const navigate = useNavigate()
-  const [orders] = useState<Order[]>(allOrders)
   const [activeTab, setActiveTab] = useState('pending')
-  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [sellerNotes, setSellerNotes] = useState('')
+  const [cancelReason, setCancelReason] = useState('')
+  
+  // Get store ID from auth context or use a default
+  // TODO: Replace with actual store ID from auth context
+  const storeId = 'default-store-id'
+  
+  const { data: ordersData, isLoading, refetch } = useStoreOrders(storeId, { page: 1, pageSize: 100 })
+  const confirmOrderMutation = useConfirmOrder()
+  const updateOrderStatusMutation = useUpdateOrderStatus()
+  
+  const orders = ordersData?.items || []
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -187,23 +135,76 @@ export default function OrdersPage() {
   }
 
   const handleConfirm = (orderId: string) => {
-    toast.success(`Đã xác nhận đơn hàng ${orderId}`)
-    // In production, call API to confirm order
+    setSelectedOrderId(orderId)
+    setShowConfirmDialog(true)
+  }
+
+  const handleConfirmOrder = async () => {
+    if (!selectedOrderId) return
+    
+    try {
+      await confirmOrderMutation.mutateAsync({
+        id: selectedOrderId,
+        sellerNotes: sellerNotes || undefined
+      })
+      toast.success('Đã xác nhận đơn hàng thành công')
+      setShowConfirmDialog(false)
+      setSellerNotes('')
+      setSelectedOrderId(null)
+      refetch()
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi xác nhận đơn hàng')
+      console.error('Error confirming order:', error)
+    }
   }
 
   const handleCancel = (orderId: string) => {
-    toast.success(`Đã hủy đơn hàng ${orderId}`)
-    // In production, call API to cancel order
+    setSelectedOrderId(orderId)
+    setShowCancelDialog(true)
+  }
+
+  const handleCancelOrder = async () => {
+    if (!selectedOrderId) return
+    
+    try {
+      await updateOrderStatusMutation.mutateAsync({
+        id: selectedOrderId,
+        status: 'cancelled'
+      })
+      toast.success('Đã hủy đơn hàng')
+      setShowCancelDialog(false)
+      setCancelReason('')
+      setSelectedOrderId(null)
+      refetch()
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi hủy đơn hàng')
+      console.error('Error cancelling order:', error)
+    }
   }
 
   const handleRefresh = async () => {
-    setIsRefreshing(true)
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setIsRefreshing(false)
+    await refetch()
     toast.success('Đã làm mới danh sách đơn hàng')
   }
 
   const pendingCount = orders.filter(o => o.status === 'pending').length
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-6xl mx-auto flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
+              <p className="text-muted-foreground">Đang tải danh sách đơn hàng...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -221,9 +222,9 @@ export default function OrdersPage() {
             <Button
               variant="outline"
               onClick={handleRefresh}
-              disabled={isRefreshing}
+              disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 mr-2 ${(confirmOrderMutation.isPending || updateOrderStatusMutation.isPending) ? 'animate-spin' : ''}`} />
               Làm mới
             </Button>
           </div>
@@ -277,7 +278,7 @@ export default function OrdersPage() {
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <h3 className="text-lg font-bold">Mã đơn: {order.orderNumber}</h3>
+                                <h3 className="text-lg font-bold">Mã đơn: {order.id}</h3>
                               </div>
                               <p className="text-sm text-muted-foreground">
                                 {formatDate(order.createdAt)}
@@ -295,23 +296,27 @@ export default function OrdersPage() {
                             {/* Customer Info */}
                             <div className="flex items-center gap-2">
                               <User className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-sm font-medium">{order.buyerName}</span>
-                              <Phone className="h-4 w-4 text-muted-foreground ml-auto" />
-                              <span className="text-sm text-muted-foreground">{order.buyerPhone}</span>
+                              <span className="text-sm font-medium">{order.userName || 'Khách hàng'}</span>
+                              {order.userEmail && (
+                                <>
+                                  <Phone className="h-4 w-4 text-muted-foreground ml-auto" />
+                                  <span className="text-sm text-muted-foreground">{order.userEmail}</span>
+                                </>
+                              )}
                             </div>
 
                             {/* Address */}
                             <div className="flex items-start gap-2">
                               <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                               <span className="text-sm text-muted-foreground line-clamp-2">
-                                {order.fullAddress}
+                                {order.shippingAddress || 'Chưa có địa chỉ'}
                               </span>
                             </div>
 
                             {/* Products and Total */}
                             <div className="flex items-center justify-between pt-2 border-t">
                               <span className="text-sm font-medium">
-                                {order.totalQuantity} sản phẩm
+                                {getTotalQuantity(order)} sản phẩm
                               </span>
                               <div className="text-right">
                                 <span className="text-sm text-muted-foreground">Tổng tiền: </span>
@@ -321,33 +326,60 @@ export default function OrdersPage() {
                               </div>
                             </div>
 
-                            {/* Action Buttons for Pending Orders */}
-                            {order.status === 'pending' && (
-                              <div className="flex gap-3 pt-3 border-t">
+                            {/* Action Buttons */}
+                            <div className="flex gap-3 pt-3 border-t">
+                              {order.status === 'pending' && (
+                                <>
+                                  <Button
+                                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleConfirm(order.id)
+                                    }}
+                                  >
+                                    <CheckCircle className="h-4 w-4 mr-2" />
+                                    Xác nhận đơn hàng
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    className="flex-1 border-red-500 text-red-700 hover:bg-red-50"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleCancel(order.id)
+                                    }}
+                                  >
+                                    <XCircle className="h-4 w-4 mr-2" />
+                                    Hủy đơn
+                                  </Button>
+                                </>
+                              )}
+                              {order.status === 'confirmed' && (
                                 <Button
                                   variant="outline"
-                                  className="flex-1 border-green-500 text-green-700 hover:bg-green-50"
+                                  className="flex-1 border-blue-500 text-blue-700 hover:bg-blue-50"
                                   onClick={(e) => {
                                     e.stopPropagation()
-                                    handleConfirm(order.id)
+                                    navigate(`/orders/${order.id}`)
                                   }}
                                 >
-                                  <CheckCircle className="h-4 w-4 mr-2" />
-                                  Xác nhận
+                                  <Package className="h-4 w-4 mr-2" />
+                                  Xem chi tiết
                                 </Button>
+                              )}
+                              {(order.status === 'preparing' || order.status === 'ready' || order.status === 'completed') && (
                                 <Button
                                   variant="outline"
-                                  className="flex-1 border-red-500 text-red-700 hover:bg-red-50"
+                                  className="flex-1"
                                   onClick={(e) => {
                                     e.stopPropagation()
-                                    handleCancel(order.id)
+                                    navigate(`/orders/${order.id}`)
                                   }}
                                 >
-                                  <XCircle className="h-4 w-4 mr-2" />
-                                  Hủy đơn
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  Xem chi tiết
                                 </Button>
-                              </div>
-                            )}
+                              )}
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
@@ -360,6 +392,86 @@ export default function OrdersPage() {
         </div>
       </main>
       <Footer />
+
+      {/* Confirm Order Dialog */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Xác nhận đơn hàng</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn xác nhận đơn hàng {selectedOrderId}? Đơn hàng sẽ chuyển sang trạng thái "Đã xác nhận".
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium">Ghi chú (tùy chọn)</label>
+              <Textarea
+                placeholder="Nhập ghi chú cho đơn hàng..."
+                value={sellerNotes}
+                onChange={(e) => setSellerNotes(e.target.value)}
+                className="mt-2"
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowConfirmDialog(false)
+              setSellerNotes('')
+              setSelectedOrderId(null)
+            }}>
+              Hủy
+            </Button>
+            <Button 
+              onClick={handleConfirmOrder}
+              disabled={confirmOrderMutation.isPending}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {confirmOrderMutation.isPending ? 'Đang xử lý...' : 'Xác nhận'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel Order Dialog */}
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Hủy đơn hàng</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn hủy đơn hàng {selectedOrderId}? Hành động này không thể hoàn tác.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium">Lý do hủy (tùy chọn)</label>
+              <Textarea
+                placeholder="Nhập lý do hủy đơn hàng..."
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                className="mt-2"
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowCancelDialog(false)
+              setCancelReason('')
+              setSelectedOrderId(null)
+            }}>
+              Không
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={handleCancelOrder}
+              disabled={updateOrderStatusMutation.isPending}
+            >
+              {updateOrderStatusMutation.isPending ? 'Đang xử lý...' : 'Hủy đơn'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

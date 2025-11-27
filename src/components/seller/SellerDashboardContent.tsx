@@ -172,11 +172,14 @@ export function SellerDashboardContent() {
     switch (status) {
       case 'pending': return 'bg-yellow-500'
       case 'confirmed': return 'bg-blue-500'
+      case 'preparing': return 'bg-purple-500'
+      case 'ready': return 'bg-green-500'
       case 'ready_for_pickup': return 'bg-purple-500'
       case 'completed': return 'bg-green-500'
       case 'cancelled': return 'bg-red-500'
       case 'refunded': return 'bg-gray-500'
       case 'shipped': return 'bg-blue-500' // Keep for backward compatibility
+      case 'processing': return 'bg-purple-500'
       case 'delivered': return 'bg-green-500' // Keep for backward compatibility
       case 'low_stock': return 'bg-yellow-500'
       case 'out_of_stock': return 'bg-red-500'
@@ -189,12 +192,15 @@ export function SellerDashboardContent() {
     switch (status) {
       case 'pending': return 'Chờ xác nhận'
       case 'confirmed': return 'Đã xác nhận'
+      case 'preparing': return 'Đang chuẩn bị'
+      case 'ready': return 'Sẵn sàng lấy hàng'
       case 'ready_for_pickup': return 'Sẵn sàng lấy'
       case 'completed': return 'Hoàn thành'
       case 'cancelled': return 'Đã hủy'
       case 'refunded': return 'Đã hoàn tiền'
       case 'shipped': return 'Đã giao' // Keep for backward compatibility
       case 'delivered': return 'Đã nhận' // Keep for backward compatibility
+      case 'processing': return 'Đang xử lý'
       case 'low_stock': return 'Sắp hết'
       case 'out_of_stock': return 'Hết hàng'
       case 'in_stock': return 'Còn hàng'
@@ -485,29 +491,50 @@ export function SellerDashboardContent() {
                 </div>
               ) : recentOrders.length > 0 ? (
                 <div className="space-y-4">
-                  {recentOrders.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
-                      <div className="flex items-center gap-4">
-                        <div>
-                          <p className="font-medium">{order.id}</p>
-                          <p className="text-sm text-muted-foreground">{order.userName}</p>
+                  {recentOrders.map((order) => {
+                    const totalQuantity = order.items.reduce((sum, item) => sum + item.quantity, 0)
+                    const firstProduct = order.items[0]
+                    
+                    return (
+                      <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-4 flex-1">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="font-semibold text-lg">Mã đơn: {order.id}</p>
+                              <Badge className={`${getStatusColor(order.status)} text-white`}>
+                                {getStatusLabel(order.status)}
+                              </Badge>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-sm text-muted-foreground">
+                                <span className="font-medium">Khách hàng:</span> {order.userName || order.userEmail || 'N/A'}
+                              </p>
+                              {order.shippingAddress && (
+                                <p className="text-sm text-muted-foreground line-clamp-1">
+                                  <span className="font-medium">Địa chỉ:</span> {order.shippingAddress}
+                                </p>
+                              )}
+                              {firstProduct && (
+                                <p className="text-sm text-muted-foreground">
+                                  <span className="font-medium">Sản phẩm:</span> {firstProduct.productName}
+                                  {totalQuantity > 1 && ` (${totalQuantity} sản phẩm)`}
+                                </p>
+                              )}
+                              <p className="text-sm text-muted-foreground">
+                                <span className="font-medium">Ngày đặt:</span> {formatDate(order.createdAt)}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium">{order.items[0]?.productName || 'N/A'}</p>
-                          <p className="text-sm text-muted-foreground">{formatDate(order.createdAt)}</p>
+                        <div className="flex flex-col items-end gap-3 ml-4">
+                          <p className="font-semibold text-lg text-primary">{formatPrice(order.total)}</p>
+                          <Button variant="outline" size="sm" asChild>
+                            <Link to={`/orders/${order.id}`}>Chi tiết</Link>
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <p className="font-semibold text-lg">{formatPrice(order.total)}</p>
-                        <Badge className={`${getStatusColor(order.status)} text-white`}>
-                          {getStatusLabel(order.status)}
-                        </Badge>
-                        <Button variant="outline" size="sm" asChild>
-                          <Link to={`/orders/${order.id}`}>Chi tiết</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               ) : (
                 <div className="text-center py-8">

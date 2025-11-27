@@ -537,11 +537,36 @@ export const handlers = [
 
   http.patch('/api/orders/:id/status', async ({ params, request }) => {
     const data = await request.json() as any
+    const order = demoData.orders.find(o => o.id === params.id)
+    if (order) {
+      (order as any).status = data.status
+      ;(order as any).updatedAt = new Date().toISOString()
+    }
     return HttpResponse.json({
       success: true,
-      data: {
+      data: order || {
         id: params.id,
         status: data.status,
+        updatedAt: new Date().toISOString(),
+      },
+    })
+  }),
+
+  http.patch('/api/orders/:id/confirm', async ({ params, request }) => {
+    const data = await request.json() as any
+    const order = demoData.orders.find(o => o.id === params.id)
+    if (order) {
+      ;(order as any).status = 'confirmed'
+      ;(order as any).updatedAt = new Date().toISOString()
+      if (data.sellerNotes) {
+        ;(order as any).sellerNotes = data.sellerNotes
+      }
+    }
+    return HttpResponse.json({
+      success: true,
+      data: order || {
+        id: params.id,
+        status: 'confirmed',
         updatedAt: new Date().toISOString(),
       },
     })
