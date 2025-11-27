@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -7,8 +7,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { StockInModal } from '@/components/stock/StockInModal'
 import { useNotification } from '@/components/notification-provider'
 import { useSellerProducts } from '@/hooks/useProducts'
-import { useStoreOrders } from '@/hooks/useOrders'
-import { formatPrice, formatDate } from '@/lib/utils'
+import { useStoreOrders, useConfirmOrder, useUpdateOrderStatus } from '@/hooks/useOrders'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { toast } from 'sonner'
 import { 
   Plus, 
   Package, 
@@ -33,16 +42,26 @@ import {
   Zap,
   FileSpreadsheet,
   Upload,
+  XCircle,
   ArrowDownLeft as ArrowDownLeftIcon
 } from 'lucide-react'
 
 export function SellerDashboardContent() {
+  const navigate = useNavigate()
   const { data: products, isLoading } = useSellerProducts()
-  const { data: ordersData, isLoading: isLoadingOrders } = useStoreOrders('store-1', { page: 1, pageSize: 10 })
+  const { data: ordersData, isLoading: isLoadingOrders, refetch: refetchOrders } = useStoreOrders('store-1', { page: 1, pageSize: 10 })
   const { notify } = useNotification()
   const [activeTab, setActiveTab] = useState('overview')
   const [isStockInModalOpen, setIsStockInModalOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<any>(null)
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [sellerNotes, setSellerNotes] = useState('')
+  const [cancelReason, setCancelReason] = useState('')
+  
+  const confirmOrderMutation = useConfirmOrder()
+  const updateOrderStatusMutation = useUpdateOrderStatus()
 
   const handleStockIn = async (data: any) => {
     // Simulate API call
@@ -61,6 +80,54 @@ export function SellerDashboardContent() {
   const handleOpenStockInModal = (product: any) => {
     setSelectedProduct(product)
     setIsStockInModalOpen(true)
+  }
+
+  const handleConfirm = (orderId: string) => {
+    setSelectedOrderId(orderId)
+    setShowConfirmDialog(true)
+  }
+
+  const handleConfirmOrder = async () => {
+    if (!selectedOrderId) return
+    
+    try {
+      await confirmOrderMutation.mutateAsync({
+        id: selectedOrderId,
+        sellerNotes: sellerNotes || undefined
+      })
+      toast.success('Đã xác nhận đơn hàng thành công')
+      setShowConfirmDialog(false)
+      setSellerNotes('')
+      setSelectedOrderId(null)
+      refetchOrders()
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi xác nhận đơn hàng')
+      console.error('Error confirming order:', error)
+    }
+  }
+
+  const handleCancel = (orderId: string) => {
+    setSelectedOrderId(orderId)
+    setShowCancelDialog(true)
+  }
+
+  const handleCancelOrder = async () => {
+    if (!selectedOrderId) return
+    
+    try {
+      await updateOrderStatusMutation.mutateAsync({
+        id: selectedOrderId,
+        status: 'cancelled'
+      })
+      toast.success('Đã hủy đơn hàng')
+      setShowCancelDialog(false)
+      setCancelReason('')
+      setSelectedOrderId(null)
+      refetchOrders()
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi hủy đơn hàng')
+      console.error('Error cancelling order:', error)
+    }
   }
 
   // Mock data for enhanced dashboard
@@ -376,18 +443,53 @@ export function SellerDashboardContent() {
                   </div>
                 ) : recentOrders.length > 0 ? (
                   recentOrders.slice(0, 3).map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <p className="font-medium">{order.userName}</p>
-                        <p className="text-sm text-muted-foreground">{order.items[0]?.productName || 'N/A'}</p>
-                        <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
+                    <div 
+                      key={order.id} 
+                      className="p-3 border rounded-lg space-y-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => navigate(`/orders/${order.id}`)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">{order.userName}</p>
+                          <p className="text-sm text-muted-foreground">{order.items[0]?.productName || 'N/A'}</p>
+                          <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold">{formatPrice(order.total)}</p>
+                          <Badge className={`${getStatusColor(order.status)} text-white text-xs`}>
+                            {getStatusLabel(order.status)}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold">{formatPrice(order.total)}</p>
-                        <Badge className={`${getStatusColor(order.status)} text-white text-xs`}>
-                          {getStatusLabel(order.status)}
-                        </Badge>
-                      </div>
+                      {order.status === 'pending' && (
+                        <div className="flex gap-2 pt-2 border-t">
+                          <Button
+                            size="sm"
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleConfirm(order.id)
+                            }}
+                            disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                          >
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Xác nhận
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 border-red-500 text-red-700 hover:bg-red-50 text-xs"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleCancel(order.id)
+                            }}
+                            disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                          >
+                            <XCircle className="h-3 w-3 mr-1" />
+                            Hủy đơn
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ))
                 ) : (
@@ -422,7 +524,11 @@ export function SellerDashboardContent() {
                     const firstProduct = order.items[0]
                     
                     return (
-                      <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
+                      <div 
+                        key={order.id} 
+                        className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
+                        onClick={() => navigate(`/orders/${order.id}`)}
+                      >
                         <div className="flex items-center gap-4 flex-1">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
@@ -454,9 +560,35 @@ export function SellerDashboardContent() {
                         </div>
                         <div className="flex flex-col items-end gap-3 ml-4">
                           <p className="font-semibold text-lg text-primary">{formatPrice(order.total)}</p>
-                          <Button variant="outline" size="sm" asChild>
-                            <Link to={`/orders/${order.id}`}>Chi tiết</Link>
-                          </Button>
+                          {order.status === 'pending' && (
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleConfirm(order.id)
+                                }}
+                                disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                              >
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Xác nhận
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="border-red-500 text-red-700 hover:bg-red-50"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleCancel(order.id)
+                                }}
+                                disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                              >
+                                <XCircle className="h-4 w-4 mr-1" />
+                                Hủy đơn
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )
@@ -530,6 +662,86 @@ export function SellerDashboardContent() {
         product={selectedProduct}
         onStockIn={handleStockIn}
       />
+
+      {/* Confirm Order Dialog */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Xác nhận đơn hàng</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn xác nhận đơn hàng {selectedOrderId}? Đơn hàng sẽ chuyển sang trạng thái "Đã xác nhận".
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium">Ghi chú (tùy chọn)</label>
+              <Textarea
+                placeholder="Nhập ghi chú cho đơn hàng..."
+                value={sellerNotes}
+                onChange={(e) => setSellerNotes(e.target.value)}
+                className="mt-2"
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowConfirmDialog(false)
+              setSellerNotes('')
+              setSelectedOrderId(null)
+            }}>
+              Hủy
+            </Button>
+            <Button 
+              onClick={handleConfirmOrder}
+              disabled={confirmOrderMutation.isPending}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {confirmOrderMutation.isPending ? 'Đang xử lý...' : 'Xác nhận'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel Order Dialog */}
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Hủy đơn hàng</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn hủy đơn hàng {selectedOrderId}? Hành động này không thể hoàn tác.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium">Lý do hủy (tùy chọn)</label>
+              <Textarea
+                placeholder="Nhập lý do hủy đơn hàng..."
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                className="mt-2"
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowCancelDialog(false)
+              setCancelReason('')
+              setSelectedOrderId(null)
+            }}>
+              Không
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={handleCancelOrder}
+              disabled={updateOrderStatusMutation.isPending}
+            >
+              {updateOrderStatusMutation.isPending ? 'Đang xử lý...' : 'Hủy đơn'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
