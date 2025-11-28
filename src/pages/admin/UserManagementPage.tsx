@@ -29,10 +29,8 @@ import {
   Shield,
   Mail,
   Phone,
-  Calendar,
   MapPin,
   Star,
-  AlertTriangle,
   CheckCircle,
   Clock
 } from 'lucide-react'

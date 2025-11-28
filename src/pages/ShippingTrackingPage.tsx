@@ -12,7 +12,6 @@ import { useShippingTracking } from '@/hooks/useShipping'
 import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorMessage } from '@/components/ui/error-boundary'
 import { ArrowLeft, Search, Package, MapPin, Clock, RefreshCw } from 'lucide-react'
-import type { ShippingInfo } from '@/components/shipping/ShippingTracking'
 
 export default function ShippingTrackingPage() {
   const { orderId } = useParams<{ orderId: string }>()

@@ -24,7 +24,6 @@ import {
   XCircle,
   Clock,
   Package,
-  Truck,
   RefreshCw,
   Eye
 } from 'lucide-react'

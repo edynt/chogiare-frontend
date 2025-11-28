@@ -13,28 +13,11 @@ import { Switch } from '@/components/ui/switch'
 import { 
   Store,
   Upload,
-  Camera,
-  MapPin,
-  Phone,
-  Mail,
-  Globe,
-  Clock,
-  Shield,
   Star,
-  Users,
-  Eye,
   Edit,
   Save,
   X,
-  CheckCircle,
-  AlertCircle,
-  Image as ImageIcon,
-  Link,
-  Settings,
-  Bell,
-  CreditCard,
-  Truck,
-  Package
+  CheckCircle
 } from 'lucide-react'
 
 interface ShopProfile {

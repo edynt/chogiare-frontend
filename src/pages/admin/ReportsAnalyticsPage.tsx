@@ -19,9 +19,6 @@ import {
 } from '@/components/ui/table'
 import { 
   Download,
-  Calendar,
-  TrendingUp,
-  TrendingDown,
   Users,
   ShoppingCart,
   DollarSign,
@@ -30,8 +27,6 @@ import {
   BarChart3,
   PieChart,
   Activity,
-  Target,
-  Zap,
   ArrowUpRight,
   ArrowDownLeft
 } from 'lucide-react'

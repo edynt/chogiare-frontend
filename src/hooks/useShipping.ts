@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { shippingApi } from '@/api/shipping'
-import type { ShippingInfo } from '@/components/shipping/ShippingTracking'
 
 export const useShippingTracking = (orderId: string) => {
   return useQuery({

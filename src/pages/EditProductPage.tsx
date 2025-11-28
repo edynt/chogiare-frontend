@@ -19,11 +19,9 @@ import { useNotification } from '@/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
 import { 
   Edit, 
-  Upload, 
   X, 
   Package, 
   DollarSign, 
-  MapPin, 
   Tag,
   Image as ImageIcon,
   Save,
@@ -32,8 +30,7 @@ import {
   Plus,
   Minus,
   BarChart3,
-  AlertTriangle,
-  CheckCircle
+  AlertTriangle
 } from 'lucide-react'
 import type { Product, ProductCondition, ProductStatus } from '@/types'
 

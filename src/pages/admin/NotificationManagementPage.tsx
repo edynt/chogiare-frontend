@@ -25,11 +25,6 @@ import {
   Mail,
   Bell,
   Send,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Users,
-  Calendar,
   Eye,
   Edit,
   Trash2,
@@ -37,10 +32,7 @@ import {
   Pause,
   BarChart3,
   Settings,
-  MessageSquare,
-  AlertTriangle,
-  Info,
-  Zap
+  MessageSquare
 } from 'lucide-react'
 
 export default function NotificationManagementPage() {

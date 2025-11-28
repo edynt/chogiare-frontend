@@ -25,11 +25,9 @@ import { useNotification } from '@/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
 import {
   Plus,
-  Upload,
   X,
   Package,
   DollarSign,
-  MapPin,
   Tag,
   Image as ImageIcon,
   Save,

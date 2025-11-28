@@ -20,7 +20,6 @@ import {
   Truck, 
   MessageCircle,
   Eye,
-  ShoppingCart,
   Zap
 } from 'lucide-react'
 

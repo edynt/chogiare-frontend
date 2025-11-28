@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { cn, formatPrice } from '@/lib/utils'
-import { MessageCircle, Clock, Check, CheckCheck } from 'lucide-react'
+import { MessageCircle, Check, CheckCheck } from 'lucide-react'
 
 interface Chat {
   id: string

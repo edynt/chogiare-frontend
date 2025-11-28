@@ -30,13 +30,10 @@ import {
   Calendar,
   Mail,
   Phone,
-  Flag,
   Reply,
   Archive,
-  Star,
   Eye,
-  Edit,
-  Trash2
+  Edit
 } from 'lucide-react'
 
 export default function SupportTicketsPage() {

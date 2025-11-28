@@ -11,8 +11,7 @@ import {
   Mail, 
   Bell,
   Database,
-  Server,
-  Key
+  Server
 } from 'lucide-react'
 
 export function AdminSettings() {

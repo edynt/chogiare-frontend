@@ -22,28 +22,20 @@ import {
   Plus, 
   Package, 
   DollarSign, 
-  Users, 
-  TrendingUp,
+  Users,
   Eye,
   ShoppingCart,
   AlertTriangle,
   CheckCircle,
-  Clock,
   BarChart3,
   Settings,
-  Truck,
   Wallet,
-  Star,
-  RefreshCw,
-  ArrowUpRight,
-  ArrowDownLeft,
   Activity,
-  Target,
-  Zap,
   FileSpreadsheet,
   Upload,
   XCircle,
-  ArrowDownLeft as ArrowDownLeftIcon
+  Timer,
+  Sparkles
 } from 'lucide-react'
 
 export function SellerDashboardContent() {
@@ -190,8 +182,178 @@ export function SellerDashboardContent() {
       currentStock: 15,
       minStock: 10,
       status: 'in_stock'
+    },
+    {
+      id: '4',
+      name: 'Samsung Galaxy S23 Ultra',
+      currentStock: 3,
+      minStock: 8,
+      status: 'low_stock'
+    },
+    {
+      id: '5',
+      name: 'iPad Pro 12.9 inch',
+      currentStock: 0,
+      minStock: 3,
+      status: 'out_of_stock'
+    },
+    {
+      id: '6',
+      name: 'Apple Watch Series 9',
+      currentStock: 7,
+      minStock: 10,
+      status: 'low_stock'
+    },
+    {
+      id: '7',
+      name: 'Sony WH-1000XM5',
+      currentStock: 12,
+      minStock: 15,
+      status: 'low_stock'
+    },
+    {
+      id: '8',
+      name: 'Dell XPS 13',
+      currentStock: 0,
+      minStock: 5,
+      status: 'out_of_stock'
+    },
+    {
+      id: '9',
+      name: 'Samsung Galaxy Watch 6',
+      currentStock: 20,
+      minStock: 10,
+      status: 'in_stock'
+    },
+    {
+      id: '10',
+      name: 'Microsoft Surface Pro 9',
+      currentStock: 2,
+      minStock: 5,
+      status: 'low_stock'
+    },
+    {
+      id: '11',
+      name: 'Google Pixel 8 Pro',
+      currentStock: 0,
+      minStock: 3,
+      status: 'out_of_stock'
+    },
+    {
+      id: '12',
+      name: 'OnePlus 12',
+      currentStock: 8,
+      minStock: 10,
+      status: 'low_stock'
+    },
+    {
+      id: '13',
+      name: 'Xiaomi 14 Pro',
+      currentStock: 25,
+      minStock: 15,
+      status: 'in_stock'
+    },
+    {
+      id: '14',
+      name: 'Huawei Mate 60 Pro',
+      currentStock: 1,
+      minStock: 5,
+      status: 'low_stock'
+    },
+    {
+      id: '15',
+      name: 'Oppo Find X6 Pro',
+      currentStock: 0,
+      minStock: 3,
+      status: 'out_of_stock'
     }
   ]
+
+  // Mock data for promoted products
+  const promotedProducts = [
+    {
+      id: '1',
+      name: 'iPhone 14 Pro Max 256GB',
+      image: 'https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=80&h=80&fit=crop',
+      price: 25990000,
+      currentViews: 1245,
+      totalViews: 5000,
+      startDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+      endDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
+      remainingViews: 3755,
+      packageId: 'ppv_5k',
+      packageName: '5,000 lượt xem',
+      packageType: 'payPerView' as const,
+      packagePrice: 200000
+    },
+    {
+      id: '2',
+      name: 'Samsung Galaxy S23 Ultra',
+      image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=80&h=80&fit=crop',
+      price: 22990000,
+      currentViews: 892,
+      totalViews: 3000,
+      startDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+      endDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // 6 days from now
+      remainingViews: 2108,
+      packageId: 'ppv_5k',
+      packageName: '5,000 lượt xem',
+      packageType: 'payPerView' as const,
+      packagePrice: 200000
+    },
+    {
+      id: '3',
+      name: 'MacBook Air M2 13 inch',
+      image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=80&h=80&fit=crop',
+      price: 32990000,
+      currentViews: 2156,
+      totalViews: 10000,
+      startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+      endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
+      remainingViews: 7844,
+      packageId: 'ppv_10k',
+      packageName: '10,000 lượt xem',
+      packageType: 'payPerView' as const,
+      packagePrice: 350000
+    },
+    {
+      id: '4',
+      name: 'AirPods Pro 2nd Gen',
+      image: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=80&h=80&fit=crop',
+      price: 5990000,
+      currentViews: 456,
+      totalViews: 2000,
+      startDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      endDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days from now
+      remainingViews: 1544,
+      packageId: 'ppd_7',
+      packageName: '7 ngày',
+      packageType: 'payPerDay' as const,
+      packagePrice: 250000
+    }
+  ]
+
+  // Calculate remaining time
+  const getRemainingTime = (endDate: Date) => {
+    const now = new Date()
+    const diff = endDate.getTime() - now.getTime()
+    
+    if (diff <= 0) {
+      return { text: 'Đã hết hạn', color: 'text-red-600' }
+    }
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+    
+    if (days > 0) {
+      return { text: `Còn ${days} ngày ${hours} giờ`, color: days <= 1 ? 'text-orange-600' : 'text-green-600' }
+    } else if (hours > 0) {
+      return { text: `Còn ${hours} giờ ${minutes} phút`, color: 'text-orange-600' }
+    } else {
+      return { text: `Còn ${minutes} phút`, color: 'text-red-600' }
+    }
+  }
 
 
   const formatPrice = (price: number) => {
@@ -266,12 +428,6 @@ export function SellerDashboardContent() {
               Import Excel
             </Link>
           </Button>
-          <Button variant="outline" asChild>
-            <Link to="/inventory">
-              <Package className="h-4 w-4 mr-2" />
-              Quản lý kho
-            </Link>
-          </Button>
           <Button asChild>
             <Link to="/seller/products/add">
               <Plus className="h-4 w-4 mr-2" />
@@ -291,6 +447,10 @@ export function SellerDashboardContent() {
                 {recentOrders.filter((o: any) => o.status === 'pending').length}
               </Badge>
             )}
+          </TabsTrigger>
+          <TabsTrigger value="promoted">
+            <Sparkles className="h-4 w-4 mr-1" />
+            Đang đẩy
           </TabsTrigger>
           <TabsTrigger value="inventory">Tồn kho</TabsTrigger>
         </TabsList>
@@ -610,6 +770,94 @@ export function SellerDashboardContent() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="promoted" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-yellow-500" />
+                Sản phẩm đang được đẩy
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {promotedProducts.length > 0 ? (
+                <div className="space-y-4">
+                  {promotedProducts.map((product) => {
+                    const remainingTime = getRemainingTime(product.endDate)
+                    const viewProgress = (product.currentViews / product.totalViews) * 100
+                    
+                    return (
+                      <div 
+                        key={product.id} 
+                        className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
+                        onClick={() => navigate(`/promoted-products/${product.id}`)}
+                      >
+                        <div className="flex items-start gap-4">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/80'
+                            }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
+                            <p className="text-sm font-medium text-primary mb-3">
+                              {formatPrice(product.price)}
+                            </p>
+                            
+                            <div className="space-y-2">
+                              {/* Time remaining */}
+                              <div className="flex items-center gap-2">
+                                <Timer className="h-4 w-4 text-muted-foreground" />
+                                <span className={`text-sm font-medium ${remainingTime.color}`}>
+                                  {remainingTime.text}
+                                </span>
+                              </div>
+                              
+                              {/* Views */}
+                              <div className="space-y-1">
+                                <div className="flex items-center justify-between text-sm">
+                                  <div className="flex items-center gap-2">
+                                    <Eye className="h-4 w-4 text-muted-foreground" />
+                                    <span className="text-muted-foreground">Lượt xem:</span>
+                                    <span className="font-semibold">{product.currentViews.toLocaleString()}</span>
+                                    <span className="text-muted-foreground">/ {product.totalViews.toLocaleString()}</span>
+                                  </div>
+                                  <span className="text-muted-foreground">
+                                    Còn lại: <span className="font-semibold text-primary">{product.remainingViews.toLocaleString()}</span>
+                                  </span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div
+                                    className="bg-primary h-2 rounded-full transition-all"
+                                    style={{ width: `${viewProgress}%` }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Chưa có sản phẩm nào đang được đẩy</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Hãy đẩy sản phẩm của bạn để tăng lượt xem và doanh số!
+                  </p>
+                  <Button asChild>
+                    <Link to="/top-up">Nạp tiền để đẩy sản phẩm</Link>
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="inventory" className="space-y-6">
           <Card>
             <CardHeader>
@@ -642,9 +890,6 @@ export function SellerDashboardContent() {
                     </div>
                   </div>
                 ))}
-                <Button variant="outline" className="w-full" asChild>
-                  <Link to="/inventory">Quản lý tồn kho</Link>
-                </Button>
               </div>
             </CardContent>
           </Card>

@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import {
   Dialog,
@@ -17,16 +16,12 @@ import {
   ArrowLeft,
   Package,
   Truck,
-  MapPin,
-  Phone,
   CreditCard,
   Clock,
   CheckCircle,
   XCircle,
-  Download,
   ShoppingBag,
   FileText,
-  Navigation,
   User
 } from 'lucide-react'
 import { useOrder, useConfirmOrder, useUpdateOrderStatus } from '@/hooks/useOrders'
@@ -525,9 +520,9 @@ export default function OrderDetailPage() {
 
             {/* Action Buttons */}
             {order.status === 'pending' && (
-              <div className="space-y-3">
+              <div className="flex gap-3">
                 <Button 
-                  className="w-full bg-green-600 hover:bg-green-700 text-white h-14" 
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white h-14" 
                   onClick={() => setShowConfirmDialog(true)}
                 >
                   <CheckCircle className="h-5 w-5 mr-2" />
@@ -535,7 +530,7 @@ export default function OrderDetailPage() {
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full border-red-500 text-red-700 hover:bg-red-50 h-14" 
+                  className="flex-1 border-red-500 text-red-700 hover:bg-red-50 h-14" 
                   onClick={() => setShowCancelDialog(true)}
                 >
                   <XCircle className="h-5 w-5 mr-2" />

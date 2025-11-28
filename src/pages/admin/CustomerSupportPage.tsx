@@ -10,14 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { 
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+
+
 import { 
   Search,
   Filter,
@@ -32,23 +26,15 @@ import {
   Settings,
   Mail,
   Phone,
-  Flag,
   Reply,
   Archive,
-  Star,
   Eye,
   Edit,
   Trash2,
   Send,
   FileText,
-  Image,
   Paperclip,
-  ThumbsUp,
-  ThumbsDown,
-  BarChart3,
-  TrendingUp,
-  Users,
-  MessageCircle
+  BarChart3
 } from 'lucide-react'
 
 export default function CustomerSupportPage() {

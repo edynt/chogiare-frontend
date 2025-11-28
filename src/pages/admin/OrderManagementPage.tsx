@@ -28,12 +28,8 @@ import {
   ShoppingCart,
   CreditCard,
   Truck,
-  User,
-  Calendar,
-  MapPin,
   Phone,
   Mail,
-  AlertTriangle,
   CheckCircle,
   Clock,
   XCircle

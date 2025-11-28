@@ -28,15 +28,10 @@ import {
   FileText,
   Globe,
   Lock,
-  Calendar,
   User,
   Eye as EyeIcon,
   Edit3,
-  Save,
-  X,
-  Image,
-  Link,
-  Tag
+  Link
 } from 'lucide-react'
 
 export default function ContentManagementPage() {

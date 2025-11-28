@@ -20,7 +20,6 @@ import {
   X,
   Users,
   DollarSign,
-  Calendar,
   Settings
 } from 'lucide-react'
 

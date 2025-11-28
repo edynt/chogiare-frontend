@@ -1,19 +1,17 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ProductCard } from '@/components/product/ProductCard'
 import { useMyProducts, useDeleteProduct } from '@/hooks/useProducts'
 import { useNotification } from '@/components/notification-provider'
 import { 
   Plus, 
   Search, 
-  Filter, 
   Grid, 
   List, 
   Eye, 
@@ -23,8 +21,7 @@ import {
   Package,
   TrendingUp,
   DollarSign,
-  Star,
-  BarChart3
+  Star
 } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 import type { ProductStatus } from '@/types'

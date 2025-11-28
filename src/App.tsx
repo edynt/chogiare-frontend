@@ -29,6 +29,7 @@ const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'))
 const OrdersPage = React.lazy(() => import('@/pages/OrdersPage'))
 const OrderDetailPage = React.lazy(() => import('@/pages/OrderDetailPage'))
 const ShippingTrackingPage = React.lazy(() => import('@/pages/ShippingTrackingPage'))
+const PromotedProductDetailPage = React.lazy(() => import('@/pages/PromotedProductDetailPage'))
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'))
 
 // Create a client
@@ -77,6 +78,7 @@ function App() {
                       <Route path="/orders/:orderId" element={<OrderDetailPage />} />
                       <Route path="/shipping/:orderId" element={<ShippingTrackingPage />} />
                       <Route path="/shipping/track/:trackingNumber" element={<ShippingTrackingPage />} />
+                      <Route path="/promoted-products/:productId" element={<PromotedProductDetailPage />} />
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                     </Suspense>

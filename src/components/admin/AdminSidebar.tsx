@@ -10,12 +10,9 @@ import {
   Settings,
   FileText,
   MessageSquare,
-  CreditCard,
-  Tag,
   Shield,
   Mail,
   ChevronLeft,
-  ChevronRight,
   Gift,
   Menu,
   Database

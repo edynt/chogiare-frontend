@@ -9,18 +9,15 @@ import {
   Eye, 
   Star, 
   Edit, 
-  Plus, 
-  Calendar,
+  Plus,
   MapPin,
   Truck,
   Barcode,
   Weight,
   Ruler,
   Tag,
-  TrendingUp,
   TrendingDown,
-  DollarSign,
-  Percent
+  DollarSign
 } from 'lucide-react'
 
 interface InventoryItem {

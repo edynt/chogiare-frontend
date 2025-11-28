@@ -12,8 +12,7 @@ import {
   Download, 
   CheckCircle, 
   AlertCircle,
-  Loader2,
-  RefreshCw
+  Loader2
 } from 'lucide-react'
 
 interface SeedResult {

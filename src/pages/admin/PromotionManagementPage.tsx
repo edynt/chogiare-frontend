@@ -24,29 +24,15 @@ import {
   Trash2,
   Copy,
   Eye,
-  Calendar,
-  Users,
   DollarSign,
-  Percent,
   Gift,
   Target,
   TrendingUp,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
   BarChart3,
   Settings,
-  Star,
-  Zap,
-  Crown,
   Tag,
-  ShoppingCart,
-  CreditCard,
-  Mail,
   Share2,
-  Download,
-  Upload
+  Download
 } from 'lucide-react'
 
 export default function PromotionManagementPage() {

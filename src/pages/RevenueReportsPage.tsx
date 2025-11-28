@@ -13,16 +13,10 @@ import {
   Download,
   Calendar,
   TrendingUp,
-  TrendingDown,
   ShoppingCart,
   DollarSign,
   Package,
-  BarChart3,
-  PieChart,
-  Activity,
-  Target,
-  FileSpreadsheet,
-  Filter
+  FileSpreadsheet
 } from 'lucide-react'
 import { formatPrice, formatDate } from '@/lib/utils'
 

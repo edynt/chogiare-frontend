@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useRegister } from '@/hooks/useAuth'
 import { useNotification } from '@/components/notification-provider'
-import { useLoading } from '@/hooks/useLoading'
-import { Loader2, CheckCircle } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
 import { registerSchema, type RegisterFormData } from '@/lib/schemas'
 import type { UserRole } from '@/types'
 
@@ -27,7 +26,7 @@ export function RegisterForm() {
   })
 
   const onSubmit = (data: RegisterFormData) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const { confirmPassword, ...registerData } = data
     // User có thể vừa là buyer vừa là seller - đăng ký với cả 2 roles
     const finalData = { ...registerData, roles: ['buyer', 'seller'] as UserRole[] }

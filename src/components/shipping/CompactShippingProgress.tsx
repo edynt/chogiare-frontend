@@ -2,15 +2,11 @@ import React from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { 
-  Package, 
-  Truck, 
-  MapPin, 
-  Clock, 
-  CheckCircle,
+  MapPin,
   Navigation,
   Timer
 } from 'lucide-react'
-import { cn, formatDate } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import type { ShippingProgressData } from './ShippingProgressBar'
 
 interface CompactShippingProgressProps {

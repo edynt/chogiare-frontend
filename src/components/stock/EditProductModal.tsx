@@ -13,12 +13,8 @@ import {
   X, 
   Package, 
   DollarSign, 
-  MapPin, 
   Weight, 
-  Ruler, 
-  Tag,
-  Upload,
-  Image as ImageIcon
+  Tag
 } from 'lucide-react'
 import { useNotification } from '@/components/notification-provider'
 

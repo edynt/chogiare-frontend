@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ordersApi } from '@/api/orders'
-import type { CreateOrderRequest, UpdateOrderRequest } from '@/api/orders'
+import type { UpdateOrderRequest } from '@/api/orders'
 
 export const useOrders = (filters?: { page?: number; pageSize?: number }) => {
   return useQuery({

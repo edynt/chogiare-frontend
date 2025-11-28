@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Product, SearchFilters, PaginatedResponse } from '@/types'
+import type { Product, SearchFilters } from '@/types'
 
 interface ProductState {
   products: Product[]
