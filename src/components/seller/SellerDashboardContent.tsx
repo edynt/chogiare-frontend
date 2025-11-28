@@ -28,7 +28,6 @@ import {
   AlertTriangle,
   CheckCircle,
   BarChart3,
-  Settings,
   Wallet,
   Activity,
   FileSpreadsheet,
@@ -572,18 +571,6 @@ export function SellerDashboardContent() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-4 text-center">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Settings className="h-6 w-6 text-orange-600" />
-                </div>
-                <h3 className="font-semibold mb-1">Cài đặt shop</h3>
-                <p className="text-sm text-muted-foreground mb-3">Thông tin cửa hàng</p>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/shop-settings">Cài đặt</Link>
-                </Button>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Recent Activity */}

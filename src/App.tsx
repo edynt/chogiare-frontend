@@ -10,7 +10,7 @@ import { PerformanceOptimizer } from '@/components/seo/PerformanceOptimizer'
 // Lazy load pages
 const HomePage = React.lazy(() => import('@/pages/HomePage'))
 const ChatPage = React.lazy(() => import('@/pages/ChatPage'))
-const ShopProfileSettingsPage = React.lazy(() => import('@/pages/ShopProfileSettingsPage'))
+const SellerNotificationsPage = React.lazy(() => import('@/pages/SellerNotificationsPage'))
 const TopUpPage = React.lazy(() => import('@/pages/TopUpPage'))
 const PaymentQRPage = React.lazy(() => import('@/pages/PaymentQRPage'))
 const BoostPostPage = React.lazy(() => import('@/pages/BoostPostPage'))
@@ -57,7 +57,7 @@ function App() {
                       <Route path="/" element={<HomePage />} />
                       <Route path="/chat" element={<ChatPage />} />
                       <Route path="/chat/:chatId" element={<ChatPage />} />
-                      <Route path="/shop-settings" element={<ShopProfileSettingsPage />} />
+                      <Route path="/seller/notifications" element={<SellerNotificationsPage />} />
                       <Route path="/top-up" element={<TopUpPage />} />
                       <Route path="/payment-qr" element={<PaymentQRPage />} />
                       <Route path="/boost-post" element={<BoostPostPage />} />

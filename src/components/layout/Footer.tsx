@@ -57,7 +57,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/notifications" className="text-muted-foreground hover:text-foreground">
+                <Link to="/seller/notifications" className="text-muted-foreground hover:text-foreground">
                   Thông báo
                 </Link>
               </li>

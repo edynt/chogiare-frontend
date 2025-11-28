@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAuthStore } from '@/stores/authStore'
-import { Menu, User, MessageCircle, Settings, Bell, Clock, Package, LogOut, Store, Droplet } from 'lucide-react'
+import { Menu, User, MessageCircle, Settings, Bell, Clock, Package, LogOut, Droplet, Home } from 'lucide-react'
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuthStore()
@@ -78,6 +78,13 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Home Button */}
+            <Link to="/">
+              <Button variant="ghost" size="icon" aria-label="Trang chủ" className="hover:scale-110 hover:bg-primary/10 dark:hover:bg-primary/20 transition-all duration-200">
+                <Home className="h-4 w-4" />
+              </Button>
+            </Link>
+            
             {/* Chat Icon */}
             <Link to="/chat">
               <Button variant="ghost" size="icon" aria-label="Chat" className="hover:scale-110 hover:bg-blue-100 dark:hover:bg-blue-900 transition-all duration-200">
@@ -140,7 +147,7 @@ export function Header() {
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="p-3 text-center hover:bg-red-500 group transition-colors">
-                  <Link to="/notifications" className="text-sm text-blue-600 group-hover:text-white">
+                  <Link to="/seller/notifications" className="text-sm text-blue-600 group-hover:text-white">
                     Xem tất cả thông báo
                   </Link>
                 </DropdownMenuItem>
@@ -184,6 +191,18 @@ export function Header() {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     
+                    {/* Navigation Section */}
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem asChild>
+                        <Link to="/" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                          <Home className="mr-2 h-4 w-4" />
+                          <span>Trang chủ</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    
+                    <DropdownMenuSeparator />
+                    
                     {/* Personal Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
@@ -211,7 +230,7 @@ export function Header() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/notifications" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                        <Link to="/seller/notifications" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <Bell className="mr-2 h-4 w-4" />
                           <span>Thông báo</span>
                         </Link>
@@ -222,12 +241,6 @@ export function Header() {
                     
                     {/* Business Section */}
                     <DropdownMenuGroup>
-                      <DropdownMenuItem asChild>
-                        <Link to="/shop-settings" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
-                          <Store className="mr-2 h-4 w-4" />
-                          <span>Quản lý cửa hàng</span>
-                        </Link>
-                      </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link to="/seller/products" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <Settings className="mr-2 h-4 w-4" />
