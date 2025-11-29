@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator'
 import { useProduct } from '@/hooks/useProducts'
 import { useAddresses, useDefaultAddress } from '@/hooks/useAddresses'
 import { useCreateOrder } from '@/hooks/useOrders'
+import { useCartStore } from '@/stores/cartStore'
 import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorMessage } from '@/components/ui/error-boundary'
 import { toast } from 'sonner'
@@ -27,7 +28,8 @@ import {
   CreditCard,
   User,
   Phone,
-  AlertCircle
+  AlertCircle,
+  Store
 } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { formatCurrency } from '@/lib/utils'
@@ -38,11 +40,37 @@ export default function CheckoutPage() {
   const navigate = useNavigate()
   const productId = searchParams.get('productId')
   const quantity = parseInt(searchParams.get('quantity') || '1')
+  const { items: cartItems, totalValue: cartTotalValue, clearCart } = useCartStore()
 
   const { data: product, isLoading: isLoadingProduct } = useProduct(productId || '')
+  // Fetch first product from cart to get storeId
+  const firstCartProductId = !productId && cartItems.length > 0 ? cartItems[0].productId : null
+  const { data: firstCartProduct } = useProduct(firstCartProductId || '')
   const { data: addresses, isLoading: isLoadingAddresses } = useAddresses()
   const { data: defaultAddress } = useDefaultAddress()
   const createOrder = useCreateOrder()
+
+  // Determine if we're checking out from cart or single product
+  const isFromCart = !productId && cartItems.length > 0
+  const orderItems = isFromCart 
+    ? cartItems.map(item => ({ productId: item.productId, quantity: item.quantity }))
+    : product 
+      ? [{ productId: product.id, quantity }]
+      : []
+
+  // Group cart items by seller/store
+  const groupedCartItems = React.useMemo(() => {
+    if (!isFromCart) return {}
+    const groups: Record<string, typeof cartItems> = {}
+    cartItems.forEach(item => {
+      const key = item.sellerId || item.storeId || 'unknown'
+      if (!groups[key]) {
+        groups[key] = []
+      }
+      groups[key].push(item)
+    })
+    return groups
+  }, [cartItems, isFromCart])
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     defaultAddress?.id || null
@@ -65,8 +93,8 @@ export default function CheckoutPage() {
   }
 
   const handlePlaceOrder = async () => {
-    if (!product) {
-      toast.error('Không tìm thấy sản phẩm')
+    if (orderItems.length === 0) {
+      toast.error('Không có sản phẩm để đặt hàng')
       return
     }
 
@@ -75,24 +103,34 @@ export default function CheckoutPage() {
       return
     }
 
-    if (quantity < 1) {
-      toast.error('Số lượng không hợp lệ')
+    // Get storeId from first product (assuming all items are from same store)
+    let storeId = ''
+    if (isFromCart && firstCartProduct) {
+      // For cart, get storeId from the first product
+      // Note: In a real app, you might want to validate all items are from the same store
+      storeId = firstCartProduct.sellerId || firstCartProduct.store?.id || ''
+    } else if (product) {
+      storeId = product.sellerId || product.store?.id || ''
+    }
+
+    if (!storeId) {
+      toast.error('Không tìm thấy thông tin người bán')
       return
     }
 
     try {
       const order = await createOrder.mutateAsync({
-        storeId: product.sellerId || product.store?.id || '',
+        storeId,
         paymentMethod: 'bank_transfer',
         shippingAddress: formatAddressString(selectedAddress),
         billingAddress: formatAddressString(selectedAddress),
-        items: [
-          {
-            productId: product.id,
-            quantity,
-          }
-        ],
+        items: orderItems,
       })
+      
+      // Clear cart if order was from cart
+      if (isFromCart) {
+        clearCart()
+      }
       
       // Navigate to order confirmation page
       if (order?.id) {
@@ -107,7 +145,7 @@ export default function CheckoutPage() {
     }
   }
 
-  if (isLoadingProduct || isLoadingAddresses) {
+  if ((productId && isLoadingProduct) || (isFromCart && !firstCartProduct && firstCartProductId) || isLoadingAddresses) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -121,7 +159,7 @@ export default function CheckoutPage() {
     )
   }
 
-  if (!product) {
+  if (productId && !product) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -136,7 +174,23 @@ export default function CheckoutPage() {
     )
   }
 
-  const totalAmount = product.price * quantity
+  if (!isFromCart && !product) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold mb-4">Giỏ hàng trống</h2>
+            <p className="text-muted-foreground mb-4">Vui lòng thêm sản phẩm vào giỏ hàng trước khi đặt hàng</p>
+            <Button onClick={() => navigate('/cart')}>Xem giỏ hàng</Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  const totalAmount = isFromCart ? cartTotalValue : (product ? product.price * quantity : 0)
 
   return (
     <div className="min-h-screen bg-background">
@@ -267,26 +321,75 @@ export default function CheckoutPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Package className="h-5 w-5 text-primary" />
-                    Thông tin sản phẩm
+                    {isFromCart ? `Thông tin sản phẩm (${cartItems.length})` : 'Thông tin sản phẩm'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex gap-4">
-                    <img
-                      src={product.images[0]}
-                      alt={product.title}
-                      className="w-24 h-24 object-cover rounded-lg"
-                    />
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-1">{product.title}</h3>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Số lượng: {quantity}
-                      </p>
-                      <p className="text-lg font-bold text-primary">
-                        {formatCurrency(product.price)} x {quantity}
-                      </p>
+                  {isFromCart ? (
+                    <div className="space-y-4">
+                      {Object.entries(groupedCartItems).map(([sellerKey, sellerItems]) => {
+                        const firstItem = sellerItems[0]
+                        const sellerName = firstItem.sellerName || firstItem.storeName || 'Nhà cung cấp'
+                        const groupTotal = sellerItems.reduce((sum, item) => sum + (item.productPrice * item.quantity), 0)
+                        const groupQuantity = sellerItems.reduce((sum, item) => sum + item.quantity, 0)
+
+                        return (
+                          <div key={sellerKey} className="space-y-2">
+                            {/* Seller Header */}
+                            <div className="flex items-center gap-2 pb-2 border-b">
+                              <Store className="h-4 w-4 text-primary" />
+                              <span className="font-bold text-sm">{sellerName}</span>
+                              <Verified className="h-3 w-3 text-primary" />
+                              <Badge variant="outline" className="text-xs">
+                                {groupQuantity} sản phẩm
+                              </Badge>
+                              <span className="text-xs text-muted-foreground ml-auto font-semibold">
+                                {formatCurrency(groupTotal)}
+                              </span>
+                            </div>
+                            {/* Products in this group */}
+                            <div className="space-y-2 pl-6">
+                              {sellerItems.map((item) => (
+                                <div key={item.id} className="flex gap-3 p-2 border rounded-lg">
+                                  <img
+                                    src={item.productImage}
+                                    alt={item.productName}
+                                    className="w-16 h-16 object-cover rounded-lg"
+                                  />
+                                  <div className="flex-1">
+                                    <h3 className="font-semibold text-sm mb-1">{item.productName}</h3>
+                                    <p className="text-xs text-muted-foreground mb-1">
+                                      Số lượng: {item.quantity}
+                                    </p>
+                                    <p className="text-sm font-bold text-primary">
+                                      {formatCurrency(item.productPrice)} × {item.quantity} = {formatCurrency(item.productPrice * item.quantity)}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
-                  </div>
+                  ) : product ? (
+                    <div className="flex gap-4">
+                      <img
+                        src={product.images[0]}
+                        alt={product.title}
+                        className="w-24 h-24 object-cover rounded-lg"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-semibold mb-1">{product.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Số lượng: {quantity}
+                        </p>
+                        <p className="text-lg font-bold text-primary">
+                          {formatCurrency(product.price)} x {quantity}
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
                 </CardContent>
               </Card>
             </div>
@@ -300,8 +403,10 @@ export default function CheckoutPage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Tạm tính</span>
-                      <span>{formatCurrency(product.price * quantity)}</span>
+                      <span className="text-muted-foreground">
+                        Tạm tính {isFromCart ? `(${cartItems.reduce((sum, item) => sum + item.quantity, 0)} sản phẩm)` : ''}
+                      </span>
+                      <span>{formatCurrency(totalAmount)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Phí vận chuyển</span>
@@ -335,14 +440,14 @@ export default function CheckoutPage() {
                     className="w-full"
                     size="lg"
                     onClick={handlePlaceOrder}
-                    disabled={!selectedAddress || createOrder.isPending}
+                    disabled={!selectedAddress || createOrder.isPending || orderItems.length === 0}
                   >
                     {createOrder.isPending ? (
                       'Đang xử lý...'
                     ) : (
                       <>
                         <CheckCircle2 className="h-4 w-4 mr-2" />
-                        Xác nhận đặt hàng
+                        Xác nhận đặt hàng {isFromCart ? `(${cartItems.length} sản phẩm)` : ''}
                       </>
                     )}
                   </Button>

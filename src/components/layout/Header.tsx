@@ -14,11 +14,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAuthStore } from '@/stores/authStore'
-import { Menu, User, MessageCircle, Settings, Bell, Clock, Package, LogOut, Droplet, Home, HelpCircle, Store, ShoppingBag, Search } from 'lucide-react'
+import { Menu, User, MessageCircle, Settings, Bell, Clock, Package, LogOut, Droplet, Home, HelpCircle, Store, ShoppingBag, Search, ShoppingCart } from 'lucide-react'
 import { useState } from 'react'
+import { useCartStore } from '@/stores/cartStore'
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuthStore()
+  const { totalItems } = useCartStore()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -129,6 +131,21 @@ export function Header() {
             <Link to="/chat">
               <Button variant="ghost" size="icon" aria-label="Chat" className="hover:scale-110 hover:bg-blue-100 dark:hover:bg-blue-900 transition-all duration-200">
                 <MessageCircle className="h-4 w-4" />
+              </Button>
+            </Link>
+
+            {/* Cart Icon */}
+            <Link to="/cart">
+              <Button variant="ghost" size="icon" aria-label="Giỏ hàng" className="relative hover:scale-110 hover:bg-green-100 dark:hover:bg-green-900 transition-all duration-200">
+                <ShoppingCart className="h-4 w-4" />
+                {totalItems > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-bold"
+                  >
+                    {totalItems > 99 ? '99+' : totalItems}
+                  </Badge>
+                )}
               </Button>
             </Link>
 

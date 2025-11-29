@@ -13,6 +13,12 @@ export default defineConfig({
   server: {
     port: 5173,
     open: true,
+    hmr: {
+      overlay: true,
+    },
+    watch: {
+      usePolling: false,
+    },
   },
   build: {
     outDir: 'dist',
@@ -29,6 +35,24 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', '@tanstack/react-query'],
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@tanstack/react-query',
+      'lucide-react',
+      'zustand',
+      'axios',
+      'sonner',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-toast',
+    ],
+    exclude: [],
+    esbuildOptions: {
+      target: 'esnext',
+    },
   },
 })

@@ -76,6 +76,10 @@ export interface CartItem {
   id: string
   cartId: string
   productId: string
+  sellerId?: string
+  sellerName?: string
+  storeId?: string
+  storeName?: string
   quantity: number
   price: number
   productName: string

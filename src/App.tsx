@@ -36,6 +36,7 @@ const SellerDetailPage = React.lazy(() => import('@/pages/SellerDetailPage'))
 const ProductDetailPage = React.lazy(() => import('@/pages/ProductDetailPage'))
 const CheckoutPage = React.lazy(() => import('@/pages/CheckoutPage'))
 const OrderConfirmationPage = React.lazy(() => import('@/pages/OrderConfirmationPage'))
+const CartPage = React.lazy(() => import('@/pages/CartPage'))
 const AddressManagementPage = React.lazy(() => import('@/pages/AddressManagementPage'))
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'))
 
@@ -89,10 +90,11 @@ function App() {
                       <Route path="/shipping/:orderId" element={<ShippingTrackingPage />} />
                       <Route path="/shipping/track/:trackingNumber" element={<ShippingTrackingPage />} />
                       <Route path="/promoted-products/:productId" element={<PromotedProductDetailPage />} />
-                      <Route path="/seller/:sellerId" element={<SellerDetailPage />} />
+                      <Route path="/shop/:id" element={<SellerDetailPage />} />
                       <Route path="/products/:id" element={<ProductDetailPage />} />
                       <Route path="/checkout" element={<CheckoutPage />} />
                       <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+                      <Route path="/cart" element={<CartPage />} />
                       <Route path="/addresses" element={<AddressManagementPage />} />
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>

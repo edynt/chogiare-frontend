@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useProducts } from '@/hooks/useProducts'
 import { LoadingSpinner } from '@/components/ui/loading'
 import { ProductCard } from '@/components/product/ProductCard'
+import { InfiniteProductGrid } from '@/components/product/InfiniteProductGrid'
 import {
   Store,
   Star,
@@ -19,7 +20,6 @@ import {
   ShoppingBag,
   Receipt,
   Users,
-  ChatBubble,
   Timer,
   Truck,
   Award,
@@ -48,6 +48,8 @@ interface Seller {
   responseRate?: number
   averageResponseTime?: string
   onTimeDeliveryRate?: number
+  cancellationRate?: number // Tỉ lệ hủy đơn
+  trustScore?: number // Độ tin cậy (0-100)
 }
 
 export default function SellerDetailPage() {
@@ -55,11 +57,11 @@ export default function SellerDetailPage() {
   const navigate = useNavigate()
   const [selectedFilter, setSelectedFilter] = useState('Tất cả')
   
-  // Fetch seller products
-  const { data: productsData, isLoading: isLoadingProducts } = useProducts({
+  // Fetch seller products for count
+  const { data: productsData } = useProducts({
     sellerId: id,
     page: 1,
-    pageSize: 20
+    limit: 1
   })
   
   // Mock seller data - in production, this would come from an API
@@ -83,14 +85,42 @@ export default function SellerDetailPage() {
     trustBadges: ['Đã xác thực', 'Top Seller', 'Giao hàng nhanh'],
     responseRate: 98.5,
     averageResponseTime: '< 5 phút',
-    onTimeDeliveryRate: 96
+    onTimeDeliveryRate: 96,
+    cancellationRate: 2.5, // 2.5% tỉ lệ hủy đơn
+    trustScore: 95 // Độ tin cậy 95/100
   }
 
-  const products = productsData?.items || []
-  
-  const filteredProducts = selectedFilter === 'Tất cả' 
-    ? products 
-    : products // Add filtering logic as needed
+  // Build filters for InfiniteProductGrid
+  const productFilters = React.useMemo(() => {
+    const baseFilters: any = {
+      sellerId: id,
+    }
+    
+    // Apply sorting based on selected filter
+    switch (selectedFilter) {
+      case 'Bán chạy':
+        baseFilters.sortBy = 'soldCount'
+        baseFilters.sortOrder = 'desc'
+        break
+      case 'Giá thấp':
+        baseFilters.sortBy = 'price'
+        baseFilters.sortOrder = 'asc'
+        break
+      case 'Giá cao':
+        baseFilters.sortBy = 'price'
+        baseFilters.sortOrder = 'desc'
+        break
+      case 'Mới nhất':
+        baseFilters.sortBy = 'createdAt'
+        baseFilters.sortOrder = 'desc'
+        break
+      default:
+        baseFilters.sortBy = 'createdAt'
+        baseFilters.sortOrder = 'desc'
+    }
+    
+    return baseFilters
+  }, [id, selectedFilter])
 
   const filters = ['Tất cả', 'Bán chạy', 'Giá thấp', 'Giá cao', 'Mới nhất']
 
@@ -98,13 +128,13 @@ export default function SellerDetailPage() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Seller Header with Gradient */}
+      {/* Seller Header - Compact */}
       <div className="bg-gradient-to-br from-primary to-primary/80 text-white">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row items-start gap-6">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
             {/* Seller Logo */}
-            <div className="relative">
-              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white">
+            <div className="relative flex-shrink-0">
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white">
                 <img
                   src={seller.logoUrl}
                   alt={seller.name}
@@ -119,182 +149,132 @@ export default function SellerDetailPage() {
                 />
               </div>
               {seller.isVerified && (
-                <div className="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
-                  <Verified className="h-4 w-4 text-white" />
+                <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <Verified className="h-3 w-3 text-white" />
                 </div>
               )}
             </div>
 
-            {/* Seller Info */}
-            <div className="flex-1">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-2xl md:text-3xl font-bold">{seller.name}</h1>
+            {/* Seller Info - Compact */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <h1 className="text-xl md:text-2xl font-bold truncate">{seller.name}</h1>
                     {seller.isTopSeller && (
-                      <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white">
+                      <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white text-xs">
                         <Star className="h-3 w-3 mr-1" />
                         Top Seller
                       </Badge>
                     )}
+                    {seller.isVerified && (
+                      <Badge className="bg-green-500 text-white text-xs">
+                        <Verified className="h-3 w-3 mr-1" />
+                        Đã xác thực
+                      </Badge>
+                    )}
                   </div>
-                  {seller.description && (
-                    <p className="text-white/90 mb-3 max-w-2xl">{seller.description}</p>
-                  )}
-                  <div className="flex items-center gap-4 text-white/90">
+                  <div className="flex items-center gap-4 text-white/90 text-sm flex-wrap">
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       <span className="font-semibold">{seller.rating.toFixed(1)}</span>
+                      <span className="text-white/80">({seller.reviewCount})</span>
                     </div>
-                    <span className="text-white/80">({seller.reviewCount} đánh giá)</span>
+                    <span className="text-white/80">•</span>
+                    <span>{seller.totalProducts} sản phẩm</span>
+                    <span className="text-white/80">•</span>
+                    <span>{seller.totalOrders} đơn hàng</span>
+                    {seller.trustScore !== undefined && (
+                      <>
+                        <span className="text-white/80">•</span>
+                        <span>Độ tin cậy: {seller.trustScore}/100</span>
+                      </>
+                    )}
                   </div>
                 </div>
+                
+                {/* Quick Actions - Compact */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                    asChild
+                  >
+                    <Link to={`/chat?sellerId=${seller.id}`}>
+                      <MessageCircle className="h-4 w-4 mr-1" />
+                      Chat
+                    </Link>
+                  </Button>
+                  {seller.phone && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                      onClick={() => window.location.href = `tel:${seller.phone}`}
+                    >
+                      <Phone className="h-4 w-4 mr-1" />
+                      Gọi
+                    </Button>
+                  )}
+                </div>
               </div>
+            </div>
+          </div>
+
+          {/* Trust Metrics - Compact Row */}
+          <div className="mt-4 pt-4 border-t border-white/20">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {seller.responseRate !== undefined && (
+                <div className="flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4 text-white/80" />
+                  <div>
+                    <p className="text-xs text-white/70">Tỷ lệ phản hồi</p>
+                    <p className="text-sm font-semibold">{seller.responseRate}%</p>
+                  </div>
+                </div>
+              )}
+              {seller.averageResponseTime && (
+                <div className="flex items-center gap-2">
+                  <Timer className="h-4 w-4 text-white/80" />
+                  <div>
+                    <p className="text-xs text-white/70">Thời gian phản hồi</p>
+                    <p className="text-sm font-semibold">{seller.averageResponseTime}</p>
+                  </div>
+                </div>
+              )}
+              {seller.cancellationRate !== undefined && (
+                <div className="flex items-center gap-2">
+                  <TrendingUp className={`h-4 w-4 ${
+                    seller.cancellationRate <= 3 ? 'text-green-300' : 
+                    seller.cancellationRate <= 5 ? 'text-yellow-300' : 'text-red-300'
+                  }`} />
+                  <div>
+                    <p className="text-xs text-white/70">Tỉ lệ hủy đơn</p>
+                    <p className={`text-sm font-semibold ${
+                      seller.cancellationRate <= 3 ? 'text-green-300' : 
+                      seller.cancellationRate <= 5 ? 'text-yellow-300' : 'text-red-300'
+                    }`}>
+                      {seller.cancellationRate}%
+                    </p>
+                  </div>
+                </div>
+              )}
+              {seller.onTimeDeliveryRate !== undefined && (
+                <div className="flex items-center gap-2">
+                  <Truck className="h-4 w-4 text-white/80" />
+                  <div>
+                    <p className="text-xs text-white/70">Giao hàng đúng hẹn</p>
+                    <p className="text-sm font-semibold">{seller.onTimeDeliveryRate}%</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
       <main className="container mx-auto px-4 py-6">
-        {/* Trust & Stats Section */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-9 h-9 bg-green-500/10 rounded-lg flex items-center justify-center">
-                <Verified className="h-5 w-5 text-green-500" />
-              </div>
-              <h2 className="text-xl font-bold">Độ tin cậy</h2>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="p-4 bg-primary/5 rounded-xl border border-primary/20">
-                <ShoppingBag className="h-6 w-6 text-primary mb-2" />
-                <p className="text-2xl font-bold text-primary">{seller.totalProducts}</p>
-                <p className="text-sm text-muted-foreground">Sản phẩm</p>
-              </div>
-              <div className="p-4 bg-blue-500/5 rounded-xl border border-blue-500/20">
-                <Receipt className="h-6 w-6 text-blue-500 mb-2" />
-                <p className="text-2xl font-bold text-blue-500">{seller.totalOrders}</p>
-                <p className="text-sm text-muted-foreground">Đơn hàng</p>
-              </div>
-              <div className="p-4 bg-purple-500/5 rounded-xl border border-purple-500/20">
-                <Users className="h-6 w-6 text-purple-500 mb-2" />
-                <p className="text-2xl font-bold text-purple-500">{seller.totalCustomers}</p>
-                <p className="text-sm text-muted-foreground">Khách hàng</p>
-              </div>
-            </div>
-
-            {/* Trust Metrics */}
-            {(seller.responseRate || seller.averageResponseTime || seller.onTimeDeliveryRate) && (
-              <>
-                <div className="border-t pt-6 space-y-4">
-                  {seller.responseRate && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                        <ChatBubble className="h-5 w-5 text-blue-500" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-muted-foreground">Tỷ lệ phản hồi</p>
-                        <p className="text-lg font-semibold text-blue-500">{seller.responseRate}%</p>
-                      </div>
-                    </div>
-                  )}
-                  {seller.averageResponseTime && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center">
-                        <Timer className="h-5 w-5 text-yellow-500" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-muted-foreground">Thời gian phản hồi</p>
-                        <p className="text-lg font-semibold text-yellow-500">{seller.averageResponseTime}</p>
-                      </div>
-                    </div>
-                  )}
-                  {seller.onTimeDeliveryRate && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
-                        <Truck className="h-5 w-5 text-green-500" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-muted-foreground">Giao hàng đúng hẹn</p>
-                        <p className="text-lg font-semibold text-green-500">{seller.onTimeDeliveryRate}%</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-
-            {/* Trust Badges */}
-            {seller.trustBadges && seller.trustBadges.length > 0 && (
-              <>
-                <div className="border-t pt-6 mt-6">
-                  <h3 className="text-sm font-semibold mb-4">Chứng nhận</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {seller.trustBadges.map((badge, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="border-primary/30 bg-primary/5 text-primary"
-                      >
-                        <Award className="h-3 w-3 mr-1" />
-                        {badge}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Quick Actions */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="grid grid-cols-3 gap-4">
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4 border-primary/20 hover:bg-primary/5"
-                asChild
-              >
-                <Link to={`/chat?sellerId=${seller.id}`}>
-                  <MessageCircle className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium">Chat</span>
-                </Link>
-              </Button>
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4 border-green-500/20 hover:bg-green-500/5"
-                onClick={() => {
-                  if (seller.phone) {
-                    window.location.href = `tel:${seller.phone}`
-                  }
-                }}
-              >
-                <Phone className="h-5 w-5 text-green-500" />
-                <span className="text-sm font-medium">Gọi điện</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4 border-blue-500/20 hover:bg-blue-500/5"
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: seller.name,
-                      text: seller.description,
-                      url: window.location.href
-                    })
-                  }
-                }}
-              >
-                <Share2 className="h-5 w-5 text-blue-500" />
-                <span className="text-sm font-medium">Chia sẻ</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Products Section */}
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -307,7 +287,7 @@ export default function SellerDetailPage() {
               </div>
             </div>
             <Badge variant="outline" className="bg-primary/5">
-              {filteredProducts.length} sản phẩm
+              {productsData?.total || 0} sản phẩm
             </Badge>
           </div>
 
@@ -326,25 +306,8 @@ export default function SellerDetailPage() {
             ))}
           </div>
 
-          {/* Products Grid */}
-          {isLoadingProducts ? (
-            <div className="flex items-center justify-center py-12">
-              <LoadingSpinner size="lg" />
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Chưa có sản phẩm</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
+          {/* Products Grid with Infinite Scroll */}
+          <InfiniteProductGrid filters={productFilters} />
         </div>
       </main>
 

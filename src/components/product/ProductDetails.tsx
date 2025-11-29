@@ -24,6 +24,8 @@ import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorMessage } from '@/components/ui/error-boundary'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { SecurityWarning } from '@/components/ui/security-warning'
+import { useCartStore } from '@/stores/cartStore'
+import { toast } from 'sonner'
 import { 
   Star, 
   Share2, 
@@ -43,6 +45,7 @@ import {
   Verified,
   Package,
   ShoppingBag,
+  ShoppingCart,
   Table2,
   CheckCircle2,
   FileText,
@@ -60,6 +63,7 @@ interface ProductDetailsProps {
 export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const { id } = useParams<{ id: string }>()
   const productIdToUse = productId || id
+  const { addItem } = useCartStore()
   
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [quantity, setQuantity] = useState<number>(1)
@@ -291,10 +295,15 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           <Separator className="my-4" />
 
           {/* Seller Info Card */}
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4 flex-1">
+                <div className="flex items-start gap-4 flex-1 cursor-pointer" onClick={() => {
+                  const sellerId = product.sellerId || product.store?.id
+                  if (sellerId) {
+                    window.location.href = `/shop/${sellerId}`
+                  }
+                }}>
                   <Avatar className="h-16 w-16">
                     <AvatarImage src={product.seller?.avatar || product.store?.logo} />
                     <AvatarFallback>
@@ -326,6 +335,17 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="whitespace-nowrap"
+                  >
+                    <Link to={`/shop/${product.sellerId || product.store?.id || ''}`}>
+                      <Package className="h-4 w-4 mr-2" />
+                      Xem shop
+                    </Link>
+                  </Button>
                   <Button variant="outline" size="sm" asChild>
                     <Link to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}>
                       <MessageCircle className="h-4 w-4 mr-2" />
@@ -364,6 +384,18 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               </Link>
             </Button>
             
+            {/* Add to Cart Button */}
+            <Button
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={() => {
+                addItem(product, quantity)
+                toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`)
+              }}
+            >
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Thêm vào giỏ hàng
+            </Button>
+
             {/* Order and Quote Buttons - Side by side */}
             <div className="grid grid-cols-2 gap-2">
               <Button 
@@ -1096,12 +1128,17 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               )}
               
               <div className="flex gap-2 mt-4">
-                <Button variant="outline" className="flex-1">
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Nhắn tin
+                <Button variant="outline" className="flex-1" asChild>
+                  <Link to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}>
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Nhắn tin
+                  </Link>
                 </Button>
-                <Button variant="outline" className="flex-1">
-                  Xem shop
+                <Button variant="outline" className="flex-1" asChild>
+                  <Link to={`/shop/${product.sellerId || product.store?.id || ''}`}>
+                    <Package className="h-4 w-4 mr-2" />
+                    Xem shop
+                  </Link>
                 </Button>
               </div>
             </CardContent>
