@@ -8,14 +8,6 @@ import { Badge } from '@/components/ui/badge'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import { useProduct } from '@/hooks/useProducts'
 import { useAddresses, useDefaultAddress } from '@/hooks/useAddresses'
 import { useCreateOrder } from '@/hooks/useOrders'
@@ -35,9 +27,7 @@ import {
   CreditCard,
   User,
   Phone,
-  AlertCircle,
-  CheckCircle,
-  ExternalLink
+  AlertCircle
 } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { formatCurrency } from '@/lib/utils'
@@ -58,8 +48,6 @@ export default function CheckoutPage() {
     defaultAddress?.id || null
   )
   const [showAddAddressDialog, setShowAddAddressDialog] = useState(false)
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
-  const [orderId, setOrderId] = useState<string | null>(null)
 
   const selectedAddress = addresses?.find(addr => addr.id === selectedAddressId) || defaultAddress
 
@@ -106,11 +94,10 @@ export default function CheckoutPage() {
         ],
       })
       
-      // Set order ID and show success dialog
+      // Navigate to order confirmation page
       if (order?.id) {
-        setOrderId(order.id)
-        setShowSuccessDialog(true)
         toast.success('Đặt hàng thành công!')
+        navigate(`/order-confirmation?orderId=${order.id}`)
       } else {
         toast.error('Đặt hàng thành công nhưng không nhận được mã đơn hàng')
         navigate('/customer-orders')
@@ -162,8 +149,8 @@ export default function CheckoutPage() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold">Đặt hàng</h1>
-              <p className="text-muted-foreground mt-1">Xác nhận thông tin đơn hàng</p>
+              <h1 className="text-3xl font-bold">Xác nhận đặt hàng</h1>
+              <p className="text-muted-foreground mt-1">Kiểm tra và xác nhận thông tin đơn hàng của bạn</p>
             </div>
           </div>
 
@@ -354,8 +341,8 @@ export default function CheckoutPage() {
                       'Đang xử lý...'
                     ) : (
                       <>
-                        <ShoppingBag className="h-4 w-4 mr-2" />
-                        Đặt hàng
+                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                        Xác nhận đặt hàng
                       </>
                     )}
                   </Button>
@@ -372,79 +359,6 @@ export default function CheckoutPage() {
         </div>
       </main>
       <Footer />
-
-      {/* Success Dialog */}
-      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader className="text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
-              <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
-            </div>
-            <DialogTitle className="text-2xl font-bold text-center">
-              Đặt hàng thành công!
-            </DialogTitle>
-            <DialogDescription className="text-center pt-2">
-              Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được ghi nhận và đang được xử lý.
-            </DialogDescription>
-          </DialogHeader>
-          
-          {orderId && (
-            <div className="py-4">
-              <div className="rounded-lg bg-muted p-4 text-center">
-                <p className="text-sm text-muted-foreground mb-1">Mã đơn hàng</p>
-                <p className="text-lg font-semibold font-mono">{orderId}</p>
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-3 py-4">
-            <div className="rounded-lg border p-3 space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Sản phẩm:</span>
-                <span className="font-medium">{product.title}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Số lượng:</span>
-                <span className="font-medium">{quantity}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Tổng tiền:</span>
-                <span className="font-bold text-primary">{formatCurrency(totalAmount)}</span>
-              </div>
-            </div>
-            
-            <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800">
-              <AlertCircle className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-blue-800 dark:text-blue-200 text-xs">
-                <strong>Lưu ý:</strong> Bạn cần tự đến lấy hàng hoặc tự đặt dịch vụ vận chuyển.
-              </AlertDescription>
-            </Alert>
-          </div>
-
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowSuccessDialog(false)
-                navigate('/')
-              }}
-              className="w-full sm:w-auto"
-            >
-              Tiếp tục mua sắm
-            </Button>
-            <Button
-              onClick={() => {
-                setShowSuccessDialog(false)
-                navigate('/customer-orders')
-              }}
-              className="w-full sm:w-auto"
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Xem đơn hàng
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
