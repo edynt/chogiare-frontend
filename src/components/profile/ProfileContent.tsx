@@ -15,7 +15,7 @@ import { CompactShippingProgress } from '@/components/shipping/CompactShippingPr
 import { 
   User, Mail, Phone, MapPin, Package, Eye, Calendar, 
   Star, Heart, ShoppingBag, Shield, Award, TrendingUp,
-  Settings, Edit, Camera, Lock, Globe
+  Settings, Edit, Camera, Lock, Globe, Store
 } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 
@@ -298,6 +298,31 @@ export function ProfileContent() {
           </CardContent>
         </Card>
       )}
+
+      {/* Seller Dashboard Access Card */}
+      <Card className="border-2 border-primary">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <Store className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">Bạn là người bán?</h3>
+                <p className="text-sm text-muted-foreground">
+                  Truy cập dashboard dành cho người bán để quản lý sản phẩm và đơn hàng
+                </p>
+              </div>
+            </div>
+            <Button asChild className="bg-primary hover:bg-primary/90">
+              <Link to="/dashboard">
+                <Store className="h-4 w-4 mr-2" />
+                Vào Dashboard
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
         </>
       )}
 

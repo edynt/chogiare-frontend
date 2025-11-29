@@ -27,6 +27,7 @@ import {
 import { useOrder, useConfirmOrder, useUpdateOrderStatus } from '@/hooks/useOrders'
 import { ErrorBoundary } from '@/components/ui/error-boundary'
 import { toast } from 'sonner'
+import { SecurityWarning } from '@/components/ui/security-warning'
 
 export default function OrderDetailPage() {
   const { orderId } = useParams<{ orderId: string }>()
@@ -322,6 +323,9 @@ export default function OrderDetailPage() {
               </CardContent>
             </Card>
 
+            {/* Security Warning */}
+            <SecurityWarning variant="payment" />
+
             {/* Payment Info Card */}
             <Card>
               <CardContent className="p-5">
@@ -518,6 +522,11 @@ export default function OrderDetailPage() {
               </Card>
             )}
 
+            {/* Security Warning for Buyers */}
+            {order.status === 'pending' && (
+              <SecurityWarning variant="payment" />
+            )}
+
             {/* Action Buttons */}
             {order.status === 'pending' && (
               <div className="flex gap-3">
@@ -564,7 +573,7 @@ export default function OrderDetailPage() {
 
       {/* Confirm Order Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Xác nhận đơn hàng</DialogTitle>
             <DialogDescription>
@@ -572,6 +581,7 @@ export default function OrderDetailPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            <SecurityWarning variant="payment" />
             <div>
               <label className="text-sm font-medium">Ghi chú (tùy chọn)</label>
               <Textarea

@@ -414,7 +414,7 @@ export default function PromotedProductDetailPage() {
             <Button 
               variant="outline" 
               className="flex-1"
-              onClick={() => navigate(`/seller/products/detail/${product.id}`)}
+              onClick={() => navigate(`/products/${product.id}`)}
             >
               <Package className="h-4 w-4 mr-2" />
               Xem chi tiết sản phẩm

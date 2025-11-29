@@ -13,9 +13,9 @@ import {
   Shield,
   Mail,
   ChevronLeft,
-  Gift,
   Menu,
-  Database
+  Database,
+  Crown
 } from 'lucide-react'
 
 const menuItems = [
@@ -44,6 +44,12 @@ const menuItems = [
     badge: null
   },
   {
+    title: 'Gói dịch vụ',
+    href: '/admin/subscriptions',
+    icon: Crown,
+    badge: null
+  },
+  {
     title: 'Báo cáo & Thống kê',
     href: '/admin/reports',
     icon: BarChart3,
@@ -62,21 +68,15 @@ const menuItems = [
     badge: '3'
   },
   {
-    title: 'Quản lý khuyến mãi',
-    href: '/admin/promotions',
-    icon: Gift,
+    title: 'Email & Thông báo',
+    href: '/admin/notifications',
+    icon: Mail,
     badge: null
   },
   {
     title: 'Cài đặt hệ thống',
     href: '/admin/settings',
     icon: Settings,
-    badge: null
-  },
-  {
-    title: 'Email & Thông báo',
-    href: '/admin/notifications',
-    icon: Mail,
     badge: null
   },
   {
@@ -130,7 +130,9 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
-          const isActive = location.pathname === item.href
+          // Check if current path matches the menu item (exact match or starts with)
+          const isActive = location.pathname === item.href || 
+                          (item.href !== '/admin' && location.pathname.startsWith(item.href))
           const Icon = item.icon
           
           return (

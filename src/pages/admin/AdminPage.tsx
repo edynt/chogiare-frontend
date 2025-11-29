@@ -8,11 +8,9 @@ import OrderManagementPage from './OrderManagementPage'
 import PackageManagementPage from './PackageManagementPage'
 import ReportsAnalyticsPage from './ReportsAnalyticsPage'
 import ContentManagementPage from './ContentManagementPage'
-import SupportTicketsPage from './SupportTicketsPage'
+import CustomerSupportPage from './CustomerSupportPage'
 import SystemSettingsPage from './SystemSettingsPage'
 import NotificationManagementPage from './NotificationManagementPage'
-import CustomerSupportPage from './CustomerSupportPage'
-import PromotionManagementPage from './PromotionManagementPage'
 import { DataSeeder } from '@/components/admin/DataSeeder'
 
 export default function AdminPage() {
@@ -26,11 +24,9 @@ export default function AdminPage() {
         <Route path="/subscriptions" element={<PackageManagementPage />} />
         <Route path="/reports" element={<ReportsAnalyticsPage />} />
         <Route path="/cms" element={<ContentManagementPage />} />
-                <Route path="/tickets" element={<SupportTicketsPage />} />
         <Route path="/support" element={<CustomerSupportPage />} />
-        <Route path="/promotions" element={<PromotionManagementPage />} />
-        <Route path="/settings" element={<SystemSettingsPage />} />
         <Route path="/notifications" element={<NotificationManagementPage />} />
+        <Route path="/settings" element={<SystemSettingsPage />} />
         <Route path="/seeder" element={<DataSeeder />} />
       </Routes>
     </AdminLayout>

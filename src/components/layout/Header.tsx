@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAuthStore } from '@/stores/authStore'
-import { Menu, User, MessageCircle, Settings, Bell, Clock, Package, LogOut, Droplet, Home } from 'lucide-react'
+import { Menu, User, MessageCircle, Settings, Bell, Clock, Package, LogOut, Droplet, Home, HelpCircle, Store, ShoppingBag } from 'lucide-react'
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuthStore()
@@ -206,15 +206,21 @@ export function Header() {
                     {/* Personal Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
+                        <Link to="/buyer-dashboard" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                          <Home className="mr-2 h-4 w-4" />
+                          <span>Dashboard Người Mua</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
                         <Link to="/profile" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <User className="mr-2 h-4 w-4" />
                           <span>Thông tin cá nhân</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/profile?tab=orders" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
-                          <Package className="mr-2 h-4 w-4" />
-                          <span>Lịch sử đơn hàng</span>
+                        <Link to="/customer-orders" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                          <ShoppingBag className="mr-2 h-4 w-4" />
+                          <span>Đơn hàng của tôi</span>
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
@@ -242,9 +248,21 @@ export function Header() {
                     {/* Business Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
+                        <Link to="/dashboard" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                          <Store className="mr-2 h-4 w-4" />
+                          <span>Dashboard Người Bán</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
                         <Link to="/seller/products" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <Settings className="mr-2 h-4 w-4" />
                           <span>Quản lý sản phẩm</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/seller/support" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                          <HelpCircle className="mr-2 h-4 w-4" />
+                          <span>Hỗ trợ & Khiếu nại</span>
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuGroup>

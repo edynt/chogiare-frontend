@@ -22,7 +22,7 @@ const EditProductPage = React.lazy(() => import('@/pages/EditProductPage'))
 const ImportProductsPage = React.lazy(() => import('@/pages/ImportProductsPage'))
 const CustomerManagementPage = React.lazy(() => import('@/pages/CustomerManagementPage'))
 const RevenueReportsPage = React.lazy(() => import('@/pages/RevenueReportsPage'))
-const ProductDetailSellerPage = React.lazy(() => import('@/pages/ProductDetailSellerPage'))
+const SellerSupportPage = React.lazy(() => import('@/pages/SellerSupportPage'))
 const NotificationsPage = React.lazy(() => import('@/pages/NotificationsPage'))
 const AuthPage = React.lazy(() => import('@/pages/AuthPage'))
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'))
@@ -30,6 +30,10 @@ const OrdersPage = React.lazy(() => import('@/pages/OrdersPage'))
 const OrderDetailPage = React.lazy(() => import('@/pages/OrderDetailPage'))
 const ShippingTrackingPage = React.lazy(() => import('@/pages/ShippingTrackingPage'))
 const PromotedProductDetailPage = React.lazy(() => import('@/pages/PromotedProductDetailPage'))
+const BuyerDashboardPage = React.lazy(() => import('@/pages/BuyerDashboardPage'))
+const CustomerOrdersPage = React.lazy(() => import('@/pages/CustomerOrdersPage'))
+const SellerDetailPage = React.lazy(() => import('@/pages/SellerDetailPage'))
+const ProductDetailPage = React.lazy(() => import('@/pages/ProductDetailPage'))
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'))
 
 // Create a client
@@ -68,17 +72,22 @@ function App() {
                       <Route path="/seller/products/add" element={<AddProductPage />} />
                       <Route path="/seller/products/import" element={<ImportProductsPage />} />
                       <Route path="/seller/products/edit/:id" element={<EditProductPage />} />
-                      <Route path="/seller/products/detail/:id" element={<ProductDetailSellerPage />} />
+                      <Route path="/seller/products/detail/:id" element={<ProductDetailPage />} />
                       <Route path="/seller/customers" element={<CustomerManagementPage />} />
                       <Route path="/seller/revenue" element={<RevenueReportsPage />} />
+                      <Route path="/seller/support" element={<SellerSupportPage />} />
                       <Route path="/notifications" element={<NotificationsPage />} />
                       <Route path="/orders" element={<OrdersPage />} />
+                      <Route path="/customer-orders" element={<CustomerOrdersPage />} />
+                      <Route path="/buyer-dashboard" element={<BuyerDashboardPage />} />
                       <Route path="/auth/*" element={<AuthPage />} />
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/orders/:orderId" element={<OrderDetailPage />} />
                       <Route path="/shipping/:orderId" element={<ShippingTrackingPage />} />
                       <Route path="/shipping/track/:trackingNumber" element={<ShippingTrackingPage />} />
                       <Route path="/promoted-products/:productId" element={<PromotedProductDetailPage />} />
+                      <Route path="/seller/:sellerId" element={<SellerDetailPage />} />
+                      <Route path="/products/:id" element={<ProductDetailPage />} />
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                     </Suspense>
