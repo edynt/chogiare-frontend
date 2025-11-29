@@ -1,7 +1,6 @@
 import React, { Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ThemeProvider } from '@/contexts/ThemeContext'
 import { Toaster } from '@/components/ui/sonner'
 import { NotificationProvider } from '@/components/notification-provider'
 import { AuthProvider } from '@/components/auth/AuthProvider'
@@ -55,59 +54,57 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <NotificationProvider>
-          <AuthProvider>
-            <PerformanceOptimizer>
-                <Router>
-                  <div className="min-h-screen bg-background">
-                    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
-                      <Routes>
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/chat" element={<ChatPage />} />
-                      <Route path="/chat/:chatId" element={<ChatPage />} />
-                      <Route path="/seller/notifications" element={<SellerNotificationsPage />} />
-                      <Route path="/top-up" element={<TopUpPage />} />
-                      <Route path="/payment-qr" element={<PaymentQRPage />} />
-                      <Route path="/boost-post" element={<BoostPostPage />} />
-                      <Route path="/admin/*" element={<AdminPage />} />
-                      <Route path="/seller/:id" element={<SellerDashboard />} />
-                      <Route path="/dashboard" element={<SellerDashboard />} />
-                      <Route path="/seller/products" element={<SellerProductsPage />} />
-                      <Route path="/seller/products/add" element={<AddProductPage />} />
-                      <Route path="/seller/products/import" element={<ImportProductsPage />} />
-                      <Route path="/seller/products/edit/:id" element={<EditProductPage />} />
-                      <Route path="/seller/products/detail/:id" element={<ProductDetailPage />} />
-                      <Route path="/seller/customers" element={<CustomerManagementPage />} />
-                      <Route path="/seller/revenue" element={<RevenueReportsPage />} />
-                      <Route path="/seller/support" element={<SellerSupportPage />} />
-                      <Route path="/notifications" element={<NotificationsPage />} />
-                      <Route path="/orders" element={<OrdersPage />} />
-                      <Route path="/customer-orders" element={<CustomerOrdersPage />} />
-                      <Route path="/buyer-dashboard" element={<BuyerDashboardPage />} />
-                      <Route path="/auth/*" element={<AuthPage />} />
-                      <Route path="/profile" element={<ProfilePage />} />
-                      <Route path="/orders/:orderId" element={<OrderDetailPage />} />
-                      <Route path="/shipping/:orderId" element={<ShippingTrackingPage />} />
-                      <Route path="/shipping/track/:trackingNumber" element={<ShippingTrackingPage />} />
-                      <Route path="/promoted-products/:productId" element={<PromotedProductDetailPage />} />
-                      <Route path="/shop/:id" element={<SellerDetailPage />} />
-                      <Route path="/products" element={<ProductListPage />} />
-                      <Route path="/products/:id" element={<ProductDetailPage />} />
-                      <Route path="/checkout" element={<CheckoutPage />} />
-                      <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
-                      <Route path="/cart" element={<CartPage />} />
-                      <Route path="/addresses" element={<AddressManagementPage />} />
-                      <Route path="*" element={<NotFoundPage />} />
-                    </Routes>
-                    </Suspense>
-                    <Toaster />
-                  </div>
-                </Router>
-            </PerformanceOptimizer>
-          </AuthProvider>
-        </NotificationProvider>
-      </ThemeProvider>
+      <NotificationProvider>
+        <AuthProvider>
+          <PerformanceOptimizer>
+              <Router>
+                <div className="min-h-screen bg-background">
+                  <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+                    <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/chat" element={<ChatPage />} />
+                    <Route path="/chat/:chatId" element={<ChatPage />} />
+                    <Route path="/seller/notifications" element={<SellerNotificationsPage />} />
+                    <Route path="/top-up" element={<TopUpPage />} />
+                    <Route path="/payment-qr" element={<PaymentQRPage />} />
+                    <Route path="/boost-post" element={<BoostPostPage />} />
+                    <Route path="/admin/*" element={<AdminPage />} />
+                    <Route path="/seller/:id" element={<SellerDashboard />} />
+                    <Route path="/dashboard" element={<SellerDashboard />} />
+                    <Route path="/seller/products" element={<SellerProductsPage />} />
+                    <Route path="/seller/products/add" element={<AddProductPage />} />
+                    <Route path="/seller/products/import" element={<ImportProductsPage />} />
+                    <Route path="/seller/products/edit/:id" element={<EditProductPage />} />
+                    <Route path="/seller/products/detail/:id" element={<ProductDetailPage />} />
+                    <Route path="/seller/customers" element={<CustomerManagementPage />} />
+                    <Route path="/seller/revenue" element={<RevenueReportsPage />} />
+                    <Route path="/seller/support" element={<SellerSupportPage />} />
+                    <Route path="/notifications" element={<NotificationsPage />} />
+                    <Route path="/orders" element={<OrdersPage />} />
+                    <Route path="/customer-orders" element={<CustomerOrdersPage />} />
+                    <Route path="/buyer-dashboard" element={<BuyerDashboardPage />} />
+                    <Route path="/auth/*" element={<AuthPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/orders/:orderId" element={<OrderDetailPage />} />
+                    <Route path="/shipping/:orderId" element={<ShippingTrackingPage />} />
+                    <Route path="/shipping/track/:trackingNumber" element={<ShippingTrackingPage />} />
+                    <Route path="/promoted-products/:productId" element={<PromotedProductDetailPage />} />
+                    <Route path="/shop/:id" element={<SellerDetailPage />} />
+                    <Route path="/products" element={<ProductListPage />} />
+                    <Route path="/products/:id" element={<ProductDetailPage />} />
+                    <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+                    <Route path="/cart" element={<CartPage />} />
+                    <Route path="/addresses" element={<AddressManagementPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Routes>
+                  </Suspense>
+                  <Toaster />
+                </div>
+              </Router>
+          </PerformanceOptimizer>
+        </AuthProvider>
+      </NotificationProvider>
     </QueryClientProvider>
   )
 }

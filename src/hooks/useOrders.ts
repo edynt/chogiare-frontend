@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import { ordersApi } from '@/api/orders'
 import type { UpdateOrderRequest } from '@/api/orders'
 
@@ -32,6 +32,39 @@ export const useStoreOrders = (storeId: string, filters?: { page?: number; pageS
     queryKey: ['orders', 'store', storeId, filters],
     queryFn: () => ordersApi.getStoreOrders(storeId, filters),
     enabled: !!storeId,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const useInfiniteStoreOrders = (storeId: string, pageSize: number = 20) => {
+  return useInfiniteQuery({
+    queryKey: ['orders', 'store', 'infinite', storeId],
+    queryFn: ({ pageParam = 1 }) => {
+      return ordersApi.getStoreOrders(storeId, { page: pageParam, pageSize })
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      const currentPage = allPages.length
+      const totalPages = lastPage.totalPages || 1
+      return currentPage < totalPages ? currentPage + 1 : undefined
+    },
+    initialPageParam: 1,
+    enabled: !!storeId,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const useInfiniteUserOrders = (pageSize: number = 20) => {
+  return useInfiniteQuery({
+    queryKey: ['orders', 'user', 'infinite'],
+    queryFn: ({ pageParam = 1 }) => {
+      return ordersApi.getUserOrders({ page: pageParam, pageSize })
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      const currentPage = allPages.length
+      const totalPages = lastPage.totalPages || 1
+      return currentPage < totalPages ? currentPage + 1 : undefined
+    },
+    initialPageParam: 1,
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }

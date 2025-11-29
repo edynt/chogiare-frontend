@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAuthStore } from '@/stores/authStore'
 import { Menu, User, MessageCircle, Settings, Bell, Clock, Package, LogOut, Droplet, Home, HelpCircle, Store, ShoppingBag, Search, ShoppingCart } from 'lucide-react'
 import { useState } from 'react'
@@ -211,19 +210,18 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-
-            {/* Theme Toggle */}
-            <ThemeToggle />
-
             {/* User Menu */}
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
-                <Link to="/seller/products">
-                  <Button variant="ghost" size="sm">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Quản lý sản phẩm
-                  </Button>
-                </Link>
+                {/* Only show "Quản lý sản phẩm" for sellers */}
+                {user?.roles?.includes('seller') && (
+                  <Link to="/seller/products">
+                    <Button variant="ghost" size="sm">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Quản lý sản phẩm
+                    </Button>
+                  </Link>
+                )}
                 
                 {/* Profile Dropdown */}
                 <DropdownMenu>
@@ -296,23 +294,26 @@ export function Header() {
                     
                     <DropdownMenuSeparator />
                     
-                    {/* Business Section */}
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem asChild>
-                        <Link to="/seller/products" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
-                          <Settings className="mr-2 h-4 w-4" />
-                          <span>Quản lý sản phẩm</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/seller/support" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
-                          <HelpCircle className="mr-2 h-4 w-4" />
-                          <span>Hỗ trợ & Khiếu nại</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    
-                    <DropdownMenuSeparator />
+                    {/* Business Section - Only for sellers */}
+                    {user?.roles?.includes('seller') && (
+                      <>
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem asChild>
+                            <Link to="/seller/products" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                              <Settings className="mr-2 h-4 w-4" />
+                              <span>Quản lý sản phẩm</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link to="/seller/support" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                              <HelpCircle className="mr-2 h-4 w-4" />
+                              <span>Hỗ trợ & Khiếu nại</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
                     
                     {/* Settings Section */}
                     <DropdownMenuGroup>
