@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -6,20 +6,16 @@ import { SEOHead } from '@/components/seo/SEOHead'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { useUserOrders } from '@/hooks/useOrders'
 import { useProducts, useCategories } from '@/hooks'
-import { SimpleProductGrid } from '@/components/product/ProductGridWithPagination'
 import { InfiniteProductGrid } from '@/components/product/InfiniteProductGrid'
+import { LazySection } from '@/components/product/LazySection'
+import { HomePageSkeleton, HomePageSectionSkeleton, HomePageShopSectionSkeleton } from '@/components/skeleton/HomePageSkeleton'
+import { Skeleton } from '@/components/ui/skeleton'
 import { 
   ShoppingBag, 
-  Heart, 
   Store, 
-  MessageSquare,
   TrendingUp,
   ArrowRight,
-  Search,
-  Users,
-  Zap,
   Layers,
   Flame,
   MapPin,
@@ -37,12 +33,9 @@ import {
 
 export default function HomePage() {
   const navigate = useNavigate()
-  const { data: ordersData } = useUserOrders({ page: 1, pageSize: 5 })
   const { data: allProductsData, isLoading: isLoadingProducts } = useProducts({ limit: 100, sortBy: 'createdAt', sortOrder: 'desc' })
   const { data: categories } = useCategories()
   
-  const orders = ordersData?.items || []
-  const pendingOrders = orders.filter(o => o.status === 'pending')
   const allProducts = allProductsData?.items || []
   
   // 1. Bán chạy nhất (Best sellers) - sort by viewCount
@@ -132,6 +125,26 @@ export default function HomePage() {
 
   const displayCategories = categories?.slice(0, 8) || []
 
+  // Show skeleton while loading initial data
+  if (isLoadingProducts) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SEOHead
+          title="Chogiare - Nền tảng mua sỉ hàng đầu Việt Nam"
+          description="Tìm kiếm và mua sỉ hàng ngàn sản phẩm với giá tốt nhất"
+          keywords="mua sỉ, bán sỉ, chogiare"
+        />
+        <Header />
+        <main className="container mx-auto px-4 py-6">
+          <div className="max-w-7xl mx-auto">
+            <HomePageSkeleton />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
@@ -160,8 +173,8 @@ export default function HomePage() {
           </Card>
 
 
-          {/* 3. Hero Banner - Modern & Attractive */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary to-purple-600 text-white shadow-2xl">
+          {/* 3. Hero Banner - Modern & Attractive - Load immediately */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary to-purple-600 text-white shadow-2xl animate-in fade-in slide-in-from-top-4 duration-700">
             <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,transparent)]" />
             <div className="relative z-10 p-8 md:p-12 lg:p-16">
               <div className="max-w-3xl">
@@ -203,9 +216,28 @@ export default function HomePage() {
           </div>
 
 
-          {/* 5. Categories Section */}
-          {displayCategories.length > 0 && (
+          {/* 5. Categories Section - Lazy Load */}
+          <LazySection fallback={
             <div>
+              <div className="flex items-center justify-between mb-4">
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-8 w-24" />
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <Card key={i}>
+                    <CardContent className="p-4 text-center">
+                      <Skeleton className="w-12 h-12 rounded-full mx-auto mb-2" />
+                      <Skeleton className="h-4 w-full mb-1" />
+                      <Skeleton className="h-3 w-16 mx-auto" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          }>
+            {displayCategories.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold">Danh mục</h2>
                 <Button variant="ghost" size="sm" asChild>
@@ -234,11 +266,13 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-          )}
+            )}
+          </LazySection>
 
-          {/* 1. Bán chạy nhất (Best sellers) */}
-          {bestSellers.length > 0 && (
-            <div className="animate-fade-in">
+          {/* 1. Bán chạy nhất (Best sellers) - Lazy Load */}
+          <LazySection fallback={<HomePageSectionSkeleton />}>
+            {bestSellers.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
@@ -256,12 +290,14 @@ export default function HomePage() {
                 </Button>
               </div>
               <InfiniteProductGrid filters={{ sortBy: 'viewCount', sortOrder: 'desc', limit: 20 }} />
-            </div>
-          )}
+              </div>
+            )}
+          </LazySection>
 
-          {/* 2. Hàng mới về (New arrivals) */}
-          {newArrivals.length > 0 && (
-            <div>
+          {/* 2. Hàng mới về (New arrivals) - Lazy Load */}
+          <LazySection fallback={<HomePageSectionSkeleton />}>
+            {newArrivals.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
@@ -279,12 +315,14 @@ export default function HomePage() {
                 </Button>
               </div>
               <InfiniteProductGrid filters={{ sortBy: 'createdAt', sortOrder: 'desc', limit: 20 }} />
-            </div>
-          )}
+              </div>
+            )}
+          </LazySection>
 
-          {/* 3. Giảm giá hot (Hot discounts) */}
-          {hotDiscounts.length > 0 && (
-            <div>
+          {/* 3. Giảm giá hot (Hot discounts) - Lazy Load */}
+          <LazySection fallback={<HomePageSectionSkeleton />}>
+            {hotDiscounts.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
@@ -302,12 +340,14 @@ export default function HomePage() {
                 </Button>
               </div>
               <InfiniteProductGrid filters={{ limit: 20 }} />
-            </div>
-          )}
+              </div>
+            )}
+          </LazySection>
 
-          {/* 4. Gợi ý dành cho bạn (Personalized recommendations) */}
-          {personalizedProducts.length > 0 && (
-            <div>
+          {/* 4. Gợi ý dành cho bạn (Personalized recommendations) - Lazy Load */}
+          <LazySection fallback={<HomePageSectionSkeleton />}>
+            {personalizedProducts.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
@@ -325,11 +365,13 @@ export default function HomePage() {
                 </Button>
               </div>
               <InfiniteProductGrid filters={{ limit: 20 }} />
-            </div>
-          )}
+              </div>
+            )}
+          </LazySection>
 
-          {/* 5. Danh sách shop đang nhập nhiều nhất */}
-          <div>
+          {/* 5. Danh sách shop đang nhập nhiều nhất - Lazy Load */}
+          <LazySection fallback={<HomePageShopSectionSkeleton />}>
+            <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
@@ -371,9 +413,11 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+          </LazySection>
 
-          {/* 6. Nhà cung cấp nhận nhiều đơn nhất */}
-          <div>
+          {/* 6. Nhà cung cấp nhận nhiều đơn nhất - Lazy Load */}
+          <LazySection fallback={<HomePageShopSectionSkeleton />}>
+            <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
@@ -409,10 +453,12 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+          </LazySection>
 
-          {/* 7. Deal sốc từ xưởng (Factory deals) */}
-          {factoryDeals.length > 0 && (
-            <div>
+          {/* 7. Deal sốc từ xưởng (Factory deals) - Lazy Load */}
+          <LazySection fallback={<HomePageSectionSkeleton />}>
+            {factoryDeals.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
@@ -430,12 +476,14 @@ export default function HomePage() {
                 </Button>
               </div>
               <InfiniteProductGrid filters={{ limit: 20 }} />
-            </div>
-          )}
+              </div>
+            )}
+          </LazySection>
 
-          {/* 8. Hàng có video (Products with video) */}
-          {productsWithVideo.length > 0 && (
-            <div>
+          {/* 8. Hàng có video (Products with video) - Lazy Load */}
+          <LazySection fallback={<HomePageSectionSkeleton />}>
+            {productsWithVideo.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg flex items-center justify-center">
@@ -453,12 +501,14 @@ export default function HomePage() {
                 </Button>
               </div>
               <InfiniteProductGrid filters={{ limit: 20 }} />
-            </div>
-          )}
+              </div>
+            )}
+          </LazySection>
 
-          {/* 9. Ưu đãi theo khu vực (Regional offers) */}
-          {regionalOffers.length > 0 && (
-            <div>
+          {/* 9. Ưu đãi theo khu vực (Regional offers) - Lazy Load */}
+          <LazySection fallback={<HomePageSectionSkeleton />}>
+            {regionalOffers.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-lg flex items-center justify-center">
@@ -476,12 +526,14 @@ export default function HomePage() {
                 </Button>
               </div>
               <InfiniteProductGrid filters={{ limit: 20 }} />
-            </div>
-          )}
+              </div>
+            )}
+          </LazySection>
 
-          {/* 10. Sản phẩm có bảo hành (Products with warranty) */}
-          {productsWithWarranty.length > 0 && (
-            <div>
+          {/* 10. Sản phẩm có bảo hành (Products with warranty) - Lazy Load */}
+          <LazySection fallback={<HomePageSectionSkeleton />}>
+            {productsWithWarranty.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
@@ -499,12 +551,14 @@ export default function HomePage() {
                 </Button>
               </div>
               <InfiniteProductGrid filters={{ limit: 20 }} />
-            </div>
-          )}
+              </div>
+            )}
+          </LazySection>
 
-          {/* 11. Trend nổi bật trên TikTok (Trending on TikTok) */}
-          {tiktokTrending.length > 0 && (
-            <div>
+          {/* 11. Trend nổi bật trên TikTok (Trending on TikTok) - Lazy Load */}
+          <LazySection fallback={<HomePageSectionSkeleton />}>
+            {tiktokTrending.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
@@ -522,12 +576,14 @@ export default function HomePage() {
                 </Button>
               </div>
               <InfiniteProductGrid filters={{ limit: 20 }} />
-            </div>
-          )}
+              </div>
+            )}
+          </LazySection>
 
-          {/* 12. Giá sỉ rẻ nhất thị trường (Cheapest wholesale prices) */}
-          {cheapestWholesale.length > 0 && (
-            <div>
+          {/* 12. Giá sỉ rẻ nhất thị trường (Cheapest wholesale prices) - Lazy Load */}
+          <LazySection fallback={<HomePageSectionSkeleton />}>
+            {cheapestWholesale.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
@@ -545,12 +601,14 @@ export default function HomePage() {
                 </Button>
               </div>
               <InfiniteProductGrid filters={{ sortBy: 'price', sortOrder: 'asc', limit: 20 }} />
-            </div>
-          )}
+              </div>
+            )}
+          </LazySection>
 
-          {/* 13. Sản phẩm chạy quảng cáo nhiều nhất (Products with most ads) */}
-          {mostAdvertised.length > 0 && (
-            <div>
+          {/* 13. Sản phẩm chạy quảng cáo nhiều nhất (Products with most ads) - Lazy Load */}
+          <LazySection fallback={<HomePageSectionSkeleton />}>
+            {mostAdvertised.length > 0 && (
+              <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
@@ -568,8 +626,9 @@ export default function HomePage() {
                 </Button>
               </div>
               <InfiniteProductGrid filters={{ limit: 20 }} />
-            </div>
-          )}
+              </div>
+            )}
+          </LazySection>
 
         </div>
       </main>

@@ -8,6 +8,9 @@ import { Pagination } from '@/components/ui/pagination'
 import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorMessage } from '@/components/ui/error-boundary'
 import { EmptyProducts } from '@/components/ui/empty-state'
+import { ProductListSkeleton, ProductListFiltersSkeleton, ProductListSortBarSkeleton } from '@/components/skeleton/ProductListSkeleton'
+import { ProductGridSkeleton } from '@/components/skeleton/ProductCardSkeleton'
+import { LazySection } from '@/components/product/LazySection'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useProducts, useCategories } from '@/hooks'
 import { SEOHead } from '@/components/seo/SEOHead'
@@ -143,32 +146,43 @@ export default function ProductListPage() {
       <main className="container mx-auto px-4 py-6">
         <div className="max-w-7xl mx-auto">
           {/* Page Title */}
-          <div className="mb-6">
+          <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-500">
             <h1 className="text-2xl md:text-3xl font-bold">Danh sách sản phẩm</h1>
-            {totalItems > 0 && (
+            {isLoading ? (
+              <div className="h-6 w-48 bg-muted animate-pulse rounded mt-2" />
+            ) : totalItems > 0 ? (
               <p className="text-muted-foreground mt-2">
                 Tìm thấy {totalItems.toLocaleString()} sản phẩm
               </p>
-            )}
+            ) : null}
           </div>
 
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Left Sidebar - Filters */}
             <aside className="w-full lg:w-80 flex-shrink-0">
               <div className="sticky top-4">
-                <ProductFilters
-                  onSearch={handleFilterChange}
-                  initialFilters={filters}
-                  categories={categories || []}
-                  showSort={false}
-                />
+                {isLoading ? (
+                  <ProductListFiltersSkeleton />
+                ) : (
+                  <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+                    <ProductFilters
+                      onSearch={handleFilterChange}
+                      initialFilters={filters}
+                      categories={categories || []}
+                      showSort={false}
+                    />
+                  </div>
+                )}
               </div>
             </aside>
 
             {/* Main Content */}
             <div className="flex-1 min-w-0">
               {/* Sort Bar */}
-              <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-card p-4 rounded-lg border">
+              {isLoading ? (
+                <ProductListSortBarSkeleton />
+              ) : (
+                <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-card p-4 rounded-lg border animate-in fade-in slide-in-from-top-4 duration-500">
                 <div className="flex items-center gap-4 w-full sm:w-auto">
                   <span className="text-sm font-medium whitespace-nowrap">Sắp xếp theo:</span>
                   <Select
@@ -204,7 +218,8 @@ export default function ProductListPage() {
                     Trang {currentPage} / {totalPages}
                   </div>
                 )}
-              </div>
+                </div>
+              )}
 
               {/* Error State */}
               {error && (
@@ -215,40 +230,48 @@ export default function ProductListPage() {
                 />
               )}
 
-              {/* Loading State */}
+              {/* Loading State - Show skeleton grid */}
               {isLoading && !error && (
-                <div className="flex items-center justify-center py-12">
-                  <LoadingSpinner size="lg" />
-                </div>
+                <ProductGridSkeleton count={12} />
               )}
 
               {/* Empty State */}
               {!isLoading && !error && products.length === 0 && (
-                <EmptyProducts />
+                <div className="animate-in fade-in duration-500">
+                  <EmptyProducts />
+                </div>
               )}
 
-              {/* Products Grid */}
+              {/* Products Grid - Load with staggered animation */}
               {!isLoading && !error && products.length > 0 && (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                    {products.map((product) => (
-                      <ProductCard key={product.id} product={product} />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 animate-in fade-in duration-500">
+                    {products.map((product, index) => (
+                      <div
+                        key={product.id}
+                        className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+                        style={{ animationDelay: `${Math.min(index * 30, 600)}ms` }}
+                      >
+                        <ProductCard product={product} />
+                      </div>
                     ))}
                   </div>
 
-                  {/* Pagination */}
+                  {/* Pagination - Lazy Load when scroll near */}
                   {totalPages > 1 && (
-                    <div className="mt-8">
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        totalItems={totalItems}
-                        pageSize={pageSize}
-                        onPageChange={handlePageChange}
-                        onPageSizeChange={handlePageSizeChange}
-                        pageSizeOptions={[12, 24, 48, 96]}
-                      />
-                    </div>
+                    <LazySection fallback={<div className="mt-8 h-12" />}>
+                      <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <Pagination
+                          currentPage={currentPage}
+                          totalPages={totalPages}
+                          totalItems={totalItems}
+                          pageSize={pageSize}
+                          onPageChange={handlePageChange}
+                          onPageSizeChange={handlePageSizeChange}
+                          pageSizeOptions={[12, 24, 48, 96]}
+                        />
+                      </div>
+                    </LazySection>
                   )}
                 </>
               )}

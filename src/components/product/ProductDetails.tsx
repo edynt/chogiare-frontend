@@ -23,6 +23,8 @@ import { SimpleProductGrid } from '@/components/product/ProductGridWithPaginatio
 import type { Review } from '@/api/reviews'
 import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorMessage } from '@/components/ui/error-boundary'
+import { ProductDetailSkeleton, ProductDetailSectionSkeleton } from '@/components/skeleton/ProductDetailSkeleton'
+import { LazySection } from './LazySection'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { SecurityWarning } from '@/components/ui/security-warning'
 import { useCartStore } from '@/stores/cartStore'
@@ -106,11 +108,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <LoadingSpinner size="lg" />
-      </div>
-    )
+    return <ProductDetailSkeleton />
   }
 
   if (error) {
@@ -210,8 +208,8 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* Product Header */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Product Header - Load immediately */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Product Images */}
         <div className="space-y-4">
           <div className="aspect-square overflow-hidden rounded-lg bg-muted">
@@ -542,8 +540,9 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         </div>
       </div>
 
-      {/* Wholesale Info Section */}
-      <Card className="mt-6">
+      {/* Wholesale Info Section - Lazy Load */}
+      <LazySection fallback={<ProductDetailSectionSkeleton />}>
+        <Card className="mt-6">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
@@ -576,9 +575,11 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           </div>
         </CardContent>
       </Card>
+      </LazySection>
 
-      {/* Tier Pricing Matrix - Redesigned */}
-      <Card className="mt-6 border-2">
+      {/* Tier Pricing Matrix - Lazy Load */}
+      <LazySection fallback={<ProductDetailSectionSkeleton />}>
+        <Card className="mt-6 border-2">
         <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -716,9 +717,11 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           )}
         </CardContent>
       </Card>
+      </LazySection>
 
-      {/* Profit Calculator - Redesigned */}
-      <Card className="mt-6 border-2">
+      {/* Profit Calculator - Lazy Load */}
+      <LazySection fallback={<ProductDetailSectionSkeleton />}>
+        <Card className="mt-6 border-2">
         <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -933,9 +936,11 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           </div>
         </CardContent>
       </Card>
+      </LazySection>
 
-      {/* Supplier Quality Dashboard */}
-      <Card className="mt-6">
+      {/* Supplier Quality Dashboard - Lazy Load */}
+      <LazySection fallback={<ProductDetailSectionSkeleton />}>
+        <Card className="mt-6">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
@@ -1033,9 +1038,11 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           </div>
         </CardContent>
       </Card>
+      </LazySection>
 
-      {/* Price History */}
-      <Card className="mt-6">
+      {/* Price History - Lazy Load */}
+      <LazySection fallback={<ProductDetailSectionSkeleton />}>
+        <Card className="mt-6">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -1102,9 +1109,11 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           </div>
         </CardContent>
       </Card>
+      </LazySection>
 
-      {/* Product Details Tabs */}
-      <Tabs defaultValue="description" className="w-full mt-6">
+      {/* Product Details Tabs - Lazy Load */}
+      <LazySection fallback={<ProductDetailSectionSkeleton />}>
+        <Tabs defaultValue="description" className="w-full mt-6">
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="description">Mô tả</TabsTrigger>
           <TabsTrigger value="reviews">Đánh giá ({product.reviewCount})</TabsTrigger>
@@ -1471,9 +1480,11 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           </Card>
         </TabsContent>
       </Tabs>
+      </LazySection>
 
-      {/* Best Selling Products Section */}
-      <Card className="mt-6">
+      {/* Best Selling Products Section - Lazy Load */}
+      <LazySection fallback={<ProductDetailSectionSkeleton />}>
+        <Card className="mt-6">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
@@ -1494,6 +1505,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           />
         </CardContent>
       </Card>
+      </LazySection>
 
       {/* Request Quote Dialog */}
       <Dialog open={showQuoteDialog} onOpenChange={setShowQuoteDialog}>

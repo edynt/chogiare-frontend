@@ -263,12 +263,6 @@ export function Header() {
                     {/* Personal Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
-                        <Link to="/buyer-dashboard" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
-                          <Home className="mr-2 h-4 w-4" />
-                          <span>Dashboard Người Mua</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
                         <Link to="/profile" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <User className="mr-2 h-4 w-4" />
                           <span>Thông tin cá nhân</span>
@@ -304,12 +298,6 @@ export function Header() {
                     
                     {/* Business Section */}
                     <DropdownMenuGroup>
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
-                          <Store className="mr-2 h-4 w-4" />
-                          <span>Dashboard Người Bán</span>
-                        </Link>
-                      </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link to="/seller/products" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
                           <Settings className="mr-2 h-4 w-4" />

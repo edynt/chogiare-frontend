@@ -3,6 +3,7 @@ import { ProductCard } from './ProductCard'
 import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorMessage } from '@/components/ui/error-boundary'
 import { EmptyProducts } from '@/components/ui/empty-state'
+import { ProductGridSkeleton } from '@/components/skeleton/ProductCardSkeleton'
 import { useInfiniteProducts, useCategories } from '@/hooks'
 import { cn } from '@/lib/utils'
 import type { SearchFilters, Product } from '@/types'
@@ -75,11 +76,7 @@ export function InfiniteProductGrid({
   const products: Product[] = data?.pages.flatMap((page) => page.items) || []
 
   if (isLoading && products.length === 0) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <LoadingSpinner size="lg" />
-      </div>
-    )
+    return <ProductGridSkeleton count={8} />
   }
 
   if (products.length === 0) {
@@ -89,8 +86,14 @@ export function InfiniteProductGrid({
   return (
     <div className={cn('space-y-6', className)}>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {products.map((product: Product) => (
-          <ProductCard key={product.id} product={product} />
+        {products.map((product: Product, index: number) => (
+          <div
+            key={product.id}
+            className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+            style={{ animationDelay: `${Math.min(index * 30, 600)}ms` }}
+          >
+            <ProductCard product={product} />
+          </div>
         ))}
       </div>
 
