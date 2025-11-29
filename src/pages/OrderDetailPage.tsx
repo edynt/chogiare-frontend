@@ -28,11 +28,8 @@ import {
   User,
   MapPin,
   Phone,
-  Mail,
   Calendar,
-  DollarSign,
-  TrendingUp,
-  Sparkles
+  DollarSign
 } from 'lucide-react'
 import { useOrder, useConfirmOrder, useUpdateOrderStatus } from '@/hooks/useOrders'
 import { ErrorBoundary } from '@/components/ui/error-boundary'

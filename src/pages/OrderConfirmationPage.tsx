@@ -11,8 +11,7 @@ import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorMessage } from '@/components/ui/error-boundary'
 import { 
   CheckCircle2, 
-  Package, 
-  ShoppingBag,
+  Package,
   AlertCircle,
   ExternalLink,
   Home,

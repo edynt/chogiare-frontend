@@ -2,27 +2,17 @@ import React, { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useProducts } from '@/hooks/useProducts'
-import { LoadingSpinner } from '@/components/ui/loading'
-import { ProductCard } from '@/components/product/ProductCard'
 import { InfiniteProductGrid } from '@/components/product/InfiniteProductGrid'
 import {
-  Store,
   Star,
   Verified,
   Phone,
   MessageCircle,
-  Share2,
-  ShoppingBag,
-  Receipt,
-  Users,
   Timer,
   Truck,
-  Award,
   Package,
   TrendingUp
 } from 'lucide-react'

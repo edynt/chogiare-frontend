@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { ProductFilters } from '@/components/product/ProductFilters'
 import { ProductCard } from '@/components/product/ProductCard'
 import { Pagination } from '@/components/ui/pagination'
-import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorMessage } from '@/components/ui/error-boundary'
 import { EmptyProducts } from '@/components/ui/empty-state'
-import { ProductListSkeleton, ProductListFiltersSkeleton, ProductListSortBarSkeleton } from '@/components/skeleton/ProductListSkeleton'
+import { ProductListFiltersSkeleton, ProductListSortBarSkeleton } from '@/components/skeleton/ProductListSkeleton'
 import { ProductGridSkeleton } from '@/components/skeleton/ProductCardSkeleton'
 import { LazySection } from '@/components/product/LazySection'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -17,16 +16,15 @@ import { ArrowLeft } from 'lucide-react'
 import { useProducts, useCategories } from '@/hooks'
 import { SEOHead } from '@/components/seo/SEOHead'
 import type { SearchFilters } from '@/types'
-import { cn } from '@/lib/utils'
 
 export default function ProductListPage() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { data: categories } = useCategories()
 
-  // Parse URL params to initial filters
-  const initialFilters = useMemo<SearchFilters>(() => {
-    const filters: SearchFilters = {
+  // Parse URL params to filters - use useMemo to avoid unnecessary re-renders
+  const filters = useMemo<SearchFilters>(() => {
+    const parsedFilters: SearchFilters = {
       page: parseInt(searchParams.get('page') || '1', 10),
       limit: parseInt(searchParams.get('limit') || '20', 10),
       query: searchParams.get('query') || undefined,
@@ -43,26 +41,19 @@ export default function ProductListPage() {
     // Handle badges
     const badgesParam = searchParams.get('badges')
     if (badgesParam) {
-      filters.badges = badgesParam.split(',') as any[]
+      parsedFilters.badges = badgesParam.split(',') as any[]
     }
 
     // Handle boolean flags
     if (searchParams.get('promoted') === 'true') {
-      filters.promoted = true
+      parsedFilters.promoted = true
     }
     if (searchParams.get('featured') === 'true') {
-      filters.featured = true
+      parsedFilters.featured = true
     }
 
-    return filters
+    return parsedFilters
   }, [searchParams])
-
-  const [filters, setFilters] = useState<SearchFilters>(initialFilters)
-
-  // Update filters when URL params change
-  useEffect(() => {
-    setFilters(initialFilters)
-  }, [initialFilters])
 
   const { data: productsData, isLoading, error, refetch } = useProducts(filters)
 
@@ -91,7 +82,6 @@ export default function ProductListPage() {
   }
 
   const handleFilterChange = (newFilters: SearchFilters) => {
-    setFilters(newFilters)
     updateURL(newFilters)
   }
 
@@ -102,13 +92,11 @@ export default function ProductListPage() {
       sortOrder,
       page: 1, // Reset to first page when sorting changes
     }
-    setFilters(newFilters)
     updateURL(newFilters)
   }
 
   const handlePageChange = (page: number) => {
     const newFilters = { ...filters, page }
-    setFilters(newFilters)
     updateURL(newFilters)
     // Scroll to top when page changes
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -116,7 +104,6 @@ export default function ProductListPage() {
 
   const handlePageSizeChange = (pageSize: number) => {
     const newFilters = { ...filters, page: 1, limit: pageSize }
-    setFilters(newFilters)
     updateURL(newFilters)
   }
 
@@ -198,7 +185,7 @@ export default function ProductListPage() {
                 <ProductListSortBarSkeleton />
               ) : (
                 <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-card p-4 rounded-lg border animate-in fade-in slide-in-from-top-4 duration-500">
-                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
                   <span className="text-sm font-medium whitespace-nowrap">Sắp xếp theo:</span>
                   <Select
                     value={filters.sortBy || 'createdAt'}

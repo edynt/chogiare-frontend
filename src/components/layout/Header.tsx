@@ -13,7 +13,7 @@ import {
   DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/authStore'
-import { Menu, User, MessageCircle, Settings, Bell, Clock, Package, LogOut, Droplet, Home, HelpCircle, Store, ShoppingBag, Search, ShoppingCart } from 'lucide-react'
+import { Menu, User, MessageCircle, Settings, Bell, Clock, LogOut, Droplet, Home, HelpCircle, Store, ShoppingBag, Search, ShoppingCart } from 'lucide-react'
 import { useState } from 'react'
 import { useCartStore } from '@/stores/cartStore'
 

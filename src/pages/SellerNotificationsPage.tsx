@@ -16,7 +16,6 @@ import {
   Clock,
   AlertTriangle,
   RefreshCw,
-  ArrowLeft,
   Home
 } from 'lucide-react'
 import { toast } from 'sonner'

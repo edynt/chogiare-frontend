@@ -22,7 +22,6 @@ import {
   Clock,
   Send,
   FileText,
-  Paperclip,
   HelpCircle
 } from 'lucide-react'
 

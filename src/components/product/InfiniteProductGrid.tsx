@@ -4,7 +4,7 @@ import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorMessage } from '@/components/ui/error-boundary'
 import { EmptyProducts } from '@/components/ui/empty-state'
 import { ProductGridSkeleton } from '@/components/skeleton/ProductCardSkeleton'
-import { useInfiniteProducts, useCategories } from '@/hooks'
+import { useInfiniteProducts } from '@/hooks'
 import { cn } from '@/lib/utils'
 import type { SearchFilters, Product } from '@/types'
 

@@ -14,9 +14,7 @@ import {
   MessageSquare,
   TrendingUp,
   ArrowRight,
-  Search,
-  Grid,
-  List
+  Search
 } from 'lucide-react'
 
 export default function BuyerDashboardPage() {

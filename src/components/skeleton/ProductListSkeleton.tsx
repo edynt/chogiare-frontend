@@ -1,6 +1,6 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { ProductCardSkeleton, ProductGridSkeleton } from './ProductCardSkeleton'
+import { ProductGridSkeleton } from './ProductCardSkeleton'
 
 export function ProductListSkeleton() {
   return (

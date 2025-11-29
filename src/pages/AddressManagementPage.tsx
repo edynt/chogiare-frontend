@@ -35,11 +35,8 @@ import {
   MapPin, 
   Edit, 
   Trash2, 
-  Star, 
-  CheckCircle2,
-  Building2,
-  Phone,
-  Mail
+  Star,
+  Phone
 } from 'lucide-react'
 import type { Address } from '@/types'
 

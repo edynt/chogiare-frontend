@@ -1,6 +1,6 @@
 import React from 'react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { AlertTriangle, Shield, CreditCard, Phone, Ban } from 'lucide-react'
+import { Shield, CreditCard, Phone, Ban } from 'lucide-react'
 
 interface SecurityWarningProps {
   variant?: 'default' | 'payment' | 'contact' | 'scam'
