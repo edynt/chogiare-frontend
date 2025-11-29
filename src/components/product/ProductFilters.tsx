@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -15,9 +15,10 @@ interface ProductFiltersProps {
   initialFilters?: SearchFilters
   categories?: Array<{ id: string; name: string }>
   className?: string
+  showSort?: boolean
 }
 
-export function ProductFilters({ onSearch, initialFilters = {}, categories = [], className }: ProductFiltersProps) {
+export function ProductFilters({ onSearch, initialFilters = {}, categories = [], className, showSort = true }: ProductFiltersProps) {
   const [filters, setFilters] = useState<SearchFilters>({
     query: '',
     categoryId: undefined,
@@ -35,6 +36,32 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
   })
 
   const [showFilters, setShowFilters] = useState(true)
+  const isUserInteraction = useRef(false)
+  const isInitialMount = useRef(true)
+
+  // Sync filters with initialFilters when they change (but preserve sort if showSort is false)
+  useEffect(() => {
+    if (showSort) {
+      setFilters(prev => ({
+        ...prev,
+        ...initialFilters,
+      }))
+    } else {
+      // When sort is hidden, preserve sortBy and sortOrder from current state
+      const { sortBy, sortOrder, ...restInitialFilters } = initialFilters
+      setFilters(prev => ({
+        ...prev,
+        ...restInitialFilters,
+        // Keep current sort values when sort is hidden
+        sortBy: prev.sortBy,
+        sortOrder: prev.sortOrder,
+      }))
+    }
+    // Reset the flag after syncing (but allow on first mount)
+    if (!isInitialMount.current) {
+      isUserInteraction.current = false
+    }
+  }, [initialFilters, showSort])
 
   // Debounced search
   const debouncedSearch = debounce((searchFilters: SearchFilters) => {
@@ -42,10 +69,17 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
   }, 500)
 
   useEffect(() => {
-    debouncedSearch(filters)
+    // Call onSearch on initial mount or if this was a user interaction
+    if (isInitialMount.current || isUserInteraction.current) {
+      debouncedSearch(filters)
+      if (isInitialMount.current) {
+        isInitialMount.current = false
+      }
+    }
   }, [filters, debouncedSearch])
 
   const handleFilterChange = (key: keyof SearchFilters, value: unknown) => {
+    isUserInteraction.current = true
     setFilters(prev => ({
       ...prev,
       [key]: value,
@@ -54,6 +88,7 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
   }
 
   const handlePriceRangeChange = (value: number[]) => {
+    isUserInteraction.current = true
     setFilters(prev => ({
       ...prev,
       minPrice: value[0],
@@ -63,6 +98,7 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
   }
 
   const handleBadgeToggle = (badge: ProductBadge) => {
+    isUserInteraction.current = true
     setFilters(prev => ({
       ...prev,
       badges: prev.badges?.includes(badge)
@@ -267,41 +303,43 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
             </div>
 
             {/* Sort */}
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">Sắp xếp theo</label>
-                <Select
-                  value={filters.sortBy || 'createdAt'}
-                  onValueChange={(value) => handleFilterChange('sortBy', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sortOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {showSort && (
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Sắp xếp theo</label>
+                  <Select
+                    value={filters.sortBy || 'createdAt'}
+                    onValueChange={(value) => handleFilterChange('sortBy', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sortOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Thứ tự</label>
+                  <Select
+                    value={filters.sortOrder || 'desc'}
+                    onValueChange={(value) => handleFilterChange('sortOrder', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="asc">Tăng dần</SelectItem>
+                      <SelectItem value="desc">Giảm dần</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Thứ tự</label>
-                <Select
-                  value={filters.sortOrder || 'desc'}
-                  onValueChange={(value) => handleFilterChange('sortOrder', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="asc">Tăng dần</SelectItem>
-                    <SelectItem value="desc">Giảm dần</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       )}
