@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { ProductFilters } from '@/components/product/ProductFilters'
@@ -12,12 +12,15 @@ import { ProductListSkeleton, ProductListFiltersSkeleton, ProductListSortBarSkel
 import { ProductGridSkeleton } from '@/components/skeleton/ProductCardSkeleton'
 import { LazySection } from '@/components/product/LazySection'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
+import { ArrowLeft } from 'lucide-react'
 import { useProducts, useCategories } from '@/hooks'
 import { SEOHead } from '@/components/seo/SEOHead'
 import type { SearchFilters } from '@/types'
 import { cn } from '@/lib/utils'
 
 export default function ProductListPage() {
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { data: categories } = useCategories()
 
@@ -145,6 +148,18 @@ export default function ProductListPage() {
       <Header />
       <main className="container mx-auto px-4 py-6">
         <div className="max-w-7xl mx-auto">
+          {/* Back Button */}
+          <div className="mb-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate(-1)}
+              className="mb-4"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Quay lại
+            </Button>
+          </div>
+
           {/* Page Title */}
           <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-500">
             <h1 className="text-2xl md:text-3xl font-bold">Danh sách sản phẩm</h1>
@@ -245,7 +260,7 @@ export default function ProductListPage() {
               {/* Products Grid - Load with staggered animation */}
               {!isLoading && !error && products.length > 0 && (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 animate-in fade-in duration-500">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in duration-500">
                     {products.map((product, index) => (
                       <div
                         key={product.id}

@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Eye, MapPin, Store, Verified, Clock, ShoppingBag, Zap, Award, TrendingUp, Star, Sparkles, Shield } from 'lucide-react'
+import { MapPin, Store, Verified, Clock, ShoppingBag, Zap, Award, TrendingUp, Star, Sparkles, Shield } from 'lucide-react'
 // Removed Redux imports
 import { cn, formatPrice, formatDate } from '@/lib/utils'
 import type { Product } from '@/types'
@@ -15,13 +15,6 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className }: ProductCardProps) {
-
-  const handleQuickView = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    // Quick view functionality can be implemented later
-  }
-
 
   // Calculate badges based on product data
   const getProductBadges = () => {
@@ -154,7 +147,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           
           {/* Additional Badges - Top Right */}
           {productBadges.length > 2 && (
-            <div className="absolute top-2 right-12 flex flex-col gap-1.5 z-10">
+            <div className="absolute top-2 right-2 flex flex-col gap-1.5 z-10">
               {productBadges.slice(2, 4).map((badge, index) => (
                 <Badge
                   key={index}
@@ -168,18 +161,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </div>
           )}
 
-          {/* Quick Actions */}
-          <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-            <Button
-              size="icon"
-              variant="secondary"
-              className="h-9 w-9 rounded-full bg-background/90 backdrop-blur-sm shadow-lg hover:bg-primary hover:text-primary-foreground transition-all duration-200"
-              onClick={handleQuickView}
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
-          </div>
-
           {/* Stock indicator */}
           {product.stock === 0 && (
             <div className="absolute bottom-2 left-2">
@@ -190,7 +171,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           )}
         </div>
 
-        <CardContent className="p-4 flex-1 flex flex-col space-y-3">
+        <CardContent className="p-4 flex-1 flex flex-col space-y-3 overflow-hidden">
           {/* Seller Info */}
           <div className="flex items-center gap-2 pb-2 border-b border-border/50">
             <Avatar className="h-6 w-6">
@@ -217,16 +198,16 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </h3>
           
           {/* Price */}
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+          <div className="flex items-baseline gap-2 flex-wrap min-w-0">
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent whitespace-nowrap">
               {formatPrice(product.price)}
             </span>
             {product.originalPrice && product.originalPrice > product.price && (
               <>
-                <span className="text-sm text-muted-foreground line-through">
+                <span className="text-sm text-muted-foreground line-through whitespace-nowrap">
                   {formatPrice(product.originalPrice)}
                 </span>
-                <Badge variant="destructive" className="text-xs">
+                <Badge variant="destructive" className="text-xs whitespace-nowrap flex-shrink-0">
                   -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
                 </Badge>
               </>
@@ -242,40 +223,40 @@ export function ProductCard({ product, className }: ProductCardProps) {
           )}
 
           {/* Product Info Row */}
-          <div className="flex items-center justify-between text-xs pt-2 border-t border-border/50">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between text-xs pt-2 border-t border-border/50 gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               {/* Rating */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 whitespace-nowrap">
                 <span className="text-yellow-500">⭐</span>
                 <span className="font-medium text-foreground">{product.rating.toFixed(1)}</span>
                 <span className="text-muted-foreground">({product.reviewCount})</span>
               </div>
               {/* Sold Count (mock) */}
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <ShoppingBag className="h-3 w-3" />
+              <div className="flex items-center gap-1 text-muted-foreground whitespace-nowrap">
+                <ShoppingBag className="h-3 w-3 flex-shrink-0" />
                 <span>{(product.viewCount || 0) * 2 + product.reviewCount * 5}</span>
               </div>
             </div>
             {/* Stock */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 whitespace-nowrap flex-shrink-0">
               <span className="text-muted-foreground">Còn</span>
               <span className="font-semibold text-foreground">{product.stock}</span>
             </div>
           </div>
 
           {/* Condition & Time */}
-          <div className="flex items-center justify-between text-xs pt-1">
+          <div className="flex items-center justify-between text-xs pt-1 gap-2">
             <Badge 
               variant="outline" 
-              className="text-xs font-medium bg-muted/50"
+              className="text-xs font-medium bg-muted/50 whitespace-nowrap flex-shrink-0"
             >
               {product.condition === 'new' ? '✨ Mới 100%' : 
                product.condition === 'like_new' ? '✨ Như mới' :
                product.condition === 'good' ? '✓ Tốt' : product.condition}
             </Badge>
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              <span className="text-xs">{formatDate(product.createdAt)}</span>
+            <div className="flex items-center gap-1 text-muted-foreground min-w-0 flex-shrink">
+              <Clock className="h-3 w-3 flex-shrink-0" />
+              <span className="text-xs truncate">{formatDate(product.createdAt)}</span>
             </div>
           </div>
         </CardContent>
