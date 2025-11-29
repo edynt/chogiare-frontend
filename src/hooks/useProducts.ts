@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { productsApi, getCategories } from '@/api/products'
 import type { Product, SearchFilters } from '@/types'
 
@@ -6,6 +6,26 @@ export const useProducts = (filters: SearchFilters = {}) => {
   return useQuery({
     queryKey: ['products', filters],
     queryFn: () => productsApi.getProducts(filters),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+export const useInfiniteProducts = (filters: Omit<SearchFilters, 'page'> = {}) => {
+  return useInfiniteQuery({
+    queryKey: ['products', 'infinite', filters],
+    queryFn: ({ pageParam = 1 }) => {
+      return productsApi.getProducts({
+        ...filters,
+        page: pageParam,
+        limit: filters.limit || 20,
+      })
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      const currentPage = allPages.length
+      const totalPages = lastPage.totalPages || 1
+      return currentPage < totalPages ? currentPage + 1 : undefined
+    },
+    initialPageParam: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }

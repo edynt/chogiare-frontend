@@ -26,7 +26,6 @@ import {
 import { toast } from 'sonner'
 import { useUserOrders, useUpdateOrderStatus } from '@/hooks/useOrders'
 import type { Order as OrderType } from '@/api/orders'
-import { SecurityWarning } from '@/components/ui/security-warning'
 
 // Helper function to get total quantity from order items
 const getTotalQuantity = (order: OrderType) => {
@@ -173,9 +172,6 @@ export default function CustomerOrdersPage() {
               Làm mới
             </Button>
           </div>
-
-          {/* Security Warning */}
-          <SecurityWarning variant="payment" />
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

@@ -1247,4 +1247,149 @@ export const handlers = [
     })
   }),
 
+  // Address endpoints
+  http.get('/api/addresses', () => {
+    const addresses = [
+      {
+        id: 'addr-1',
+        recipientName: 'Nguyễn Văn A',
+        recipientPhone: '0901234567',
+        street: '123 Đường Nguyễn Huệ',
+        city: 'Hồ Chí Minh',
+        state: 'TP.HCM',
+        district: 'Quận 1',
+        ward: 'Phường Bến Nghé',
+        zipCode: '700000',
+        country: 'Việt Nam',
+        isDefault: true,
+      },
+      {
+        id: 'addr-2',
+        recipientName: 'Trần Thị B',
+        recipientPhone: '0987654321',
+        street: '456 Đường Lê Lợi',
+        city: 'Hà Nội',
+        state: 'Hà Nội',
+        district: 'Quận Hoàn Kiếm',
+        ward: 'Phường Tràng Tiền',
+        zipCode: '100000',
+        country: 'Việt Nam',
+        isDefault: false,
+      },
+      {
+        id: 'addr-3',
+        recipientName: 'Lê Văn C',
+        recipientPhone: '0912345678',
+        street: '789 Đường Trần Hưng Đạo',
+        city: 'Đà Nẵng',
+        state: 'Đà Nẵng',
+        district: 'Quận Hải Châu',
+        ward: 'Phường Thạch Thang',
+        zipCode: '550000',
+        country: 'Việt Nam',
+        isDefault: false,
+      },
+    ]
+    
+    return HttpResponse.json({
+      success: true,
+      data: addresses,
+    })
+  }),
+
+  http.get('/api/addresses/default', () => {
+    const defaultAddress = {
+      id: 'addr-1',
+      recipientName: 'Nguyễn Văn A',
+      recipientPhone: '0901234567',
+      street: '123 Đường Nguyễn Huệ',
+      city: 'Hồ Chí Minh',
+      state: 'TP.HCM',
+      district: 'Quận 1',
+      ward: 'Phường Bến Nghé',
+      zipCode: '700000',
+      country: 'Việt Nam',
+      isDefault: true,
+    }
+    
+    return HttpResponse.json({
+      success: true,
+      data: defaultAddress,
+    })
+  }),
+
+  http.get('/api/addresses/:id', ({ params }) => {
+    const id = params.id as string
+    const address = {
+      id,
+      recipientName: 'Nguyễn Văn A',
+      recipientPhone: '0901234567',
+      street: '123 Đường Nguyễn Huệ',
+      city: 'Hồ Chí Minh',
+      state: 'TP.HCM',
+      district: 'Quận 1',
+      ward: 'Phường Bến Nghé',
+      zipCode: '700000',
+      country: 'Việt Nam',
+      isDefault: true,
+    }
+    
+    return HttpResponse.json({
+      success: true,
+      data: address,
+    })
+  }),
+
+  http.post('/api/addresses', async ({ request }) => {
+    const data = await request.json() as Record<string, unknown>
+    const newAddress = {
+      id: `addr-${Date.now()}`,
+      ...data,
+    }
+    
+    return HttpResponse.json({
+      success: true,
+      data: newAddress,
+    })
+  }),
+
+  http.put('/api/addresses/:id', async ({ params, request }) => {
+    const id = params.id as string
+    const data = await request.json() as Record<string, unknown>
+    const updatedAddress = {
+      id,
+      ...data,
+    }
+    
+    return HttpResponse.json({
+      success: true,
+      data: updatedAddress,
+    })
+  }),
+
+  http.delete('/api/addresses/:id', () => {
+    return HttpResponse.json({ success: true })
+  }),
+
+  http.patch('/api/addresses/:id/set-default', ({ params }) => {
+    const id = params.id as string
+    const address = {
+      id,
+      recipientName: 'Nguyễn Văn A',
+      recipientPhone: '0901234567',
+      street: '123 Đường Nguyễn Huệ',
+      city: 'Hồ Chí Minh',
+      state: 'TP.HCM',
+      district: 'Quận 1',
+      ward: 'Phường Bến Nghé',
+      zipCode: '700000',
+      country: 'Việt Nam',
+      isDefault: true,
+    }
+    
+    return HttpResponse.json({
+      success: true,
+      data: address,
+    })
+  }),
 ]

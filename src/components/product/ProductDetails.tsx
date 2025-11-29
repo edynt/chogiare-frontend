@@ -368,13 +368,12 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
             <div className="grid grid-cols-2 gap-2">
               <Button 
                 className="bg-green-600 hover:bg-green-700 text-white"
-                onClick={() => {
-                  // Handle order placement
-                  window.location.href = `/checkout?productId=${product.id}&quantity=${quantity}`
-                }}
+                asChild
               >
-                <ShoppingBag className="h-4 w-4 mr-2" />
-                Đặt hàng
+                <Link to={`/checkout?productId=${product.id}&quantity=${quantity}`}>
+                  <ShoppingBag className="h-4 w-4 mr-2" />
+                  Đặt hàng
+                </Link>
               </Button>
               <Button
                 variant="outline"

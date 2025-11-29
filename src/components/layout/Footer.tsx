@@ -4,19 +4,21 @@ import { Droplet } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer className="border-t bg-background">
+    <footer className="border-t bg-background/50 backdrop-blur-sm mt-16">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <Droplet className="h-5 w-5 text-primary-foreground" fill="currentColor" />
+            <div className="flex items-center space-x-3">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg shadow-primary/20">
+                <Droplet className="h-6 w-6 text-white" fill="currentColor" />
               </div>
-              <span className="text-xl font-bold">Chogiare</span>
+              <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                Chogiare
+              </span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Nền tảng rao bán uy tín, kết nối người mua và người bán một cách an toàn và tiện lợi.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Nền tảng mua sỉ hàng đầu, kết nối người mua và người bán một cách an toàn và tiện lợi.
             </p>
           </div>
 

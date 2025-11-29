@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +14,20 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAuthStore } from '@/stores/authStore'
-import { Menu, User, MessageCircle, Settings, Bell, Clock, Package, LogOut, Droplet, Home, HelpCircle, Store, ShoppingBag } from 'lucide-react'
+import { Menu, User, MessageCircle, Settings, Bell, Clock, Package, LogOut, Droplet, Home, HelpCircle, Store, ShoppingBag, Search } from 'lucide-react'
+import { useState } from 'react'
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuthStore()
   const navigate = useNavigate()
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/products?query=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
 
   const handleLogout = () => {
     logout()
@@ -63,21 +73,51 @@ export function Header() {
   const unreadCount = notifications.filter(n => n.unread).length
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 animate-in slide-in-from-top duration-500">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 hover:scale-105 transition-transform duration-200">
-            <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center hover:rotate-12 transition-transform duration-300">
-              <Droplet className="h-5 w-5 text-primary-foreground" fill="currentColor" />
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="relative h-9 w-9 bg-gradient-to-br from-primary to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-xl group-hover:shadow-primary/30 transition-all duration-300 group-hover:scale-110">
+              <Droplet className="h-5 w-5 text-white" fill="currentColor" />
             </div>
-            <span className="text-xl font-bold">Chogiare</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              Chogiare
+            </span>
           </Link>
 
           {/* Navigation - Desktop - Removed products and seller links */}
 
+          {/* Search Bar - Desktop */}
+          <div className="hidden md:flex flex-1 max-w-2xl mx-8">
+            <form onSubmit={handleSearch} className="w-full">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Tìm kiếm sản phẩm, danh mục..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-4 h-10 w-full bg-background border-border focus-visible:ring-2 focus-visible:ring-primary"
+                />
+              </div>
+            </form>
+          </div>
+
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-2">
+            {/* Seller Dashboard Button */}
+            <Link to="/dashboard">
+              <Button 
+                variant="default" 
+                size="sm"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                <Store className="h-4 w-4 mr-2" />
+                Người bán
+              </Button>
+            </Link>
+
             {/* Home Button */}
             <Link to="/">
               <Button variant="ghost" size="icon" aria-label="Trang chủ" className="hover:scale-110 hover:bg-primary/10 dark:hover:bg-primary/20 transition-all duration-200">
@@ -301,15 +341,33 @@ export function Header() {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => {/* Mobile menu toggle can be implemented later */}}
-          >
-            <Menu className="h-4 w-4" />
-          </Button>
+          {/* Mobile Search and Menu */}
+          <div className="flex items-center gap-2 md:hidden">
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => navigate('/dashboard')}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              <Store className="h-4 w-4 mr-1" />
+              <span className="text-xs">Người bán</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/products')}
+              aria-label="Tìm kiếm"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {/* Mobile menu toggle can be implemented later */}}
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
       </div>

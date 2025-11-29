@@ -6,6 +6,7 @@ import { LoadingSpinner } from '@/components/ui/loading'
 import { ErrorMessage } from '@/components/ui/error-boundary'
 import { EmptyProducts } from '@/components/ui/empty-state'
 import { useProducts, useCategories } from '@/hooks'
+import { InfiniteProductGrid } from './InfiniteProductGrid'
 import { cn } from '@/lib/utils'
 import type { SearchFilters, Product } from '@/types'
 
@@ -14,6 +15,7 @@ interface ProductGridWithPaginationProps {
   showSearch?: boolean
   showPagination?: boolean
   showSidebar?: boolean
+  infiniteScroll?: boolean
   className?: string
 }
 
@@ -22,6 +24,7 @@ export function ProductGridWithPagination({
   showSearch = true,
   showPagination = true,
   showSidebar = false,
+  infiniteScroll = false,
   className,
 }: ProductGridWithPaginationProps) {
   const [filters, setFilters] = useState<SearchFilters>({
@@ -75,6 +78,24 @@ export function ProductGridWithPagination({
           categories={categories || []}
           compact={true}
         />
+      </div>
+    )
+  }
+
+  // Use infinite scroll if enabled
+  if (infiniteScroll) {
+    const { page, limit, ...infiniteFilters } = filters
+    return (
+      <div className={cn('space-y-6', className)}>
+        {/* Search and Filters */}
+        {showSearch && (
+          <ProductSearch
+            onSearch={handleSearch}
+            initialFilters={filters}
+            categories={categories || []}
+          />
+        )}
+        <InfiniteProductGrid filters={infiniteFilters} />
       </div>
     )
   }
@@ -167,7 +188,7 @@ export function SimpleProductGrid({
   }
 
   return (
-    <div className={cn('grid grid-cols-1 gap-6', className)}>
+    <div className={cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6', className)}>
       {products.map((product: Product) => (
         <ProductCard key={product.id} product={product} />
       ))}

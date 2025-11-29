@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { useUserOrders } from '@/hooks/useOrders'
 import { useProducts, useCategories } from '@/hooks'
 import { SimpleProductGrid } from '@/components/product/ProductGridWithPagination'
+import { InfiniteProductGrid } from '@/components/product/InfiniteProductGrid'
 import { 
   ShoppingBag, 
   Heart, 
@@ -24,8 +25,6 @@ import {
   MapPin,
   Award,
   Sparkles,
-  ChevronLeft,
-  ChevronRight,
   Trophy,
   Package,
   Video,
@@ -133,51 +132,6 @@ export default function HomePage() {
 
   const displayCategories = categories?.slice(0, 8) || []
 
-  // Promotional banner carousel state
-  const [currentBannerIndex, setCurrentBannerIndex] = useState(0)
-
-  // Promotional banners data (similar to mobile)
-  const promotionalBanners = [
-    {
-      title: 'KHO HÀNG SIÊU LỚN',
-      subtitle: '10,000+ SẢN PHẨM SỈ',
-      description: 'Giá tốt nhất thị trường - Giao hàng nhanh toàn quốc',
-      gradient: 'from-blue-500 via-blue-600 to-purple-600',
-      badge: 'HOT'
-    },
-    {
-      title: 'DEAL SIÊU KHỦNG',
-      subtitle: 'GIẢM ĐẾN 80%',
-      description: 'Flash Sale cuối tuần - Số lượng có hạn',
-      gradient: 'from-red-500 via-red-600 to-orange-600',
-      badge: 'FLASH'
-    },
-    {
-      title: 'NHÀ CUNG CẤP UY TÍN',
-      subtitle: '1000+ ĐỐI TÁC',
-      description: 'Hàng chính hãng - Bảo hành đầy đủ',
-      gradient: 'from-green-500 via-green-600 to-blue-600',
-      badge: 'TRUSTED'
-    }
-  ]
-
-  // Auto-scroll promotional banners
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentBannerIndex((prev) => (prev + 1) % promotionalBanners.length)
-    }, 5000) // Change banner every 5 seconds
-
-    return () => clearInterval(interval)
-  }, [promotionalBanners.length])
-
-  const nextBanner = () => {
-    setCurrentBannerIndex((prev) => (prev + 1) % promotionalBanners.length)
-  }
-
-  const prevBanner = () => {
-    setCurrentBannerIndex((prev) => (prev - 1 + promotionalBanners.length) % promotionalBanners.length)
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
@@ -200,175 +154,54 @@ export default function HomePage() {
       <Header />
       <main className="container mx-auto px-4 py-6">
         <div className="max-w-7xl mx-auto space-y-6">
-          {/* 1. Quick Stats Section */}
-          <Card className="bg-gradient-to-r from-blue-500 to-purple-600 border-0 text-white">
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <ShoppingBag className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">{orders.length}</p>
-                    <p className="text-blue-100 text-sm">Đơn hàng</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 md:border-l md:border-white/30 md:pl-6">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <TrendingUp className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">{allProducts.length}+</p>
-                    <p className="text-blue-100 text-sm">Sản phẩm</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 md:border-l md:border-white/30 md:pl-6">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <Users className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">100+</p>
-                    <p className="text-blue-100 text-sm">Nhà cung cấp</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
+          {/* 1. Quick Stats Section - Modern SAAS Design */}
+          <Card className="bg-gradient-to-br from-primary via-primary to-purple-600 border-0 text-white shadow-xl shadow-primary/20 overflow-hidden relative">
+            <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,transparent)]" />
           </Card>
 
-          {/* 2. Announcement Banner */}
-          <Card className="bg-orange-50 border-orange-200">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-orange-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Zap className="h-5 w-5 text-orange-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-orange-900">Thông báo mới</p>
-                  <p className="text-xs text-orange-700">
-                    Đơn hàng đã được xác nhận và đang chuẩn bị
-                  </p>
-                </div>
-                <Button variant="ghost" size="sm" className="text-orange-700 hover:text-orange-900">
-                  <span className="sr-only">Đóng</span>
-                  ×
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* 3. Promotional Banner (Carousel) */}
-          <div className="relative">
-            <div className="relative overflow-hidden rounded-lg">
-              <div 
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${currentBannerIndex * 100}%)` }}
-              >
-                {promotionalBanners.map((banner, index) => (
-                  <div key={index} className="min-w-full flex-shrink-0">
-                    <Card className={`bg-gradient-to-r ${banner.gradient} border-0 text-white`}>
-                      <CardContent className="p-8">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            {banner.badge && (
-                              <Badge className="mb-3 bg-white/30 text-white border-white/50">
-                                {banner.badge === 'FLASH' && <Flame className="h-3 w-3 mr-1" />}
-                                {banner.badge}
-                              </Badge>
-                            )}
-                            <h2 className="text-2xl font-bold mb-2">{banner.title}</h2>
-                            <p className="text-lg font-semibold mb-2">{banner.subtitle}</p>
-                            <p className="text-white/90 text-sm">{banner.description}</p>
-                          </div>
-                          <Button variant="secondary" size="lg" className="bg-white text-gray-900 hover:bg-gray-100 ml-4">
-                            Xem ngay
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ))}
+          {/* 3. Hero Banner - Modern & Attractive */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary to-purple-600 text-white shadow-2xl">
+            <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,transparent)]" />
+            <div className="relative z-10 p-8 md:p-12 lg:p-16">
+              <div className="max-w-3xl">
+                <Badge className="mb-4 bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                  <Flame className="h-3 w-3 mr-1" />
+                  Nền tảng mua sỉ hàng đầu
+                </Badge>
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+                  Kết nối người mua và người bán
+                  <span className="block text-white/90 mt-2">Một cách an toàn và tiện lợi</span>
+                </h1>
+                <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed">
+                  Hàng ngàn sản phẩm sỉ với giá tốt nhất thị trường. Giao hàng nhanh, thanh toán an toàn, hỗ trợ 24/7.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button 
+                    size="lg" 
+                    className="bg-white text-primary hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={() => navigate('/products')}
+                  >
+                    <ShoppingBag className="h-5 w-5 mr-2" />
+                    Khám phá sản phẩm
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="bg-white/10 text-white border-white/30 hover:bg-white/20 backdrop-blur-sm"
+                    onClick={() => navigate('/dashboard')}
+                  >
+                    <Store className="h-5 w-5 mr-2" />
+                    Trở thành người bán
+                  </Button>
+                </div>
               </div>
-              
-              {/* Navigation arrows */}
-              <button
-                onClick={prevBanner}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center text-white transition-colors"
-                aria-label="Banner trước"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-              <button
-                onClick={nextBanner}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center text-white transition-colors"
-                aria-label="Banner tiếp"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
             </div>
-            
-            {/* Page indicators */}
-            <div className="flex justify-center w-full py-2 gap-2">
-              {promotionalBanners.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentBannerIndex(index)}
-                  className={`h-2 rounded-full transition-all ${
-                    index === currentBannerIndex
-                      ? 'w-8 bg-primary'
-                      : 'w-2 bg-gray-300 hover:bg-gray-400'
-                  }`}
-                  aria-label={`Banner ${index + 1}`}
-                />
-              ))}
-            </div>
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
           </div>
 
-          {/* 4. Quick Actions Section */}
-          <div>
-            <h2 className="text-xl font-bold mb-4">Thao tác nhanh</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/products')}>
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Search className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <h3 className="font-semibold mb-1 text-sm">Tìm sản phẩm</h3>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/customer-orders')}>
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <ShoppingBag className="h-6 w-6 text-green-600" />
-                  </div>
-                  <h3 className="font-semibold mb-1 text-sm">Đơn hàng</h3>
-                  {pendingOrders.length > 0 && (
-                    <Badge className="mt-1 bg-red-500 text-white text-xs">
-                      {pendingOrders.length}
-                    </Badge>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/chat')}>
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <MessageSquare className="h-6 w-6 text-orange-600" />
-                  </div>
-                  <h3 className="font-semibold mb-1 text-sm">Tin nhắn</h3>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/profile?tab=favorites')}>
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Heart className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <h3 className="font-semibold mb-1 text-sm">Yêu thích</h3>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
 
           {/* 5. Categories Section */}
           {displayCategories.length > 0 && (
@@ -405,24 +238,24 @@ export default function HomePage() {
 
           {/* 1. Bán chạy nhất (Best sellers) */}
           {bestSellers.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
-                    <Trophy className="h-6 w-6 text-white" />
+            <div className="animate-fade-in">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
+                    <Trophy className="h-7 w-7 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold">Bán chạy nhất</h2>
-                    <p className="text-sm text-muted-foreground">Sản phẩm được mua nhiều nhất</p>
+                    <h2 className="text-2xl font-bold">Bán chạy nhất</h2>
+                    <p className="text-sm text-muted-foreground mt-1">Sản phẩm được mua nhiều nhất</p>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link to="/products?sortBy=viewCount&sortOrder=desc">
+                <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 hover:text-primary">
+                  <Link to="/products?sortBy=viewCount&sortOrder=desc" className="flex items-center">
                     Xem tất cả <ArrowRight className="h-4 w-4 ml-1" />
                   </Link>
                 </Button>
               </div>
-              <SimpleProductGrid products={bestSellers} isLoading={isLoadingProducts} />
+              <InfiniteProductGrid filters={{ sortBy: 'viewCount', sortOrder: 'desc', limit: 20 }} />
             </div>
           )}
 
@@ -445,7 +278,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-              <SimpleProductGrid products={newArrivals} isLoading={isLoadingProducts} />
+              <InfiniteProductGrid filters={{ sortBy: 'createdAt', sortOrder: 'desc', limit: 20 }} />
             </div>
           )}
 
@@ -468,7 +301,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-              <SimpleProductGrid products={hotDiscounts} isLoading={isLoadingProducts} />
+              <InfiniteProductGrid filters={{ limit: 20 }} />
             </div>
           )}
 
@@ -491,7 +324,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-              <SimpleProductGrid products={personalizedProducts} isLoading={isLoadingProducts} />
+              <InfiniteProductGrid filters={{ limit: 20 }} />
             </div>
           )}
 
@@ -596,7 +429,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-              <SimpleProductGrid products={factoryDeals} isLoading={isLoadingProducts} />
+              <InfiniteProductGrid filters={{ limit: 20 }} />
             </div>
           )}
 
@@ -619,7 +452,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-              <SimpleProductGrid products={productsWithVideo} isLoading={isLoadingProducts} />
+              <InfiniteProductGrid filters={{ limit: 20 }} />
             </div>
           )}
 
@@ -642,7 +475,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-              <SimpleProductGrid products={regionalOffers} isLoading={isLoadingProducts} />
+              <InfiniteProductGrid filters={{ limit: 20 }} />
             </div>
           )}
 
@@ -665,7 +498,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-              <SimpleProductGrid products={productsWithWarranty} isLoading={isLoadingProducts} />
+              <InfiniteProductGrid filters={{ limit: 20 }} />
             </div>
           )}
 
@@ -688,7 +521,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-              <SimpleProductGrid products={tiktokTrending} isLoading={isLoadingProducts} />
+              <InfiniteProductGrid filters={{ limit: 20 }} />
             </div>
           )}
 
@@ -711,7 +544,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-              <SimpleProductGrid products={cheapestWholesale} isLoading={isLoadingProducts} />
+              <InfiniteProductGrid filters={{ sortBy: 'price', sortOrder: 'asc', limit: 20 }} />
             </div>
           )}
 
@@ -734,7 +567,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-              <SimpleProductGrid products={mostAdvertised} isLoading={isLoadingProducts} />
+              <InfiniteProductGrid filters={{ limit: 20 }} />
             </div>
           )}
 
