@@ -33,7 +33,7 @@ import {
   Sparkles,
   Lock
 } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { formatCurrency } from '@/lib/utils'
 import type { Address } from '@/types'
 
@@ -238,6 +238,24 @@ export default function CheckoutPage() {
                     Bạn cần <strong>tự đến lấy hàng</strong> hoặc <strong>tự đặt dịch vụ vận chuyển</strong>.
                   </AlertDescription>
                 </div>
+              </Alert>
+
+              {/* Buyer Warning - Protect Seller */}
+              <Alert className="border-amber-500 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800">
+                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <AlertTitle className="text-amber-900 dark:text-amber-100 font-semibold mb-1">
+                  ⚠️ Lưu ý quan trọng cho người mua
+                </AlertTitle>
+                <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm space-y-1">
+                  <p className="font-medium">
+                    Vui lòng chỉ đặt hàng khi bạn thực sự có nhu cầu mua sản phẩm.
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>Không spam tin nhắn hoặc đặt hàng giả để tội người bán</li>
+                    <li>Hãy tôn trọng thời gian và công sức của người bán</li>
+                    <li>Đặt hàng nghiêm túc giúp tạo môi trường mua bán lành mạnh</li>
+                  </ul>
+                </AlertDescription>
               </Alert>
 
               {/* Shipping Address */}
@@ -472,6 +490,15 @@ export default function CheckoutPage() {
                   <Separator />
 
                   <div className="space-y-3">
+                    {/* Buyer Warning - Protect Seller */}
+                    <Alert className="border-amber-500 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800">
+                      <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                      <AlertDescription className="text-amber-800 dark:text-amber-200 text-xs space-y-1">
+                        <p className="font-semibold mb-1">⚠️ Chỉ đặt hàng khi thực sự cần</p>
+                        <p className="text-xs">Không spam hoặc đặt hàng giả. Hãy tôn trọng người bán.</p>
+                      </AlertDescription>
+                    </Alert>
+                    
                     <Alert className="bg-gradient-to-r from-blue-50 to-blue-100/50 border-2 border-blue-300 dark:from-blue-950/30 dark:to-blue-900/20 dark:border-blue-800">
                       <div className="flex items-start gap-2">
                         <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5" />

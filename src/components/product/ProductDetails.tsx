@@ -17,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { useProduct, useProductReviews, useProducts } from '@/hooks'
 import { SimpleProductGrid } from '@/components/product/ProductGridWithPagination'
 import type { Review } from '@/api/reviews'
@@ -52,7 +53,9 @@ import {
   Send,
   Lightbulb,
   Edit,
-  Image as ImageIcon
+  Image as ImageIcon,
+  DollarSign,
+  AlertCircle
 } from 'lucide-react'
 
 interface ProductDetailsProps {
@@ -371,11 +374,29 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           {/* Security Warning */}
           <SecurityWarning variant="scam" className="my-4" />
 
+          {/* Buyer Warning - Protect Seller */}
+          <Alert className="border-amber-500 bg-amber-50/50">
+            <AlertCircle className="h-5 w-5 text-amber-600" />
+            <AlertTitle className="text-amber-900 font-semibold mb-1">
+              ⚠️ Lưu ý quan trọng cho người mua
+            </AlertTitle>
+            <AlertDescription className="text-amber-800 text-sm space-y-1">
+              <p className="font-medium">
+                Vui lòng chỉ đặt hàng hoặc liên hệ khi bạn thực sự có nhu cầu mua sản phẩm.
+              </p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li>Không spam tin nhắn hoặc đặt hàng giả để tội người bán</li>
+                <li>Hãy tôn trọng thời gian và công sức của người bán</li>
+                <li>Đặt hàng nghiêm túc giúp tạo môi trường mua bán lành mạnh</li>
+              </ul>
+            </AlertDescription>
+          </Alert>
+
           {/* Actions */}
           <div className="space-y-3 py-2">
-            {/* Chat Button - Full width, Red, Top */}
+            {/* Primary Action - Chat Button */}
             <Button
-              className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-6"
+              className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-6 shadow-lg hover:shadow-xl transition-all"
               asChild
             >
               <Link to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}>
@@ -384,22 +405,20 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               </Link>
             </Button>
             
-            {/* Add to Cart Button */}
-            <Button
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-              onClick={() => {
-                addItem(product, quantity)
-                toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`)
-              }}
-            >
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Thêm vào giỏ hàng
-            </Button>
-
-            {/* Order and Quote Buttons - Side by side */}
+            {/* Secondary Actions - Add to Cart & Order */}
             <div className="grid grid-cols-2 gap-2">
+              <Button
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all"
+                onClick={() => {
+                  addItem(product, quantity)
+                  toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`)
+                }}
+              >
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Thêm giỏ
+              </Button>
               <Button 
-                className="bg-green-600 hover:bg-green-700 text-white"
+                className="bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all"
                 asChild
               >
                 <Link to={`/checkout?productId=${product.id}&quantity=${quantity}`}>
@@ -407,19 +426,22 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   Đặt hàng
                 </Link>
               </Button>
+            </div>
+            
+            {/* Tertiary Actions - Outline style */}
+            <div className="grid grid-cols-2 gap-2">
               <Button
                 variant="outline"
-                className="bg-white border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
+                className="border-2 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
                 onClick={() => setShowQuoteDialog(true)}
               >
                 <FileText className="h-4 w-4 mr-2" />
                 Xin báo giá
               </Button>
-            </div>
-            
-            {/* Secondary Actions */}
-            <div className="flex gap-2">
-              <Button variant="outline" className="flex-1">
+              <Button 
+                variant="outline"
+                className="border-2 hover:bg-muted/50"
+              >
                 <Share2 className="h-4 w-4 mr-2" />
                 Chia sẻ
               </Button>
@@ -555,128 +577,358 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         </CardContent>
       </Card>
 
-      {/* Tier Pricing Matrix */}
-      <Card className="mt-6">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
-              <Table2 className="h-5 w-5 text-white" />
+      {/* Tier Pricing Matrix - Redesigned */}
+      <Card className="mt-6 border-2">
+        <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
+                <Table2 className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-xl">Bảng giá theo số lượng</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Càng mua nhiều, giá càng rẻ - Ưu đãi tốt nhất cho đơn hàng lớn
+                </p>
+              </div>
             </div>
-            <div>
-              <CardTitle>Bảng giá theo số lượng</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Càng mua nhiều, giá càng rẻ
-              </p>
-            </div>
+            <Badge variant="outline" className="bg-white">
+              <TrendingDown className="h-3 w-3 mr-1" />
+              Giảm giá theo số lượng
+            </Badge>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <div className="grid grid-cols-3 gap-4 p-3 bg-primary/5 rounded-lg font-semibold text-primary">
-              <div>Số lượng</div>
-              <div className="text-center">Đơn giá</div>
-              <div className="text-right">Tiết kiệm</div>
-            </div>
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {priceTiers.map((tier, index) => {
               const isActive = quantity >= tier.minQuantity && (tier.maxQuantity === null || quantity <= tier.maxQuantity)
               const isBest = index === priceTiers.length - 1
               const savings = product.price - tier.price
               const savingsPercent = (savings / product.price) * 100
+              const totalAtTier = tier.price * (tier.minQuantity || 1)
               
               return (
                 <div
                   key={index}
-                  className={`grid grid-cols-3 gap-4 p-3 rounded-lg border ${
+                  className={`relative p-5 rounded-xl border-2 transition-all duration-300 ${
                     isActive
-                      ? 'bg-green-50 border-green-200'
+                      ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-400 shadow-lg scale-105'
                       : isBest
-                      ? 'bg-green-50/50 border-green-200/50'
-                      : 'bg-muted/50 border-border'
+                      ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-300 hover:shadow-md'
+                      : 'bg-card border-border hover:border-primary/30 hover:shadow-sm'
                   }`}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold">{tier.minQuantity}+</span>
-                    {isBest && (
-                      <Badge className="bg-green-500 text-white text-xs">TỐT NHẤT</Badge>
-                    )}
-                  </div>
-                  <div className={`text-center font-bold ${isBest ? 'text-green-600' : 'text-primary'}`}>
-                    {formatCurrency(tier.price)}
-                  </div>
-                  <div className="text-right">
-                    <div className="font-semibold text-green-600">{formatCurrency(savings)}</div>
-                    <div className="text-xs text-muted-foreground">({savingsPercent.toFixed(1)}%)</div>
+                  {isActive && (
+                    <div className="absolute -top-3 -right-3">
+                      <Badge className="bg-green-500 text-white shadow-lg animate-pulse">
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        Đang chọn
+                      </Badge>
+                    </div>
+                  )}
+                  
+                  {isBest && !isActive && (
+                    <div className="absolute -top-3 -right-3">
+                      <Badge className="bg-blue-500 text-white shadow-lg">
+                        <Star className="h-3 w-3 mr-1 fill-white" />
+                        Tốt nhất
+                      </Badge>
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    {/* Quantity Range */}
+                    <div className="text-center">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+                        <Package className="h-4 w-4 text-primary" />
+                        <span className="font-bold text-lg text-primary">
+                          {tier.minQuantity}
+                          {tier.maxQuantity ? ` - ${tier.maxQuantity}` : '+'} sản phẩm
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Price */}
+                    <div className="text-center space-y-1">
+                      <p className="text-xs text-muted-foreground">Đơn giá</p>
+                      <p className={`text-2xl font-bold ${
+                        isActive ? 'text-green-600' : isBest ? 'text-blue-600' : 'text-primary'
+                      }`}>
+                        {formatCurrency(tier.price)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">/ sản phẩm</p>
+                    </div>
+
+                    {/* Savings */}
+                    <div className="pt-2 border-t space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">Tiết kiệm:</span>
+                        <span className="text-sm font-semibold text-green-600">
+                          {formatCurrency(savings)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">Tỷ lệ:</span>
+                        <Badge variant="outline" className="text-green-600 border-green-300">
+                          -{savingsPercent.toFixed(1)}%
+                        </Badge>
+                      </div>
+                    </div>
+
+                    {/* Example Total */}
+                    <div className="pt-2 border-t">
+                      <p className="text-xs text-muted-foreground text-center mb-1">
+                        Tổng tiền ({tier.minQuantity} sản phẩm):
+                      </p>
+                      <p className="text-center font-semibold text-primary">
+                        {formatCurrency(totalAtTier)}
+                      </p>
+                    </div>
                   </div>
                 </div>
               )
             })}
           </div>
+
+          {/* Current Selection Info */}
+          {quantity > 0 && (
+            <div className="mt-6 p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                    <CheckCircle2 className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold">Bạn đang chọn: {quantity} sản phẩm</p>
+                    <p className="text-sm text-muted-foreground">
+                      Áp dụng mức giá: {formatCurrency(currentTierPrice)}/sản phẩm
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-muted-foreground">Tổng tiền</p>
+                  <p className="text-2xl font-bold text-primary">
+                    {formatCurrency(totalCost)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Profit Calculator */}
-      <Card className="mt-6">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-              <Calculator className="h-5 w-5 text-white" />
+      {/* Profit Calculator - Redesigned */}
+      <Card className="mt-6 border-2">
+        <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Calculator className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-xl">Dự tính lợi nhuận</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Tính toán lợi nhuận dự kiến khi bán lại sản phẩm
+                </p>
+              </div>
             </div>
-            <div>
-              <CardTitle>Dự tính lợi nhuận</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Tính toán lợi nhuận dự kiến
-              </p>
-            </div>
+            <Badge variant="outline" className="bg-white">
+              <Lightbulb className="h-3 w-3 mr-1" />
+              Công cụ hỗ trợ
+            </Badge>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-semibold mb-2 block">Giá bán (đơn vị)</label>
-              <input
-                type="number"
-                value={sellingPrice}
-                onChange={(e) => setSellingPrice(Number(e.target.value))}
-                className="w-full p-3 border rounded-lg"
-                placeholder="Nhập giá bán"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-semibold mb-2 block">Số lượng</label>
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(minOrderQty, Number(e.target.value)))}
-                className="w-full p-3 border rounded-lg"
-                placeholder="Số lượng"
-              />
-            </div>
-          </div>
-          <div className="p-6 bg-green-50 rounded-lg border-2 border-green-200 space-y-3">
-            <div className="flex justify-between">
-              <span className="text-sm font-semibold">Đơn giá sỉ:</span>
-              <span className="font-bold">{formatCurrency(currentTierPrice)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm font-semibold">Tổng vốn:</span>
-              <span className="font-bold">{formatCurrency(totalCost)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm font-semibold">Tổng doanh thu:</span>
-              <span className="font-bold text-primary">{formatCurrency(totalRevenue)}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between">
-              <span className="text-lg font-bold">Lợi nhuận dự kiến:</span>
-              <span className="text-2xl font-bold text-green-600">{formatCurrency(totalProfit)}</span>
-            </div>
-            <div className="p-3 bg-green-100 rounded-lg text-center">
-              <div className="flex items-center justify-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-600" />
-                <span className="font-bold text-green-600">
-                  Tỷ suất lợi nhuận: {profitMargin.toFixed(1)}%
-                </span>
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Input Section */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="selling-price" className="text-sm font-semibold flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-primary" />
+                  Giá bán dự kiến (đơn vị)
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="selling-price"
+                    type="number"
+                    value={sellingPrice || ''}
+                    onChange={(e) => setSellingPrice(Number(e.target.value) || 0)}
+                    placeholder="Nhập giá bán dự kiến"
+                    className="pl-10 text-lg"
+                    min={0}
+                  />
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Gợi ý: {formatCurrency(Math.round(currentTierPrice * 1.5))} (1.5x giá sỉ)
+                </p>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="profit-quantity" className="text-sm font-semibold flex items-center gap-2">
+                  <Package className="h-4 w-4 text-primary" />
+                  Số lượng bán
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="profit-quantity"
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(Math.max(minOrderQty, Number(e.target.value) || minOrderQty))}
+                    placeholder="Số lượng"
+                    className="pl-10 text-lg"
+                    min={minOrderQty}
+                  />
+                  <Package className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Tối thiểu: {minOrderQty} sản phẩm
+                </p>
+              </div>
+
+              {/* Quick Price Suggestions */}
+              <div className="p-4 bg-muted/50 rounded-lg border">
+                <p className="text-xs font-semibold mb-2 text-muted-foreground">Gợi ý giá bán nhanh:</p>
+                <div className="flex flex-wrap gap-2">
+                  {[1.2, 1.5, 1.8, 2.0].map((multiplier) => {
+                    const suggestedPrice = Math.round(currentTierPrice * multiplier)
+                    return (
+                      <Button
+                        key={multiplier}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSellingPrice(suggestedPrice)}
+                        className="text-xs"
+                      >
+                        {multiplier}x = {formatCurrency(suggestedPrice)}
+                      </Button>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Results Section */}
+            <div className="space-y-4">
+              {/* Summary Cards */}
+              <div className="grid grid-cols-2 gap-3">
+                <Card className="border-blue-200 bg-blue-50/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <ShoppingBag className="h-4 w-4 text-blue-600" />
+                      <p className="text-xs text-muted-foreground">Tổng vốn</p>
+                    </div>
+                    <p className="text-xl font-bold text-blue-600">
+                      {formatCurrency(totalCost)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatCurrency(currentTierPrice)} × {quantity}
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-purple-200 bg-purple-50/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="h-4 w-4 text-purple-600" />
+                      <p className="text-xs text-muted-foreground">Tổng doanh thu</p>
+                    </div>
+                    <p className="text-xl font-bold text-purple-600">
+                      {formatCurrency(totalRevenue)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatCurrency(sellingPrice)} × {quantity}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Profit Highlight */}
+              <Card className={`border-2 ${
+                totalProfit > 0 
+                  ? 'border-green-400 bg-gradient-to-br from-green-50 to-emerald-50' 
+                  : totalProfit < 0
+                  ? 'border-red-400 bg-gradient-to-br from-red-50 to-rose-50'
+                  : 'border-gray-300 bg-muted'
+              }`}>
+                <CardContent className="p-6">
+                  <div className="text-center space-y-3">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Lợi nhuận dự kiến</p>
+                      <p className={`text-4xl font-bold ${
+                        totalProfit > 0 ? 'text-green-600' : totalProfit < 0 ? 'text-red-600' : 'text-gray-600'
+                      }`}>
+                        {formatCurrency(totalProfit)}
+                      </p>
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div className="flex items-center justify-center gap-2">
+                      {totalProfit > 0 ? (
+                        <TrendingUp className="h-5 w-5 text-green-600" />
+                      ) : totalProfit < 0 ? (
+                        <TrendingDown className="h-5 w-5 text-red-600" />
+                      ) : null}
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Tỷ suất lợi nhuận</p>
+                        <p className={`text-2xl font-bold ${
+                          profitMargin > 0 ? 'text-green-600' : profitMargin < 0 ? 'text-red-600' : 'text-gray-600'
+                        }`}>
+                          {profitMargin > 0 ? '+' : ''}{profitMargin.toFixed(1)}%
+                        </p>
+                      </div>
+                    </div>
+
+                    {totalProfit > 0 && (
+                      <div className="mt-3 p-3 bg-green-100 rounded-lg">
+                        <p className="text-xs font-semibold text-green-800">
+                          ✓ Lợi nhuận tích cực - Đây là mức giá hợp lý để bán lại
+                        </p>
+                      </div>
+                    )}
+                    {totalProfit <= 0 && sellingPrice > 0 && (
+                      <div className="mt-3 p-3 bg-yellow-100 rounded-lg">
+                        <p className="text-xs font-semibold text-yellow-800">
+                          ⚠ Cần điều chỉnh giá bán để có lợi nhuận
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Breakdown */}
+              <Card className="border">
+                <CardContent className="p-4">
+                  <p className="text-xs font-semibold mb-3 text-muted-foreground">Chi tiết tính toán:</p>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Đơn giá sỉ:</span>
+                      <span className="font-medium">{formatCurrency(currentTierPrice)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Giá bán dự kiến:</span>
+                      <span className="font-medium">{formatCurrency(sellingPrice)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Lợi nhuận/đơn vị:</span>
+                      <span className={`font-medium ${
+                        sellingPrice > currentTierPrice ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {formatCurrency(sellingPrice - currentTierPrice)}
+                      </span>
+                    </div>
+                    <Separator className="my-2" />
+                    <div className="flex justify-between font-semibold">
+                      <span>Lợi nhuận tổng:</span>
+                      <span className={totalProfit > 0 ? 'text-green-600' : 'text-red-600'}>
+                        {formatCurrency(totalProfit)}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </CardContent>
