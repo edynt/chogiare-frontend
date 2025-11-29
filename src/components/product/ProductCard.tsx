@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Heart, Eye, MapPin, Store, Verified, Clock, ShoppingBag, Zap, Award, TrendingUp, Star, Sparkles, Shield } from 'lucide-react'
+import { Eye, MapPin, Store, Verified, Clock, ShoppingBag, Zap, Award, TrendingUp, Star, Sparkles, Shield } from 'lucide-react'
 // Removed Redux imports
 import { cn, formatPrice, formatDate } from '@/lib/utils'
 import type { Product } from '@/types'
@@ -22,11 +22,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
     // Quick view functionality can be implemented later
   }
 
-  const handleFavorite = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    // TODO: Implement favorite functionality
-  }
 
   // Calculate badges based on product data
   const getProductBadges = () => {
@@ -175,14 +170,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
           {/* Quick Actions */}
           <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-            <Button
-              size="icon"
-              variant="secondary"
-              className="h-9 w-9 rounded-full bg-background/90 backdrop-blur-sm shadow-lg hover:bg-primary hover:text-primary-foreground transition-all duration-200"
-              onClick={handleFavorite}
-            >
-              <Heart className="h-4 w-4" />
-            </Button>
             <Button
               size="icon"
               variant="secondary"

@@ -11,48 +11,49 @@ export function SecurityWarning({ variant = 'default', className }: SecurityWarn
   const warnings = {
     default: {
       icon: Shield,
-      title: '⚠️ Cảnh báo bảo mật',
+      title: '⚠️ Lưu ý quan trọng',
       items: [
-        'Không chuyển khoản trước khi nhận hàng, trừ khi đã xác nhận với người bán qua chat',
-        'Kiểm tra kỹ thông tin người bán trước khi đặt hàng',
-        'Chỉ thanh toán qua các kênh chính thức của nền tảng',
-        'Không cung cấp mật khẩu, OTP, hoặc thông tin tài khoản ngân hàng cho bất kỳ ai',
-        'Nếu có dấu hiệu lừa đảo, vui lòng báo cáo ngay cho chúng tôi'
+        'Chúng tôi là nền tảng trung gian kết nối người mua và người bán',
+        'Người mua và người bán tự thỏa thuận về phương thức thanh toán và giao hàng',
+        'Nền tảng không xử lý thanh toán, không chịu trách nhiệm về giao dịch tài chính',
+        'Vui lòng thỏa thuận rõ ràng với người bán về điều kiện thanh toán trước khi đặt hàng',
+        'Kiểm tra kỹ thông tin người bán, đánh giá và uy tín trước khi quyết định',
+        'Nếu có vấn đề, vui lòng liên hệ trực tiếp với người bán hoặc báo cáo cho chúng tôi'
       ]
     },
     payment: {
       icon: CreditCard,
-      title: '⚠️ Cảnh báo thanh toán',
+      title: '⚠️ Lưu ý về thanh toán',
       items: [
-        'CHỈ thanh toán qua các kênh chính thức của nền tảng',
-        'KHÔNG chuyển khoản trực tiếp vào tài khoản cá nhân của người bán',
-        'KHÔNG thanh toán qua các ứng dụng chat như Zalo, Facebook Messenger',
-        'Luôn kiểm tra thông tin đơn hàng trước khi thanh toán',
-        'Nếu người bán yêu cầu thanh toán ngoài nền tảng, đây có thể là dấu hiệu lừa đảo',
-        'Báo cáo ngay nếu phát hiện hành vi đáng ngờ'
+        'Nền tảng không xử lý thanh toán, người mua và người bán tự thỏa thuận',
+        'Vui lòng thỏa thuận rõ ràng với người bán về phương thức thanh toán (COD, chuyển khoản, v.v.)',
+        'Nên thanh toán sau khi nhận hàng và kiểm tra chất lượng (COD) để an toàn hơn',
+        'Nếu chuyển khoản trước, chỉ chuyển sau khi đã thỏa thuận rõ ràng và tin tưởng người bán',
+        'Lưu giữ đầy đủ hóa đơn, chứng từ giao dịch để làm bằng chứng nếu có tranh chấp',
+        'Nếu có vấn đề về thanh toán, vui lòng liên hệ trực tiếp với người bán để giải quyết'
       ]
     },
     contact: {
       icon: Phone,
-      title: '⚠️ Cảnh báo liên hệ',
+      title: '⚠️ Lưu ý về liên hệ',
       items: [
-        'Chỉ liên hệ với người bán qua kênh chat chính thức của nền tảng',
-        'KHÔNG cung cấp số điện thoại, email cá nhân cho người bán',
-        'KHÔNG chuyển sang các ứng dụng chat khác như Zalo, Telegram',
-        'Nếu người bán yêu cầu liên hệ ngoài nền tảng, đây có thể là dấu hiệu lừa đảo',
-        'Tất cả giao dịch phải được thực hiện trên nền tảng để được bảo vệ'
+        'Bạn có thể liên hệ với người bán qua kênh chat của nền tảng hoặc thông tin công khai',
+        'Nên trao đổi rõ ràng về sản phẩm, giá cả, phương thức thanh toán và giao hàng',
+        'Lưu giữ lịch sử chat để làm bằng chứng nếu có tranh chấp',
+        'Nếu người bán yêu cầu thông tin nhạy cảm (mật khẩu, OTP), hãy từ chối và báo cáo',
+        'Nền tảng chỉ là trung gian kết nối, không chịu trách nhiệm về nội dung trao đổi giữa các bên'
       ]
     },
     scam: {
       icon: Ban,
       title: '🚨 Cảnh báo lừa đảo',
       items: [
-        'CẢNH GIÁC với các đề nghị quá hấp dẫn, giá rẻ bất thường',
-        'KHÔNG chuyển tiền trước khi nhận hàng và kiểm tra chất lượng',
-        'KHÔNG cung cấp thông tin tài khoản, mật khẩu, OTP cho bất kỳ ai',
-        'Nếu người bán yêu cầu thanh toán qua tài khoản cá nhân, đây là DẤU HIỆU LỪA ĐẢO',
-        'Luôn kiểm tra đánh giá và uy tín của người bán trước khi đặt hàng',
-        'Báo cáo ngay các hành vi đáng ngờ qua hotline hoặc email hỗ trợ'
+        'CẢNH GIÁC với các đề nghị quá hấp dẫn, giá rẻ bất thường so với thị trường',
+        'Nên thanh toán sau khi nhận hàng và kiểm tra chất lượng (COD) để an toàn hơn',
+        'KHÔNG cung cấp thông tin nhạy cảm như mật khẩu, OTP, mã PIN cho bất kỳ ai',
+        'Kiểm tra kỹ đánh giá, uy tín và thông tin của người bán trước khi quyết định',
+        'Nếu có dấu hiệu lừa đảo hoặc hành vi đáng ngờ, hãy báo cáo ngay cho chúng tôi',
+        'Lưu giữ đầy đủ hóa đơn, chứng từ và lịch sử giao dịch để làm bằng chứng'
       ]
     }
   }
