@@ -33,7 +33,6 @@ import {
 
 export default function ReportsAnalyticsPage() {
   const [timeRange, setTimeRange] = useState('30d')
-  const [reportType, setReportType] = useState('overview')
 
   // Mock data
   const overviewStats = [

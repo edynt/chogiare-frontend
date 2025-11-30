@@ -34,12 +34,82 @@ import {
   Upload,
   XCircle,
   Timer,
-  Sparkles
+  Sparkles,
+  User,
+  Phone,
+  Calendar,
+  ShoppingBag,
+  CreditCard,
+  Clock
 } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import type { Order } from '@/api/orders'
+
+// Helper function to get total quantity from order items
+const getTotalQuantity = (order: Order) => {
+  return order.items.reduce((sum, item) => sum + item.quantity, 0)
+}
+
+const STATUS_CONFIG = {
+  pending: {
+    label: 'Cần xác nhận',
+    color: '#F59E0B',
+    icon: Clock,
+    bgColor: 'bg-gradient-to-br from-amber-50 to-orange-50',
+    borderColor: 'border-amber-200',
+    textColor: 'text-amber-700',
+    badgeColor: 'bg-amber-500'
+  },
+  confirmed: {
+    label: 'Đã xác nhận',
+    color: '#3B82F6',
+    icon: CheckCircle,
+    bgColor: 'bg-gradient-to-br from-blue-50 to-indigo-50',
+    borderColor: 'border-blue-200',
+    textColor: 'text-blue-700',
+    badgeColor: 'bg-blue-500'
+  },
+  preparing: {
+    label: 'Đang chuẩn bị',
+    color: '#8B5CF6',
+    icon: Package,
+    bgColor: 'bg-gradient-to-br from-purple-50 to-violet-50',
+    borderColor: 'border-purple-200',
+    textColor: 'text-purple-700',
+    badgeColor: 'bg-purple-500'
+  },
+  ready: {
+    label: 'Sẵn sàng',
+    color: '#10B981',
+    icon: CheckCircle,
+    bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
+    borderColor: 'border-green-200',
+    textColor: 'text-green-700',
+    badgeColor: 'bg-green-500'
+  },
+  completed: {
+    label: 'Hoàn thành',
+    color: '#10B981',
+    icon: CheckCircle,
+    bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
+    borderColor: 'border-green-200',
+    textColor: 'text-green-700',
+    badgeColor: 'bg-green-500'
+  },
+  cancelled: {
+    label: 'Đã hủy',
+    color: '#EF4444',
+    icon: XCircle,
+    bgColor: 'bg-gradient-to-br from-red-50 to-rose-50',
+    borderColor: 'border-red-200',
+    textColor: 'text-red-700',
+    badgeColor: 'bg-red-500'
+  }
+}
 
 export function SellerDashboardContent() {
   const navigate = useNavigate()
-  const { data: products, isLoading } = useSellerProducts()
+  const { data: _products, isLoading: _isLoading } = useSellerProducts()
   const { data: ordersData, isLoading: isLoadingOrders, refetch: refetchOrders } = useStoreOrders('store-1', { page: 1, pageSize: 10 })
   const { notify } = useNotification()
   const [activeTab, setActiveTab] = useState('overview')
@@ -441,9 +511,9 @@ export function SellerDashboardContent() {
           <TabsTrigger value="overview">Tổng quan</TabsTrigger>
           <TabsTrigger value="orders">
             Đơn hàng
-            {recentOrders.filter((o: any) => o.status === 'pending').length > 0 && (
+            {recentOrders.filter((o) => o.status === 'pending').length > 0 && (
               <Badge variant="destructive" className="ml-2 text-xs">
-                {recentOrders.filter((o: any) => o.status === 'pending').length}
+                {recentOrders.filter((o) => o.status === 'pending').length}
               </Badge>
             )}
           </TabsTrigger>
@@ -665,79 +735,168 @@ export function SellerDashboardContent() {
                   <p className="mt-2 text-muted-foreground">Đang tải đơn hàng...</p>
                 </div>
               ) : recentOrders.length > 0 ? (
-                <div className="space-y-4">
+                <div className="grid gap-3">
                   {recentOrders.map((order) => {
-                    const totalQuantity = order.items.reduce((sum, item) => sum + item.quantity, 0)
-                    const firstProduct = order.items[0]
-                    
+                    const statusConfig = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.pending
+                    const StatusIcon = statusConfig.icon
+                    const isPaid = order.paymentStatus === 'completed' || order.paymentStatus === 'paid'
+                    const getPaymentStatusLabel = () => {
+                      if (isPaid) return 'Đã thanh toán'
+                      if (order.paymentStatus === 'pending') return 'Chờ thanh toán'
+                      if (order.paymentStatus === 'failed') return 'Thanh toán thất bại'
+                      return 'Chưa thanh toán'
+                    }
+
                     return (
-                      <div 
-                        key={order.id} 
-                        className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
+                      <Card
+                        key={order.id}
+                        className={cn(
+                          "group cursor-pointer transition-all duration-200 hover:shadow-md border overflow-hidden",
+                          statusConfig.borderColor,
+                          "hover:border-primary/50"
+                        )}
                         onClick={() => navigate(`/orders/${order.id}`)}
                       >
-                        <div className="flex items-center gap-4 flex-1">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="font-semibold text-lg">Mã đơn: {order.id}</p>
-                              <Badge className={`${getStatusColor(order.status)} text-white`}>
-                                {getStatusLabel(order.status)}
-                              </Badge>
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between gap-4">
+                            {/* Left: Order Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="text-base font-bold text-foreground">
+                                  #{order.id}
+                                </h3>
+                                <Badge
+                                  className={cn(
+                                    "flex items-center gap-1 px-2 py-0.5 text-xs font-medium",
+                                    statusConfig.bgColor,
+                                    statusConfig.textColor,
+                                    statusConfig.borderColor,
+                                    "border"
+                                  )}
+                                >
+                                  <StatusIcon className="h-3 w-3" />
+                                  {statusConfig.label}
+                                </Badge>
+                              </div>
+                              
+                              <div className="space-y-1 mb-2">
+                                {/* Customer Info - Compact */}
+                                <div className="flex items-center gap-3 text-xs">
+                                  <div className="flex items-center gap-1.5">
+                                    <User className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                                    <span className="font-medium text-foreground">{order.userName || 'Khách hàng'}</span>
+                                  </div>
+                                  {order.userEmail && (
+                                    <>
+                                      <span className="text-muted-foreground">•</span>
+                                      <div className="flex items-center gap-1">
+                                        <Phone className="h-3 w-3 text-muted-foreground" />
+                                        <span className="text-muted-foreground">{order.userEmail}</span>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+
+                                {/* Payment Status and Info - Compact */}
+                                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                  <div className="flex items-center gap-1">
+                                    <CreditCard className="h-3 w-3" />
+                                    <Badge 
+                                      variant={isPaid ? "default" : "secondary"}
+                                      className={cn(
+                                        "text-xs px-1.5 py-0.5 h-auto font-medium",
+                                        isPaid ? "bg-green-100 text-green-700 border-green-200" : "bg-amber-100 text-amber-700 border-amber-200"
+                                      )}
+                                    >
+                                      {getPaymentStatusLabel()}
+                                    </Badge>
+                                  </div>
+                                  <span className="text-muted-foreground">•</span>
+                                  <span className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    {formatDate(order.createdAt)}
+                                  </span>
+                                  <span className="text-muted-foreground">•</span>
+                                  <span className="flex items-center gap-1">
+                                    <ShoppingBag className="h-3 w-3" />
+                                    {getTotalQuantity(order)} sản phẩm
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                            <div className="space-y-1">
-                              <p className="text-sm text-muted-foreground">
-                                <span className="font-medium">Khách hàng:</span> {order.userName || order.userEmail || 'N/A'}
-                              </p>
-                              {order.shippingAddress && (
-                                <p className="text-sm text-muted-foreground line-clamp-1">
-                                  <span className="font-medium">Địa chỉ:</span> {order.shippingAddress}
+
+                            {/* Right: Price and Action */}
+                            <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                              <div className="text-right">
+                                <p className="text-lg font-bold text-primary">
+                                  {formatPrice(order.total)}
                                 </p>
-                              )}
-                              {firstProduct && (
-                                <p className="text-sm text-muted-foreground">
-                                  <span className="font-medium">Sản phẩm:</span> {firstProduct.productName}
-                                  {totalQuantity > 1 && ` (${totalQuantity} sản phẩm)`}
-                                </p>
-                              )}
-                              <p className="text-sm text-muted-foreground">
-                                <span className="font-medium">Ngày đặt:</span> {formatDate(order.createdAt)}
-                              </p>
+                              </div>
+                              
+                              {/* Action Buttons */}
+                              <div className="flex gap-2">
+                                {order.status === 'pending' && (
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      className="bg-green-600 hover:bg-green-700 text-white text-xs h-8"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleConfirm(order.id)
+                                      }}
+                                      disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                                    >
+                                      <CheckCircle className="h-3 w-3 mr-1" />
+                                      Xác nhận
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 text-xs h-8"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleCancel(order.id)
+                                      }}
+                                      disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                                    >
+                                      <XCircle className="h-3 w-3 mr-1" />
+                                      Hủy
+                                    </Button>
+                                  </>
+                                )}
+                                {(order.status === 'confirmed' || order.status === 'preparing' || order.status === 'ready') && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="border-primary text-primary hover:bg-primary/10 text-xs h-8"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      navigate(`/orders/${order.id}`)
+                                    }}
+                                  >
+                                    <Eye className="h-3 w-3 mr-1" />
+                                    Chi tiết
+                                  </Button>
+                                )}
+                                {(order.status === 'completed' || order.status === 'cancelled') && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="border-primary text-primary hover:bg-primary/10 text-xs h-8"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      navigate(`/orders/${order.id}`)
+                                    }}
+                                  >
+                                    <Eye className="h-3 w-3 mr-1" />
+                                    Chi tiết
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-3 ml-4">
-                          <p className="font-semibold text-lg text-primary">{formatPrice(order.total)}</p>
-                          {order.status === 'pending' && (
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                className="bg-green-600 hover:bg-green-700 text-white"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleConfirm(order.id)
-                                }}
-                                disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
-                              >
-                                <CheckCircle className="h-4 w-4 mr-1" />
-                                Xác nhận
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-red-500 text-red-700 hover:bg-red-50"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleCancel(order.id)
-                                }}
-                                disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
-                              >
-                                <XCircle className="h-4 w-4 mr-1" />
-                                Hủy đơn
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
                     )
                   })}
                 </div>

@@ -26,7 +26,6 @@ import {
   RefreshCw,
   Eye,
   Calendar,
-  TrendingUp,
   CreditCard
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -99,7 +98,7 @@ const STATUS_CONFIG = {
 
 export default function OrdersPage() {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('pending')
+  const [activeTab, setActiveTab] = useState('all')
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
@@ -143,6 +142,7 @@ export default function OrdersPage() {
   }
 
   const getOrdersByStatus = (status: string) => {
+    if (status === 'all') return orders
     if (status === 'pending') return orders.filter(o => o.status === 'pending')
     if (status === 'confirmed') return orders.filter(o => o.status === 'confirmed')
     if (status === 'preparing') return orders.filter(o => o.status === 'preparing')
@@ -238,10 +238,6 @@ export default function OrdersPage() {
   const completedCount = orders.filter(o => o.status === 'completed').length
   const cancelledCount = orders.filter(o => o.status === 'cancelled').length
 
-  const totalRevenue = orders
-    .filter(o => o.status === 'completed')
-    .reduce((sum, o) => sum + o.total, 0)
-
   if (isLoading && orders.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
@@ -290,55 +286,92 @@ export default function OrdersPage() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {/* Chờ xác nhận */}
               <Card className="border-0 shadow-md bg-gradient-to-br from-amber-50 to-orange-50">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Cần xác nhận</p>
-                      <p className="text-2xl font-bold text-amber-700">{pendingCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Chờ xác nhận</p>
+                      <p className="text-xl md:text-2xl font-bold text-amber-700">{pendingCount}</p>
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                      <Clock className="h-6 w-6 text-amber-600" />
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-amber-100 flex items-center justify-center">
+                      <Clock className="h-5 w-5 md:h-6 md:w-6 text-amber-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
+              
+              {/* Đã xác nhận */}
               <Card className="border-0 shadow-md bg-gradient-to-br from-blue-50 to-indigo-50">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Đang xử lý</p>
-                      <p className="text-2xl font-bold text-blue-700">{confirmedCount + preparingCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Đã xác nhận</p>
+                      <p className="text-xl md:text-2xl font-bold text-blue-700">{confirmedCount}</p>
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                      <Package className="h-6 w-6 text-blue-600" />
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                      <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
+              
+              {/* Đang chuẩn bị */}
+              <Card className="border-0 shadow-md bg-gradient-to-br from-purple-50 to-violet-50">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Đang chuẩn bị</p>
+                      <p className="text-xl md:text-2xl font-bold text-purple-700">{preparingCount}</p>
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                      <Package className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Sẵn sàng lấy hàng */}
+              <Card className="border-0 shadow-md bg-gradient-to-br from-cyan-50 to-teal-50">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Sẵn sàng lấy hàng</p>
+                      <p className="text-xl md:text-2xl font-bold text-cyan-700">{readyCount}</p>
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-cyan-100 flex items-center justify-center">
+                      <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-cyan-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Đã hoàn thành */}
               <Card className="border-0 shadow-md bg-gradient-to-br from-green-50 to-emerald-50">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Hoàn thành</p>
-                      <p className="text-2xl font-bold text-green-700">{completedCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Đã hoàn thành</p>
+                      <p className="text-xl md:text-2xl font-bold text-green-700">{completedCount}</p>
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                      <CheckCircle className="h-6 w-6 text-green-600" />
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-green-100 flex items-center justify-center">
+                      <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-md bg-gradient-to-br from-purple-50 to-pink-50">
+              
+              {/* Đã huỷ */}
+              <Card className="border-0 shadow-md bg-gradient-to-br from-red-50 to-rose-50">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Doanh thu</p>
-                      <p className="text-2xl font-bold text-purple-700">{formatPrice(totalRevenue)}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Đã huỷ</p>
+                      <p className="text-xl md:text-2xl font-bold text-red-700">{cancelledCount}</p>
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-                      <TrendingUp className="h-6 w-6 text-purple-600" />
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-red-100 flex items-center justify-center">
+                      <XCircle className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
                     </div>
                   </div>
                 </CardContent>
@@ -348,7 +381,18 @@ export default function OrdersPage() {
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 h-auto p-1 bg-muted/50">
+            <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 h-auto p-1 bg-muted/50">
+              <TabsTrigger 
+                value="all" 
+                className="relative data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                Tất cả
+                {orders.length > 0 && (
+                  <Badge className="ml-2 bg-primary text-white text-xs px-1.5 py-0.5 rounded-full">
+                    {orders.length}
+                  </Badge>
+                )}
+              </TabsTrigger>
               <TabsTrigger 
                 value="pending" 
                 className="relative data-[state=active]:bg-background data-[state=active]:shadow-sm"
@@ -417,6 +461,206 @@ export default function OrdersPage() {
               </TabsTrigger>
             </TabsList>
 
+            {/* Tab "Tất cả" - Hiển thị tất cả đơn hàng */}
+            <TabsContent value="all" className="space-y-4 mt-6">
+              {orders.length === 0 ? (
+                <Card className="border-2 border-dashed">
+                  <CardContent className="flex flex-col items-center justify-center py-16">
+                    <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
+                      <ShoppingBag className="h-10 w-10 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Chưa có đơn hàng</h3>
+                    <p className="text-muted-foreground text-center max-w-md">
+                      Các đơn hàng của bạn sẽ hiển thị ở đây
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid gap-3">
+                  {orders.map((order) => {
+                    const statusConfig = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.pending
+                    const StatusIcon = statusConfig.icon
+                    const isPaid = order.paymentStatus === 'completed' || order.paymentStatus === 'paid'
+                    const getPaymentStatusLabel = () => {
+                      if (isPaid) return 'Đã thanh toán'
+                      if (order.paymentStatus === 'pending') return 'Chờ thanh toán'
+                      if (order.paymentStatus === 'failed') return 'Thanh toán thất bại'
+                      return 'Chưa thanh toán'
+                    }
+
+                    return (
+                      <Card
+                        key={order.id}
+                        className={cn(
+                          "group cursor-pointer transition-all duration-200 hover:shadow-md border overflow-hidden",
+                          statusConfig.borderColor,
+                          "hover:border-primary/50"
+                        )}
+                        onClick={() => navigate(`/orders/${order.id}`)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between gap-4">
+                            {/* Left: Order Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="text-base font-bold text-foreground">
+                                  #{order.id}
+                                </h3>
+                                <Badge
+                                  className={cn(
+                                    "flex items-center gap-1 px-2 py-0.5 text-xs font-medium",
+                                    statusConfig.bgColor,
+                                    statusConfig.textColor,
+                                    statusConfig.borderColor,
+                                    "border"
+                                  )}
+                                >
+                                  <StatusIcon className="h-3 w-3" />
+                                  {statusConfig.label}
+                                </Badge>
+                              </div>
+                              
+                              <div className="space-y-1 mb-2">
+                                {/* Customer Info - Compact */}
+                                <div className="flex items-center gap-3 text-xs">
+                                  <div className="flex items-center gap-1.5">
+                                    <User className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                                    <span className="font-medium text-foreground">{order.userName || 'Khách hàng'}</span>
+                                  </div>
+                                  {order.userEmail && (
+                                    <>
+                                      <span className="text-muted-foreground">•</span>
+                                      <div className="flex items-center gap-1">
+                                        <Phone className="h-3 w-3 text-muted-foreground" />
+                                        <span className="text-muted-foreground">{order.userEmail}</span>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+
+                                {/* Payment Status and Info - Compact */}
+                                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                  <div className="flex items-center gap-1">
+                                    <CreditCard className="h-3 w-3" />
+                                    <Badge 
+                                      variant={isPaid ? "default" : "secondary"}
+                                      className={cn(
+                                        "text-xs px-1.5 py-0.5 h-auto font-medium",
+                                        isPaid ? "bg-green-100 text-green-700 border-green-200" : "bg-amber-100 text-amber-700 border-amber-200"
+                                      )}
+                                    >
+                                      {getPaymentStatusLabel()}
+                                    </Badge>
+                                  </div>
+                                  <span className="text-muted-foreground">•</span>
+                                  <span className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    {formatDate(order.createdAt)}
+                                  </span>
+                                  <span className="text-muted-foreground">•</span>
+                                  <span className="flex items-center gap-1">
+                                    <ShoppingBag className="h-3 w-3" />
+                                    {getTotalQuantity(order)} sản phẩm
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right: Price and Action */}
+                            <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                              <div className="text-right">
+                                <p className="text-lg font-bold text-primary">
+                                  {formatPrice(order.total)}
+                                </p>
+                              </div>
+                              
+                              {/* Action Buttons */}
+                              <div className="flex gap-2">
+                                {order.status === 'pending' && (
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      className="bg-green-600 hover:bg-green-700 text-white text-xs h-8"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleConfirm(order.id)
+                                      }}
+                                      disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                                    >
+                                      <CheckCircle className="h-3 w-3 mr-1" />
+                                      Xác nhận
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 text-xs h-8"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleCancel(order.id)
+                                      }}
+                                      disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                                    >
+                                      <XCircle className="h-3 w-3 mr-1" />
+                                      Hủy
+                                    </Button>
+                                  </>
+                                )}
+                                {(order.status === 'confirmed' || order.status === 'preparing' || order.status === 'ready') && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="border-primary text-primary hover:bg-primary/10 text-xs h-8"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      navigate(`/orders/${order.id}`)
+                                    }}
+                                  >
+                                    <Eye className="h-3 w-3 mr-1" />
+                                    Chi tiết
+                                  </Button>
+                                )}
+                                {(order.status === 'completed' || order.status === 'cancelled') && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="border-primary text-primary hover:bg-primary/10 text-xs h-8"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      navigate(`/orders/${order.id}`)
+                                    }}
+                                  >
+                                    <Eye className="h-3 w-3 mr-1" />
+                                    Chi tiết
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
+                </div>
+              )}
+              
+              {/* Load More Sentinel */}
+              {orders.length > 0 && (
+                <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
+                  {isFetchingNextPage && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <LoadingSpinner size="sm" />
+                      <span className="text-sm">Đang tải thêm đơn hàng...</span>
+                    </div>
+                  )}
+                  {!hasNextPage && orders.length > 0 && (
+                    <p className="text-sm text-muted-foreground text-center">
+                      Đã hiển thị tất cả đơn hàng
+                    </p>
+                  )}
+                </div>
+              )}
+            </TabsContent>
+
             {['pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'].map((status) => {
               const statusOrders = getOrdersByStatus(status)
               const statusConfig = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]
@@ -438,7 +682,7 @@ export default function OrdersPage() {
                     </Card>
                   ) : (
                     <div className="grid gap-3">
-                      {statusOrders.map((order, index) => {
+                      {statusOrders.map((order) => {
                         const isPaid = order.paymentStatus === 'completed' || order.paymentStatus === 'paid'
                         const getPaymentStatusLabel = () => {
                           if (isPaid) return 'Đã thanh toán'
