@@ -13,8 +13,9 @@ import {
   DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/authStore'
-import { Menu, User, MessageCircle, Settings, Bell, Clock, LogOut, Droplet, Home, HelpCircle, Store, ShoppingBag, Search, ShoppingCart } from 'lucide-react'
+import { Menu, User, MessageCircle, Settings, Bell, Clock, LogOut, Droplet, Home, HelpCircle, Store, ShoppingBag, Search, ShoppingCart, X } from 'lucide-react'
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useCartStore } from '@/stores/cartStore'
 
 export function Header() {
@@ -22,6 +23,7 @@ export function Header() {
   const { totalItems } = useCartStore()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -261,13 +263,13 @@ export function Header() {
                     {/* Personal Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
-                        <Link to="/profile" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                        <Link to="/profile" className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
                           <User className="mr-2 h-4 w-4" />
                           <span>Thông tin cá nhân</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/customer-orders" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                        <Link to="/customer-orders" className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
                           <ShoppingBag className="mr-2 h-4 w-4" />
                           <span>Đơn hàng của tôi</span>
                         </Link>
@@ -279,13 +281,13 @@ export function Header() {
                     {/* Communication Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
-                        <Link to="/chat" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                        <Link to="/chat" className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
                           <MessageCircle className="mr-2 h-4 w-4" />
                           <span>Tin nhắn</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/seller/notifications" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                        <Link to="/seller/notifications" className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
                           <Bell className="mr-2 h-4 w-4" />
                           <span>Thông báo</span>
                         </Link>
@@ -299,13 +301,13 @@ export function Header() {
                       <>
                         <DropdownMenuGroup>
                           <DropdownMenuItem asChild>
-                            <Link to="/seller/products" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                            <Link to="/seller/products" className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
                               <Settings className="mr-2 h-4 w-4" />
                               <span>Quản lý sản phẩm</span>
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link to="/seller/support" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                            <Link to="/seller/support" className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
                               <HelpCircle className="mr-2 h-4 w-4" />
                               <span>Hỗ trợ & Khiếu nại</span>
                             </Link>
@@ -318,7 +320,7 @@ export function Header() {
                     {/* Settings Section */}
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
-                        <Link to="/profile?tab=settings" className="flex items-center hover:bg-red-500 hover:text-white transition-colors">
+                        <Link to="/profile?tab=settings" className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
                           <Settings className="mr-2 h-4 w-4" />
                           <span>Cài đặt</span>
                         </Link>
@@ -328,7 +330,7 @@ export function Header() {
                     <DropdownMenuSeparator />
                     
                     {/* Logout */}
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 hover:bg-red-500 hover:text-white transition-colors">
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Đăng xuất</span>
                     </DropdownMenuItem>
@@ -350,15 +352,6 @@ export function Header() {
           {/* Mobile Search and Menu */}
           <div className="flex items-center gap-2 md:hidden">
             <Button
-              variant="default"
-              size="sm"
-              onClick={() => navigate('/dashboard')}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              <Store className="h-4 w-4 mr-1" />
-              <span className="text-xs">Người bán</span>
-            </Button>
-            <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate('/products')}
@@ -369,14 +362,232 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => {/* Mobile menu toggle can be implemented later */}}
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Menu"
             >
               <Menu className="h-4 w-4" />
             </Button>
           </div>
         </div>
-
       </div>
+
+      {/* Mobile Menu Drawer - Rendered via Portal to ensure it's always on top */}
+      {mobileMenuOpen && typeof document !== 'undefined' && createPortal(
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] md:hidden animate-in fade-in-0"
+            onClick={() => setMobileMenuOpen(false)}
+            style={{ zIndex: 9999 }}
+          />
+          
+          {/* Drawer */}
+          <div 
+            className="fixed right-0 top-0 h-full w-80 max-w-[85vw] bg-background shadow-xl z-[9999] md:hidden animate-in slide-in-from-right duration-300 overflow-y-auto"
+            style={{ zIndex: 9999 }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-background z-10">
+              <div className="flex items-center space-x-3">
+                <div className="relative h-9 w-9 bg-gradient-to-br from-primary to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                  <Droplet className="h-5 w-5 text-white" fill="currentColor" />
+                </div>
+                <span className="text-lg font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                  Menu
+                </span>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Đóng menu"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Menu Content */}
+            <div className="p-4 space-y-2">
+              {/* User Info Section */}
+              {isAuthenticated && user && (
+                <div className="p-4 bg-muted rounded-lg mb-4">
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={user?.avatar} alt={user?.name} />
+                      <AvatarFallback>
+                        <User className="h-6 w-6" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate">{user?.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation Links */}
+              <div className="space-y-1">
+                <Link
+                  to="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                >
+                  <Home className="h-5 w-5" />
+                  <span>Trang chủ</span>
+                </Link>
+
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                >
+                  <Store className="h-5 w-5" />
+                  <span>Người bán</span>
+                </Link>
+
+                <Link
+                  to="/chat"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  <span>Tin nhắn</span>
+                </Link>
+
+                <Link
+                  to="/cart"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors relative"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  <span>Giỏ hàng</span>
+                  {totalItems > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="ml-auto h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-bold"
+                    >
+                      {totalItems > 99 ? '99+' : totalItems}
+                    </Badge>
+                  )}
+                </Link>
+
+                <Link
+                  to="/seller/notifications"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors relative"
+                >
+                  <Bell className="h-5 w-5" />
+                  <span>Thông báo</span>
+                  {unreadCount > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="ml-auto h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-bold"
+                    >
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </Link>
+              </div>
+
+              {/* Separator */}
+              <div className="my-4 border-t" />
+
+              {/* User Menu Section */}
+              {isAuthenticated ? (
+                <div className="space-y-1">
+                  <Link
+                    to="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <User className="h-5 w-5" />
+                    <span>Thông tin cá nhân</span>
+                  </Link>
+
+                  <Link
+                    to="/customer-orders"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <ShoppingBag className="h-5 w-5" />
+                    <span>Đơn hàng của tôi</span>
+                  </Link>
+
+                  {/* Seller Only Section */}
+                  {user?.roles?.includes('seller') && (
+                    <>
+                      <div className="my-2 border-t" />
+                      <Link
+                        to="/seller/products"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                      >
+                        <Settings className="h-5 w-5" />
+                        <span>Quản lý sản phẩm</span>
+                      </Link>
+
+                      <Link
+                        to="/seller/support"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                      >
+                        <HelpCircle className="h-5 w-5" />
+                        <span>Hỗ trợ & Khiếu nại</span>
+                      </Link>
+                    </>
+                  )}
+
+                  <div className="my-2 border-t" />
+
+                  <Link
+                    to="/profile?tab=settings"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span>Cài đặt</span>
+                  </Link>
+
+                  <button
+                    onClick={() => {
+                      handleLogout()
+                      setMobileMenuOpen(false)
+                    }}
+                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-destructive hover:text-destructive-foreground transition-colors w-full text-left text-red-600"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    <span>Đăng xuất</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      navigate('/auth/login')
+                      setMobileMenuOpen(false)
+                    }}
+                  >
+                    Đăng nhập
+                  </Button>
+                  <Button
+                    className="w-full"
+                    onClick={() => {
+                      navigate('/auth/register')
+                      setMobileMenuOpen(false)
+                    }}
+                  >
+                    Đăng ký
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
     </header>
   )
 }

@@ -54,7 +54,21 @@ export default function AuthPage() {
         <div className="text-center">
           <Link to="/" className="flex items-center justify-center mb-4 hover:opacity-80 hover:scale-105 transition-all duration-300">
             <div className="h-16 w-16 bg-primary rounded-lg flex items-center justify-center hover:rotate-12 transition-transform duration-300">
-              <span className="text-primary-foreground font-bold text-2xl">C</span>
+              <svg 
+                className="w-10 h-10 text-primary-foreground" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path 
+                  d="M12 2.69C12 2.69 6 7.5 6 12.5C6 16.64 9.36 20 13.5 20C17.64 20 21 16.64 21 12.5C21 7.5 15 2.69 12 2.69Z" 
+                  fill="currentColor"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
           </Link>
           <h1 className="text-3xl font-bold text-primary animate-in fade-in duration-1000 delay-200">Chogiare</h1>
