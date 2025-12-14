@@ -47,6 +47,13 @@ export const authApi = {
     await apiClient.post('/auth/forgot-password', { email })
   },
 
+  verifyResetToken: async (token: string): Promise<{ valid: boolean }> => {
+    const response = await apiClient.get<ApiResponse<{ valid: boolean }>>(
+      `/auth/verify-reset-token?token=${encodeURIComponent(token)}`
+    )
+    return response.data.data
+  },
+
   resetPassword: async (token: string, password: string): Promise<void> => {
     await apiClient.post('/auth/reset-password', { resetToken: token, newPassword: password })
   },

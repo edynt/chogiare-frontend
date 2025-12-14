@@ -151,7 +151,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Chogiare - Nền tảng mua sỉ hàng đầu Việt Nam"
+        title="Chợ Giá Rẻ - Nền tảng mua sỉ hàng đầu Việt Nam"
         description="Tìm kiếm và mua sỉ hàng ngàn sản phẩm với giá tốt nhất. Quản lý đơn hàng, theo dõi giao hàng và kết nối với nhà cung cấp uy tín."
         keywords="mua sỉ, bán sỉ, chogiare, đặt hàng sỉ, tìm nhà cung cấp, quản lý đơn hàng"
         structuredData={{

@@ -83,6 +83,12 @@ export const useForgotPassword = () => {
   })
 }
 
+export const useVerifyResetToken = () => {
+  return useMutation({
+    mutationFn: (token: string) => authApi.verifyResetToken(token),
+  })
+}
+
 export const useResetPassword = () => {
   return useMutation({
     mutationFn: ({ token, password }: { token: string; password: string }) =>
