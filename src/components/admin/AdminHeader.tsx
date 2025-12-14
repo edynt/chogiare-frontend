@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Bell, Search, Settings, User, LogOut, Menu, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { useLogout } from '@/hooks/useAuth'
+import { apiClient } from '@/api/axios'
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +21,8 @@ interface AdminHeaderProps {
 }
 
 export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
+  const navigate = useNavigate()
+  const logoutMutation = useLogout()
   const [notifications] = useState([
     { id: 1, title: 'Tài khoản mới cần duyệt', time: '2 phút trước', unread: true },
     { id: 2, title: 'Sản phẩm vi phạm báo cáo', time: '15 phút trước', unread: true },
@@ -25,6 +30,17 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   ])
 
   const unreadCount = notifications.filter(n => n.unread).length
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync()
+    } catch (error) {
+      console.error('Logout error:', error)
+    } finally {
+      apiClient.clearAuthTokens()
+      navigate('/admin-login', { replace: true })
+    }
+  }
 
   return (
     <header className="bg-white border-b border-gray-200 px-8 py-6">
@@ -132,9 +148,13 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                 Cài đặt
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600">
+              <DropdownMenuItem 
+                className="text-red-600"
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
+              >
                 <LogOut className="h-4 w-4 mr-2" />
-                Đăng xuất
+                {logoutMutation.isPending ? 'Đang đăng xuất...' : 'Đăng xuất'}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -62,9 +62,14 @@ class ApiClient {
           } catch (refreshError) {
             this.refreshSubscribers = []
             this.clearStoredTokens()
-            const isAuthPage = window.location.pathname.startsWith('/auth/')
-            if (!isAuthPage) {
+            const currentPath = window.location.pathname
+            const isAuthPage = currentPath.startsWith('/auth/')
+            const isAdminPage = currentPath.startsWith('/admin') || currentPath.startsWith('/admin-login')
+            
+            if (!isAuthPage && !isAdminPage) {
               window.location.href = '/auth/login'
+            } else if (isAdminPage && !currentPath.startsWith('/admin-login')) {
+              window.location.href = '/admin-login'
             }
             return Promise.reject(refreshError)
           } finally {

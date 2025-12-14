@@ -44,6 +44,10 @@ export const useLogout = () => {
       logout()
       queryClient.clear()
     },
+    onError: () => {
+      logout()
+      queryClient.clear()
+    },
   })
 }
 

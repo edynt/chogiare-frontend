@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { useProfile } from '@/hooks'
+import { apiClient } from '@/api/axios'
 import { Loader2 } from 'lucide-react'
 
 interface AdminAuthGuardProps {
@@ -10,7 +11,7 @@ interface AdminAuthGuardProps {
 
 export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
   const navigate = useNavigate()
-  const { tokens } = useAuthStore()
+  const { tokens, logout, user } = useAuthStore()
   const { data: profile, isLoading, error } = useProfile()
 
   useEffect(() => {
@@ -22,6 +23,8 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
     if (!isLoading && error) {
       const axiosError = error as { response?: { status?: number } }
       if (axiosError.response?.status === 401) {
+        logout()
+        apiClient.clearAuthTokens()
         navigate('/admin-login', { replace: true })
         return
       }
@@ -32,11 +35,25 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
       const isAdmin = userRoles.includes('admin')
       
       if (!isAdmin) {
+        logout()
+        apiClient.clearAuthTokens()
         navigate('/admin-login', { replace: true })
         return
       }
     }
-  }, [tokens, profile, isLoading, error, navigate])
+
+    if (user && !isLoading && !profile) {
+      const userRoles = user.roles || []
+      const isAdmin = userRoles.includes('admin')
+      
+      if (!isAdmin) {
+        logout()
+        apiClient.clearAuthTokens()
+        navigate('/admin-login', { replace: true })
+        return
+      }
+    }
+  }, [tokens, profile, isLoading, error, navigate, logout, user])
 
   if (!tokens) {
     return null
@@ -60,7 +77,7 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
     }
   }
 
-  if (profile) {
+  if (profile && !isLoading) {
     const userRoles = profile.roles || []
     const isAdmin = userRoles.includes('admin')
     
@@ -69,6 +86,15 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
     }
 
     return <>{children}</>
+  }
+
+  if (user && !isLoading && !profile) {
+    const userRoles = user.roles || []
+    const isAdmin = userRoles.includes('admin')
+    
+    if (!isAdmin) {
+      return null
+    }
   }
 
   return (

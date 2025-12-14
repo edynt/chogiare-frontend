@@ -603,7 +603,6 @@ export const handlers = [
       comment: `This is review ${i + 1}`,
       images: [],
       isVerified: Math.random() > 0.5,
-      helpful: Math.floor(Math.random() * 10),
       userName: 'User Name',
       userEmail: 'user@example.com',
       userAvatar: '/avatar.jpg',
@@ -639,7 +638,6 @@ export const handlers = [
       comment: `This is review ${i + 1}`,
       images: [],
       isVerified: Math.random() > 0.5,
-      helpful: Math.floor(Math.random() * 10),
       buyerId: `user-${i + 1}`,
       buyer: {
         id: `user-${i + 1}`,
@@ -678,7 +676,6 @@ export const handlers = [
       userId: 1,
       images: [],
       isVerified: false,
-      helpful: 0,
       userName: 'User Name',
       userEmail: 'user@example.com',
       userAvatar: '/avatar.jpg',

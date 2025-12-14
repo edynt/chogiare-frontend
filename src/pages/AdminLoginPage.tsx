@@ -63,11 +63,19 @@ export default function AdminLoginPage() {
         return
       }
 
+      const userWithRoles = {
+        ...response.user,
+        roles: (response.roles || response.user.roles || []) as Array<'buyer' | 'seller' | 'admin'>,
+      }
+      
       apiClient.setAuthTokens(response.tokens)
-      login(response.user, response.tokens)
+      login(userWithRoles, response.tokens)
       
       toast.success('Login successful')
-      navigate('/admin', { replace: true })
+      
+      setTimeout(() => {
+        navigate('/admin', { replace: true })
+      }, 100)
     } catch (error: unknown) {
       let errorMessage = 'Login failed. Please check your credentials.'
       
