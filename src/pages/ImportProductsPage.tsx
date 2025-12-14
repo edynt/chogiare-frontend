@@ -13,6 +13,7 @@ import { Upload, FileSpreadsheet, FileText, CheckCircle, AlertCircle, Download, 
 import { useNotification } from '@/components/notification-provider'
 import * as XLSX from 'xlsx'
 import { useCreateProduct } from '@/hooks/useProducts'
+import { PLACEHOLDER_IMAGE } from '@/lib/utils'
 
 interface ParsedProduct {
   title: string
@@ -181,7 +182,7 @@ export default function ImportProductsPage() {
             originalPrice: product.originalPrice,
             stock: product.stock,
             categoryId: product.categoryId,
-            images: product.images.length > 0 ? product.images : ['https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=400&h=400&fit=crop'],
+            images: product.images.length > 0 ? product.images : [PLACEHOLDER_IMAGE],
             condition: product.condition,
             tags: product.tags,
             location: product.location,

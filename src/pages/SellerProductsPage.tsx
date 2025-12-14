@@ -23,7 +23,7 @@ import {
   DollarSign,
   Star
 } from 'lucide-react'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, PLACEHOLDER_IMAGE } from '@/lib/utils'
 import type { ProductStatus } from '@/types'
 
 export default function SellerProductsPage() {
@@ -318,9 +318,12 @@ export default function SellerProductsPage() {
                     <Card key={product.id} className="group hover:shadow-lg transition-shadow">
                       <div className="relative">
                         <img
-                          src={product.images[0]}
+                          src={product.images && product.images.length > 0 ? product.images[0] : PLACEHOLDER_IMAGE}
                           alt={product.title}
                           className="w-full h-48 object-cover rounded-t-lg"
+                          onError={(e) => {
+                            e.currentTarget.src = PLACEHOLDER_IMAGE
+                          }}
                         />
                         <div className="absolute top-2 left-2">
                           {getStatusBadge(product.status)}

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { MapPin, Verified, Clock, ShoppingBag, Zap, Award, TrendingUp, Star, Sparkles, Shield } from 'lucide-react'
 // Removed Redux imports
-import { cn, formatPrice, formatDate } from '@/lib/utils'
+import { cn, formatPrice, formatDate, PLACEHOLDER_IMAGE } from '@/lib/utils'
 import type { Product } from '@/types'
 
 interface ProductCardProps {
@@ -100,12 +100,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
       <Link to={`/products/${product.id}`} className="flex flex-col flex-1">
         <div className="relative aspect-[4/3] overflow-hidden bg-muted">
           <img
-            src={product.images[0]}
+            src={product.images && product.images.length > 0 ? product.images[0] : PLACEHOLDER_IMAGE}
             alt={product.title}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
             loading="lazy"
             onError={(e) => {
-              e.currentTarget.src = 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop'
+              e.currentTarget.src = PLACEHOLDER_IMAGE
             }}
           />
           {/* Gradient overlay on hover */}

@@ -34,7 +34,7 @@ import {
   Lock
 } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, PLACEHOLDER_IMAGE } from '@/lib/utils'
 
 export default function CheckoutPage() {
   const [searchParams] = useSearchParams()
@@ -433,9 +433,12 @@ export default function CheckoutPage() {
                   ) : product ? (
                     <div className="flex gap-6 p-4 border-2 rounded-xl bg-muted/30 hover:border-primary/50 hover:shadow-md transition-all">
                       <img
-                        src={product.images[0]}
+                        src={product.images && product.images.length > 0 ? product.images[0] : PLACEHOLDER_IMAGE}
                         alt={product.title}
                         className="w-28 h-28 object-cover rounded-xl border-2 border-border shadow-lg"
+                        onError={(e) => {
+                          e.currentTarget.src = PLACEHOLDER_IMAGE
+                        }}
                       />
                       <div className="flex-1 flex flex-col justify-center">
                         <h3 className="font-bold text-lg mb-2">{product.title}</h3>

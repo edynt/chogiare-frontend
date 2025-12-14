@@ -24,7 +24,7 @@ import type { Review } from '@/api/reviews'
 import { ErrorMessage } from '@/components/ui/error-boundary'
 import { ProductDetailSkeleton, ProductDetailSectionSkeleton } from '@/components/skeleton/ProductDetailSkeleton'
 import { LazySection } from './LazySection'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate, PLACEHOLDER_IMAGE } from '@/lib/utils'
 import { SecurityWarning } from '@/components/ui/security-warning'
 import { useCartStore } from '@/stores/cartStore'
 import { toast } from 'sonner'
@@ -245,9 +245,12 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         <div className="space-y-4">
           <div className="aspect-square overflow-hidden rounded-lg bg-muted">
             <img
-              src={product.images?.[selectedImageIndex] || product.images?.[0] || '/placeholder.jpg'}
+              src={product.images && product.images.length > 0 ? (product.images[selectedImageIndex] || product.images[0]) : PLACEHOLDER_IMAGE}
               alt={product.title}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = PLACEHOLDER_IMAGE
+              }}
             />
           </div>
           
@@ -1532,7 +1535,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         <CardContent>
           <BestSellingProducts 
             productId={product.id} 
-            categoryId={product.categoryId || product.category?.id || ''} 
+            categoryId={String(product.categoryId || product.category?.id || '')} 
           />
         </CardContent>
       </Card>
