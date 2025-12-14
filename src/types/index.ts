@@ -47,7 +47,7 @@ export interface Product {
   description: string
   price: number
   originalPrice?: number
-  categoryId: string
+  categoryId: string | number
   category?: Category
   images: string[]
   condition: ProductCondition
@@ -166,12 +166,14 @@ export interface Conversation {
 
 export interface SearchFilters {
   query?: string | undefined
-  categoryId?: string | undefined
+  categoryId?: string | number | undefined
   minPrice?: number | undefined
   maxPrice?: number | undefined
   condition?: ProductCondition | undefined
   location?: string | undefined
   sellerId?: string | undefined
+  status?: ProductStatus | undefined
+  search?: string | undefined
   badges?: ProductBadge[] | undefined
   rating?: number | undefined
   minRating?: number | undefined
@@ -180,6 +182,7 @@ export interface SearchFilters {
   sortBy?: string | undefined
   sortOrder?: 'asc' | 'desc' | undefined
   page?: number | undefined
+  pageSize?: number | undefined
   limit?: number | undefined
   offset?: number | undefined
 }
@@ -211,11 +214,9 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
-  name: string
+  fullName: string
   email: string
   password: string
-  phone?: string
-  roles: UserRole[]
 }
 
 export interface DemoData {

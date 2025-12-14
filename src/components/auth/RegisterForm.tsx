@@ -9,7 +9,7 @@ import { useRegister } from '@/hooks/useAuth'
 import { useNotification } from '@/components/notification-provider'
 import { CheckCircle } from 'lucide-react'
 import { registerSchema, type RegisterFormData } from '@/lib/schemas'
-import type { UserRole } from '@/types'
+import type { RegisterData } from '@/types'
 
 export function RegisterForm() {
   const { notify } = useNotification()
@@ -26,10 +26,12 @@ export function RegisterForm() {
   })
 
   const onSubmit = (data: RegisterFormData) => {
-     
-    const { confirmPassword, ...registerData } = data
-    // User có thể vừa là buyer vừa là seller - đăng ký với cả 2 roles
-    const finalData = { ...registerData, roles: ['buyer', 'seller'] as UserRole[] }
+    const { confirmPassword: _confirmPassword, ...registerData } = data
+    const finalData: RegisterData = {
+      fullName: registerData.name,
+      email: registerData.email,
+      password: registerData.password,
+    }
     registerMutation.mutate(finalData, {
       onSuccess: () => {
         setIsRegistered(true)
@@ -39,7 +41,7 @@ export function RegisterForm() {
           message: 'Vui lòng kiểm tra email để xác nhận tài khoản.',
         })
       },
-      onError: (error) => {
+      onError: error => {
         notify({
           type: 'error',
           title: 'Đăng ký thất bại',
@@ -59,13 +61,11 @@ export function RegisterForm() {
             <div>
               <h3 className="text-lg font-semibold">Đăng ký thành công!</h3>
               <p className="text-muted-foreground mt-2">
-                Vui lòng kiểm tra email để xác nhận tài khoản trước khi đăng nhập.
+                Vui lòng kiểm tra email để xác nhận tài khoản trước khi đăng
+                nhập.
               </p>
             </div>
-            <Button 
-              onClick={() => navigate('/auth/login')} 
-              className="w-full"
-            >
+            <Button onClick={() => navigate('/auth/login')} className="w-full">
               Đi đến trang đăng nhập
             </Button>
           </div>
@@ -108,23 +108,9 @@ export function RegisterForm() {
               placeholder="Nhập email của bạn"
             />
             {errors.email && (
-              <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="phone" className="text-sm font-medium">
-              Số điện thoại (tùy chọn)
-            </label>
-            <Input
-              id="phone"
-              type="tel"
-              {...register('phone')}
-              className="mt-1"
-              placeholder="Nhập số điện thoại"
-            />
-            {errors.phone && (
-              <p className="text-sm text-red-500 mt-1">{errors.phone.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -140,7 +126,9 @@ export function RegisterForm() {
               placeholder="Nhập mật khẩu"
             />
             {errors.password && (
-              <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -156,7 +144,9 @@ export function RegisterForm() {
               placeholder="Nhập lại mật khẩu"
             />
             {errors.confirmPassword && (
-              <p className="text-sm text-red-500 mt-1">{errors.confirmPassword.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 

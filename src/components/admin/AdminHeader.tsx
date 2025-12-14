@@ -17,7 +17,7 @@ interface AdminHeaderProps {
   sidebarOpen?: boolean
 }
 
-export function AdminHeader({ onMenuClick, sidebarOpen }: AdminHeaderProps) {
+export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const [notifications] = useState([
     { id: 1, title: 'Tài khoản mới cần duyệt', time: '2 phút trước', unread: true },
     { id: 2, title: 'Sản phẩm vi phạm báo cáo', time: '15 phút trước', unread: true },

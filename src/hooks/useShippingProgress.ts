@@ -65,7 +65,7 @@ export const useMultipleShippingProgress = (orderIds: string[]) => {
             currentLocation: shippingInfo.currentLocation,
             trackingNumber: shippingInfo.trackingNumber
           }
-        } catch (error) {
+        } catch {
           // If shipping info not available, create default progress
           results[orderId] = {
             orderId,

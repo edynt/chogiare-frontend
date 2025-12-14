@@ -149,7 +149,7 @@ export function EditProductModal({
       })
       
       onClose()
-    } catch (error) {
+    } catch {
       notify({
         type: 'error',
         title: 'Lỗi',

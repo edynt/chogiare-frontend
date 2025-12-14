@@ -31,7 +31,7 @@ export interface CartStats {
 }
 
 export interface AddCartItemRequest {
-  productId: string
+  productId: number
   quantity: number
 }
 

@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { uploadApi, type UploadProgress } from '@/api/upload'
-import { useAuthStore } from '@/stores/authStore'
 
 export const useUploadFile = () => {
   return useMutation({
@@ -48,14 +47,12 @@ export const useUploadStoreImage = () => {
     mutationFn: ({ 
       storeId, 
       file, 
-      type, 
       onProgress 
     }: { 
       storeId: string; 
       file: File; 
-      type: 'logo' | 'banner'; 
       onProgress?: (progress: UploadProgress) => void 
-    }) => uploadApi.uploadStoreImage(storeId, file, type, onProgress),
+    }) => uploadApi.uploadStoreImage(storeId, file, onProgress),
     onSuccess: (_, { storeId }) => {
       queryClient.invalidateQueries({ queryKey: ['stores', storeId] })
       queryClient.invalidateQueries({ queryKey: ['stores'] })
@@ -64,7 +61,6 @@ export const useUploadStoreImage = () => {
 }
 
 export const useUploadAvatar = () => {
-  const { setUser } = useAuthStore()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -75,8 +71,7 @@ export const useUploadAvatar = () => {
       file: File; 
       onProgress?: (progress: UploadProgress) => void 
     }) => uploadApi.uploadAvatar(file, onProgress),
-    onSuccess: (data) => {
-      // Update user profile with new avatar
+    onSuccess: () => {
       // Update user profile with new avatar
       // This would need to be implemented with proper user update logic
       queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] })

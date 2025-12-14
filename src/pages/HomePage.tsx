@@ -33,10 +33,12 @@ import {
 
 export default function HomePage() {
   const navigate = useNavigate()
-  const { data: allProductsData, isLoading: isLoadingProducts } = useProducts({ limit: 100, sortBy: 'createdAt', sortOrder: 'desc' })
+  const { data: allProductsData, isLoading: isLoadingProducts } = useProducts({ limit: 100 })
   const { data: categories } = useCategories()
   
   const allProducts = allProductsData?.items || []
+  
+  const categoriesList = Array.isArray(categories) ? categories : []
   
   // 1. Bán chạy nhất (Best sellers) - sort by viewCount
   const bestSellers = allProducts
@@ -123,7 +125,7 @@ export default function HomePage() {
     })
     .slice(0, 8)
 
-  const displayCategories = categories?.slice(0, 8) || []
+  const displayCategories = categoriesList.slice(0, 8)
 
   // Show skeleton while loading initial data
   if (isLoadingProducts) {

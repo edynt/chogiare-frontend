@@ -33,7 +33,7 @@ import {
   Save,
   ArrowLeft,
 } from 'lucide-react'
-import type { Product, ProductCondition, ProductStatus } from '@/types'
+import type { ProductCondition, ProductStatus } from '@/types'
 
 // Using Zod schema from lib/schemas.ts
 
@@ -92,7 +92,6 @@ export default function AddProductPage() {
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -133,25 +132,26 @@ export default function AddProductPage() {
 
   const onSubmit = (data: ProductFormData) => {
     execute(async () => {
-      const productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'> = {
-        ...data,
-        images:
-          images.length > 0
-            ? images
-            : ['https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=400&h=400&fit=crop'],
-        badges: selectedBadges as any[],
-        sellerId: 'current-user-id', // TODO: Get from auth context
-        status: 'draft' as ProductStatus,
-        rating: 0,
-        reviewCount: 0,
-        viewCount: 0,
-        isFeatured: false,
-        isPromoted: false,
-        tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : [],
+      const productData = {
+        title: data.title,
+        description: data.description || undefined,
+        categoryId: typeof data.categoryId === 'string' ? parseInt(data.categoryId, 10) : data.categoryId,
+        price: data.price,
+        originalPrice: data.originalPrice || undefined,
+        condition: data.condition,
+        location: data.location || undefined,
+        stock: data.stock,
+        tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : undefined,
+        badges: selectedBadges.length > 0 ? selectedBadges : undefined,
+        minStock: minStock > 0 ? minStock : undefined,
+        maxStock: maxStock > 0 ? maxStock : undefined,
+        costPrice: costPrice > 0 ? costPrice : undefined,
+        sellingPrice: data.price > 0 ? data.price : undefined,
+        sku: sku || undefined,
       }
 
       await new Promise((resolve, reject) => {
-        createProductMutation.mutate(productData, {
+        createProductMutation.mutate(productData as Parameters<typeof createProductMutation.mutate>[0], {
           onSuccess: () => resolve(undefined),
           onError: (error: Error) => reject(error),
         })
@@ -265,7 +265,7 @@ export default function AddProductPage() {
                   <div>
                     <Label htmlFor="categoryId">Danh mục *</Label>
                     <Select
-                      onValueChange={value => setValue('categoryId', value)}
+                      onValueChange={value => setValue('categoryId', parseInt(value, 10))}
                     >
                       <SelectTrigger
                         className={

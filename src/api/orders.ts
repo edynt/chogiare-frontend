@@ -59,25 +59,33 @@ export interface OrderStats {
 }
 
 export interface CreateOrderRequest {
-  storeId: string
-  paymentMethod: string
-  shippingAddress: string
-  billingAddress: string
+  storeId: number
+  paymentMethod?: string
+  shippingAddressId?: number
+  billingAddressId?: number
   notes?: string
   items: CreateOrderItemRequest[]
 }
 
 export interface CreateOrderItemRequest {
-  productId: string
+  productId: number
   quantity: number
+}
+
+export interface CreateOrderFromCartRequest {
+  storeId: number
+  paymentMethod?: string
+  shippingAddressId?: number
+  billingAddressId?: number
+  notes?: string
 }
 
 export interface UpdateOrderRequest {
   status?: string
   paymentStatus?: string
   paymentMethod?: string
-  shippingAddress?: string
-  billingAddress?: string
+  shippingAddressId?: number
+  billingAddressId?: number
   notes?: string
 }
 
@@ -85,6 +93,11 @@ export const ordersApi = {
   // Order CRUD operations
   createOrder: async (data: CreateOrderRequest): Promise<Order> => {
     const response = await apiClient.post<ApiResponse<Order>>('/orders', data)
+    return response.data.data
+  },
+
+  createOrderFromCart: async (data: CreateOrderFromCartRequest): Promise<Order> => {
+    const response = await apiClient.post<ApiResponse<Order>>('/orders/from-cart', data)
     return response.data.data
   },
 
@@ -97,7 +110,7 @@ export const ordersApi = {
     const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders', {
       params: { 
         page: filters?.page || 1, 
-        page_size: filters?.pageSize || 10 
+        pageSize: filters?.pageSize || 10 
       }
     })
     return response.data.data
@@ -107,7 +120,7 @@ export const ordersApi = {
     const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders/my', {
       params: { 
         page: filters?.page || 1, 
-        page_size: filters?.pageSize || 10 
+        pageSize: filters?.pageSize || 10 
       }
     })
     return response.data.data
@@ -117,7 +130,7 @@ export const ordersApi = {
     const response = await apiClient.get<ApiResponse<OrderListResponse>>(`/orders/store/${storeId}`, {
       params: { 
         page: filters?.page || 1, 
-        page_size: filters?.pageSize || 10 
+        pageSize: filters?.pageSize || 10 
       }
     })
     return response.data.data
@@ -125,21 +138,21 @@ export const ordersApi = {
 
   listOrders: async (page = 1, pageSize = 10): Promise<OrderListResponse> => {
     const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders', {
-      params: { page, page_size: pageSize }
+      params: { page, pageSize }
     })
     return response.data.data
   },
 
   listUserOrders: async (page = 1, pageSize = 10): Promise<OrderListResponse> => {
     const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders/my', {
-      params: { page, page_size: pageSize }
+      params: { page, pageSize }
     })
     return response.data.data
   },
 
   listStoreOrders: async (storeId: string, page = 1, pageSize = 10): Promise<OrderListResponse> => {
     const response = await apiClient.get<ApiResponse<OrderListResponse>>(`/orders/store/${storeId}`, {
-      params: { page, page_size: pageSize }
+      params: { page, pageSize }
     })
     return response.data.data
   },
@@ -150,19 +163,29 @@ export const ordersApi = {
   },
 
   updateOrderStatus: async (id: string, status: string): Promise<Order> => {
-    const response = await apiClient.patch<ApiResponse<Order>>(`/orders/${id}/status`, { status })
+    const response = await apiClient.patch<ApiResponse<Order>>(
+      `/orders/${id}/status`,
+      {},
+      { params: { status } }
+    )
     return response.data.data
   },
 
   confirmOrder: async (id: string, sellerNotes?: string): Promise<Order> => {
-    const response = await apiClient.patch<ApiResponse<Order>>(`/orders/${id}/confirm`, { 
-      sellerNotes 
-    })
+    const response = await apiClient.patch<ApiResponse<Order>>(
+      `/orders/${id}/confirm`,
+      {},
+      { params: sellerNotes ? { sellerNotes } : {} }
+    )
     return response.data.data
   },
 
   updateOrderPaymentStatus: async (id: string, paymentStatus: string): Promise<Order> => {
-    const response = await apiClient.patch<ApiResponse<Order>>(`/orders/${id}/payment-status`, { paymentStatus })
+    const response = await apiClient.patch<ApiResponse<Order>>(
+      `/orders/${id}/payment-status`,
+      {},
+      { params: { paymentStatus } }
+    )
     return response.data.data
   },
 

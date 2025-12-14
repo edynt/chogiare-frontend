@@ -105,7 +105,7 @@ export const storesApi = {
     const response = await apiClient.get<ApiResponse<StoreListResponse>>('/stores', {
       params: { 
         page: filters?.page || 1, 
-        page_size: filters?.pageSize || 10 
+        pageSize: filters?.pageSize || 10 
       }
     })
     return response.data.data
@@ -113,7 +113,7 @@ export const storesApi = {
 
   listStores: async (page = 1, pageSize = 10): Promise<StoreListResponse> => {
     const response = await apiClient.get<ApiResponse<StoreListResponse>>('/stores', {
-      params: { page, page_size: pageSize }
+      params: { page, pageSize }
     })
     return response.data.data
   },
@@ -123,7 +123,7 @@ export const storesApi = {
       params: { 
         q: query, 
         page: filters?.page || 1, 
-        page_size: filters?.pageSize || 10 
+        pageSize: filters?.pageSize || 10 
       }
     })
     return response.data.data

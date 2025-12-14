@@ -37,8 +37,8 @@ export interface ReviewStats {
 }
 
 export interface CreateReviewRequest {
-  productId: string
-  orderId?: string
+  productId: number
+  orderId?: number
   rating: number
   title?: string
   comment?: string
@@ -47,11 +47,11 @@ export interface CreateReviewRequest {
 }
 
 export interface UpdateReviewRequest {
-  rating: number
+  rating?: number
   title?: string
   comment?: string
   images?: string[]
-  isVerified: boolean
+  isVerified?: boolean
 }
 
 export const reviewsApi = {
@@ -71,7 +71,7 @@ export const reviewsApi = {
     const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/reviews', {
       params: { 
         page: filters?.page || 1, 
-        page_size: filters?.pageSize || 10 
+        pageSize: filters?.pageSize || 10 
       }
     })
     return response.data.data
@@ -79,7 +79,7 @@ export const reviewsApi = {
 
   listReviews: async (page = 1, pageSize = 10): Promise<ReviewListResponse> => {
     const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/reviews', {
-      params: { page, page_size: pageSize }
+      params: { page, pageSize }
     })
     return response.data.data
   },
@@ -89,7 +89,7 @@ export const reviewsApi = {
     const response = await apiClient.get<ApiResponse<ReviewListResponse>>(`/reviews/product/${productId}`, {
       params: { 
         page: filters?.page || 1, 
-        page_size: filters?.pageSize || 10 
+        pageSize: filters?.pageSize || 10 
       }
     })
     return response.data.data
@@ -97,7 +97,7 @@ export const reviewsApi = {
 
   listReviewsByProduct: async (productId: string, page = 1, pageSize = 10): Promise<ReviewListResponse> => {
     const response = await apiClient.get<ApiResponse<ReviewListResponse>>(`/reviews/product/${productId}`, {
-      params: { page, page_size: pageSize }
+      params: { page, pageSize }
     })
     return response.data.data
   },
@@ -107,7 +107,7 @@ export const reviewsApi = {
     const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/reviews/my', {
       params: { 
         page: filters?.page || 1, 
-        page_size: filters?.pageSize || 10 
+        pageSize: filters?.pageSize || 10 
       }
     })
     return response.data.data
@@ -115,7 +115,7 @@ export const reviewsApi = {
 
   listUserReviews: async (page = 1, pageSize = 10): Promise<ReviewListResponse> => {
     const response = await apiClient.get<ApiResponse<ReviewListResponse>>('/reviews/my', {
-      params: { page, page_size: pageSize }
+      params: { page, pageSize }
     })
     return response.data.data
   },
@@ -125,7 +125,7 @@ export const reviewsApi = {
     const response = await apiClient.get<ApiResponse<ReviewListResponse>>(`/reviews/store/${storeId}`, {
       params: { 
         page: filters?.page || 1, 
-        page_size: filters?.pageSize || 10 
+        pageSize: filters?.pageSize || 10 
       }
     })
     return response.data.data

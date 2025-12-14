@@ -35,7 +35,6 @@ import {
 } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { formatCurrency } from '@/lib/utils'
-import type { Address } from '@/types'
 
 export default function CheckoutPage() {
   const [searchParams] = useSearchParams()
@@ -55,9 +54,12 @@ export default function CheckoutPage() {
   // Determine if we're checking out from cart or single product
   const isFromCart = !productId && cartItems.length > 0
   const orderItems = isFromCart 
-    ? cartItems.map(item => ({ productId: item.productId, quantity: item.quantity }))
+    ? cartItems.map(item => ({ 
+        productId: typeof item.productId === 'string' ? parseInt(item.productId, 10) : item.productId, 
+        quantity: item.quantity 
+      }))
     : product 
-      ? [{ productId: product.id, quantity }]
+      ? [{ productId: typeof product.id === 'string' ? parseInt(product.id, 10) : product.id, quantity }]
       : []
 
   // Group cart items by seller/store
@@ -80,19 +82,6 @@ export default function CheckoutPage() {
 
   const selectedAddress = addresses?.find(addr => addr.id === selectedAddressId) || defaultAddress
 
-  const formatAddressString = (address: Address) => {
-    const parts = [
-      address.street,
-      address.ward && `Phường/Xã ${address.ward}`,
-      address.district && `Quận/Huyện ${address.district}`,
-      address.city,
-      address.state,
-      address.zipCode && `Mã bưu điện: ${address.zipCode}`,
-      address.country
-    ].filter(Boolean)
-    return parts.join(', ')
-  }
-
   const handlePlaceOrder = async () => {
     if (orderItems.length === 0) {
       toast.error('Không có sản phẩm để đặt hàng')
@@ -105,28 +94,39 @@ export default function CheckoutPage() {
     }
 
     // Get storeId from first product (assuming all items are from same store)
-    let storeId = ''
+    let storeId: number | null = null
     if (isFromCart && firstCartProduct) {
-      // For cart, get storeId from the first product
-      // Note: In a real app, you might want to validate all items are from the same store
-      storeId = firstCartProduct.sellerId || firstCartProduct.store?.id || ''
+      const storeIdStr = firstCartProduct.store?.id || firstCartProduct.sellerId || ''
+      storeId = storeIdStr ? parseInt(storeIdStr, 10) : null
     } else if (product) {
-      storeId = product.sellerId || product.store?.id || ''
+      const storeIdStr = product.store?.id || product.sellerId || ''
+      storeId = storeIdStr ? parseInt(storeIdStr, 10) : null
     }
 
-    if (!storeId) {
+    if (!storeId || isNaN(storeId)) {
       toast.error('Không tìm thấy thông tin người bán')
       return
     }
 
+    const addressId = parseInt(selectedAddress.id, 10)
+    if (isNaN(addressId)) {
+      toast.error('Địa chỉ không hợp lệ')
+      return
+    }
+
     try {
-      const order = await createOrder.mutateAsync({
+      const orderData = {
         storeId,
-        paymentMethod: 'bank_transfer',
-        shippingAddress: formatAddressString(selectedAddress),
-        billingAddress: formatAddressString(selectedAddress),
-        items: orderItems,
-      })
+        paymentMethod: 'bank_transfer' as const,
+        shippingAddressId: addressId,
+        billingAddressId: addressId,
+        items: orderItems.map(item => ({
+          productId: typeof item.productId === 'string' ? parseInt(item.productId, 10) : item.productId,
+          quantity: item.quantity,
+        })),
+      }
+
+      const order = await createOrder.mutateAsync(orderData)
       
       // Clear cart if order was from cart
       if (isFromCart) {

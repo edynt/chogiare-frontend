@@ -11,9 +11,23 @@ import type {
 export const productsApi = {
   // Product CRUD operations
   getProducts: async (filters: SearchFilters = {}): Promise<PaginatedResponse<Product>> => {
+    const params: Record<string, unknown> = {}
+    
+    if (filters.page !== undefined) params.page = filters.page
+    if (filters.pageSize !== undefined) params.pageSize = filters.pageSize
+    else if (filters.limit !== undefined) params.pageSize = filters.limit
+    
+    if (filters.categoryId !== undefined) params.categoryId = filters.categoryId
+    if (filters.sellerId !== undefined) params.sellerId = filters.sellerId
+    if (filters.status !== undefined) params.status = filters.status
+    if (filters.search !== undefined) params.search = filters.search
+    if (filters.query !== undefined) params.search = filters.query
+    if (filters.featured !== undefined) params.isFeatured = filters.featured
+    if (filters.promoted !== undefined) params.isPromoted = filters.promoted
+    
     const response = await apiClient.get<ApiResponse<PaginatedResponse<Product>>>(
       '/products',
-      { params: filters }
+      { params }
     )
     return response.data.data
   },
@@ -23,13 +37,30 @@ export const productsApi = {
     return response.data.data
   },
 
-  createProduct: async (data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product> => {
+  createProduct: async (data: {
+    title: string
+    description?: string
+    categoryId: number
+    price: number
+    originalPrice?: number
+    condition: string
+    location?: string
+    stock: number
+    tags?: string[]
+    badges?: string[]
+    minStock?: number
+    maxStock?: number
+    costPrice?: number
+    sellingPrice?: number
+    sku?: string
+    storeId?: number
+  }): Promise<Product> => {
     const response = await apiClient.post<ApiResponse<Product>>('/products', data)
     return response.data.data
   },
 
   updateProduct: async (id: string, data: Partial<Product>): Promise<Product> => {
-    const response = await apiClient.put<ApiResponse<Product>>(`/products/${id}`, data)
+    const response = await apiClient.patch<ApiResponse<Product>>(`/products/${id}`, data)
     return response.data.data
   },
 
@@ -89,7 +120,8 @@ export const productsApi = {
   updateProductStatus: async (id: string, status: ProductStatus): Promise<Product> => {
     const response = await apiClient.patch<ApiResponse<Product>>(
       `/products/${id}/status`,
-      { status }
+      {},
+      { params: { status } }
     )
     return response.data.data
   },
@@ -97,7 +129,8 @@ export const productsApi = {
   updateProductStock: async (id: string, stock: number): Promise<Product> => {
     const response = await apiClient.patch<ApiResponse<Product>>(
       `/products/${id}/stock`,
-      { stock }
+      {},
+      { params: { stock } }
     )
     return response.data.data
   },
@@ -116,8 +149,15 @@ export const productsApi = {
 export const categoriesApi = {
   // Category CRUD operations
   getCategories: async (): Promise<Category[]> => {
-    const response = await apiClient.get<ApiResponse<Category[]>>('/categories')
-    return response.data.data
+    const response = await apiClient.get<ApiResponse<Category[] | { items: Category[]; total: number }>>('/categories')
+    const data = response.data.data
+    if (Array.isArray(data)) {
+      return data
+    }
+    if (data && typeof data === 'object' && 'items' in data) {
+      return (data as { items: Category[] }).items
+    }
+    return []
   },
 
   getCategory: async (id: string): Promise<Category> => {

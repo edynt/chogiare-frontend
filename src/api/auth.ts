@@ -36,7 +36,7 @@ export const authApi = {
   },
 
   resetPassword: async (token: string, password: string): Promise<void> => {
-    await apiClient.post('/auth/reset-password', { token, password })
+    await apiClient.post('/auth/reset-password', { resetToken: token, newPassword: password })
   },
 
   getProfile: async (): Promise<User> => {
@@ -45,7 +45,7 @@ export const authApi = {
   },
 
   updateProfile: async (data: Partial<User>): Promise<User> => {
-    const response = await apiClient.patch<ApiResponse<User>>('/auth/profile', data)
+    const response = await apiClient.put<ApiResponse<User>>('/auth/profile', data)
     return response.data.data
   },
 
@@ -57,16 +57,18 @@ export const authApi = {
   },
 
   // OAuth methods
-  googleAuth: async (): Promise<{ user: User; tokens: AuthTokens }> => {
+  googleAuth: async (accessToken: string, providerId?: string): Promise<{ user: User; tokens: AuthTokens }> => {
     const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
-      '/auth/google'
+      '/auth/google',
+      { accessToken, providerId }
     )
     return response.data.data
   },
 
-  facebookAuth: async (): Promise<{ user: User; tokens: AuthTokens }> => {
+  facebookAuth: async (accessToken: string, providerId?: string): Promise<{ user: User; tokens: AuthTokens }> => {
     const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
-      '/auth/facebook'
+      '/auth/facebook',
+      { accessToken, providerId }
     )
     return response.data.data
   },

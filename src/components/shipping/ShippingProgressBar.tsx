@@ -123,7 +123,6 @@ export function ShippingProgressBar({
         {steps.map((step, index) => {
           const isCompleted = step.id <= shippingData.currentStep
           const isCurrent = step.id === shippingData.currentStep
-          const isPending = step.id > shippingData.currentStep
           
           return (
             <div key={step.id} className="flex flex-col items-center relative">

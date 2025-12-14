@@ -49,7 +49,7 @@ export function AdminBreadcrumb() {
           </a>
         </li>
         
-        {breadcrumbs.map((breadcrumb, index) => (
+        {breadcrumbs.map((breadcrumb) => (
           <li key={breadcrumb.path} className="flex items-center space-x-3">
             <ChevronRight className="h-5 w-5 text-gray-400" />
             <span 

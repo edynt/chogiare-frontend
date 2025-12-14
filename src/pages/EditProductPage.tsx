@@ -32,7 +32,7 @@ import {
   BarChart3,
   AlertTriangle
 } from 'lucide-react'
-import type { Product, ProductCondition, ProductStatus } from '@/types'
+import type { Product, ProductCondition, ProductStatus, ProductBadge } from '@/types'
 
 // Using Zod schema from lib/schemas.ts
 
@@ -111,7 +111,7 @@ export default function EditProductPage() {
         description: product.description,
         price: product.price,
         originalPrice: product.originalPrice,
-        categoryId: product.categoryId,
+        categoryId: typeof product.categoryId === 'string' ? parseInt(product.categoryId, 10) : product.categoryId,
         condition: product.condition,
         location: product.location,
         stock: product.stock,
@@ -148,10 +148,17 @@ export default function EditProductPage() {
 
     execute(async () => {
       const productData: Partial<Product> = {
-        ...data,
-        images: images.length > 0 ? images : ['https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=400&h=400&fit=crop'],
-        badges: selectedBadges as any[],
-        tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : [],
+        title: data.title,
+        description: data.description,
+        categoryId: data.categoryId ? (typeof data.categoryId === 'string' ? parseInt(data.categoryId, 10) : data.categoryId) : undefined,
+        price: data.price,
+        originalPrice: data.originalPrice,
+        condition: data.condition,
+        location: data.location,
+        stock: data.stock,
+        status: data.status,
+        tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : undefined,
+        badges: selectedBadges.length > 0 ? (selectedBadges as ProductBadge[]) : undefined,
       }
 
       await new Promise((resolve, reject) => {
@@ -262,8 +269,8 @@ export default function EditProductPage() {
                   <div>
                     <Label htmlFor="categoryId">Danh mục *</Label>
                     <Select 
-                      value={watch('categoryId')} 
-                      onValueChange={(value) => setValue('categoryId', value)}
+                      value={watch('categoryId')?.toString()} 
+                      onValueChange={(value) => setValue('categoryId', typeof value === 'string' ? parseInt(value, 10) : value)}
                     >
                       <SelectTrigger className={errors.categoryId ? 'border-destructive' : ''}>
                         <SelectValue placeholder="Chọn danh mục" />

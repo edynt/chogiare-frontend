@@ -16,7 +16,7 @@ export function SEOHead({
   keywords = 'mua sắm online, thương mại điện tử, sản phẩm giá rẻ, giao hàng nhanh, Việt Nam',
   image = '/og-image.jpg',
   url = 'https://chogiare.com',
-  type = 'website',
+  type: _type = 'website',
   structuredData
 }: SEOHeadProps) {
   const fullTitle = title.includes('Chogiare') ? title : `${title} | Chogiare`

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -50,7 +50,6 @@ const MOCK_PRODUCT = {
 
 export default function BoostPostPage() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
   
   const [selectedType, setSelectedType] = useState<keyof typeof BOOST_PACKAGES>('payPerDay')
   const [selectedPackage, setSelectedPackage] = useState<BoostPackage | null>(null)

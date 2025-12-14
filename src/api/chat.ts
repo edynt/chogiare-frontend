@@ -58,9 +58,8 @@ export interface ChatStats {
 }
 
 export interface CreateConversationRequest {
-  type: string
+  otherUserId: number
   title?: string
-  userIds: number[]
 }
 
 export interface UpdateConversationRequest {
@@ -69,9 +68,8 @@ export interface UpdateConversationRequest {
 }
 
 export interface CreateChatMessageRequest {
-  conversationId: string
-  messageType: string
   content: string
+  messageType?: string
 }
 
 export const chatApi = {
@@ -90,7 +88,7 @@ export const chatApi = {
     const response = await apiClient.get<ApiResponse<ConversationListResponse>>('/chat/conversations', {
       params: { 
         page: filters?.page || 1, 
-        page_size: filters?.pageSize || 10 
+        pageSize: filters?.pageSize || 10 
       }
     })
     return response.data.data
@@ -98,7 +96,7 @@ export const chatApi = {
 
   listUserConversations: async (page = 1, pageSize = 10): Promise<ConversationListResponse> => {
     const response = await apiClient.get<ApiResponse<ConversationListResponse>>('/chat/conversations', {
-      params: { page, page_size: pageSize }
+      params: { page, pageSize }
     })
     return response.data.data
   },
@@ -126,12 +124,20 @@ export const chatApi = {
 
   // Chat message operations
   sendMessage: async (conversationId: string, data: CreateChatMessageRequest): Promise<ChatMessage> => {
-    const response = await apiClient.post<ApiResponse<ChatMessage>>(`/chat/conversations/${conversationId}/messages`, data)
+    const response = await apiClient.post<ApiResponse<ChatMessage>>(`/chat/conversations/${conversationId}/messages`, {
+      content: data.content,
+      messageType: data.messageType
+    })
     return response.data.data
   },
 
-  createChatMessage: async (data: CreateChatMessageRequest): Promise<ChatMessage> => {
-    const response = await apiClient.post<ApiResponse<ChatMessage>>('/chat/messages', data)
+  createChatMessage: async (conversationId: string, data: CreateChatMessageRequest): Promise<ChatMessage> => {
+    const response = await apiClient.post<ApiResponse<ChatMessage>>('/chat/messages', {
+      content: data.content,
+      messageType: data.messageType
+    }, {
+      params: { conversationId }
+    })
     return response.data.data
   },
 
@@ -144,7 +150,7 @@ export const chatApi = {
     const response = await apiClient.get<ApiResponse<ChatMessageListResponse>>(`/chat/conversations/${conversationId}/messages`, {
       params: { 
         page: filters?.page || 1, 
-        page_size: filters?.pageSize || 50 
+        pageSize: filters?.pageSize || 50 
       }
     })
     return response.data.data
@@ -152,7 +158,7 @@ export const chatApi = {
 
   listConversationMessages: async (conversationId: string, page = 1, pageSize = 50): Promise<ChatMessageListResponse> => {
     const response = await apiClient.get<ApiResponse<ChatMessageListResponse>>(`/chat/conversations/${conversationId}/messages`, {
-      params: { page, page_size: pageSize }
+      params: { page, pageSize }
     })
     return response.data.data
   },

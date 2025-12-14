@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useAuthStore } from '@/stores/authStore'
 import { useProfile } from '@/hooks'
 
@@ -9,52 +9,54 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const { isAuthenticated, tokens, setUser, setTokens, setLoading, setError } = useAuthStore()
   const { data: profile, error, isLoading } = useProfile()
+  const hasInitialized = useRef(false)
 
   useEffect(() => {
-    // Check if user has valid tokens in localStorage
+    if (hasInitialized.current) return
+    
     const storedTokens = localStorage.getItem('auth_tokens')
-    if (storedTokens && !isAuthenticated) {
+    if (storedTokens) {
       try {
         const parsedTokens = JSON.parse(storedTokens)
-        // Check if token is not expired
-        if (parsedTokens.expiresIn && Date.now() < parsedTokens.expiresIn) {
+        if (parsedTokens.accessToken) {
           setTokens(parsedTokens)
-          // We have valid tokens, but no user data yet
-          // The useProfile hook will fetch user data
         } else {
-          // Token expired, clear it
           localStorage.removeItem('auth_tokens')
         }
       } catch {
-        // Invalid token format, clear it
         localStorage.removeItem('auth_tokens')
       }
     }
-  }, [isAuthenticated, setTokens])
+    hasInitialized.current = true
+  }, [setTokens])
 
   useEffect(() => {
     if (profile && tokens) {
-      // User is authenticated and we have profile data
       setUser(profile)
-    } else if (error && isAuthenticated) {
-      // Profile fetch failed, user might not be authenticated anymore
-      setUser(null)
-      setTokens(null)
     }
-  }, [profile, tokens, error, isAuthenticated, setUser, setTokens])
-
-  useEffect(() => {
-    setLoading(isLoading)
-  }, [isLoading, setLoading])
+  }, [profile, tokens, setUser])
 
   useEffect(() => {
     if (error) {
-      setError(error.message || 'Có lỗi xảy ra')
+      const axiosError = error as { response?: { status?: number } }
+      if (axiosError.response?.status === 401 && tokens) {
+        setUser(null)
+        setTokens(null)
+        localStorage.removeItem('auth_tokens')
+        setError(null)
+      }
     }
-  }, [error, setError])
+  }, [error, tokens, setUser, setTokens, setError])
 
-  // Show loading state while checking authentication
-  if (isLoading && !isAuthenticated) {
+  useEffect(() => {
+    if (tokens && !isAuthenticated) {
+      setLoading(isLoading)
+    } else {
+      setLoading(false)
+    }
+  }, [isLoading, tokens, isAuthenticated, setLoading])
+
+  if (isLoading && tokens && !isAuthenticated && !hasInitialized.current) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">

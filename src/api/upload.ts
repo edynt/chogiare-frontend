@@ -8,12 +8,11 @@ export interface UploadProgress {
 }
 
 export interface UploadResult {
-  id: string
   url: string
-  filename: string
+  key: string
+  fileName: string
   size: number
   mimeType: string
-  uploadedAt: string
 }
 
 export interface UploadFileRequest {
@@ -35,7 +34,6 @@ export interface UploadProductImagesRequest {
 export interface UploadStoreImageRequest {
   storeId: string
   file: File
-  type: 'logo' | 'banner'
   onProgress?: (progress: UploadProgress) => void
 }
 
@@ -67,7 +65,7 @@ export const uploadApi = {
   // Multiple files upload
   uploadFiles: async (files: File[], onProgress?: (fileIndex: number, progress: UploadProgress) => void): Promise<UploadResult[]> => {
     const formData = new FormData()
-    files.forEach((file, index) => {
+    files.forEach((file) => {
       formData.append(`files`, file)
     })
 
@@ -97,12 +95,12 @@ export const uploadApi = {
   // Product images upload
   uploadProductImages: async (productId: string, files: File[], onProgress?: (fileIndex: number, progress: UploadProgress) => void): Promise<UploadResult[]> => {
     const formData = new FormData()
-    formData.append('productId', productId)
     files.forEach((file) => {
-      formData.append('images', file)
+      formData.append('files', file)
     })
 
     const response = await apiClient.post<ApiResponse<UploadResult[]>>('/upload/product-images', formData, {
+      params: { productId },
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -124,13 +122,12 @@ export const uploadApi = {
   },
 
   // Store image upload (logo or banner)
-  uploadStoreImage: async (storeId: string, file: File, type: 'logo' | 'banner', onProgress?: (progress: UploadProgress) => void): Promise<UploadResult> => {
+  uploadStoreImage: async (storeId: string, file: File, onProgress?: (progress: UploadProgress) => void): Promise<UploadResult> => {
     const formData = new FormData()
-    formData.append('storeId', storeId)
-    formData.append('type', type)
     formData.append('file', file)
 
     const response = await apiClient.post<ApiResponse<UploadResult>>('/upload/store-image', formData, {
+      params: { storeId },
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -152,7 +149,7 @@ export const uploadApi = {
   // Avatar upload
   uploadAvatar: async (file: File, onProgress?: (progress: UploadProgress) => void): Promise<UploadResult> => {
     const formData = new FormData()
-    formData.append('avatar', file)
+    formData.append('file', file)
 
     const response = await apiClient.post<ApiResponse<UploadResult>>('/upload/avatar', formData, {
       headers: {
@@ -173,21 +170,21 @@ export const uploadApi = {
     return response.data.data
   },
 
-  // Delete file
-  deleteFile: async (fileId: string): Promise<void> => {
-    await apiClient.delete(`/upload/files/${fileId}`)
+  // Delete file by key
+  deleteFile: async (key: string): Promise<void> => {
+    await apiClient.delete(`/upload/files/${key}`)
   },
 
-  // Get file info
-  getFileInfo: async (fileId: string): Promise<UploadResult> => {
-    const response = await apiClient.get<ApiResponse<UploadResult>>(`/upload/files/${fileId}`)
+  // Get file info by key
+  getFileInfo: async (key: string): Promise<UploadResult> => {
+    const response = await apiClient.get<ApiResponse<UploadResult>>(`/upload/files/${key}`)
     return response.data.data
   },
 
   // List user files
-  getUserFiles: async (page = 1, pageSize = 20): Promise<{ files: UploadResult[]; total: number; page: number; pageSize: number; totalPages: number }> => {
-    const response = await apiClient.get<ApiResponse<{ files: UploadResult[]; total: number; page: number; pageSize: number; totalPages: number }>>('/upload/files', {
-      params: { page, page_size: pageSize }
+  getUserFiles: async (filters?: { path?: string; folder?: string }): Promise<UploadResult[]> => {
+    const response = await apiClient.get<ApiResponse<UploadResult[]>>('/upload/files', {
+      params: filters
     })
     return response.data.data
   },

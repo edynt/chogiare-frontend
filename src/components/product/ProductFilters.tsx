@@ -48,7 +48,7 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
       }))
     } else {
       // When sort is hidden, preserve sortBy and sortOrder from current state
-      const { sortBy, sortOrder, ...restInitialFilters } = initialFilters
+      const { sortBy: _sortBy, sortOrder: _sortOrder, ...restInitialFilters } = initialFilters
       setFilters(prev => ({
         ...prev,
         ...restInitialFilters,

@@ -62,8 +62,10 @@ class ApiClient {
           } catch (refreshError) {
             this.refreshSubscribers = []
             this.clearStoredTokens()
-            // Redirect to login or handle auth failure
-            window.location.href = '/auth/login'
+            const isAuthPage = window.location.pathname.startsWith('/auth/')
+            if (!isAuthPage) {
+              window.location.href = '/auth/login'
+            }
             return Promise.reject(refreshError)
           } finally {
             this.isRefreshing = false
@@ -97,11 +99,12 @@ class ApiClient {
     }
 
     try {
-      const response = await axios.post('/api/auth/refresh', {
+      const baseURL = import.meta.env['VITE_API_URL'] || '/api'
+      const response = await axios.post(`${baseURL}/auth/refresh`, {
         refreshToken: tokens.refreshToken,
       })
 
-      const newTokens: AuthTokens = response.data
+      const newTokens: AuthTokens = response.data.data || response.data
       this.storeTokens(newTokens)
       
       return newTokens.accessToken

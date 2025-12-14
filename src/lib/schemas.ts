@@ -11,7 +11,6 @@ export const registerSchema = z.object({
   email: z.string().email('Email không hợp lệ'),
   password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
   confirmPassword: z.string(),
-  phone: z.string().min(10, 'Số điện thoại không hợp lệ'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Mật khẩu xác nhận không khớp',
   path: ['confirmPassword'],
@@ -32,16 +31,15 @@ export const resetPasswordSchema = z.object({
 // Product schemas
 export const productSchema = z.object({
   title: z.string().min(1, 'Tên sản phẩm là bắt buộc'),
-  description: z.string().min(10, 'Mô tả phải có ít nhất 10 ký tự'),
+  description: z.string().optional(),
   price: z.number().min(0, 'Giá phải lớn hơn 0'),
   originalPrice: z.number().min(0, 'Giá gốc phải lớn hơn 0').optional(),
-  categoryId: z.string().min(1, 'Danh mục là bắt buộc'),
+  categoryId: z.number().min(1, 'Danh mục là bắt buộc'),
   condition: z.enum(['new', 'like_new', 'good', 'fair', 'poor']),
-  location: z.string().min(1, 'Vị trí là bắt buộc'),
+  location: z.string().optional(),
   stock: z.number().min(0, 'Số lượng phải lớn hơn hoặc bằng 0'),
   tags: z.string().optional(),
   badges: z.array(z.string()).optional(),
-  images: z.array(z.string()).min(1, 'Phải có ít nhất 1 hình ảnh'),
 })
 
 export const productUpdateSchema = productSchema.partial().extend({
@@ -81,13 +79,13 @@ export const addToCartSchema = z.object({
 
 // Order schemas
 export const orderSchema = z.object({
-  storeId: z.string().min(1, 'Cửa hàng là bắt buộc'),
-  paymentMethod: z.string().min(1, 'Phương thức thanh toán là bắt buộc'),
-  shippingAddress: z.string().min(1, 'Địa chỉ giao hàng là bắt buộc'),
-  billingAddress: z.string().min(1, 'Địa chỉ thanh toán là bắt buộc'),
+  storeId: z.union([z.string(), z.number()]).transform((val) => typeof val === 'string' ? parseInt(val, 10) : val),
+  paymentMethod: z.string().optional(),
+  shippingAddressId: z.number().optional(),
+  billingAddressId: z.number().optional(),
   notes: z.string().optional(),
   items: z.array(z.object({
-    productId: z.string(),
+    productId: z.union([z.string(), z.number()]).transform((val) => typeof val === 'string' ? parseInt(val, 10) : val),
     quantity: z.number().min(1),
   })).min(1, 'Phải có ít nhất 1 sản phẩm'),
 })

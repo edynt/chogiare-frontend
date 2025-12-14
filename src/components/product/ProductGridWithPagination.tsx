@@ -84,7 +84,7 @@ export function ProductGridWithPagination({
 
   // Use infinite scroll if enabled
   if (infiniteScroll) {
-    const { page, limit, ...infiniteFilters } = filters
+    const { page: _page, limit: _limit, ...infiniteFilters } = filters
     return (
       <div className={cn('space-y-6', className)}>
         {/* Search and Filters */}

@@ -48,10 +48,14 @@ export const useLogout = () => {
 }
 
 export const useProfile = () => {
+  const { tokens } = useAuthStore()
+  
   return useQuery({
     queryKey: ['auth', 'profile'],
     queryFn: authApi.getProfile,
+    enabled: !!tokens?.accessToken,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
   })
 }
 
@@ -91,7 +95,8 @@ export const useGoogleAuth = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: authApi.googleAuth,
+    mutationFn: ({ accessToken, providerId }: { accessToken: string; providerId?: string }) =>
+      authApi.googleAuth(accessToken, providerId),
     onSuccess: (data) => {
       login(data.user, data.tokens)
       queryClient.setQueryData(['auth', 'profile'], data.user)
@@ -107,7 +112,8 @@ export const useFacebookAuth = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: authApi.facebookAuth,
+    mutationFn: ({ accessToken, providerId }: { accessToken: string; providerId?: string }) =>
+      authApi.facebookAuth(accessToken, providerId),
     onSuccess: (data) => {
       login(data.user, data.tokens)
       queryClient.setQueryData(['auth', 'profile'], data.user)

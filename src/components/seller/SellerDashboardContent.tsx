@@ -45,6 +45,16 @@ import {
 import { cn } from '@/lib/utils'
 import type { Order } from '@/api/orders'
 
+interface StockInProduct {
+  id: string
+  name: string
+  sku: string
+  currentStock: number
+  minStock: number
+  maxStock: number
+  costPrice?: number
+}
+
 // Helper function to get total quantity from order items
 const getTotalQuantity = (order: Order) => {
   return order.items.reduce((sum, item) => sum + item.quantity, 0)
@@ -114,7 +124,7 @@ export function SellerDashboardContent() {
   const { notify } = useNotification()
   const [activeTab, setActiveTab] = useState('overview')
   const [isStockInModalOpen, setIsStockInModalOpen] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<any>(null)
+  const [selectedProduct, setSelectedProduct] = useState<StockInProduct | null>(null)
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
@@ -124,7 +134,7 @@ export function SellerDashboardContent() {
   const confirmOrderMutation = useConfirmOrder()
   const updateOrderStatusMutation = useUpdateOrderStatus()
 
-  const handleStockIn = async (data: any) => {
+  const handleStockIn = async (data: { quantity: number; costPrice: number; supplier: string; batchNumber?: string; expiryDate?: string; notes?: string; location: string; productId: string }) => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
     
@@ -138,7 +148,7 @@ export function SellerDashboardContent() {
     setSelectedProduct(null)
   }
 
-  const handleOpenStockInModal = (product: any) => {
+  const handleOpenStockInModal = (product: StockInProduct) => {
     setSelectedProduct(product)
     setIsStockInModalOpen(true)
   }
@@ -230,110 +240,140 @@ export function SellerDashboardContent() {
   // Get recent orders from API data
   const recentOrders = ordersData?.items || []
 
-  const lowStockProducts = [
+  const lowStockProducts: (StockInProduct & { status: string })[] = [
     {
       id: '1',
       name: 'AirPods Pro 2nd Gen',
+      sku: 'AP-PRO-2',
       currentStock: 5,
       minStock: 10,
+      maxStock: 100,
       status: 'low_stock'
     },
     {
       id: '2',
       name: 'MacBook Air M2 13 inch',
+      sku: 'MBA-M2-13',
       currentStock: 0,
       minStock: 5,
+      maxStock: 50,
       status: 'out_of_stock'
     },
     {
       id: '3',
       name: 'iPhone 14 Pro Max 256GB',
+      sku: 'IP14PM-256',
       currentStock: 15,
       minStock: 10,
+      maxStock: 200,
       status: 'in_stock'
     },
     {
       id: '4',
       name: 'Samsung Galaxy S23 Ultra',
+      sku: 'SGS23U',
       currentStock: 3,
       minStock: 8,
+      maxStock: 150,
       status: 'low_stock'
     },
     {
       id: '5',
       name: 'iPad Pro 12.9 inch',
+      sku: 'IPAD-PRO-129',
       currentStock: 0,
       minStock: 3,
+      maxStock: 30,
       status: 'out_of_stock'
     },
     {
       id: '6',
       name: 'Apple Watch Series 9',
+      sku: 'AW-S9',
       currentStock: 7,
       minStock: 10,
+      maxStock: 100,
       status: 'low_stock'
     },
     {
       id: '7',
       name: 'Sony WH-1000XM5',
+      sku: 'SONY-WH1000XM5',
       currentStock: 12,
       minStock: 15,
+      maxStock: 80,
       status: 'low_stock'
     },
     {
       id: '8',
       name: 'Dell XPS 13',
+      sku: 'DELL-XPS13',
       currentStock: 0,
       minStock: 5,
+      maxStock: 40,
       status: 'out_of_stock'
     },
     {
       id: '9',
       name: 'Samsung Galaxy Watch 6',
+      sku: 'SGW6',
       currentStock: 20,
       minStock: 10,
+      maxStock: 120,
       status: 'in_stock'
     },
     {
       id: '10',
       name: 'Microsoft Surface Pro 9',
+      sku: 'MS-SP9',
       currentStock: 2,
       minStock: 5,
+      maxStock: 60,
       status: 'low_stock'
     },
     {
       id: '11',
       name: 'Google Pixel 8 Pro',
+      sku: 'GP-P8P',
       currentStock: 0,
       minStock: 3,
+      maxStock: 40,
       status: 'out_of_stock'
     },
     {
       id: '12',
       name: 'OnePlus 12',
+      sku: 'OP-12',
       currentStock: 8,
       minStock: 10,
+      maxStock: 90,
       status: 'low_stock'
     },
     {
       id: '13',
       name: 'Xiaomi 14 Pro',
+      sku: 'XM-14P',
       currentStock: 25,
       minStock: 15,
+      maxStock: 110,
       status: 'in_stock'
     },
     {
       id: '14',
       name: 'Huawei Mate 60 Pro',
+      sku: 'HW-M60P',
       currentStock: 1,
       minStock: 5,
+      maxStock: 70,
       status: 'low_stock'
     },
     {
       id: '15',
       name: 'Oppo Find X6 Pro',
+      sku: 'OP-FX6P',
       currentStock: 0,
       minStock: 3,
+      maxStock: 50,
       status: 'out_of_stock'
     }
   ]
@@ -1029,7 +1069,10 @@ export function SellerDashboardContent() {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => handleOpenStockInModal(product)}
+                        onClick={() => {
+                          const { status: _status, ...productData } = product
+                          handleOpenStockInModal(productData)
+                        }}
                       >
                         Nhập hàng
                       </Button>

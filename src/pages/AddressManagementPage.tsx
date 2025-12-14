@@ -132,7 +132,7 @@ export default function AddressManagementPage() {
         setIsAddDialogOpen(false)
       }
       resetForm()
-    } catch (error) {
+    } catch {
       toast.error('Có lỗi xảy ra')
     }
   }
@@ -145,7 +145,7 @@ export default function AddressManagementPage() {
       toast.success('Xóa địa chỉ thành công')
       setIsDeleteDialogOpen(false)
       setDeleteAddressId(null)
-    } catch (error) {
+    } catch {
       toast.error('Có lỗi xảy ra')
     }
   }
@@ -154,7 +154,7 @@ export default function AddressManagementPage() {
     try {
       await setDefaultAddress.mutateAsync(id)
       toast.success('Đã đặt làm địa chỉ mặc định')
-    } catch (error) {
+    } catch {
       toast.error('Có lỗi xảy ra')
     }
   }
