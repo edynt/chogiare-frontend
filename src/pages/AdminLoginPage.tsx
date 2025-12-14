@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
         roles: (response.roles || response.user.roles || []) as Array<'buyer' | 'seller' | 'admin'>,
       }
       
-      apiClient.setAuthTokens(response.tokens)
+      apiClient.setAuthTokens(response.tokens, true)
       login(userWithRoles, response.tokens)
       
       toast.success('Login successful')

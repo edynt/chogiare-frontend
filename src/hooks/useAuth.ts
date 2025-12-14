@@ -59,7 +59,9 @@ export const useProfile = () => {
     queryFn: authApi.getProfile,
     enabled: !!tokens?.accessToken,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: false,
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   })
 }
 

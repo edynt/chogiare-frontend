@@ -110,7 +110,8 @@ class ApiClient {
       })
 
       const newTokens: AuthTokens = response.data.data || response.data
-      this.storeTokens(newTokens)
+      const isAdminRoute = window.location.pathname.startsWith('/admin')
+      this.storeTokens(newTokens, isAdminRoute)
       
       return newTokens.accessToken
     } catch (error) {
@@ -121,19 +122,41 @@ class ApiClient {
 
   private getStoredTokens(): AuthTokens | null {
     try {
-      const tokens = localStorage.getItem('auth_tokens')
-      return tokens ? JSON.parse(tokens) : null
+      const isAdminRoute = window.location.pathname.startsWith('/admin') || window.location.pathname.startsWith('/admin-login')
+      const adminKey = 'admin_tokens'
+      const userKey = 'auth_tokens'
+      
+      if (isAdminRoute) {
+        const adminTokens = localStorage.getItem(adminKey)
+        if (adminTokens) {
+          return JSON.parse(adminTokens)
+        }
+      }
+      
+      const userTokens = localStorage.getItem(userKey)
+      if (userTokens) {
+        return JSON.parse(userTokens)
+      }
+      
+      return null
     } catch {
       return null
     }
   }
 
-  private storeTokens(tokens: AuthTokens): void {
-    localStorage.setItem('auth_tokens', JSON.stringify(tokens))
+  private storeTokens(tokens: AuthTokens, isAdmin = false): void {
+    const key = isAdmin ? 'admin_tokens' : 'auth_tokens'
+    localStorage.setItem(key, JSON.stringify(tokens))
+    if (isAdmin) {
+      localStorage.removeItem('auth_tokens')
+    } else {
+      localStorage.removeItem('admin_tokens')
+    }
   }
 
   private clearStoredTokens(): void {
     localStorage.removeItem('auth_tokens')
+    localStorage.removeItem('admin_tokens')
   }
 
   // Public methods
@@ -157,8 +180,8 @@ class ApiClient {
     return this.client.delete<T>(url, config)
   }
 
-  setAuthTokens(tokens: AuthTokens): void {
-    this.storeTokens(tokens)
+  setAuthTokens(tokens: AuthTokens, isAdmin = false): void {
+    this.storeTokens(tokens, isAdmin)
   }
 
   clearAuthTokens(): void {

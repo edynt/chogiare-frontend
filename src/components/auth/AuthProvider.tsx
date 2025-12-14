@@ -7,34 +7,43 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const { isAuthenticated, tokens, setUser, setTokens, setLoading, setError } = useAuthStore()
+  const { isAuthenticated, tokens, user, setUser, setTokens, setLoading, setError } = useAuthStore()
   const { data: profile, error, isLoading } = useProfile()
   const hasInitialized = useRef(false)
 
   useEffect(() => {
     if (hasInitialized.current) return
     
-    const storedTokens = localStorage.getItem('auth_tokens')
-    if (storedTokens) {
-      try {
-        const parsedTokens = JSON.parse(storedTokens)
-        if (parsedTokens.accessToken) {
-          setTokens(parsedTokens)
-        } else {
-          localStorage.removeItem('auth_tokens')
+    const currentPath = window.location.pathname
+    const isAdminRoute = currentPath.startsWith('/admin')
+    const tokenKey = isAdminRoute ? 'admin_tokens' : 'auth_tokens'
+    
+    if (!tokens) {
+      const storedTokens = localStorage.getItem(tokenKey)
+      if (storedTokens) {
+        try {
+          const parsedTokens = JSON.parse(storedTokens)
+          if (parsedTokens.accessToken) {
+            setTokens(parsedTokens)
+          } else {
+            localStorage.removeItem(tokenKey)
+          }
+        } catch {
+          localStorage.removeItem(tokenKey)
         }
-      } catch {
-        localStorage.removeItem('auth_tokens')
       }
     }
+    
     hasInitialized.current = true
-  }, [setTokens])
+  }, [setTokens, tokens])
 
   useEffect(() => {
     if (profile && tokens) {
       setUser(profile)
+    } else if (tokens && !profile && !isLoading && !error && hasInitialized.current) {
+      setLoading(true)
     }
-  }, [profile, tokens, setUser])
+  }, [profile, tokens, setUser, isLoading, error])
 
   useEffect(() => {
     if (error) {
@@ -42,21 +51,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (axiosError.response?.status === 401 && tokens) {
         setUser(null)
         setTokens(null)
+        const currentPath = window.location.pathname
+        const isAdminRoute = currentPath.startsWith('/admin')
+        const tokenKey = isAdminRoute ? 'admin_tokens' : 'auth_tokens'
+        localStorage.removeItem(tokenKey)
         localStorage.removeItem('auth_tokens')
+        localStorage.removeItem('admin_tokens')
         setError(null)
       }
     }
   }, [error, tokens, setUser, setTokens, setError])
 
   useEffect(() => {
-    if (tokens && !isAuthenticated) {
+    if (tokens && !isAuthenticated && !user) {
       setLoading(isLoading)
     } else {
       setLoading(false)
     }
-  }, [isLoading, tokens, isAuthenticated, setLoading])
+  }, [isLoading, tokens, isAuthenticated, user, setLoading])
 
-  if (isLoading && tokens && !isAuthenticated && !hasInitialized.current) {
+  if (isLoading && tokens && !isAuthenticated && !user && hasInitialized.current) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
