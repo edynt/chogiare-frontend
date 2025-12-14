@@ -13,6 +13,7 @@ import { LazySection } from '@/components/product/LazySection'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
+import { APP_NAME } from '@/constants/app.constants'
 import { useProducts, useCategories } from '@/hooks'
 import { SEOHead } from '@/components/seo/SEOHead'
 import type { SearchFilters } from '@/types'
@@ -128,7 +129,7 @@ export default function ProductListPage() {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Danh sách sản phẩm - Chogiare"
+        title={`Danh sách sản phẩm - ${APP_NAME}`}
         description="Tìm kiếm và lọc sản phẩm theo danh mục, giá, tình trạng và nhiều tiêu chí khác"
         keywords="sản phẩm, mua sỉ, bán sỉ, tìm kiếm sản phẩm"
       />

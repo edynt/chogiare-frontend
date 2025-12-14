@@ -17,6 +17,7 @@ import { Menu, User, MessageCircle, Settings, Bell, Clock, LogOut, Droplet, Home
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useCartStore } from '@/stores/cartStore'
+import { APP_NAME } from '@/constants/app.constants'
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuthStore()
@@ -85,7 +86,7 @@ export function Header() {
               <Droplet className="h-5 w-5 text-white" fill="currentColor" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              Chogiare
+              {APP_NAME}
             </span>
           </Link>
 

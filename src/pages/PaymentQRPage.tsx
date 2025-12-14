@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { APP_NAME } from '@/constants/app.constants'
 import { 
   CreditCard,
   Copy,
@@ -45,7 +46,7 @@ export default function PaymentQRPage() {
 
   const generateQRData = () => {
     // Generate QR data with payment information
-    return `970422|${bankInfo.accountNumber}|${amount.toFixed(0)}|${transactionId}|Nạp tiền Chogiare`
+    return `970422|${bankInfo.accountNumber}|${amount.toFixed(0)}|${transactionId}|Nạp tiền ${APP_NAME}`
   }
 
   return (

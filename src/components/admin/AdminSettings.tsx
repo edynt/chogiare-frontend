@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { APP_NAME } from '@/constants/app.constants'
 import { 
   Settings, 
   Save, 
@@ -35,7 +36,7 @@ export function AdminSettings() {
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="site-name">Tên trang web</Label>
-              <Input id="site-name" defaultValue="Chogiare" />
+              <Input id="site-name" defaultValue={APP_NAME} />
             </div>
             <div>
               <Label htmlFor="site-description">Mô tả trang web</Label>

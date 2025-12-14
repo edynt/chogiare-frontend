@@ -4,6 +4,7 @@ import { RegisterForm } from '@/components/auth/RegisterForm'
 import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm'
 import { ResetPasswordForm } from '@/components/auth/ResetPasswordForm'
 import { SEOHead } from '@/components/seo/SEOHead'
+import { APP_NAME } from '@/constants/app.constants'
 
 export default function AuthPage() {
   const location = useLocation()
@@ -12,31 +13,31 @@ export default function AuthPage() {
     if (location.pathname.includes('/login')) {
       return {
         title: 'Đăng nhập',
-        description: 'Đăng nhập vào tài khoản Chogiare để mua sắm và bán hàng trực tuyến',
+        description: `Đăng nhập vào tài khoản ${APP_NAME} để mua sắm và bán hàng trực tuyến`,
         keywords: 'đăng nhập, tài khoản, chogiare'
       }
     } else if (location.pathname.includes('/register')) {
       return {
         title: 'Đăng ký',
-        description: 'Tạo tài khoản Chogiare miễn phí để bắt đầu mua sắm và bán hàng trực tuyến',
+        description: `Tạo tài khoản ${APP_NAME} miễn phí để bắt đầu mua sắm và bán hàng trực tuyến`,
         keywords: 'đăng ký, tạo tài khoản, chogiare'
       }
     } else if (location.pathname.includes('/forgot-password')) {
       return {
         title: 'Quên mật khẩu',
-        description: 'Khôi phục mật khẩu tài khoản Chogiare của bạn',
+        description: `Khôi phục mật khẩu tài khoản ${APP_NAME} của bạn`,
         keywords: 'quên mật khẩu, khôi phục mật khẩu, chogiare'
       }
     } else if (location.pathname.includes('/reset-password')) {
       return {
         title: 'Đặt lại mật khẩu',
-        description: 'Đặt lại mật khẩu mới cho tài khoản Chogiare',
+        description: `Đặt lại mật khẩu mới cho tài khoản ${APP_NAME}`,
         keywords: 'đặt lại mật khẩu, reset password, chogiare'
       }
     }
     return {
       title: 'Xác thực',
-      description: 'Đăng nhập hoặc đăng ký tài khoản Chogiare',
+      description: `Đăng nhập hoặc đăng ký tài khoản ${APP_NAME}`,
       keywords: 'xác thực, đăng nhập, đăng ký, chogiare'
     }
   }
@@ -71,7 +72,7 @@ export default function AuthPage() {
               </svg>
             </div>
           </Link>
-          <h1 className="text-3xl font-bold text-primary animate-in fade-in duration-1000 delay-200">Chogiare</h1>
+          <h1 className="text-3xl font-bold text-primary animate-in fade-in duration-1000 delay-200">{APP_NAME}</h1>
           <p className="text-muted-foreground animate-in fade-in duration-1000 delay-300">Nền tảng rao bán uy tín</p>
         </div>
         

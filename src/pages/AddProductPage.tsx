@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { productSchema, type ProductFormData } from '@/lib/schemas'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { APP_NAME } from '@/constants/app.constants'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -182,7 +183,7 @@ export default function AddProductPage() {
               <h1 className="text-3xl font-bold">Thêm sản phẩm mới</h1>
             </div>
             <p className="text-muted-foreground text-lg">
-              Tạo sản phẩm mới để bán trên Chogiare
+              Tạo sản phẩm mới để bán trên {APP_NAME}
             </p>
           </div>
 

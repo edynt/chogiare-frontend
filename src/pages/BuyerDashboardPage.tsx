@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useUserOrders } from '@/hooks/useOrders'
+import { APP_NAME } from '@/constants/app.constants'
 import { 
   ShoppingBag, 
   Package, 
@@ -39,7 +40,7 @@ export default function BuyerDashboardPage() {
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Welcome Section */}
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
-            <h1 className="text-3xl font-bold mb-2">Chào mừng đến với Chogiare</h1>
+            <h1 className="text-3xl font-bold mb-2">Chào mừng đến với {APP_NAME}</h1>
             <p className="text-blue-100">Nền tảng mua sỉ hàng đầu - Tìm kiếm sản phẩm tốt nhất cho bạn</p>
           </div>
 

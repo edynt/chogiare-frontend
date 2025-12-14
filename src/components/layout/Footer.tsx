@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Droplet } from 'lucide-react'
+import { APP_NAME } from '@/constants/app.constants'
 
 export function Footer() {
   return (
@@ -14,7 +15,7 @@ export function Footer() {
                 <Droplet className="h-6 w-6 text-white" fill="currentColor" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                Chogiare
+                {APP_NAME}
               </span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -80,7 +81,7 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              © 2024 Chogiare. Tất cả quyền được bảo lưu.
+              © 2024 {APP_NAME}. Tất cả quyền được bảo lưu.
             </p>
             <div className="flex space-x-4 mt-4 md:mt-0">
               <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground">

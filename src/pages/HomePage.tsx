@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { SEOHead } from '@/components/seo/SEOHead'
+import { APP_NAME } from '@/constants/app.constants'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -132,7 +133,7 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-background">
         <SEOHead
-          title="Chogiare - Nền tảng mua sỉ hàng đầu Việt Nam"
+          title={`${APP_NAME} - Nền tảng mua sỉ hàng đầu Việt Nam`}
           description="Tìm kiếm và mua sỉ hàng ngàn sản phẩm với giá tốt nhất"
           keywords="mua sỉ, bán sỉ, chogiare"
         />
@@ -156,7 +157,7 @@ export default function HomePage() {
         structuredData={{
           "@context": "https://schema.org",
           "@type": "WebSite",
-          "name": "Chogiare",
+          "name": APP_NAME,
           "url": "https://chogiare.com",
           "description": "Nền tảng mua sắm trực tuyến hàng đầu Việt Nam",
           "potentialAction": {
