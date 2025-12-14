@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { useRegister } from '@/hooks/useAuth'
 import { useNotification } from '@/components/notification-provider'
 import { registerSchema, type RegisterFormData } from '@/lib/schemas'
+import { PasswordStrengthIndicator } from './PasswordStrengthIndicator'
 import type { RegisterData } from '@/types'
 
 export function RegisterForm() {
@@ -18,10 +19,13 @@ export function RegisterForm() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   })
+
+  const password = watch('password')
 
   const onSubmit = (data: RegisterFormData) => {
     const { confirmPassword: _confirmPassword, ...registerData } = data
@@ -100,6 +104,9 @@ export function RegisterForm() {
               className="mt-1"
               placeholder="Nhập mật khẩu"
             />
+            {password && (
+              <PasswordStrengthIndicator password={password} className="mt-2" />
+            )}
             {errors.password && (
               <p className="text-sm text-red-500 mt-1">
                 {errors.password.message}

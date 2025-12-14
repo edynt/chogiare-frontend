@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { PASSWORD_PATTERNS } from '@/constants/password.constants'
 
 // Auth schemas
 export const loginSchema = z.object({
@@ -9,7 +10,12 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
   name: z.string().min(2, 'Tên phải có ít nhất 2 ký tự'),
   email: z.string().email('Email không hợp lệ'),
-  password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+  password: z
+    .string()
+    .min(PASSWORD_PATTERNS.MIN_LENGTH, 'Mật khẩu phải có ít nhất 6 ký tự')
+    .regex(PASSWORD_PATTERNS.LOWERCASE, 'Mật khẩu phải có ít nhất 1 chữ thường')
+    .regex(PASSWORD_PATTERNS.UPPERCASE, 'Mật khẩu phải có ít nhất 1 chữ hoa')
+    .regex(PASSWORD_PATTERNS.SPECIAL_CHAR, 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Mật khẩu xác nhận không khớp',
@@ -21,7 +27,12 @@ export const forgotPasswordSchema = z.object({
 })
 
 export const resetPasswordSchema = z.object({
-  password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+  password: z
+    .string()
+    .min(PASSWORD_PATTERNS.MIN_LENGTH, 'Mật khẩu phải có ít nhất 6 ký tự')
+    .regex(PASSWORD_PATTERNS.LOWERCASE, 'Mật khẩu phải có ít nhất 1 chữ thường')
+    .regex(PASSWORD_PATTERNS.UPPERCASE, 'Mật khẩu phải có ít nhất 1 chữ hoa')
+    .regex(PASSWORD_PATTERNS.SPECIAL_CHAR, 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Mật khẩu xác nhận không khớp',

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { useResetPassword } from '@/hooks/useAuth'
 import { useNotification } from '@/components/notification-provider'
 import { resetPasswordSchema, type ResetPasswordFormData } from '@/lib/schemas'
+import { PasswordStrengthIndicator } from './PasswordStrengthIndicator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
@@ -21,10 +22,13 @@ export function ResetPasswordForm() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
   })
+
+  const password = watch('password')
 
   useEffect(() => {
     if (!token) {
@@ -110,6 +114,9 @@ export function ResetPasswordForm() {
               className="mt-1"
               placeholder="Nhập mật khẩu mới"
             />
+            {password && (
+              <PasswordStrengthIndicator password={password} className="mt-2" />
+            )}
             {errors.password && (
               <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
             )}
