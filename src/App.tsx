@@ -24,6 +24,7 @@ const RevenueReportsPage = React.lazy(() => import('@/pages/RevenueReportsPage')
 const SellerSupportPage = React.lazy(() => import('@/pages/SellerSupportPage'))
 const NotificationsPage = React.lazy(() => import('@/pages/NotificationsPage'))
 const AuthPage = React.lazy(() => import('@/pages/AuthPage'))
+const VerifyEmailPage = React.lazy(() => import('@/pages/VerifyEmailPage'))
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'))
 const OrdersPage = React.lazy(() => import('@/pages/OrdersPage'))
 const OrderDetailPage = React.lazy(() => import('@/pages/OrderDetailPage'))
@@ -84,6 +85,7 @@ function App() {
                     <Route path="/customer-orders" element={<CustomerOrdersPage />} />
                     <Route path="/buyer-dashboard" element={<BuyerDashboardPage />} />
                     <Route path="/auth/*" element={<AuthPage />} />
+                    <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/orders/:orderId" element={<OrderDetailPage />} />
                     <Route path="/shipping/:orderId" element={<ShippingTrackingPage />} />

@@ -123,3 +123,25 @@ export const useFacebookAuth = () => {
     },
   })
 }
+
+export const useVerifyEmail = () => {
+  const { login, setError } = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: authApi.verifyEmail,
+    onSuccess: (data) => {
+      login(data.user, data.tokens)
+      queryClient.setQueryData(['auth', 'profile'], data.user)
+    },
+    onError: (error: Error) => {
+      setError(error.message)
+    },
+  })
+}
+
+export const useResendVerification = () => {
+  return useMutation({
+    mutationFn: authApi.resendVerification,
+  })
+}

@@ -10,12 +10,24 @@ export const authApi = {
     return response.data.data
   },
 
-  register: async (data: RegisterData): Promise<{ user: User; tokens: AuthTokens }> => {
-    const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
+  register: async (data: RegisterData): Promise<{ message: string; email: string }> => {
+    const response = await apiClient.post<ApiResponse<{ message: string; email: string }>>(
       '/auth/register',
       data
     )
     return response.data.data
+  },
+
+  verifyEmail: async (code: string): Promise<{ user: User; tokens: AuthTokens }> => {
+    const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
+      '/auth/verify-email',
+      { code }
+    )
+    return response.data.data
+  },
+
+  resendVerification: async (email: string): Promise<void> => {
+    await apiClient.post('/auth/resend-verification', { email })
   },
 
   logout: async (): Promise<void> => {

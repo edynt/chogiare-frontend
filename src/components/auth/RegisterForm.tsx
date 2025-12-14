@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useRegister } from '@/hooks/useAuth'
 import { useNotification } from '@/components/notification-provider'
-import { CheckCircle } from 'lucide-react'
 import { registerSchema, type RegisterFormData } from '@/lib/schemas'
 import type { RegisterData } from '@/types'
 
@@ -15,7 +14,6 @@ export function RegisterForm() {
   const { notify } = useNotification()
   const navigate = useNavigate()
   const registerMutation = useRegister()
-  const [isRegistered, setIsRegistered] = useState(false)
 
   const {
     register,
@@ -33,13 +31,13 @@ export function RegisterForm() {
       password: registerData.password,
     }
     registerMutation.mutate(finalData, {
-      onSuccess: () => {
-        setIsRegistered(true)
+      onSuccess: (response) => {
         notify({
           type: 'success',
           title: 'Đăng ký thành công',
-          message: 'Vui lòng kiểm tra email để xác nhận tài khoản.',
+          message: 'Mã OTP đã được gửi đến email của bạn',
         })
+        navigate('/auth/verify-email', { state: { email: response.email } })
       },
       onError: error => {
         notify({
@@ -49,29 +47,6 @@ export function RegisterForm() {
         })
       },
     })
-  }
-
-  // Show success message after registration
-  if (isRegistered) {
-    return (
-      <Card className="w-full max-w-md">
-        <CardContent className="pt-6">
-          <div className="text-center space-y-4">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
-            <div>
-              <h3 className="text-lg font-semibold">Đăng ký thành công!</h3>
-              <p className="text-muted-foreground mt-2">
-                Vui lòng kiểm tra email để xác nhận tài khoản trước khi đăng
-                nhập.
-              </p>
-            </div>
-            <Button onClick={() => navigate('/auth/login')} className="w-full">
-              Đi đến trang đăng nhập
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    )
   }
 
   return (

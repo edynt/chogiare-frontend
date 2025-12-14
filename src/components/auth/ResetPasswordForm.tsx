@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,10 +8,15 @@ import { Input } from '@/components/ui/input'
 import { useResetPassword } from '@/hooks/useAuth'
 import { useNotification } from '@/components/notification-provider'
 import { resetPasswordSchema, type ResetPasswordFormData } from '@/lib/schemas'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
 
 export function ResetPasswordForm() {
   const { notify } = useNotification()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const resetPasswordMutation = useResetPassword()
+  const token = searchParams.get('token')
 
   const {
     register,
@@ -21,9 +26,28 @@ export function ResetPasswordForm() {
     resolver: zodResolver(resetPasswordSchema),
   })
 
+  useEffect(() => {
+    if (!token) {
+      notify({
+        type: 'error',
+        title: 'Token không hợp lệ',
+        message: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn',
+      })
+      navigate('/auth/forgot-password')
+    }
+  }, [token, navigate, notify])
+
   const onSubmit = (data: ResetPasswordFormData) => {
-    // In a real app, you'd get the token from URL params
-    const token = 'mock-reset-token'
+    if (!token) {
+      notify({
+        type: 'error',
+        title: 'Token không hợp lệ',
+        message: 'Vui lòng yêu cầu đặt lại mật khẩu mới',
+      })
+      navigate('/auth/forgot-password')
+      return
+    }
+
     resetPasswordMutation.mutate({ token, password: data.password }, {
       onSuccess: () => {
         notify({
@@ -31,15 +55,41 @@ export function ResetPasswordForm() {
           title: 'Đặt lại mật khẩu thành công',
           message: 'Bạn có thể đăng nhập với mật khẩu mới',
         })
+        setTimeout(() => {
+          navigate('/auth/login')
+        }, 2000)
       },
       onError: (error) => {
         notify({
           type: 'error',
           title: 'Đặt lại mật khẩu thất bại',
-          message: error.message,
+          message: error.message || 'Token không hợp lệ hoặc đã hết hạn',
         })
       },
     })
+  }
+
+  if (!token) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardContent className="pt-6">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu đặt lại mật khẩu mới.
+            </AlertDescription>
+          </Alert>
+          <div className="mt-4 text-center">
+            <Link
+              to="/auth/forgot-password"
+              className="text-sm text-primary hover:underline"
+            >
+              Yêu cầu đặt lại mật khẩu
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (
