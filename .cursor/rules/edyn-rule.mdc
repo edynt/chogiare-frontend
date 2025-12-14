@@ -1,0 +1,31 @@
+---
+alwaysApply: true
+---
+
+# GLOBAL RULES
+1. No use of type `any`
+2. No Vietnamese messages inside code
+3. All texts must be defined in shared constants files
+4. No comments in code
+5. No random or unnecessary line breaks
+6. Full strict typing across all layers
+7. Each feature must be fully completed before starting another
+8. All API contracts must be consistent and strongly typed
+9. Use camelCase for all variables, functions, and file naming (except database columns)
+10. Enforce complete Global Rules across the project
+11. ESLint must always be enabled and enforced
+12. All unused code must be removed immediately (variables, imports, functions, components)
+13. Always follow clean code principles; code must be clear, readable, and maintainable
+14. Always optimize imports; avoid deep or redundant import paths
+15. Enforce clear separation of concerns: UI, business logic, data access, validations, and utilities must not mix
+16. Avoid duplication of logic across modules; extract reusable utilities when needed
+17. Use pure functions whenever possible to ensure predictable behavior
+18. Centralize all configuration; no inline configuration or magic values allowed
+19. Validate environment variables before application startup
+20. Enforce consistent naming conventions across all modules
+21. Prevent deep nesting; use early returns and refactoring
+22. All system messages must be stored in centralized message constants
+23. All input fields must enforce maximum length validation
+24. All fields must be validated using correct format (email, phone, uuid, numeric, date, etc.)
+25. Please remove code declared but its value is never read
+26. Always fix format problems by Prettier

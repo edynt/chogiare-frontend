@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -22,6 +22,8 @@ export function ResetPasswordForm() {
   const [isVerifying, setIsVerifying] = useState(true)
   const [isTokenValid, setIsTokenValid] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const hasVerifiedRef = useRef(false)
+  const hasShownErrorRef = useRef(false)
 
   const {
     register,
@@ -35,17 +37,26 @@ export function ResetPasswordForm() {
   const password = watch('password')
 
   useEffect(() => {
-    if (!token) {
-      notify({
-        type: 'error',
-        title: 'Token không hợp lệ',
-        message: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn',
-      })
-      setTimeout(() => {
-        navigate('/auth/login')
-      }, 2000)
+    if (hasVerifiedRef.current) {
       return
     }
+
+    if (!token) {
+      if (!hasShownErrorRef.current) {
+        hasShownErrorRef.current = true
+        notify({
+          type: 'error',
+          title: 'Token không hợp lệ',
+          message: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn',
+        })
+        setTimeout(() => {
+          navigate('/auth/login')
+        }, 2000)
+      }
+      return
+    }
+
+    hasVerifiedRef.current = true
 
     verifyTokenMutation.mutate(token, {
       onSuccess: () => {
@@ -55,29 +66,33 @@ export function ResetPasswordForm() {
       onError: (error: any) => {
         setIsVerifying(false)
         setIsTokenValid(false)
-        const errorMessage = error?.response?.data?.message || error.message || 'Token không hợp lệ hoặc đã hết hạn'
-        const errorCode = error?.response?.data?.errorCode
         
-        let title = 'Liên kết không hợp lệ'
-        let message = errorMessage
-        
-        if (errorCode === 'AUTH_RESET_TOKEN_ALREADY_USED' || errorMessage.includes('already been used')) {
-          title = 'Liên kết đã được sử dụng'
-          message = 'Liên kết đặt lại mật khẩu này đã được sử dụng. Vui lòng đăng nhập với mật khẩu mới.'
-        } else if (errorCode === 'AUTH_INVALID_RESET_TOKEN' || errorMessage.includes('expired') || errorMessage.includes('Invalid')) {
-          title = 'Liên kết không hợp lệ'
-          message = 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.'
+        if (!hasShownErrorRef.current) {
+          hasShownErrorRef.current = true
+          const errorMessage = error?.response?.data?.message || error.message || 'Token không hợp lệ hoặc đã hết hạn'
+          const errorCode = error?.response?.data?.errorCode
+          
+          let title = 'Liên kết không hợp lệ'
+          let message = errorMessage
+          
+          if (errorCode === 'AUTH_RESET_TOKEN_ALREADY_USED' || errorMessage.includes('already been used')) {
+            title = 'Liên kết đã được sử dụng'
+            message = 'Liên kết đặt lại mật khẩu này đã được sử dụng. Vui lòng đăng nhập với mật khẩu mới.'
+          } else if (errorCode === 'AUTH_INVALID_RESET_TOKEN' || errorMessage.includes('expired') || errorMessage.includes('Invalid')) {
+            title = 'Liên kết không hợp lệ'
+            message = 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.'
+          }
+          
+          notify({
+            type: 'error',
+            title,
+            message,
+          })
+          
+          setTimeout(() => {
+            navigate('/auth/login')
+          }, 3000)
         }
-        
-        notify({
-          type: 'error',
-          title,
-          message,
-        })
-        
-        setTimeout(() => {
-          navigate('/auth/login')
-        }, 3000)
       },
     })
   }, [token, navigate, notify, verifyTokenMutation])
