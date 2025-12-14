@@ -14,6 +14,7 @@ const TopUpPage = React.lazy(() => import('@/pages/TopUpPage'))
 const PaymentQRPage = React.lazy(() => import('@/pages/PaymentQRPage'))
 const BoostPostPage = React.lazy(() => import('@/pages/BoostPostPage'))
 const AdminPage = React.lazy(() => import('@/pages/admin/AdminPage'))
+const AdminLoginPage = React.lazy(() => import('@/pages/AdminLoginPage'))
 const SellerDashboard = React.lazy(() => import('@/pages/SellerDashboard'))
 const SellerProductsPage = React.lazy(() => import('@/pages/SellerProductsPage'))
 const AddProductPage = React.lazy(() => import('@/pages/AddProductPage'))
@@ -69,6 +70,7 @@ function App() {
                     <Route path="/top-up" element={<TopUpPage />} />
                     <Route path="/payment-qr" element={<PaymentQRPage />} />
                     <Route path="/boost-post" element={<BoostPostPage />} />
+                    <Route path="/admin-login" element={<AdminLoginPage />} />
                     <Route path="/admin/*" element={<AdminPage />} />
                     <Route path="/seller/:id" element={<SellerDashboard />} />
                     <Route path="/dashboard" element={<SellerDashboard />} />

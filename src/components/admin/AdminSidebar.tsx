@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
-import { APP_NAME } from '@/constants/app.constants'
 import { 
   LayoutDashboard,
   Users,
@@ -15,8 +14,8 @@ import {
   Mail,
   ChevronLeft,
   Menu,
-  Database,
-  Crown
+  Crown,
+  Clock
 } from 'lucide-react'
 
 const menuItems = [
@@ -81,9 +80,9 @@ const menuItems = [
     badge: null
   },
   {
-    title: 'Data Seeder',
-    href: '/admin/seeder',
-    icon: Database,
+    title: 'Quản lý Job',
+    href: '/admin/jobs',
+    icon: Clock,
     badge: null
   }
 ]
