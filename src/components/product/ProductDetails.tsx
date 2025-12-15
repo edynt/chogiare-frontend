@@ -243,37 +243,59 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Product Images */}
         <div className="space-y-4">
-          <div className="aspect-square overflow-hidden rounded-lg bg-muted">
+          <div className="aspect-square overflow-hidden rounded-lg bg-muted border-2 border-border">
             <img
               src={product.images && product.images.length > 0 ? (product.images[selectedImageIndex] || product.images[0]) : PLACEHOLDER_IMAGE}
               alt={product.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
               onError={(e) => {
                 e.currentTarget.src = PLACEHOLDER_IMAGE
+              }}
+              onClick={() => {
+                if (product.images && product.images.length > 1) {
+                  setSelectedImageIndex((selectedImageIndex + 1) % product.images.length)
+                }
               }}
             />
           </div>
           
-          {product.images && product.images.length > 1 && (
-            <div className="grid grid-cols-4 gap-2">
-              {product.images.map((image, index) => (
-                <button
-                  key={index}
-      
-                  onClick={() => setSelectedImageIndex(index)}
-                  className={`aspect-square overflow-hidden rounded-md border-2 ${
-                    selectedImageIndex === index
-                      ? 'border-primary'
-                      : 'border-transparent'
-                  }`}
-                >
-                  <img
-                    src={image}
-                    alt={`${product.title} ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
+          {product.images && product.images.length > 0 ? (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Hình ảnh sản phẩm ({product.images.length})
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {selectedImageIndex + 1} / {product.images.length}
+                </p>
+              </div>
+              <div className="grid grid-cols-4 gap-2 max-h-80 overflow-y-auto">
+                {product.images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImageIndex(index)}
+                    className={`aspect-square overflow-hidden rounded-md border-2 transition-all ${
+                      selectedImageIndex === index
+                        ? 'border-primary ring-2 ring-primary ring-offset-2'
+                        : 'border-transparent hover:border-primary/50'
+                    }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.title} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = PLACEHOLDER_IMAGE
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-4 text-sm text-muted-foreground">
+              <ImageIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
+              <p>Chưa có hình ảnh</p>
             </div>
           )}
         </div>

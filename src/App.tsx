@@ -28,7 +28,6 @@ const VerifyEmailPage = React.lazy(() => import('@/pages/VerifyEmailPage'))
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'))
 const OrdersPage = React.lazy(() => import('@/pages/OrdersPage'))
 const OrderDetailPage = React.lazy(() => import('@/pages/OrderDetailPage'))
-const ShippingTrackingPage = React.lazy(() => import('@/pages/ShippingTrackingPage'))
 const PromotedProductDetailPage = React.lazy(() => import('@/pages/PromotedProductDetailPage'))
 const BuyerDashboardPage = React.lazy(() => import('@/pages/BuyerDashboardPage'))
 const CustomerOrdersPage = React.lazy(() => import('@/pages/CustomerOrdersPage'))
@@ -88,8 +87,6 @@ function App() {
                     <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/orders/:orderId" element={<OrderDetailPage />} />
-                    <Route path="/shipping/:orderId" element={<ShippingTrackingPage />} />
-                    <Route path="/shipping/track/:trackingNumber" element={<ShippingTrackingPage />} />
                     <Route path="/promoted-products/:productId" element={<PromotedProductDetailPage />} />
                     <Route path="/shop/:id" element={<SellerDetailPage />} />
                     <Route path="/products" element={<ProductListPage />} />
