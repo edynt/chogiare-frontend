@@ -8,6 +8,8 @@ export { storesApi } from './stores'
 export { chatApi } from './chat'
 export { uploadApi } from './upload'
 export { addressesApi } from './addresses'
+export { reportsApi } from './reports'
+export { adminApi } from './admin'
 export { apiClient } from './axios'
 
 // Re-export types for convenience
