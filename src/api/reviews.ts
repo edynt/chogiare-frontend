@@ -11,6 +11,7 @@ export interface Review {
   comment?: string
   images: string[]
   isVerified: boolean
+  helpful: number
   userName?: string
   userEmail?: string
   userAvatar?: string
@@ -137,6 +138,19 @@ export const reviewsApi = {
 
   deleteReview: async (id: string): Promise<void> => {
     await apiClient.delete(`/reviews/${id}`)
+  },
+
+  // Review interactions
+  markHelpful: async (id: string): Promise<void> => {
+    await apiClient.post(`/reviews/${id}/helpful`)
+  },
+
+  markReviewHelpful: async (id: string): Promise<void> => {
+    await apiClient.post(`/reviews/${id}/helpful`)
+  },
+
+  unmarkReviewHelpful: async (id: string): Promise<void> => {
+    await apiClient.delete(`/reviews/${id}/helpful`)
   },
 
   // Statistics

@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { useProfile } from '@/hooks/useAuth'
 import { useUserOrders } from '@/hooks/useOrders'
+import { useMultipleShippingProgress } from '@/hooks/useShippingProgress'
+import { CompactShippingProgress } from '@/components/shipping/CompactShippingProgress'
 import { 
   User, Mail, Phone, MapPin, Package, Eye, Calendar, 
   Star, Heart, ShoppingBag, Shield, Award, TrendingUp,
@@ -33,6 +35,10 @@ export function ProfileContent() {
     showPhone: false
   })
   const { data: ordersData, isLoading: isLoadingOrders } = useUserOrders({ page: 1, pageSize: 10 })
+  
+  // Get shipping progress for all orders
+  const orderIds = ordersData?.items?.map(order => order.id) || []
+  const { data: shippingProgressData } = useMultipleShippingProgress(orderIds)
 
   // Update active tab when URL changes
   useEffect(() => {
@@ -49,6 +55,10 @@ export function ProfileContent() {
     }
     setActiveTab(tab)
     setSearchParams({ tab })
+  }
+
+  const handleTrackOrder = (orderId: string) => {
+    navigate(`/shipping/${orderId}`)
   }
 
   if (isLoading) {
@@ -383,6 +393,15 @@ export function ProfileContent() {
                     </div>
 
                     {/* Shipping Progress Bar */}
+                    {shippingProgressData && shippingProgressData[order.id] && (
+                      <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                        <CompactShippingProgress 
+                          shippingData={shippingProgressData[order.id]}
+                          onTrackClick={() => handleTrackOrder(order.id)}
+                        />
+                      </div>
+                    )}
+                    
                     <div className="flex items-center justify-between mt-4 pt-3 border-t">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Calendar className="h-4 w-4" />

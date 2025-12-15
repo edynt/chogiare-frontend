@@ -91,12 +91,4 @@ export const authApi = {
     )
     return response.data.data
   },
-
-  adminLogin: async (credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens; roles?: string[]; permissions?: string[] }> => {
-    const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens; roles?: string[]; permissions?: string[] }>>(
-      '/auth/admin/login',
-      credentials
-    )
-    return response.data.data
-  },
 }

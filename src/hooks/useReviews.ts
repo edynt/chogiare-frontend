@@ -83,6 +83,18 @@ export const useDeleteReview = () => {
   })
 }
 
+export const useMarkReviewHelpful = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: reviewsApi.markHelpful,
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['reviews'] })
+      queryClient.invalidateQueries({ queryKey: ['reviews', id] })
+    },
+  })
+}
+
 export const useReviewStats = () => {
   return useQuery({
     queryKey: ['reviews', 'stats'],

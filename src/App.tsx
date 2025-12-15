@@ -14,7 +14,6 @@ const TopUpPage = React.lazy(() => import('@/pages/TopUpPage'))
 const PaymentQRPage = React.lazy(() => import('@/pages/PaymentQRPage'))
 const BoostPostPage = React.lazy(() => import('@/pages/BoostPostPage'))
 const AdminPage = React.lazy(() => import('@/pages/admin/AdminPage'))
-const AdminLoginPage = React.lazy(() => import('@/pages/AdminLoginPage'))
 const SellerDashboard = React.lazy(() => import('@/pages/SellerDashboard'))
 const SellerProductsPage = React.lazy(() => import('@/pages/SellerProductsPage'))
 const AddProductPage = React.lazy(() => import('@/pages/AddProductPage'))
@@ -29,6 +28,7 @@ const VerifyEmailPage = React.lazy(() => import('@/pages/VerifyEmailPage'))
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'))
 const OrdersPage = React.lazy(() => import('@/pages/OrdersPage'))
 const OrderDetailPage = React.lazy(() => import('@/pages/OrderDetailPage'))
+const ShippingTrackingPage = React.lazy(() => import('@/pages/ShippingTrackingPage'))
 const PromotedProductDetailPage = React.lazy(() => import('@/pages/PromotedProductDetailPage'))
 const BuyerDashboardPage = React.lazy(() => import('@/pages/BuyerDashboardPage'))
 const CustomerOrdersPage = React.lazy(() => import('@/pages/CustomerOrdersPage'))
@@ -69,7 +69,6 @@ function App() {
                     <Route path="/top-up" element={<TopUpPage />} />
                     <Route path="/payment-qr" element={<PaymentQRPage />} />
                     <Route path="/boost-post" element={<BoostPostPage />} />
-                    <Route path="/admin-login" element={<AdminLoginPage />} />
                     <Route path="/admin/*" element={<AdminPage />} />
                     <Route path="/seller/:id" element={<SellerDashboard />} />
                     <Route path="/dashboard" element={<SellerDashboard />} />
@@ -89,6 +88,8 @@ function App() {
                     <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/orders/:orderId" element={<OrderDetailPage />} />
+                    <Route path="/shipping/:orderId" element={<ShippingTrackingPage />} />
+                    <Route path="/shipping/track/:trackingNumber" element={<ShippingTrackingPage />} />
                     <Route path="/promoted-products/:productId" element={<PromotedProductDetailPage />} />
                     <Route path="/shop/:id" element={<SellerDetailPage />} />
                     <Route path="/products" element={<ProductListPage />} />

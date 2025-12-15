@@ -8,7 +8,6 @@ export { storesApi } from './stores'
 export { chatApi } from './chat'
 export { uploadApi } from './upload'
 export { addressesApi } from './addresses'
-export { jobsApi } from './jobs'
 export { apiClient } from './axios'
 
 // Re-export types for convenience
@@ -57,9 +56,3 @@ export type {
   UpdateConversationRequest, 
   CreateChatMessageRequest 
 } from './chat'
-
-export type { 
-  JobInfo, 
-  UpdateJobScheduleRequest, 
-  TriggerJobResponse 
-} from './jobs'
