@@ -153,4 +153,74 @@ export const storesApi = {
     const response = await apiClient.get<ApiResponse<StoreStats>>(`/stores/stats/${storeId}`)
     return response.data.data
   },
+
+  getDashboardStats: async (): Promise<DashboardStats> => {
+    const response = await apiClient.get<ApiResponse<DashboardStats>>('/stores/dashboard/stats')
+    return response.data.data
+  },
+
+  getLowStockProducts: async (limit?: number): Promise<LowStockProduct[]> => {
+    const response = await apiClient.get<ApiResponse<LowStockProduct[]>>('/stores/dashboard/low-stock', {
+      params: { limit },
+    })
+    return response.data.data
+  },
+
+  getPromotedProducts: async (): Promise<PromotedProduct[]> => {
+    const response = await apiClient.get<ApiResponse<PromotedProduct[]>>('/stores/dashboard/promoted')
+    return response.data.data
+  },
+}
+
+export interface DashboardStats {
+  totalProducts: {
+    value: number
+    change: number
+    changeType: 'positive' | 'negative'
+    subtitle: string
+  }
+  revenue: {
+    value: number
+    change: number
+    changeType: 'positive' | 'negative'
+    subtitle: string
+  }
+  orders: {
+    value: number
+    change: number
+    changeType: 'positive' | 'negative'
+    subtitle: string
+  }
+  views: {
+    value: number
+    change: number
+    changeType: 'positive' | 'negative'
+    subtitle: string
+  }
+}
+
+export interface LowStockProduct {
+  id: string
+  name: string
+  sku: string
+  currentStock: number
+  minStock: number
+  maxStock: number
+  status: 'in_stock' | 'low_stock' | 'out_of_stock'
+}
+
+export interface PromotedProduct {
+  id: string
+  name: string
+  image: string
+  price: number
+  currentViews: number
+  totalViews: number
+  startDate: string
+  endDate: string | null
+  remainingViews: number
+  packageId: string
+  packageName: string
+  packageType: 'payPerView' | 'payPerDay'
+  packagePrice: number
 }

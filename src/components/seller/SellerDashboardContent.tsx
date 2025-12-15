@@ -8,6 +8,7 @@ import { StockInModal } from '@/components/stock/StockInModal'
 import { useNotification } from '@/components/notification-provider'
 import { useSellerProducts } from '@/hooks/useProducts'
 import { useStoreOrders, useConfirmOrder, useUpdateOrderStatus } from '@/hooks/useOrders'
+import { useDashboardStats, useLowStockProducts, usePromotedProducts } from '@/hooks/useStores'
 import {
   Dialog,
   DialogContent,
@@ -121,6 +122,9 @@ export function SellerDashboardContent() {
   const navigate = useNavigate()
   const { data: _products, isLoading: _isLoading } = useSellerProducts()
   const { data: ordersData, isLoading: isLoadingOrders, refetch: refetchOrders } = useStoreOrders('store-1', { page: 1, pageSize: 10 })
+  const { data: dashboardStats, isLoading: isLoadingStats } = useDashboardStats()
+  const { data: lowStockProductsData, isLoading: isLoadingLowStock } = useLowStockProducts(20)
+  const { data: promotedProductsData, isLoading: isLoadingPromoted } = usePromotedProducts()
   const { notify } = useNotification()
   const [activeTab, setActiveTab] = useState('overview')
   const [isStockInModalOpen, setIsStockInModalOpen] = useState(false)
@@ -201,246 +205,82 @@ export function SellerDashboardContent() {
     }
   }
 
-  // Mock data for enhanced dashboard
-  const stats = [
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) {
+      return `${(num / 1000000).toFixed(1)}M`
+    }
+    if (num >= 1000) {
+      return `${(num / 1000).toFixed(1)}K`
+    }
+    return num.toString()
+  }
+
+  const formatCurrency = (num: number): string => {
+    return new Intl.NumberFormat('vi-VN').format(num)
+  }
+
+  const stats = dashboardStats ? [
     { 
       title: 'Tổng sản phẩm', 
-      value: '156', 
+      value: dashboardStats.totalProducts.value.toString(), 
       icon: Package, 
-      change: '+12', 
-      changeType: 'positive',
-      subtitle: 'Hoạt động: 142'
+      change: `${dashboardStats.totalProducts.change >= 0 ? '+' : ''}${dashboardStats.totalProducts.change.toFixed(1)}%`, 
+      changeType: dashboardStats.totalProducts.changeType,
+      subtitle: dashboardStats.totalProducts.subtitle
     },
     { 
       title: 'Doanh thu tháng', 
-      value: '25.7M', 
+      value: formatCurrency(dashboardStats.revenue.value), 
       icon: DollarSign, 
-      change: '+18.5%', 
-      changeType: 'positive',
-      subtitle: 'Lợi nhuận: 4.2M'
+      change: `${dashboardStats.revenue.change >= 0 ? '+' : ''}${dashboardStats.revenue.change.toFixed(1)}%`, 
+      changeType: dashboardStats.revenue.changeType,
+      subtitle: dashboardStats.revenue.subtitle
     },
     { 
       title: 'Đơn hàng', 
-      value: '1,247', 
+      value: formatNumber(dashboardStats.orders.value), 
       icon: ShoppingCart, 
-      change: '+89', 
-      changeType: 'positive',
-      subtitle: 'Chờ xử lý: 23'
+      change: `${dashboardStats.orders.change >= 0 ? '+' : ''}${dashboardStats.orders.change.toFixed(1)}%`, 
+      changeType: dashboardStats.orders.changeType,
+      subtitle: dashboardStats.orders.subtitle
     },
     { 
       title: 'Lượt xem', 
-      value: '15.6K', 
+      value: formatNumber(dashboardStats.views.value), 
       icon: Eye, 
-      change: '+1.2K', 
-      changeType: 'positive',
-      subtitle: 'Hôm nay: 234'
+      change: `${dashboardStats.views.change >= 0 ? '+' : ''}${dashboardStats.views.change.toFixed(1)}%`, 
+      changeType: dashboardStats.views.changeType,
+      subtitle: dashboardStats.views.subtitle
     },
-  ]
+  ] : []
 
-  // Get recent orders from API data
   const recentOrders = ordersData?.items || []
 
-  const lowStockProducts: (StockInProduct & { status: string })[] = [
-    {
-      id: '1',
-      name: 'AirPods Pro 2nd Gen',
-      sku: 'AP-PRO-2',
-      currentStock: 5,
-      minStock: 10,
-      maxStock: 100,
-      status: 'low_stock'
-    },
-    {
-      id: '2',
-      name: 'MacBook Air M2 13 inch',
-      sku: 'MBA-M2-13',
-      currentStock: 0,
-      minStock: 5,
-      maxStock: 50,
-      status: 'out_of_stock'
-    },
-    {
-      id: '3',
-      name: 'iPhone 14 Pro Max 256GB',
-      sku: 'IP14PM-256',
-      currentStock: 15,
-      minStock: 10,
-      maxStock: 200,
-      status: 'in_stock'
-    },
-    {
-      id: '4',
-      name: 'Samsung Galaxy S23 Ultra',
-      sku: 'SGS23U',
-      currentStock: 3,
-      minStock: 8,
-      maxStock: 150,
-      status: 'low_stock'
-    },
-    {
-      id: '5',
-      name: 'iPad Pro 12.9 inch',
-      sku: 'IPAD-PRO-129',
-      currentStock: 0,
-      minStock: 3,
-      maxStock: 30,
-      status: 'out_of_stock'
-    },
-    {
-      id: '6',
-      name: 'Apple Watch Series 9',
-      sku: 'AW-S9',
-      currentStock: 7,
-      minStock: 10,
-      maxStock: 100,
-      status: 'low_stock'
-    },
-    {
-      id: '7',
-      name: 'Sony WH-1000XM5',
-      sku: 'SONY-WH1000XM5',
-      currentStock: 12,
-      minStock: 15,
-      maxStock: 80,
-      status: 'low_stock'
-    },
-    {
-      id: '8',
-      name: 'Dell XPS 13',
-      sku: 'DELL-XPS13',
-      currentStock: 0,
-      minStock: 5,
-      maxStock: 40,
-      status: 'out_of_stock'
-    },
-    {
-      id: '9',
-      name: 'Samsung Galaxy Watch 6',
-      sku: 'SGW6',
-      currentStock: 20,
-      minStock: 10,
-      maxStock: 120,
-      status: 'in_stock'
-    },
-    {
-      id: '10',
-      name: 'Microsoft Surface Pro 9',
-      sku: 'MS-SP9',
-      currentStock: 2,
-      minStock: 5,
-      maxStock: 60,
-      status: 'low_stock'
-    },
-    {
-      id: '11',
-      name: 'Google Pixel 8 Pro',
-      sku: 'GP-P8P',
-      currentStock: 0,
-      minStock: 3,
-      maxStock: 40,
-      status: 'out_of_stock'
-    },
-    {
-      id: '12',
-      name: 'OnePlus 12',
-      sku: 'OP-12',
-      currentStock: 8,
-      minStock: 10,
-      maxStock: 90,
-      status: 'low_stock'
-    },
-    {
-      id: '13',
-      name: 'Xiaomi 14 Pro',
-      sku: 'XM-14P',
-      currentStock: 25,
-      minStock: 15,
-      maxStock: 110,
-      status: 'in_stock'
-    },
-    {
-      id: '14',
-      name: 'Huawei Mate 60 Pro',
-      sku: 'HW-M60P',
-      currentStock: 1,
-      minStock: 5,
-      maxStock: 70,
-      status: 'low_stock'
-    },
-    {
-      id: '15',
-      name: 'Oppo Find X6 Pro',
-      sku: 'OP-FX6P',
-      currentStock: 0,
-      minStock: 3,
-      maxStock: 50,
-      status: 'out_of_stock'
-    }
-  ]
+  const lowStockProducts: (StockInProduct & { status: string })[] = (lowStockProductsData || []).map((product) => ({
+    id: product.id,
+    name: product.name,
+    sku: product.sku,
+    currentStock: product.currentStock,
+    minStock: product.minStock,
+    maxStock: product.maxStock,
+    status: product.status,
+  }))
 
-  // Mock data for promoted products
-  const promotedProducts = [
-    {
-      id: '1',
-      name: 'iPhone 14 Pro Max 256GB',
-      image: 'https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=80&h=80&fit=crop',
-      price: 25990000,
-      currentViews: 1245,
-      totalViews: 5000,
-      startDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-      endDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
-      remainingViews: 3755,
-      packageId: 'ppv_5k',
-      packageName: '5,000 lượt xem',
-      packageType: 'payPerView' as const,
-      packagePrice: 200000
-    },
-    {
-      id: '2',
-      name: 'Samsung Galaxy S23 Ultra',
-      image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=80&h=80&fit=crop',
-      price: 22990000,
-      currentViews: 892,
-      totalViews: 3000,
-      startDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-      endDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // 6 days from now
-      remainingViews: 2108,
-      packageId: 'ppv_5k',
-      packageName: '5,000 lượt xem',
-      packageType: 'payPerView' as const,
-      packagePrice: 200000
-    },
-    {
-      id: '3',
-      name: 'MacBook Air M2 13 inch',
-      image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=80&h=80&fit=crop',
-      price: 32990000,
-      currentViews: 2156,
-      totalViews: 10000,
-      startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-      endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
-      remainingViews: 7844,
-      packageId: 'ppv_10k',
-      packageName: '10,000 lượt xem',
-      packageType: 'payPerView' as const,
-      packagePrice: 350000
-    },
-    {
-      id: '4',
-      name: 'AirPods Pro 2nd Gen',
-      image: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=80&h=80&fit=crop',
-      price: 5990000,
-      currentViews: 456,
-      totalViews: 2000,
-      startDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-      endDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days from now
-      remainingViews: 1544,
-      packageId: 'ppd_7',
-      packageName: '7 ngày',
-      packageType: 'payPerDay' as const,
-      packagePrice: 250000
-    }
-  ]
+  const promotedProducts = (promotedProductsData || []).map((product) => ({
+    id: product.id,
+    name: product.name,
+    image: product.image,
+    price: product.price,
+    currentViews: product.currentViews,
+    totalViews: product.totalViews,
+    startDate: new Date(product.startDate),
+    endDate: product.endDate ? new Date(product.endDate) : null,
+    remainingViews: product.remainingViews,
+    packageId: product.packageId,
+    packageName: product.packageName,
+    packageType: product.packageType,
+    packagePrice: product.packagePrice,
+  }))
 
   // Calculate remaining time
   const getRemainingTime = (endDate: Date) => {
