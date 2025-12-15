@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -37,6 +38,7 @@ import {
 } from 'lucide-react'
 
 export default function NotificationManagementPage() {
+  const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -311,9 +313,9 @@ export default function NotificationManagementPage() {
             <Settings className="h-4 w-4 mr-2" />
             Cài đặt
           </Button>
-          <Button>
+          <Button onClick={() => navigate('/admin/notifications/create')}>
             <Plus className="h-4 w-4 mr-2" />
-            Tạo chiến dịch
+            Tạo thông báo
           </Button>
         </div>
       </div>

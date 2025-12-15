@@ -11,6 +11,7 @@ import ContentManagementPage from './ContentManagementPage'
 import CustomerSupportPage from './CustomerSupportPage'
 import SystemSettingsPage from './SystemSettingsPage'
 import NotificationManagementPage from './NotificationManagementPage'
+import CreateNotificationPage from './CreateNotificationPage'
 import { DataSeeder } from '@/components/admin/DataSeeder'
 
 export default function AdminPage() {
@@ -26,6 +27,7 @@ export default function AdminPage() {
         <Route path="/cms" element={<ContentManagementPage />} />
         <Route path="/support" element={<CustomerSupportPage />} />
         <Route path="/notifications" element={<NotificationManagementPage />} />
+        <Route path="/notifications/create" element={<CreateNotificationPage />} />
         <Route path="/settings" element={<SystemSettingsPage />} />
         <Route path="/seeder" element={<DataSeeder />} />
       </Routes>

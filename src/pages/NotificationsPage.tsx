@@ -16,96 +16,12 @@ import {
   Info,
   Payment,
   CheckCircle,
-  RefreshCw
+  RefreshCw,
+  MessageCircle
 } from 'lucide-react'
 import { toast } from 'sonner'
-
-interface Notification {
-  id: string
-  type: 'order' | 'promo' | 'product' | 'system' | 'payment'
-  title: string
-  message: string
-  detailMessage?: string
-  isRead: boolean
-  createdAt: string
-  actionUrl?: string
-  imageUrl?: string
-  metadata?: Record<string, any>
-}
-
-// Mock data
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'order',
-    title: 'Đơn hàng của bạn đã được xác nhận',
-    message: 'Đơn hàng #ORD001 đã được xác nhận và đang được chuẩn bị',
-    detailMessage: 'Đơn hàng #ORD001 của bạn đã được xác nhận thành công. Chúng tôi đang chuẩn bị hàng và sẽ giao đến bạn trong 2-3 ngày tới.',
-    isRead: false,
-    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    actionUrl: '/orders/ORD001',
-    metadata: { orderId: 'ORD001' }
-  },
-  {
-    id: '2',
-    type: 'promo',
-    title: 'Khuyến mãi đặc biệt - Giảm 50%',
-    message: 'Giảm giá lên đến 50% cho tất cả sản phẩm điện tử',
-    detailMessage: 'Chương trình khuyến mãi đặc biệt dành cho bạn! Giảm giá lên đến 50% cho tất cả sản phẩm điện tử.',
-    isRead: false,
-    createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-    imageUrl: 'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=600'
-  },
-  {
-    id: '3',
-    type: 'product',
-    title: 'Sản phẩm đã có hàng trở lại',
-    message: 'iPhone 15 Pro Max đã có hàng trở lại trong kho',
-    detailMessage: 'Sản phẩm iPhone 15 Pro Max mà bạn đã quan tâm hiện đã có hàng trở lại trong kho.',
-    isRead: true,
-    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-    imageUrl: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600'
-  },
-  {
-    id: '4',
-    type: 'order',
-    title: 'Đơn hàng đang được giao',
-    message: 'Đơn hàng #ORD002 đang được giao đến bạn',
-    detailMessage: 'Đơn hàng #ORD002 của bạn đã được đóng gói và đang trên đường giao đến bạn.',
-    isRead: true,
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    actionUrl: '/orders/ORD002',
-    metadata: { orderId: 'ORD002', trackingNumber: 'VN123456789' }
-  },
-  {
-    id: '5',
-    type: 'promo',
-    title: 'Chúc mừng sinh nhật!',
-    message: 'Bạn có phiếu giảm giá 20% cho đơn hàng tiếp theo',
-    detailMessage: 'Chúc mừng sinh nhật bạn! Chúng tôi gửi tặng bạn phiếu giảm giá 20% cho đơn hàng tiếp theo.',
-    isRead: true,
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: '6',
-    type: 'payment',
-    title: 'Thanh toán thành công',
-    message: 'Đơn hàng #ORD003 đã được thanh toán thành công',
-    detailMessage: 'Đơn hàng #ORD003 của bạn đã được thanh toán thành công qua chuyển khoản ngân hàng.',
-    isRead: true,
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    metadata: { orderId: 'ORD003', amount: 1250000, transactionId: 'TXN001234' }
-  },
-  {
-    id: '7',
-    type: 'system',
-    title: 'Cập nhật hệ thống',
-    message: 'Ứng dụng đã được cập nhật với nhiều tính năng mới',
-    detailMessage: 'Chúng tôi đã cập nhật ứng dụng với nhiều tính năng mới và cải thiện hiệu suất.',
-    isRead: true,
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-  }
-]
+import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from '@/hooks/useNotifications'
+import type { Notification } from '@/api/notifications'
 
 const TYPE_INFO = {
   order: {
@@ -113,7 +29,7 @@ const TYPE_INFO = {
     label: 'Đơn hàng',
     color: '#C81E1E'
   },
-  promo: {
+  promotion: {
     icon: LocalOffer,
     label: 'Khuyến mãi',
     color: '#F59E0B'
@@ -132,15 +48,28 @@ const TYPE_INFO = {
     icon: Payment,
     label: 'Thanh toán',
     color: '#8B5CF6'
+  },
+  message: {
+    icon: MessageCircle,
+    label: 'Tin nhắn',
+    color: '#3B82F6'
   }
 }
 
 export default function NotificationsPage() {
   const navigate = useNavigate()
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedFilter, setSelectedFilter] = useState('Tất cả')
-  const [isRefreshing, setIsRefreshing] = useState(false)
+  
+  const { data: notificationsData, isLoading, refetch } = useNotifications({
+    page: 1,
+    pageSize: 100,
+  })
+  const markAsReadMutation = useMarkNotificationAsRead()
+  const markAllAsReadMutation = useMarkAllNotificationsAsRead()
+
+  const notifications = notificationsData?.items || []
+  const unreadCount = notificationsData?.unreadCount || 0
 
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString)
@@ -157,7 +86,6 @@ export default function NotificationsPage() {
   }
 
   const filteredNotifications = notifications.filter(notification => {
-    // Filter by search
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       if (!notification.title.toLowerCase().includes(query) && 
@@ -166,14 +94,14 @@ export default function NotificationsPage() {
       }
     }
 
-    // Filter by type
     if (selectedFilter !== 'Tất cả') {
       const filterMap: Record<string, Notification['type']> = {
         'Đơn hàng': 'order',
-        'Khuyến mãi': 'promo',
+        'Khuyến mãi': 'promotion',
         'Sản phẩm': 'product',
         'Thanh toán': 'payment',
-        'Hệ thống': 'system'
+        'Hệ thống': 'system',
+        'Tin nhắn': 'message'
       }
       return notification.type === filterMap[selectedFilter]
     }
@@ -181,35 +109,35 @@ export default function NotificationsPage() {
     return true
   })
 
-  const unreadCount = notifications.filter(n => !n.isRead).length
-
-  const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === id 
-          ? { ...notification, isRead: true }
-          : notification
-      )
-    )
-    toast.success('Đã đánh dấu là đã đọc')
+  const markAsRead = async (id: string) => {
+    try {
+      await markAsReadMutation.mutateAsync(id)
+    } catch {
+      toast.error('Không thể đánh dấu đã đọc')
+    }
   }
 
-  const markAllAsRead = () => {
-    setNotifications(prev => 
-      prev.map(notification => ({ ...notification, isRead: true }))
-    )
-    toast.success('Đã đánh dấu tất cả là đã đọc')
+  const markAllAsRead = async () => {
+    try {
+      await markAllAsReadMutation.mutateAsync()
+      toast.success('Đã đánh dấu tất cả là đã đọc')
+    } catch {
+      toast.error('Không thể đánh dấu tất cả là đã đọc')
+    }
   }
 
   const handleRefresh = async () => {
-    setIsRefreshing(true)
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setIsRefreshing(false)
+    try {
+      await refetch()
+      toast.success('Đã làm mới danh sách')
+    } catch {
+      toast.error('Không thể làm mới danh sách')
+    }
   }
 
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = async (notification: Notification) => {
     if (!notification.isRead) {
-      markAsRead(notification.id)
+      await markAsRead(notification.id)
     }
     if (notification.actionUrl) {
       navigate(notification.actionUrl)
@@ -232,9 +160,14 @@ export default function NotificationsPage() {
               )}
             </div>
             {unreadCount > 0 && (
-              <Button onClick={markAllAsRead} variant="outline" size="sm">
+              <Button 
+                onClick={markAllAsRead} 
+                variant="outline" 
+                size="sm"
+                disabled={markAllAsReadMutation.isPending}
+              >
                 <CheckCircle className="h-4 w-4 mr-2" />
-                Đọc tất cả
+                {markAllAsReadMutation.isPending ? 'Đang xử lý...' : 'Đọc tất cả'}
               </Button>
             )}
           </div>
@@ -262,7 +195,7 @@ export default function NotificationsPage() {
 
           {/* Filter Chips */}
           <div className="flex gap-2 overflow-x-auto pb-2">
-            {['Tất cả', 'Đơn hàng', 'Khuyến mãi', 'Sản phẩm', 'Thanh toán', 'Hệ thống'].map((filter) => {
+            {['Tất cả', 'Đơn hàng', 'Khuyến mãi', 'Sản phẩm', 'Thanh toán', 'Hệ thống', 'Tin nhắn'].map((filter) => {
               const isSelected = selectedFilter === filter
               return (
                 <Button
@@ -281,8 +214,24 @@ export default function NotificationsPage() {
           </div>
 
           {/* Notifications List */}
-          <div className="space-y-3">
-            {filteredNotifications.length === 0 ? (
+          {isLoading ? (
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-muted rounded-xl" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 w-48 bg-muted rounded" />
+                        <div className="h-3 w-full bg-muted rounded" />
+                        <div className="h-3 w-32 bg-muted rounded" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filteredNotifications.length === 0 ? (
               <Card>
                 <CardContent className="flex flex-col items-center justify-center py-16">
                   <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
@@ -304,7 +253,8 @@ export default function NotificationsPage() {
                 </CardContent>
               </Card>
             ) : (
-              filteredNotifications.map(notification => {
+              <div className="space-y-3">
+                {filteredNotifications.map(notification => {
                 const typeInfo = TYPE_INFO[notification.type]
                 const Icon = typeInfo.icon
                 return (
@@ -369,18 +319,18 @@ export default function NotificationsPage() {
                     </CardContent>
                   </Card>
                 )
-              })
+                })}
+              </div>
             )}
-          </div>
 
           {/* Refresh Button */}
           <div className="flex justify-center pt-4">
             <Button
               variant="outline"
               onClick={handleRefresh}
-              disabled={isRefreshing}
+              disabled={isLoading}
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
               Làm mới
             </Button>
           </div>

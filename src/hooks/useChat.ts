@@ -5,8 +5,20 @@ import type { UpdateConversationRequest, CreateChatMessageRequest } from '@/api/
 export const useConversations = (filters?: { page?: number; pageSize?: number }) => {
   return useQuery({
     queryKey: ['chat', 'conversations', filters],
-    queryFn: () => chatApi.getConversations(filters),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    queryFn: async () => {
+      try {
+        return await chatApi.getConversations(filters)
+      } catch {
+        return {
+          conversations: [],
+          total: 0,
+          page: 1,
+          pageSize: 10,
+          totalPages: 0,
+        }
+      }
+    },
+    staleTime: 2 * 60 * 1000,
   })
 }
 

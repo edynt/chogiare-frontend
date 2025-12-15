@@ -16,6 +16,10 @@ import {
   CheckCheck
 } from 'lucide-react'
 import { cn, formatPrice } from '@/lib/utils'
+import { useConversation, useConversationMessages, useSendMessage } from '@/hooks/useChat'
+import { useAuthStore } from '@/stores/authStore'
+import { toast } from 'sonner'
+import type { ChatMessage } from '@/api/chat'
 
 interface Message {
   id: string
@@ -39,73 +43,41 @@ interface ChatWindowProps {
 }
 
 export function ChatWindow({ chatId }: ChatWindowProps) {
-  const [messages, setMessages] = useState<Message[]>([])
+  const { user } = useAuthStore()
   const [newMessage, setNewMessage] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Mock data - trong thực tế sẽ fetch từ API
-  useEffect(() => {
-    const mockMessages: Message[] = [
-      {
-        id: '1',
-        content: 'Xin chào! Sản phẩm này còn hàng không ạ?',
-        timestamp: '10:30',
-        senderId: 'buyer1',
-        senderName: 'Bạn',
-        senderAvatar: 'https://i.pravatar.cc/150?img=10',
-        isRead: true,
-        type: 'text'
-      },
-      {
-        id: '2',
-        content: 'Chào bạn! Sản phẩm vẫn còn hàng ạ. Bạn có câu hỏi gì về sản phẩm không?',
-        timestamp: '10:32',
-        senderId: 'seller1',
-        senderName: 'Nguyễn Văn A',
-        senderAvatar: 'https://i.pravatar.cc/150?img=1',
-        isRead: true,
-        type: 'text'
-      },
-      {
-        id: '3',
-        content: 'Sản phẩm có bảo hành không ạ?',
-        timestamp: '10:35',
-        senderId: 'buyer1',
-        senderName: 'Bạn',
-        senderAvatar: 'https://i.pravatar.cc/150?img=10',
-        isRead: true,
-        type: 'text'
-      },
-      {
-        id: '4',
-        content: 'Có ạ! Sản phẩm bảo hành 12 tháng chính hãng. Bạn có thể xem chi tiết trong mô tả sản phẩm.',
-        timestamp: '10:37',
-        senderId: 'seller1',
-        senderName: 'Nguyễn Văn A',
-        senderAvatar: 'https://i.pravatar.cc/150?img=1',
-        isRead: true,
-        type: 'text'
-      },
-      {
-        id: '5',
-        content: 'Cảm ơn bạn! Tôi sẽ đặt hàng ngay.',
-        timestamp: '10:40',
-        senderId: 'buyer1',
-        senderName: 'Bạn',
-        senderAvatar: 'https://i.pravatar.cc/150?img=10',
-        isRead: false,
-        type: 'text'
-      }
-    ]
+  const { data: conversation, isLoading: conversationLoading } = useConversation(chatId)
+  const { data: messagesData, isLoading: messagesLoading } = useConversationMessages(chatId, {
+    page: 1,
+    pageSize: 100,
+  })
+  const sendMessageMutation = useSendMessage()
 
-    setTimeout(() => {
-      setMessages(mockMessages)
-      setIsLoading(false)
-    }, 1000)
-  }, [chatId])
+  const isLoading = conversationLoading || messagesLoading
+
+  const mapChatMessageToMessage = (msg: ChatMessage): Message => {
+    const isCurrentUser = msg.senderId === user?.id
+    const formatTime = (dateString: string) => {
+      const date = new Date(dateString)
+      return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+    }
+
+    return {
+      id: msg.id,
+      content: msg.content,
+      timestamp: formatTime(msg.createdAt),
+      senderId: msg.senderId.toString(),
+      senderName: isCurrentUser ? 'Bạn' : msg.senderName || `User ${msg.senderId}`,
+      senderAvatar: msg.senderAvatar || '',
+      isRead: msg.isRead,
+      type: (msg.messageType as 'text' | 'image' | 'file') || 'text',
+    }
+  }
+
+  const messages: Message[] = messagesData?.messages.map(mapChatMessageToMessage) || []
 
   useEffect(() => {
     scrollToBottom()
@@ -115,46 +87,21 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const handleSendMessage = () => {
-    if (!newMessage.trim()) return
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !chatId) return
 
-    const message: Message = {
-      id: Date.now().toString(),
-      content: newMessage,
-      timestamp: new Date().toLocaleTimeString('vi-VN', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      }),
-      senderId: 'buyer1',
-      senderName: 'Bạn',
-      senderAvatar: 'https://i.pravatar.cc/150?img=10',
-      isRead: false,
-      type: 'text'
+    try {
+      await sendMessageMutation.mutateAsync({
+        conversationId: chatId,
+        data: {
+          content: newMessage.trim(),
+          messageType: 'text',
+        },
+      })
+      setNewMessage('')
+    } catch (error) {
+      toast.error('Không thể gửi tin nhắn. Vui lòng thử lại.')
     }
-
-    setMessages(prev => [...prev, message])
-    setNewMessage('')
-
-    // Simulate typing indicator
-    setIsTyping(true)
-    setTimeout(() => {
-      setIsTyping(false)
-      // Simulate response
-      const response: Message = {
-        id: (Date.now() + 1).toString(),
-        content: 'Cảm ơn bạn đã liên hệ! Tôi sẽ phản hồi sớm nhất có thể.',
-        timestamp: new Date().toLocaleTimeString('vi-VN', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        }),
-        senderId: 'seller1',
-        senderName: 'Nguyễn Văn A',
-        senderAvatar: 'https://i.pravatar.cc/150?img=1',
-        isRead: true,
-        type: 'text'
-      }
-      setMessages(prev => [...prev, response])
-    }, 2000)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -165,7 +112,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
   }
 
   const getMessageStatus = (isRead: boolean, senderId: string) => {
-    if (senderId === 'buyer1') {
+    if (senderId === user?.id?.toString()) {
       return isRead ? (
         <CheckCheck className="h-4 w-4 text-blue-500" />
       ) : (
@@ -174,6 +121,9 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
     }
     return null
   }
+
+  const otherParticipant = conversation?.participants.find(p => p.userId !== user?.id)
+  const participantName = conversation?.title || otherParticipant ? `User ${otherParticipant?.userId}` : 'Người dùng'
 
   if (isLoading) {
     return (
@@ -193,11 +143,11 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="w-10 h-10">
-              <AvatarImage src="https://i.pravatar.cc/150?img=1" />
-              <AvatarFallback>NV</AvatarFallback>
+              <AvatarImage src={otherParticipant ? '' : ''} />
+              <AvatarFallback>{participantName.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-semibold">Nguyễn Văn A</h3>
+              <h3 className="font-semibold">{participantName}</h3>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-success rounded-full"></div>
                 <span className="text-sm text-muted-foreground">Đang hoạt động</span>
@@ -219,35 +169,6 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
         </div>
       </div>
 
-      {/* Product Info */}
-      <div className="p-4 border-b bg-muted/10">
-        <Card>
-          <CardContent className="p-3">
-            <div className="flex items-center space-x-3">
-              <img
-                src="https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=60&h=60&fit=crop"
-                alt="Product"
-                className="w-12 h-12 rounded object-cover"
-                onError={(e) => {
-                  e.currentTarget.src = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face'
-                }}
-              />
-              <div className="flex-1">
-                <h4 className="font-medium text-sm">iPhone 14 Pro Max 256GB</h4>
-                <p className="text-sm text-muted-foreground">Tình trạng: Mới 100%</p>
-                <p className="text-sm font-semibold text-primary">
-                  {formatPrice(25000000)}
-                </p>
-              </div>
-              <Button size="sm" variant="outline" asChild>
-                <Link to="/seller/products">
-                  Xem sản phẩm
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
@@ -256,12 +177,12 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
             key={message.id}
             className={cn(
               "flex",
-              message.senderId === 'buyer1' ? "justify-end" : "justify-start"
+              message.senderId === user?.id?.toString() ? "justify-end" : "justify-start"
             )}
           >
             <div className={cn(
               "flex space-x-2 max-w-[70%]",
-              message.senderId === 'buyer1' ? "flex-row-reverse space-x-reverse" : "flex-row"
+              message.senderId === user?.id?.toString() ? "flex-row-reverse space-x-reverse" : "flex-row"
             )}>
               <Avatar className="w-8 h-8 flex-shrink-0">
                 <AvatarImage src={message.senderAvatar} />
@@ -270,7 +191,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
               
               <div className={cn(
                 "rounded-lg px-3 py-2",
-                message.senderId === 'buyer1' 
+                message.senderId === user?.id?.toString() 
                   ? "bg-primary text-primary-foreground" 
                   : "bg-muted"
               )}>
@@ -337,7 +258,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
           
           <Button 
             onClick={handleSendMessage}
-            disabled={!newMessage.trim()}
+            disabled={!newMessage.trim() || sendMessageMutation.isPending}
             size="icon"
           >
             <Send className="h-4 w-4" />

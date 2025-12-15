@@ -18,6 +18,7 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useCartStore } from '@/stores/cartStore'
 import { APP_NAME } from '@/constants/app.constants'
+import { useNotifications, useUnreadNotificationCount } from '@/hooks/useNotifications'
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuthStore()
@@ -38,43 +39,24 @@ export function Header() {
     navigate('/')
   }
 
-  // Mock notifications data
-  const notifications = [
-    {
-      id: '1',
-      title: 'Đơn hàng mới',
-      message: 'Bạn có đơn hàng mới từ khách hàng Nguyễn Văn A',
-      time: '2 phút trước',
-      unread: true,
-      type: 'order'
-    },
-    {
-      id: '2',
-      title: 'Tin nhắn mới',
-      message: 'Khách hàng đang hỏi về sản phẩm iPhone 14',
-      time: '15 phút trước',
-      unread: true,
-      type: 'message'
-    },
-    {
-      id: '3',
-      title: 'Sản phẩm được duyệt',
-      message: 'Sản phẩm "MacBook Pro M2" đã được duyệt và hiển thị',
-      time: '1 giờ trước',
-      unread: false,
-      type: 'product'
-    },
-    {
-      id: '4',
-      title: 'Thanh toán thành công',
-      message: 'Đơn hàng #ORD-2024-001 đã thanh toán thành công',
-      time: '2 giờ trước',
-      unread: false,
-      type: 'payment'
-    }
-  ]
+  const { data: notificationsData } = useNotifications({ page: 1, pageSize: 5 })
+  const { data: unreadCount = 0 } = useUnreadNotificationCount()
 
-  const unreadCount = notifications.filter(n => n.unread).length
+  const notifications = notificationsData?.items || []
+
+  const getTimeAgo = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+
+    if (diffMins < 1) return 'Vừa xong'
+    if (diffMins < 60) return `${diffMins} phút trước`
+    if (diffHours < 24) return `${diffHours} giờ trước`
+    return `${diffDays} ngày trước`
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 shadow-sm">
@@ -181,18 +163,18 @@ export function Header() {
                       <DropdownMenuItem key={notification.id} className="p-3 cursor-pointer hover:bg-red-500 group transition-colors">
                         <div className="flex items-start gap-3 w-full">
                           <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                            notification.unread ? 'bg-blue-500' : 'bg-gray-300'
+                            !notification.isRead ? 'bg-blue-500' : 'bg-gray-300'
                           }`} />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-1">
                               <h4 className={`text-sm font-medium group-hover:text-white ${
-                                notification.unread ? 'text-gray-900' : 'text-gray-600'
+                                !notification.isRead ? 'text-gray-900' : 'text-gray-600'
                               }`}>
                                 {notification.title}
                               </h4>
                               <span className="text-xs text-muted-foreground group-hover:text-white flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
-                                {notification.time}
+                                {getTimeAgo(notification.createdAt)}
                               </span>
                             </div>
                             <p className="text-xs text-muted-foreground group-hover:text-white line-clamp-2">
@@ -206,7 +188,7 @@ export function Header() {
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="p-3 text-center hover:bg-red-500 group transition-colors">
-                  <Link to="/seller/notifications" className="text-sm text-blue-600 group-hover:text-white">
+                  <Link to="/notifications" className="text-sm text-blue-600 group-hover:text-white">
                     Xem tất cả thông báo
                   </Link>
                 </DropdownMenuItem>
@@ -288,7 +270,7 @@ export function Header() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/seller/notifications" className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
+                        <Link to="/notifications" className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
                           <Bell className="mr-2 h-4 w-4" />
                           <span>Thông báo</span>
                         </Link>
@@ -474,7 +456,7 @@ export function Header() {
                 </Link>
 
                 <Link
-                  to="/seller/notifications"
+                  to="/notifications"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors relative"
                 >

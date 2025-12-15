@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { cn, formatPrice } from '@/lib/utils'
 import { MessageCircle, Check, CheckCheck } from 'lucide-react'
+import { useConversations } from '@/hooks/useChat'
+import { useAuthStore } from '@/stores/authStore'
+import type { Conversation } from '@/api/chat'
 
 interface Chat {
   id: string
@@ -34,86 +36,49 @@ interface ChatListProps {
 }
 
 export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
-  const [chats, setChats] = useState<Chat[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const { user } = useAuthStore()
+  const { data: conversationsData, isLoading } = useConversations({ page: 1, pageSize: 100 })
 
-  // Mock data - trong thực tế sẽ fetch từ API
-  useEffect(() => {
-    const mockChats: Chat[] = [
-      {
-        id: '1',
-        participant: {
-          id: 'seller1',
-          name: 'Nguyễn Văn A',
-          avatar: 'https://i.pravatar.cc/150?img=1',
-          isOnline: true
-        },
-        lastMessage: {
-          content: 'Xin chào! Sản phẩm này còn hàng không ạ?',
-          timestamp: '10:30',
-          isRead: true,
-          senderId: 'buyer1'
-        },
-        unreadCount: 0,
-        product: {
-          id: '1',
-          title: 'iPhone 14 Pro Max 256GB',
-          image: 'https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=60&h=60&fit=crop',
-          price: 25000000
-        }
-      },
-      {
-        id: '2',
-        participant: {
-          id: 'seller2',
-          name: 'Trần Thị B',
-          avatar: 'https://i.pravatar.cc/150?img=2',
-          isOnline: false
-        },
-        lastMessage: {
-          content: 'Cảm ơn bạn đã quan tâm!',
-          timestamp: '09:15',
-          isRead: false,
-          senderId: 'seller2'
-        },
-        unreadCount: 2,
-        product: {
-          id: '2',
-          title: 'MacBook Pro M2 13 inch',
-          image: 'https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=60&h=60&fit=crop',
-          price: 35000000
-        }
-      },
-      {
-        id: '3',
-        participant: {
-          id: 'seller3',
-          name: 'Lê Văn C',
-          avatar: 'https://i.pravatar.cc/150?img=3',
-          isOnline: true
-        },
-        lastMessage: {
-          content: 'Bạn có thể giao hàng đến quận 1 không?',
-          timestamp: '08:45',
-          isRead: true,
-          senderId: 'buyer1'
-        },
-        unreadCount: 0,
-        product: {
-          id: '3',
-          title: 'Samsung Galaxy S23 Ultra',
-          image: 'https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=60&h=60&fit=crop',
-          price: 28000000
-        }
-      }
-    ]
+  const mapConversationToChat = (conversation: Conversation): Chat | null => {
+    const otherParticipant = conversation.participants.find(p => p.userId !== user?.id)
+    if (!otherParticipant) return null
 
-    // Simulate API call
-    setTimeout(() => {
-      setChats(mockChats)
-      setIsLoading(false)
-    }, 1000)
-  }, [])
+    const lastMessage = conversation.lastMessage
+    const formatTime = (dateString: string) => {
+      const date = new Date(dateString)
+      return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+    }
+
+    return {
+      id: conversation.id,
+      participant: {
+        id: otherParticipant.userId.toString(),
+        name: conversation.title || `User ${otherParticipant.userId}`,
+        avatar: '',
+        isOnline: false,
+      },
+      lastMessage: lastMessage
+        ? {
+            content: lastMessage.content,
+            timestamp: formatTime(lastMessage.createdAt),
+            isRead: lastMessage.isRead,
+            senderId: lastMessage.senderId.toString(),
+          }
+        : {
+            content: 'Chưa có tin nhắn',
+            timestamp: formatTime(conversation.createdAt),
+            isRead: true,
+            senderId: '',
+          },
+      unreadCount: conversation.unreadCount,
+    }
+  }
+
+  const chats: Chat[] = conversationsData?.conversations
+    ? conversationsData.conversations
+        .map(mapConversationToChat)
+        .filter((chat): chat is Chat => chat !== null)
+    : []
 
   const filteredChats = chats.filter(chat =>
     chat.participant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -126,7 +91,7 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
   }
 
   const getMessageStatus = (isRead: boolean, senderId: string) => {
-    if (senderId === 'buyer1') { // Current user
+    if (senderId === user?.id?.toString()) {
       return isRead ? (
         <CheckCheck className="h-4 w-4 text-blue-500" />
       ) : (
@@ -217,7 +182,7 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
               <div className="flex items-center justify-between">
                 <p className={cn(
                   "text-sm truncate",
-                  !chat.lastMessage.isRead && chat.lastMessage.senderId !== 'buyer1' 
+                  !chat.lastMessage.isRead && chat.lastMessage.senderId !== user?.id?.toString() 
                     ? "font-semibold text-foreground" 
                     : "text-muted-foreground"
                 )}>

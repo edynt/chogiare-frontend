@@ -10,6 +10,8 @@ export { uploadApi } from './upload'
 export { addressesApi } from './addresses'
 export { reportsApi } from './reports'
 export { adminApi } from './admin'
+export { walletApi } from './wallet'
+export { notificationsApi } from './notifications'
 export { apiClient } from './axios'
 
 // Re-export types for convenience
@@ -58,3 +60,21 @@ export type {
   UpdateConversationRequest, 
   CreateChatMessageRequest 
 } from './chat'
+
+export type {
+  WalletBalance,
+  Transaction,
+  TransactionListResponse,
+  DepositRequest,
+  DepositResponse,
+  QueryTransactionParams
+} from './wallet'
+
+export type {
+  Notification,
+  NotificationListResponse,
+  QueryNotificationParams,
+  MarkAsReadResponse,
+  CreateNotificationRequest,
+  CreateNotificationResponse
+} from './notifications'

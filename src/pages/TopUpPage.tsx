@@ -25,20 +25,8 @@ import {
   CreditCard
 } from 'lucide-react'
 import { toast } from 'sonner'
-
-interface Transaction {
-  id: string
-  type: 'deposit' | 'sale' | 'refund' | 'commission' | 'bonus' | 'boost'
-  amount: number
-  status: 'pending' | 'completed' | 'failed' | 'cancelled'
-  description: string
-  reference: string
-  createdAt: string
-  completedAt?: string
-  fee?: number
-  netAmount?: number
-  method: string
-}
+import { useWalletBalance, useTransactions, useDeposit } from '@/hooks/useWallet'
+import type { Transaction } from '@/api/wallet'
 
 const PRESET_AMOUNTS = [50000, 100000, 200000, 500000, 1000000, 2000000]
 
@@ -48,87 +36,32 @@ export default function TopUpPage() {
   const [depositAmount, setDepositAmount] = useState('')
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null)
   const [depositMethod, setDepositMethod] = useState<string>('bank_transfer')
+  const [searchQuery, setSearchQuery] = useState('')
 
-  // Mock data
-  const balance = {
-    available: 15750000,
-    pending: 2500000,
-    total: 18250000,
-    frozen: 0,
-    currency: 'VND'
-  }
+  const { data: balanceData, isLoading: balanceLoading } = useWalletBalance()
+  const { data: transactionsData, isLoading: transactionsLoading } = useTransactions({
+    page: 1,
+    pageSize: 50,
+  })
+  const depositMutation = useDeposit()
 
-  const transactions: Transaction[] = [
-    {
-      id: '1',
-      type: 'sale',
-      amount: 2500000,
-      status: 'completed',
-      description: 'Bán iPhone 14 Pro Max',
-      reference: 'ORD-2024-001',
-      createdAt: '2024-01-15T14:30:00Z',
-      completedAt: '2024-01-15T14:35:00Z',
-      fee: 125000,
-      netAmount: 2375000,
-      method: 'Chuyển khoản'
-    },
-    {
-      id: '2',
-      type: 'deposit',
-      amount: 5000000,
-      status: 'completed',
-      description: 'Nạp tiền vào ví',
-      reference: 'DEP-2024-001',
-      createdAt: '2024-01-14T10:00:00Z',
-      completedAt: '2024-01-14T10:05:00Z',
-      method: 'Chuyển khoản ngân hàng'
-    },
-    {
-      id: '3',
-      type: 'boost',
-      amount: -50000,
-      status: 'completed',
-      description: 'Đẩy bài sản phẩm - Gói 1 ngày',
-      reference: 'BOOST-2024-001',
-      createdAt: '2024-01-13T09:00:00Z',
-      completedAt: '2024-01-13T09:01:00Z',
-      method: 'Ví nội bộ'
-    },
-    {
-      id: '4',
-      type: 'sale',
-      amount: 1800000,
-      status: 'pending',
-      description: 'Bán AirPods Pro 2nd Gen',
-      reference: 'ORD-2024-002',
-      createdAt: '2024-01-15T16:45:00Z',
-      fee: 90000,
-      netAmount: 1710000,
-      method: 'Chuyển khoản'
-    },
-    {
-      id: '5',
-      type: 'commission',
-      amount: -50000,
-      status: 'completed',
-      description: 'Phí dịch vụ nền tảng',
-      reference: 'COM-2024-001',
-      createdAt: '2024-01-15T14:35:00Z',
-      completedAt: '2024-01-15T14:35:00Z',
-      method: 'Tự động'
-    },
-    {
-      id: '6',
-      type: 'refund',
-      amount: -1200000,
-      status: 'completed',
-      description: 'Hoàn tiền đơn hàng bị hủy',
-      reference: 'REF-2024-001',
-      createdAt: '2024-01-13T11:20:00Z',
-      completedAt: '2024-01-13T11:25:00Z',
-      method: 'Chuyển khoản'
-    }
-  ]
+  const balance = balanceData
+    ? {
+        available: balanceData.balance,
+        pending: 0,
+        total: balanceData.balance,
+        frozen: 0,
+        currency: balanceData.currency || 'VND',
+      }
+    : {
+        available: 0,
+        pending: 0,
+        total: 0,
+        frozen: 0,
+        currency: 'VND',
+      }
+
+  const transactions: Transaction[] = transactionsData?.items || []
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -191,7 +124,7 @@ export default function TopUpPage() {
     setDepositAmount(amount.toString())
   }
 
-  const handleTopUp = () => {
+  const handleTopUp = async () => {
     const amount = selectedPreset || parseFloat(depositAmount)
     
     if (!amount || amount < 10000) {
@@ -199,55 +132,66 @@ export default function TopUpPage() {
       return
     }
 
-    // Generate transaction ID
-    const transactionId = `TXN${Date.now()}`
-    
-    // Navigate to payment QR screen if bank transfer
-    if (depositMethod === 'bank_transfer') {
-      navigate(`/payment-qr?amount=${amount}&transactionId=${transactionId}`)
-      return
-    }
+    try {
+      const result = await depositMutation.mutateAsync({
+        amount,
+        paymentMethod: depositMethod,
+        description: `Nạp tiền vào ví - ${formatPrice(amount)}`,
+      })
 
-    // For other payment methods, show success message
-    toast.success(`Đã tạo yêu cầu nạp tiền ${formatPrice(amount)}. Vui lòng hoàn tất thanh toán.`)
-    setDepositAmount('')
-    setSelectedPreset(null)
+      if (depositMethod === 'bank_transfer') {
+        navigate(`/payment-qr?amount=${amount}&transactionId=${result.transaction.id}`)
+        return
+      }
+
+      toast.success(`Đã tạo yêu cầu nạp tiền ${formatPrice(amount)}. Vui lòng hoàn tất thanh toán.`)
+      setDepositAmount('')
+      setSelectedPreset(null)
+    } catch {
+      toast.error('Có lỗi xảy ra khi nạp tiền. Vui lòng thử lại.')
+    }
   }
 
-  const TransactionCard = ({ transaction }: { transaction: Transaction }) => (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-              transaction.amount > 0 ? 'bg-green-100' : 'bg-red-100'
-            }`}>
-              {getTransactionIcon(transaction.type)}
+  const TransactionCard = ({ transaction }: { transaction: Transaction }) => {
+    const displayAmount = transaction.type === 'boost' || transaction.type === 'commission' || transaction.type === 'refund'
+      ? -Math.abs(transaction.amount)
+      : transaction.amount
+
+    return (
+      <Card className="hover:shadow-md transition-shadow">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                displayAmount > 0 ? 'bg-green-100' : 'bg-red-100'
+              }`}>
+                {getTransactionIcon(transaction.type)}
+              </div>
+              <div>
+                <h3 className="font-medium">{transaction.description || 'Giao dịch'}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {transaction.reference || `TXN-${transaction.id}`} • {formatDate(transaction.createdAt)}
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-medium">{transaction.description}</h3>
-              <p className="text-sm text-muted-foreground">
-                {transaction.reference} • {formatDate(transaction.createdAt)}
+            <div className="text-right">
+              <p className={`font-semibold ${getTransactionColor(transaction.type, displayAmount)}`}>
+                {displayAmount > 0 ? '+' : ''}{formatPrice(Math.abs(displayAmount))}
               </p>
+              <Badge className={`${getStatusColor(transaction.status)} text-white text-xs`}>
+                {getStatusLabel(transaction.status)}
+              </Badge>
+              {transaction.paymentMethod && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {transaction.paymentMethod}
+                </p>
+              )}
             </div>
           </div>
-          <div className="text-right">
-            <p className={`font-semibold ${getTransactionColor(transaction.type, transaction.amount)}`}>
-              {transaction.amount > 0 ? '+' : ''}{formatPrice(transaction.amount)}
-            </p>
-            <Badge className={`${getStatusColor(transaction.status)} text-white text-xs`}>
-              {getStatusLabel(transaction.status)}
-            </Badge>
-            {transaction.fee && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Phí: {formatPrice(transaction.fee)}
-              </p>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -281,23 +225,35 @@ export default function TopUpPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">
-                    {showBalance ? formatPrice(balance.available) : '••••••••'}
+                {balanceLoading ? (
+                  <div className="space-y-4">
+                    <div className="h-12 bg-muted rounded animate-pulse" />
+                    <div className="space-y-2">
+                      <div className="h-4 bg-muted rounded animate-pulse" />
+                      <div className="h-4 bg-muted rounded animate-pulse" />
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">Có thể sử dụng</p>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Đang chờ:</span>
-                    <span className="font-medium">{formatPrice(balance.pending)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Tổng cộng:</span>
-                    <span className="font-medium">{formatPrice(balance.total)}</span>
-                  </div>
-                </div>
+                ) : (
+                  <>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">
+                        {showBalance ? formatPrice(balance.available) : '••••••••'}
+                      </div>
+                      <p className="text-sm text-muted-foreground">Có thể sử dụng</p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Đang chờ:</span>
+                        <span className="font-medium">{formatPrice(balance.pending)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Tổng cộng:</span>
+                        <span className="font-medium">{formatPrice(balance.total)}</span>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <div className="pt-4 border-t">
                   <Button 
@@ -454,12 +410,15 @@ export default function TopUpPage() {
 
                     <Button 
                       onClick={handleTopUp}
-                      disabled={!selectedPreset && (!depositAmount || parseFloat(depositAmount) < 10000)}
+                      disabled={
+                        depositMutation.isPending ||
+                        (!selectedPreset && (!depositAmount || parseFloat(depositAmount) < 10000))
+                      }
                       className="w-full"
                       size="lg"
                     >
                       <ArrowDownLeft className="h-4 w-4 mr-2" />
-                      Nạp tiền
+                      {depositMutation.isPending ? 'Đang xử lý...' : 'Nạp tiền'}
                     </Button>
 
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -479,6 +438,8 @@ export default function TopUpPage() {
                       <Input
                         placeholder="Tìm kiếm giao dịch..."
                         className="pl-10"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                       />
                     </div>
                   </div>
@@ -492,11 +453,53 @@ export default function TopUpPage() {
                 </div>
 
                 {/* Transactions List */}
-                <div className="space-y-4">
-                  {transactions.map((transaction) => (
-                    <TransactionCard key={transaction.id} transaction={transaction} />
-                  ))}
-                </div>
+                {transactionsLoading ? (
+                  <div className="space-y-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Card key={i} className="animate-pulse">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-muted rounded-full" />
+                              <div className="space-y-2">
+                                <div className="h-4 w-48 bg-muted rounded" />
+                                <div className="h-3 w-32 bg-muted rounded" />
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="h-4 w-24 bg-muted rounded" />
+                              <div className="h-5 w-16 bg-muted rounded" />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : transactions.length === 0 ? (
+                  <Card>
+                    <CardContent className="p-8 text-center">
+                      <History className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">Chưa có giao dịch nào</h3>
+                      <p className="text-muted-foreground">Các giao dịch của bạn sẽ hiển thị ở đây</p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="space-y-4">
+                    {transactions
+                      .filter((transaction) => {
+                        if (!searchQuery) return true
+                        const query = searchQuery.toLowerCase()
+                        return (
+                          transaction.description?.toLowerCase().includes(query) ||
+                          transaction.reference?.toLowerCase().includes(query) ||
+                          transaction.id.toString().includes(query)
+                        )
+                      })
+                      .map((transaction) => (
+                        <TransactionCard key={transaction.id} transaction={transaction} />
+                      ))}
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>

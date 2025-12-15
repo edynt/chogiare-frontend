@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { useProducts, useCategories } from '@/hooks'
 import { InfiniteProductGrid } from '@/components/product/InfiniteProductGrid'
 import { LazySection } from '@/components/product/LazySection'
-import { HomePageSkeleton, HomePageSectionSkeleton, HomePageShopSectionSkeleton } from '@/components/skeleton/HomePageSkeleton'
+import { HomePageSkeleton, HomePageSectionSkeleton } from '@/components/skeleton/HomePageSkeleton'
 import { Skeleton } from '@/components/ui/skeleton'
 import { 
   ShoppingBag, 
@@ -20,7 +20,6 @@ import {
   Layers,
   Flame,
   MapPin,
-  Award,
   Sparkles,
   Trophy,
   Package,
@@ -28,8 +27,7 @@ import {
   Shield,
   DollarSign,
   Megaphone,
-  Factory,
-  Download
+  Factory
 } from 'lucide-react'
 
 export default function HomePage() {
@@ -370,92 +368,6 @@ export default function HomePage() {
               <InfiniteProductGrid filters={{ limit: 20 }} />
               </div>
             )}
-          </LazySection>
-
-          {/* 5. Danh sách shop đang nhập nhiều nhất - Lazy Load */}
-          <LazySection fallback={<HomePageShopSectionSkeleton />}>
-            <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                  <Download className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">Danh sách shop đang nhập nhiều nhất</h2>
-                  <p className="text-sm text-muted-foreground">Các shop có lượng nhập hàng cao nhất</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/sellers?sortBy=imports">
-                  Xem tất cả <ArrowRight className="h-4 w-4 ml-1" />
-                </Link>
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((idx) => (
-                <Card key={idx}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-emerald-500/10 rounded-full flex items-center justify-center">
-                        <Store className="h-6 w-6 text-green-600" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold">Shop {idx}</p>
-                        <div className="flex items-center gap-1">
-                          <span className="text-xs">⭐</span>
-                          <span className="text-xs">4.{idx + 5}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-xs">
-                      <p className="font-semibold text-green-600">+{500 + idx * 100} sản phẩm</p>
-                      <p className="text-muted-foreground">Nhập hàng tuần này</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-          </LazySection>
-
-          {/* 6. Nhà cung cấp nhận nhiều đơn nhất - Lazy Load */}
-          <LazySection fallback={<HomePageShopSectionSkeleton />}>
-            <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                  <Award className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">Nhà cung cấp nhận nhiều đơn nhất</h2>
-                  <p className="text-sm text-muted-foreground">Đối tác uy tín với nhiều đơn hàng nhất</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/suppliers?sortBy=orders">
-                  Xem tất cả <ArrowRight className="h-4 w-4 ml-1" />
-                </Link>
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((idx) => (
-                <Card key={idx}>
-                  <CardContent className="p-4 text-center">
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Store className="h-8 w-8 text-blue-600" />
-                    </div>
-                    <p className="text-sm font-semibold mb-1">Nhà cung cấp {idx}</p>
-                    <div className="flex items-center justify-center gap-1 mb-2">
-                      <span className="text-xs">⭐</span>
-                      <span className="text-xs font-medium">4.{idx + 7}</span>
-                    </div>
-                    <Badge variant="outline" className="text-xs mb-2">Uy tín</Badge>
-                    <p className="text-xs text-muted-foreground">{1000 + idx * 200}+ đơn</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
           </LazySection>
 
           {/* 7. Deal sốc từ xưởng (Factory deals) - Lazy Load */}

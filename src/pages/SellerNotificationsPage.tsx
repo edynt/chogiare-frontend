@@ -19,99 +19,8 @@ import {
   Home
 } from 'lucide-react'
 import { toast } from 'sonner'
-
-interface Notification {
-  id: string
-  type: 'order' | 'product' | 'payment' | 'system' | 'promotion'
-  title: string
-  message: string
-  isRead: boolean
-  createdAt: string
-  actionUrl?: string
-  metadata?: Record<string, unknown>
-}
-
-// Mock data for seller notifications
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'order',
-    title: 'Đơn hàng mới #ORD001',
-    message: 'Bạn có đơn hàng mới từ khách hàng Nguyễn Văn A',
-    isRead: false,
-    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    actionUrl: '/orders/ORD001',
-    metadata: { orderId: 'ORD001', amount: 2500000 }
-  },
-  {
-    id: '2',
-    type: 'order',
-    title: 'Đơn hàng đã được thanh toán',
-    message: 'Đơn hàng #ORD002 đã được thanh toán thành công',
-    isRead: false,
-    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-    actionUrl: '/orders/ORD002',
-    metadata: { orderId: 'ORD002', amount: 1500000 }
-  },
-  {
-    id: '3',
-    type: 'product',
-    title: 'Sản phẩm sắp hết hàng',
-    message: 'iPhone 14 Pro Max 256GB chỉ còn 5 sản phẩm trong kho',
-    isRead: true,
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    actionUrl: '/seller/products',
-    metadata: { productId: 'prod-1', stock: 5 }
-  },
-  {
-    id: '4',
-    type: 'order',
-    title: 'Đơn hàng đã được xác nhận',
-    message: 'Khách hàng đã xác nhận nhận hàng cho đơn hàng #ORD003',
-    isRead: true,
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    actionUrl: '/orders/ORD003',
-    metadata: { orderId: 'ORD003' }
-  },
-  {
-    id: '5',
-    type: 'payment',
-    title: 'Thanh toán thành công',
-    message: 'Bạn đã nhận được 2.500.000đ từ đơn hàng #ORD001',
-    isRead: true,
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    actionUrl: '/orders/ORD001',
-    metadata: { orderId: 'ORD001', amount: 2500000 }
-  },
-  {
-    id: '6',
-    type: 'product',
-    title: 'Sản phẩm đã hết hàng',
-    message: 'MacBook Air M2 13 inch đã hết hàng trong kho',
-    isRead: true,
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    actionUrl: '/seller/products',
-    metadata: { productId: 'prod-2', stock: 0 }
-  },
-  {
-    id: '7',
-    type: 'system',
-    title: 'Cập nhật hệ thống',
-    message: 'Hệ thống đã được cập nhật với nhiều tính năng mới',
-    isRead: true,
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: '8',
-    type: 'promotion',
-    title: 'Gói đẩy sản phẩm sắp hết hạn',
-    message: 'Gói đẩy cho iPhone 14 Pro Max sẽ hết hạn trong 2 ngày',
-    isRead: false,
-    createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-    actionUrl: '/promoted-products/1',
-    metadata: { productId: 'prod-1' }
-  }
-]
+import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from '@/hooks/useNotifications'
+import type { Notification } from '@/api/notifications'
 
 const TYPE_INFO = {
   order: {
@@ -143,10 +52,21 @@ const TYPE_INFO = {
 
 export default function SellerNotificationsPage() {
   const navigate = useNavigate()
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTab, setSelectedTab] = useState('all')
   const [isRefreshing, setIsRefreshing] = useState(false)
+
+  const { data: notificationsData, isLoading, refetch } = useNotifications({
+    page: 1,
+    pageSize: 100,
+    type: selectedTab !== 'all' && selectedTab !== 'unread' ? (selectedTab as Notification['type']) : undefined,
+    isRead: selectedTab === 'unread' ? false : undefined,
+  })
+  const markAsReadMutation = useMarkNotificationAsRead()
+  const markAllAsReadMutation = useMarkAllNotificationsAsRead()
+
+  const notifications = notificationsData?.items || []
+  const unreadCount = notificationsData?.unreadCount || 0
 
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString)
@@ -163,7 +83,6 @@ export default function SellerNotificationsPage() {
   }
 
   const filteredNotifications = notifications.filter(notification => {
-    // Filter by search
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       if (!notification.title.toLowerCase().includes(query) && 
@@ -171,47 +90,41 @@ export default function SellerNotificationsPage() {
         return false
       }
     }
-
-    // Filter by tab
-    if (selectedTab === 'unread') {
-      return !notification.isRead
-    }
-    if (selectedTab !== 'all') {
-      return notification.type === selectedTab
-    }
-
     return true
   })
 
-  const unreadCount = notifications.filter(n => !n.isRead).length
-
-  const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === id 
-          ? { ...notification, isRead: true }
-          : notification
-      )
-    )
+  const markAsRead = async (id: string) => {
+    try {
+      await markAsReadMutation.mutateAsync(id)
+    } catch (error) {
+      toast.error('Không thể đánh dấu đã đọc')
+    }
   }
 
-  const markAllAsRead = () => {
-    setNotifications(prev => 
-      prev.map(notification => ({ ...notification, isRead: true }))
-    )
-    toast.success('Đã đánh dấu tất cả là đã đọc')
+  const markAllAsRead = async () => {
+    try {
+      await markAllAsReadMutation.mutateAsync()
+      toast.success('Đã đánh dấu tất cả là đã đọc')
+    } catch (error) {
+      toast.error('Không thể đánh dấu tất cả là đã đọc')
+    }
   }
 
   const handleRefresh = async () => {
     setIsRefreshing(true)
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setIsRefreshing(false)
-    toast.success('Đã làm mới danh sách')
+    try {
+      await refetch()
+      toast.success('Đã làm mới danh sách')
+    } catch (error) {
+      toast.error('Không thể làm mới danh sách')
+    } finally {
+      setIsRefreshing(false)
+    }
   }
 
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = async (notification: Notification) => {
     if (!notification.isRead) {
-      markAsRead(notification.id)
+      await markAsRead(notification.id)
     }
     if (notification.actionUrl) {
       navigate(notification.actionUrl)
@@ -251,16 +164,21 @@ export default function SellerNotificationsPage() {
             </div>
             <div className="flex items-center gap-2">
               {unreadCount > 0 && (
-                <Button onClick={markAllAsRead} variant="outline" size="sm">
+                <Button 
+                  onClick={markAllAsRead} 
+                  variant="outline" 
+                  size="sm"
+                  disabled={markAllAsReadMutation.isPending}
+                >
                   <CheckCircle className="h-4 w-4 mr-2" />
-                  Đọc tất cả
+                  {markAllAsReadMutation.isPending ? 'Đang xử lý...' : 'Đọc tất cả'}
                 </Button>
               )}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleRefresh}
-                disabled={isRefreshing}
+                disabled={isRefreshing || isLoading}
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
                 Làm mới
@@ -318,8 +236,24 @@ export default function SellerNotificationsPage() {
         </Tabs>
 
         {/* Notifications List */}
-        <div className="space-y-3">
-          {filteredNotifications.length === 0 ? (
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-muted rounded-xl" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-48 bg-muted rounded" />
+                      <div className="h-3 w-full bg-muted rounded" />
+                      <div className="h-3 w-32 bg-muted rounded" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : filteredNotifications.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-16">
                 <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
@@ -341,7 +275,8 @@ export default function SellerNotificationsPage() {
               </CardContent>
             </Card>
           ) : (
-            filteredNotifications.map(notification => {
+            <div className="space-y-3">
+              {filteredNotifications.map(notification => {
               const typeInfo = TYPE_INFO[notification.type]
               const Icon = typeInfo.icon
               return (
@@ -412,9 +347,9 @@ export default function SellerNotificationsPage() {
                   </CardContent>
                 </Card>
               )
-            })
+              })}
+            </div>
           )}
-        </div>
       </div>
     </div>
   )
