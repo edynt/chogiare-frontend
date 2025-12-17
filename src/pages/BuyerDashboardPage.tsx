@@ -72,16 +72,6 @@ export default function BuyerDashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/profile?tab=favorites')}>
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Heart className="h-6 w-6 text-purple-600" />
-                </div>
-                <h3 className="font-semibold mb-1">Yêu thích</h3>
-                <p className="text-sm text-muted-foreground">Sản phẩm đã lưu</p>
-              </CardContent>
-            </Card>
-
             <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/chat')}>
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">

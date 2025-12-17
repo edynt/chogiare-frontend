@@ -74,3 +74,4 @@ export const queryKeys = {
     unreadCount: ['notifications', 'unread-count'] as const,
   },
 } as const
+

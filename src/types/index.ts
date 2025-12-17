@@ -4,6 +4,14 @@ export interface User {
   email: string
   phone?: string
   avatar?: string
+  gender?: string
+  dateOfBirth?: string
+  address?: string
+  country?: string
+  language?: string
+  showEmail?: boolean
+  showPhone?: boolean
+  isVerified?: boolean
   roles: UserRole[]
   postCount: number
   storeInfo?: StoreInfo

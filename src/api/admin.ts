@@ -89,6 +89,47 @@ export interface CategoryStat {
   percentage: number
 }
 
+export interface AdminUser {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  role: string
+  status: string
+  verified: boolean
+  joinDate: string
+  lastActive: string
+  totalOrders: number
+  totalRevenue: number
+  rating: number
+  location?: string
+  avatar?: string
+}
+
+export interface AdminUserListResponse {
+  items: AdminUser[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+export interface AdminUserStats {
+  active: number
+  pending: number
+  suspended: number
+  sellers: number
+  verified: number
+}
+
+export interface QueryAdminUsersParams {
+  page?: number
+  pageSize?: number
+  search?: string
+  status?: string
+  role?: string
+}
+
 export const adminApi = {
   getDashboardStats: async (): Promise<AdminDashboardStats> => {
     const response = await apiClient.get<ApiResponse<AdminDashboardStats>>('/admin/dashboard/stats')
@@ -134,4 +175,51 @@ export const adminApi = {
     const response = await apiClient.get<ApiResponse<CategoryStat[]>>('/admin/analytics/category-stats')
     return response.data.data
   },
+
+  getUsers: async (params?: QueryAdminUsersParams): Promise<AdminUserListResponse> => {
+    const response = await apiClient.get<ApiResponse<AdminUserListResponse>>('/admin/users', {
+      params,
+    })
+    return response.data.data
+  },
+
+  getUser: async (id: string): Promise<AdminUser> => {
+    const response = await apiClient.get<ApiResponse<AdminUser>>(`/admin/users/${id}`)
+    return response.data.data
+  },
+
+  getUserStats: async (): Promise<AdminUserStats> => {
+    const response = await apiClient.get<ApiResponse<AdminUserStats>>('/admin/users/stats')
+    return response.data.data
+  },
+
+  approveUser: async (id: string): Promise<AdminUser> => {
+    const response = await apiClient.put<ApiResponse<AdminUser>>(`/admin/users/${id}/approve`)
+    return response.data.data
+  },
+
+  suspendUser: async (id: string): Promise<AdminUser> => {
+    const response = await apiClient.put<ApiResponse<AdminUser>>(`/admin/users/${id}/suspend`)
+    return response.data.data
+  },
+
+  activateUser: async (id: string): Promise<AdminUser> => {
+    const response = await apiClient.put<ApiResponse<AdminUser>>(`/admin/users/${id}/activate`)
+    return response.data.data
+  },
+
+  bulkApproveUsers: async (userIds: string[]): Promise<{ count: number }> => {
+    const response = await apiClient.post<ApiResponse<{ count: number }>>('/admin/users/bulk-approve', {
+      userIds,
+    })
+    return response.data.data
+  },
+
+  bulkSuspendUsers: async (userIds: string[]): Promise<{ count: number }> => {
+    const response = await apiClient.post<ApiResponse<{ count: number }>>('/admin/users/bulk-suspend', {
+      userIds,
+    })
+    return response.data.data
+  },
 }
+

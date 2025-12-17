@@ -93,3 +93,4 @@ export const notificationsApi = {
     return response.data.data
   },
 }
+

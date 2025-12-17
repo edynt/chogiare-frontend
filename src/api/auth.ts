@@ -1,5 +1,5 @@
 import { apiClient } from './axios'
-import type { LoginCredentials, RegisterData, AuthTokens, User, ApiResponse } from '@/types'
+import type { LoginCredentials, RegisterData, AuthTokens, User, UserRole, ApiResponse } from '@/types'
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> => {
@@ -59,11 +59,59 @@ export const authApi = {
   },
 
   getProfile: async (): Promise<User> => {
-    const response = await apiClient.get<ApiResponse<User>>('/auth/profile')
-    return response.data.data
+    const response = await apiClient.get<ApiResponse<{
+      id: number
+      email: string
+      isVerified: boolean
+      status: boolean
+      language: string
+      userInfo: {
+        fullName: string | null
+        avatarUrl: string | null
+        gender: string | null
+        dateOfBirth: string | null
+        phoneNumber: string | null
+        address: string | null
+        country: string | null
+        showEmail: boolean
+        showPhone: boolean
+      } | null
+      roles: string[]
+    }>>('/auth/profile')
+    const data = response.data.data
+    return {
+      id: data.id.toString(),
+      name: data.userInfo?.fullName || '',
+      email: data.email,
+      phone: data.userInfo?.phoneNumber || undefined,
+      avatar: data.userInfo?.avatarUrl || undefined,
+      gender: data.userInfo?.gender || undefined,
+      dateOfBirth: data.userInfo?.dateOfBirth || undefined,
+      address: data.userInfo?.address || undefined,
+      country: data.userInfo?.country || undefined,
+      language: data.language,
+      showEmail: data.userInfo?.showEmail ?? false,
+      showPhone: data.userInfo?.showPhone ?? false,
+      isVerified: data.isVerified,
+      roles: data.roles as UserRole[],
+      postCount: 0,
+      createdAt: '',
+      updatedAt: '',
+    }
   },
 
-  updateProfile: async (data: Partial<User>): Promise<User> => {
+  updateProfile: async (data: {
+    fullName?: string
+    phoneNumber?: string
+    avatarUrl?: string
+    gender?: string
+    dateOfBirth?: string
+    address?: string
+    country?: string
+    language?: string
+    showEmail?: boolean
+    showPhone?: boolean
+  }): Promise<User> => {
     const response = await apiClient.put<ApiResponse<User>>('/auth/profile', data)
     return response.data.data
   },

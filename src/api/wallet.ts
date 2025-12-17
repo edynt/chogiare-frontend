@@ -89,3 +89,4 @@ export const walletApi = {
     return response.data.data
   },
 }
+

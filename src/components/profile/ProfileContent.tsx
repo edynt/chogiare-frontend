@@ -8,12 +8,20 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
-import { useProfile } from '@/hooks/useAuth'
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { useProfile, useUpdateProfile, useChangePassword } from '@/hooks/useAuth'
+import { toast } from 'sonner'
 import { useUserOrders } from '@/hooks/useOrders'
 import { 
   User, Mail, Phone, MapPin, Package, Eye, Calendar, 
-  Star, Heart, ShoppingBag, Shield, Award, TrendingUp,
-  Settings, Edit, Camera, Lock, Globe, Store
+  Star, ShoppingBag, Shield, Award, TrendingUp,
+  Settings, Edit, Camera, Globe, Store, Save, X, CheckCircle2
 } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 
@@ -21,10 +29,9 @@ export function ProfileContent() {
   const { data: profile, isLoading } = useProfile()
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
-  const tabFromUrl = searchParams.get('tab') as 'profile' | 'orders' | 'favorites' | 'settings' | 'addresses' | null
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'favorites' | 'settings' | 'addresses'>(tabFromUrl || 'profile')
+  const tabFromUrl = searchParams.get('tab') as 'profile' | 'orders' | 'settings' | 'addresses' | null
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'settings' | 'addresses'>(tabFromUrl || 'profile')
   
-  // Settings state
   const [settings, setSettings] = useState({
     emailNotifications: true,
     pushNotifications: true,
@@ -32,17 +39,57 @@ export function ProfileContent() {
     showEmail: false,
     showPhone: false
   })
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+  const [profileFormData, setProfileFormData] = useState({
+    fullName: '',
+    phoneNumber: '',
+    gender: '',
+    dateOfBirth: '',
+    address: '',
+    country: 'Vietnam',
+    language: 'vi',
+  })
+  const [passwordFormData, setPasswordFormData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
   const { data: ordersData, isLoading: isLoadingOrders } = useUserOrders({ page: 1, pageSize: 10 })
+  const updateProfileMutation = useUpdateProfile()
+  const changePasswordMutation = useChangePassword()
 
-  // Update active tab when URL changes
   useEffect(() => {
-    if (tabFromUrl && ['profile', 'orders', 'favorites', 'settings', 'addresses'].includes(tabFromUrl)) {
+    if (tabFromUrl && ['profile', 'orders', 'settings', 'addresses'].includes(tabFromUrl)) {
       setActiveTab(tabFromUrl)
     }
   }, [tabFromUrl])
 
-  // Update URL when tab changes
-  const handleTabChange = (tab: 'profile' | 'orders' | 'favorites' | 'settings' | 'addresses') => {
+  useEffect(() => {
+    if (profile && !isEditingProfile) {
+      setProfileFormData({
+        fullName: profile.name || '',
+        phoneNumber: profile.phone || '',
+        gender: profile.gender || '',
+        dateOfBirth: profile.dateOfBirth || '',
+        address: profile.address || '',
+        country: profile.country || 'Vietnam',
+        language: profile.language || 'vi',
+      })
+    }
+  }, [profile, isEditingProfile])
+
+  useEffect(() => {
+    if (profile) {
+      setSettings(prev => ({
+        ...prev,
+        showEmail: profile.showEmail ?? false,
+        showPhone: profile.showPhone ?? false,
+      }))
+    }
+  }, [profile])
+
+  const handleTabChange = (tab: 'profile' | 'orders' | 'settings' | 'addresses') => {
     if (tab === 'addresses') {
       navigate('/addresses')
       return
@@ -92,6 +139,71 @@ export function ProfileContent() {
     })
   }
 
+  const handleStartEditProfile = () => {
+    setIsEditingProfile(true)
+  }
+
+  const handleCancelEditProfile = () => {
+    setIsEditingProfile(false)
+    if (profile) {
+      setProfileFormData({
+        fullName: profile.name || '',
+        phoneNumber: profile.phone || '',
+        gender: profile.gender || '',
+        dateOfBirth: profile.dateOfBirth || '',
+        address: profile.address || '',
+        country: profile.country || 'Vietnam',
+        language: profile.language || 'vi',
+      })
+    }
+  }
+
+  const handleSaveProfile = async () => {
+    try {
+      await updateProfileMutation.mutateAsync({
+        fullName: profileFormData.fullName,
+        phoneNumber: profileFormData.phoneNumber,
+        gender: profileFormData.gender || undefined,
+        dateOfBirth: profileFormData.dateOfBirth || undefined,
+        address: profileFormData.address || undefined,
+        country: profileFormData.country || undefined,
+        language: profileFormData.language || undefined,
+      })
+      setIsEditingProfile(false)
+      toast.success('Đã cập nhật thông tin cá nhân thành công')
+    } catch {
+      toast.error('Có lỗi xảy ra khi cập nhật thông tin')
+    }
+  }
+
+  const handleChangePassword = async () => {
+    if (passwordFormData.newPassword !== passwordFormData.confirmPassword) {
+      toast.error('Mật khẩu mới và xác nhận mật khẩu không khớp')
+      return
+    }
+
+    if (passwordFormData.newPassword.length < 6) {
+      toast.error('Mật khẩu mới phải có ít nhất 6 ký tự')
+      return
+    }
+
+    try {
+      await changePasswordMutation.mutateAsync({
+        currentPassword: passwordFormData.currentPassword,
+        newPassword: passwordFormData.newPassword,
+      })
+      setIsChangingPassword(false)
+      setPasswordFormData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      })
+      toast.success('Đã đổi mật khẩu thành công')
+    } catch {
+      toast.error('Có lỗi xảy ra khi đổi mật khẩu')
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Tabs */}
@@ -119,17 +231,6 @@ export function ProfileContent() {
             >
               <Package className="h-4 w-4 mr-2 inline" />
               Lịch sử đơn hàng
-            </button>
-            <button
-              onClick={() => handleTabChange('favorites')}
-              className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'favorites'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <Heart className="h-4 w-4 mr-2 inline" />
-              Yêu thích
             </button>
             <button
               onClick={() => handleTabChange('addresses')}
@@ -198,10 +299,12 @@ export function ProfileContent() {
                   <Award className="h-3 w-3" />
                   Thành viên VIP
                 </Badge>
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <Shield className="h-3 w-3" />
-                  Đã xác thực
-                </Badge>
+                {profile.isVerified && (
+                  <Badge variant="outline" className="flex items-center gap-1 bg-green-50 text-green-700 border-green-200">
+                    <CheckCircle2 className="h-3 w-3" />
+                    Đã xác thực
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
@@ -211,22 +314,133 @@ export function ProfileContent() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Thông tin tài khoản</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>Thông tin tài khoản</CardTitle>
+              {!isEditingProfile && (
+                <Button variant="outline" size="sm" onClick={handleStartEditProfile}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Chỉnh sửa
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium">Họ và tên</label>
-              <Input value={profile.name} disabled />
+              <Input 
+                value={isEditingProfile ? profileFormData.fullName : profile.name} 
+                disabled={!isEditingProfile}
+                onChange={(e) => setProfileFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                maxLength={255}
+              />
             </div>
             <div>
-              <label className="text-sm font-medium">Email</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-medium">Email</label>
+                {profile.isVerified && (
+                  <Badge variant="outline" className="flex items-center gap-1 text-xs bg-green-50 text-green-700 border-green-200">
+                    <CheckCircle2 className="h-3 w-3" />
+                    Đã xác thực
+                  </Badge>
+                )}
+              </div>
               <Input value={profile.email} disabled />
             </div>
             <div>
-              <label className="text-sm font-medium">Số điện thoại</label>
-              <Input value={profile.phone || ''} disabled />
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-medium">Số điện thoại</label>
+                {profile.isVerified && profile.phone && (
+                  <Badge variant="outline" className="flex items-center gap-1 text-xs bg-green-50 text-green-700 border-green-200">
+                    <CheckCircle2 className="h-3 w-3" />
+                    Đã xác thực
+                  </Badge>
+                )}
+              </div>
+              <Input 
+                value={isEditingProfile ? profileFormData.phoneNumber : (profile.phone || '')} 
+                disabled={!isEditingProfile}
+                onChange={(e) => setProfileFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                maxLength={20}
+              />
             </div>
-            <Button>Chỉnh sửa thông tin</Button>
+            {isEditingProfile && (
+              <div>
+                <Label>Giới tính</Label>
+                <Select
+                  value={profileFormData.gender}
+                  onValueChange={(value) => setProfileFormData(prev => ({ ...prev, gender: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn giới tính" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Chọn giới tính</SelectItem>
+                    <SelectItem value="male">Nam</SelectItem>
+                    <SelectItem value="female">Nữ</SelectItem>
+                    <SelectItem value="other">Khác</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {isEditingProfile && (
+              <div>
+                <label className="text-sm font-medium">Ngày sinh</label>
+                <Input 
+                  type="date"
+                  value={profileFormData.dateOfBirth} 
+                  onChange={(e) => setProfileFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                />
+              </div>
+            )}
+            {isEditingProfile && (
+              <div>
+                <label className="text-sm font-medium">Địa chỉ</label>
+                <Input 
+                  value={profileFormData.address} 
+                  onChange={(e) => setProfileFormData(prev => ({ ...prev, address: e.target.value }))}
+                  maxLength={500}
+                />
+              </div>
+            )}
+            {isEditingProfile && (
+              <div>
+                <label className="text-sm font-medium">Quốc gia</label>
+                <Input 
+                  value={profileFormData.country} 
+                  onChange={(e) => setProfileFormData(prev => ({ ...prev, country: e.target.value }))}
+                  maxLength={100}
+                />
+              </div>
+            )}
+            {isEditingProfile && (
+              <div>
+                <Label>Ngôn ngữ</Label>
+                <Select
+                  value={profileFormData.language}
+                  onValueChange={(value) => setProfileFormData(prev => ({ ...prev, language: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="vi">Tiếng Việt</SelectItem>
+                    <SelectItem value="en">English</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {isEditingProfile ? (
+              <div className="flex gap-2">
+                <Button onClick={handleSaveProfile} disabled={updateProfileMutation.isPending}>
+                  <Save className="h-4 w-4 mr-2" />
+                  {updateProfileMutation.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
+                </Button>
+                <Button variant="outline" onClick={handleCancelEditProfile}>
+                  <X className="h-4 w-4 mr-2" />
+                  Hủy
+                </Button>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
 
@@ -245,11 +459,6 @@ export function ProfileContent() {
                 <Star className="h-6 w-6 text-green-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold text-green-600">4.8</p>
                 <p className="text-sm text-muted-foreground">Đánh giá trung bình</p>
-              </div>
-              <div className="text-center p-3 bg-purple-50 rounded-lg">
-                <Heart className="h-6 w-6 text-purple-600 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-purple-600">156</p>
-                <p className="text-sm text-muted-foreground">Sản phẩm yêu thích</p>
               </div>
               <div className="text-center p-3 bg-orange-50 rounded-lg">
                 <TrendingUp className="h-6 w-6 text-orange-600 mx-auto mb-2" />
@@ -424,30 +633,6 @@ export function ProfileContent() {
         </Card>
       )}
 
-      {/* Favorites Tab */}
-      {activeTab === 'favorites' && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Heart className="h-5 w-5" />
-              Sản phẩm yêu thích
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-12">
-              <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Chưa có sản phẩm yêu thích</h3>
-              <p className="text-muted-foreground mb-6">
-                Hãy bắt đầu yêu thích những sản phẩm bạn quan tâm!
-              </p>
-              <Button asChild>
-                <Link to="/seller/products">Quản lý sản phẩm</Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Settings Tab */}
       {activeTab === 'settings' && (
         <div className="space-y-6">
@@ -494,29 +679,83 @@ export function ProfileContent() {
                   onCheckedChange={(checked) => setSettings(prev => ({ ...prev, privacyMode: checked }))}
                 />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lock className="h-5 w-5" />
-                Bảo mật
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button variant="outline" className="w-full justify-start">
-                <Edit className="h-4 w-4 mr-2" />
-                Đổi mật khẩu
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                <Phone className="h-4 w-4 mr-2" />
-                Xác thực số điện thoại
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                <Mail className="h-4 w-4 mr-2" />
-                Xác thực email
-              </Button>
+              <Separator />
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <Label className="font-medium">Đổi mật khẩu</Label>
+                    <p className="text-sm text-muted-foreground">Cập nhật mật khẩu để bảo vệ tài khoản của bạn</p>
+                  </div>
+                  {!isChangingPassword && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setIsChangingPassword(true)}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Đổi mật khẩu
+                    </Button>
+                  )}
+                </div>
+                {isChangingPassword && (
+                  <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                    <div>
+                      <Label htmlFor="current-password">Mật khẩu hiện tại</Label>
+                      <Input
+                        id="current-password"
+                        type="password"
+                        value={passwordFormData.currentPassword}
+                        onChange={(e) => setPasswordFormData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                        placeholder="Nhập mật khẩu hiện tại"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="new-password">Mật khẩu mới</Label>
+                      <Input
+                        id="new-password"
+                        type="password"
+                        value={passwordFormData.newPassword}
+                        onChange={(e) => setPasswordFormData(prev => ({ ...prev, newPassword: e.target.value }))}
+                        placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="confirm-password">Xác nhận mật khẩu mới</Label>
+                      <Input
+                        id="confirm-password"
+                        type="password"
+                        value={passwordFormData.confirmPassword}
+                        onChange={(e) => setPasswordFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                        placeholder="Nhập lại mật khẩu mới"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={handleChangePassword} 
+                        disabled={changePasswordMutation.isPending}
+                        className="flex-1"
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        {changePasswordMutation.isPending ? 'Đang đổi...' : 'Đổi mật khẩu'}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setIsChangingPassword(false)
+                          setPasswordFormData({
+                            currentPassword: '',
+                            newPassword: '',
+                            confirmPassword: '',
+                          })
+                        }}
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Hủy
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
 
@@ -536,7 +775,17 @@ export function ProfileContent() {
                 <Switch
                   id="show-email"
                   checked={settings.showEmail}
-                  onCheckedChange={(checked) => setSettings(prev => ({ ...prev, showEmail: checked }))}
+                  onCheckedChange={async (checked) => {
+                    setSettings(prev => ({ ...prev, showEmail: checked }))
+                    try {
+                      await updateProfileMutation.mutateAsync({ showEmail: checked })
+                      toast.success('Đã cập nhật cài đặt quyền riêng tư')
+                    } catch {
+                      toast.error('Có lỗi xảy ra khi cập nhật cài đặt')
+                      setSettings(prev => ({ ...prev, showEmail: !checked }))
+                    }
+                  }}
+                  disabled={updateProfileMutation.isPending}
                 />
               </div>
               <Separator />
@@ -548,7 +797,17 @@ export function ProfileContent() {
                 <Switch
                   id="show-phone"
                   checked={settings.showPhone}
-                  onCheckedChange={(checked) => setSettings(prev => ({ ...prev, showPhone: checked }))}
+                  onCheckedChange={async (checked) => {
+                    setSettings(prev => ({ ...prev, showPhone: checked }))
+                    try {
+                      await updateProfileMutation.mutateAsync({ showPhone: checked })
+                      toast.success('Đã cập nhật cài đặt quyền riêng tư')
+                    } catch {
+                      toast.error('Có lỗi xảy ra khi cập nhật cài đặt')
+                      setSettings(prev => ({ ...prev, showPhone: !checked }))
+                    }
+                  }}
+                  disabled={updateProfileMutation.isPending}
                 />
               </div>
             </CardContent>
