@@ -2,14 +2,14 @@ import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { 
+import {
   Download,
   Users,
   ShoppingCart,
@@ -28,89 +28,51 @@ import {
   PieChart,
   Activity,
   ArrowUpRight,
-  ArrowDownLeft
+  ArrowDownLeft,
+  Loader2
 } from 'lucide-react'
+import { toast } from 'sonner'
+import {
+  useReportsOverview,
+  useRevenueChart,
+  useCategoryDistribution,
+  useTopProductsReport,
+  useTopSellersReport,
+  useDailyStats,
+  useExportReport,
+} from '@/hooks/useAdmin'
+import type { QueryReportsParams } from '@/api/admin'
 
 export default function ReportsAnalyticsPage() {
-  const [timeRange, setTimeRange] = useState('30d')
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d')
 
-  // Mock data
-  const overviewStats = [
-    {
-      title: 'Tổng lượt truy cập',
-      value: '2.4M',
-      change: '+12.5%',
-      changeType: 'positive',
-      icon: Eye,
-      color: 'blue',
-      subtitle: 'Tháng này: 180K'
-    },
-    {
-      title: 'Người dùng mới',
-      value: '15,847',
-      change: '+8.2%',
-      changeType: 'positive',
-      icon: Users,
-      color: 'green',
-      subtitle: 'Tỷ lệ tăng trưởng: 8.2%'
-    },
-    {
-      title: 'Đơn hàng',
-      value: '8,934',
-      change: '+15.3%',
-      changeType: 'positive',
-      icon: ShoppingCart,
-      color: 'purple',
-      subtitle: 'Tỷ lệ chuyển đổi: 3.7%'
-    },
-    {
-      title: 'Doanh thu',
-      value: '2.4B VNĐ',
-      change: '+22.1%',
-      changeType: 'positive',
-      icon: DollarSign,
-      color: 'orange',
-      subtitle: 'Lợi nhuận: 480M VNĐ'
-    }
-  ]
+  const params: QueryReportsParams = { timeRange }
 
-  const topProducts = [
-    { name: 'iPhone 14 Pro Max', views: 12500, orders: 234, revenue: 5850000000, growth: '+15%' },
-    { name: 'MacBook Air M2', views: 8900, orders: 156, revenue: 4368000000, growth: '+22%' },
-    { name: 'AirPods Pro 2nd Gen', views: 15600, orders: 445, revenue: 2002500000, growth: '+8%' },
-    { name: 'Samsung Galaxy S23', views: 7800, orders: 123, revenue: 2706000000, growth: '+18%' },
-    { name: 'iPad Pro 12.9', views: 5600, orders: 89, revenue: 2672000000, growth: '+12%' }
-  ]
+  const { data: overview, isLoading: isLoadingOverview } = useReportsOverview(params)
+  const { data: revenueChart = [] } = useRevenueChart(params)
+  const { data: categoryDistribution = [] } = useCategoryDistribution()
+  const { data: topProducts = [], isLoading: isLoadingProducts } = useTopProductsReport({ limit: 5, timeRange })
+  const { data: topSellers = [], isLoading: isLoadingSellers } = useTopSellersReport({ limit: 5, timeRange })
+  const { data: dailyStats = [], isLoading: isLoadingDaily } = useDailyStats(params)
+  const exportMutation = useExportReport()
 
-  const topSellers = [
-    { name: 'TechStore Pro', orders: 1247, revenue: 450000000, growth: '+25%', rating: 4.9 },
-    { name: 'Audio World', orders: 892, revenue: 320000000, growth: '+18%', rating: 4.8 },
-    { name: 'Fashion Hub', orders: 756, revenue: 280000000, growth: '+12%', rating: 4.7 },
-    { name: 'Home & Garden', orders: 634, revenue: 195000000, growth: '+8%', rating: 4.6 },
-    { name: 'Sports Zone', orders: 521, revenue: 168000000, growth: '+15%', rating: 4.5 }
-  ]
-
-  const categoryStats = [
-    { name: 'Điện thoại', products: 1250, orders: 2340, revenue: 1200000000, percentage: 35 },
-    { name: 'Laptop', products: 890, orders: 1560, revenue: 980000000, percentage: 28 },
-    { name: 'Phụ kiện', products: 2100, orders: 3450, revenue: 450000000, percentage: 13 },
-    { name: 'Thời trang', products: 1800, orders: 2100, revenue: 380000000, percentage: 11 },
-    { name: 'Gia dụng', products: 950, orders: 1200, revenue: 290000000, percentage: 8 },
-    { name: 'Khác', products: 650, orders: 800, revenue: 150000000, percentage: 5 }
-  ]
-
-  const dailyStats = [
-    { date: '2024-01-20', visitors: 12500, orders: 234, revenue: 125000000 },
-    { date: '2024-01-21', visitors: 13200, orders: 256, revenue: 138000000 },
-    { date: '2024-01-22', visitors: 11800, orders: 198, revenue: 112000000 },
-    { date: '2024-01-23', visitors: 14500, orders: 287, revenue: 156000000 },
-    { date: '2024-01-24', visitors: 16200, orders: 312, revenue: 178000000 },
-    { date: '2024-01-25', visitors: 13800, orders: 245, revenue: 134000000 },
-    { date: '2024-01-26', visitors: 15200, orders: 278, revenue: 167000000 }
-  ]
-
-  const getChangeColor = (changeType: string) => {
-    return changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+  const handleExport = () => {
+    exportMutation.mutate(params, {
+      onSuccess: (blob) => {
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `report-${timeRange}-${new Date().toISOString().split('T')[0]}.xlsx`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+        toast.success('Đã xuất báo cáo thành công')
+      },
+      onError: () => {
+        toast.error('Có lỗi xảy ra khi xuất báo cáo')
+      },
+    })
   }
 
   const getChangeIcon = (changeType: string) => {
@@ -128,6 +90,54 @@ export default function ReportsAnalyticsPage() {
     return new Intl.NumberFormat('vi-VN').format(num)
   }
 
+  const formatValue = (value: number) => {
+    if (value >= 1000000000) {
+      return `${(value / 1000000000).toFixed(1)}B`
+    }
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`
+    }
+    if (value >= 1000) {
+      return `${(value / 1000).toFixed(1)}K`
+    }
+    return formatNumber(value)
+  }
+
+  const overviewStats = [
+    {
+      title: 'Tổng lượt truy cập',
+      value: overview ? formatValue(overview.totalViews.value) : '0',
+      change: overview ? `${overview.totalViews.change > 0 ? '+' : ''}${overview.totalViews.change}%` : '0%',
+      changeType: overview?.totalViews.changeType || 'positive',
+      icon: Eye,
+      color: 'blue',
+    },
+    {
+      title: 'Người dùng mới',
+      value: overview ? formatValue(overview.newUsers.value) : '0',
+      change: overview ? `${overview.newUsers.change > 0 ? '+' : ''}${overview.newUsers.change}%` : '0%',
+      changeType: overview?.newUsers.changeType || 'positive',
+      icon: Users,
+      color: 'green',
+    },
+    {
+      title: 'Đơn hàng',
+      value: overview ? formatValue(overview.orders.value) : '0',
+      change: overview ? `${overview.orders.change > 0 ? '+' : ''}${overview.orders.change}%` : '0%',
+      changeType: overview?.orders.changeType || 'positive',
+      icon: ShoppingCart,
+      color: 'purple',
+    },
+    {
+      title: 'Doanh thu',
+      value: overview ? formatValue(overview.revenue.value) + ' VNĐ' : '0 VNĐ',
+      change: overview ? `${overview.revenue.change > 0 ? '+' : ''}${overview.revenue.change}%` : '0%',
+      changeType: overview?.revenue.changeType || 'positive',
+      icon: DollarSign,
+      color: 'orange',
+    }
+  ]
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -137,7 +147,7 @@ export default function ReportsAnalyticsPage() {
           <p className="text-gray-600 mt-1">Phân tích dữ liệu và hiệu suất của nền tảng</p>
         </div>
         <div className="flex items-center gap-3">
-          <Select value={timeRange} onValueChange={setTimeRange}>
+          <Select value={timeRange} onValueChange={(value: '7d' | '30d' | '90d' | '1y') => setTimeRange(value)}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Thời gian" />
             </SelectTrigger>
@@ -148,8 +158,12 @@ export default function ReportsAnalyticsPage() {
               <SelectItem value="1y">1 năm qua</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
+          <Button variant="outline" onClick={handleExport} disabled={exportMutation.isPending}>
+            {exportMutation.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4 mr-2" />
+            )}
             Xuất báo cáo
           </Button>
         </div>
@@ -157,46 +171,55 @@ export default function ReportsAnalyticsPage() {
 
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {overviewStats.map((stat, index) => {
-          const Icon = stat.icon
-          const ChangeIcon = getChangeIcon(stat.changeType)
-          return (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
+        {isLoadingOverview ? (
+          Array(4).fill(0).map((_, index) => (
+            <Card key={index} className="animate-pulse">
               <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                    <p className="text-xs text-gray-500 mt-1">{stat.subtitle}</p>
-                  </div>
-                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                    stat.color === 'blue' ? 'bg-blue-100' :
-                    stat.color === 'green' ? 'bg-green-100' :
-                    stat.color === 'purple' ? 'bg-purple-100' :
-                    'bg-orange-100'
-                  }`}>
-                    <Icon className={`h-6 w-6 ${
-                      stat.color === 'blue' ? 'text-blue-600' :
-                      stat.color === 'green' ? 'text-green-600' :
-                      stat.color === 'purple' ? 'text-purple-600' :
-                      'text-orange-600'
-                    }`} />
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <Badge 
-                    variant={stat.changeType === 'positive' ? 'default' : 'destructive'}
-                    className="text-xs"
-                  >
-                    <ChangeIcon className="h-3 w-3 mr-1" />
-                    {stat.change}
-                  </Badge>
-                  <span className="text-xs text-gray-500 ml-2">so với kỳ trước</span>
-                </div>
+                <div className="h-24 bg-gray-200 rounded"></div>
               </CardContent>
             </Card>
-          )
-        })}
+          ))
+        ) : (
+          overviewStats.map((stat, index) => {
+            const Icon = stat.icon
+            const ChangeIcon = getChangeIcon(stat.changeType)
+            return (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                      <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                    </div>
+                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                      stat.color === 'blue' ? 'bg-blue-100' :
+                      stat.color === 'green' ? 'bg-green-100' :
+                      stat.color === 'purple' ? 'bg-purple-100' :
+                      'bg-orange-100'
+                    }`}>
+                      <Icon className={`h-6 w-6 ${
+                        stat.color === 'blue' ? 'text-blue-600' :
+                        stat.color === 'green' ? 'text-green-600' :
+                        stat.color === 'purple' ? 'text-purple-600' :
+                        'text-orange-600'
+                      }`} />
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <Badge
+                      variant={stat.changeType === 'positive' ? 'default' : 'destructive'}
+                      className="text-xs"
+                    >
+                      <ChangeIcon className="h-3 w-3 mr-1" />
+                      {stat.change}
+                    </Badge>
+                    <span className="text-xs text-gray-500 ml-2">so với kỳ trước</span>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })
+        )}
       </div>
 
       {/* Charts Row */}
@@ -210,12 +233,33 @@ export default function ReportsAnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500">Biểu đồ doanh thu sẽ được hiển thị ở đây</p>
+            {revenueChart.length === 0 ? (
+              <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                <div className="text-center">
+                  <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-500">Không có dữ liệu</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="h-64 flex items-end gap-1">
+                {revenueChart.slice(-14).map((item, index) => {
+                  const maxRevenue = Math.max(...revenueChart.map(r => r.revenue))
+                  const height = maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0
+                  return (
+                    <div key={index} className="flex-1 flex flex-col items-center">
+                      <div
+                        className="w-full bg-blue-500 rounded-t hover:bg-blue-600 transition-colors"
+                        style={{ height: `${height}%`, minHeight: item.revenue > 0 ? '4px' : '0' }}
+                        title={`${item.date}: ${formatPrice(item.revenue)}`}
+                      />
+                      <span className="text-xs text-gray-500 mt-1 truncate w-full text-center">
+                        {new Date(item.date).getDate()}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -228,27 +272,47 @@ export default function ReportsAnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {categoryStats.map((category, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 rounded-full bg-blue-500"></div>
-                    <span className="text-sm font-medium">{category.name}</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="w-24 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-blue-500 h-2 rounded-full" 
-                        style={{ width: `${category.percentage}%` }}
-                      ></div>
+            {categoryDistribution.length === 0 ? (
+              <div className="h-64 flex items-center justify-center text-gray-500">
+                Không có dữ liệu
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {categoryDistribution.map((category, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-4 h-4 rounded-full ${
+                        index === 0 ? 'bg-blue-500' :
+                        index === 1 ? 'bg-green-500' :
+                        index === 2 ? 'bg-yellow-500' :
+                        index === 3 ? 'bg-purple-500' :
+                        index === 4 ? 'bg-pink-500' :
+                        'bg-gray-500'
+                      }`}></div>
+                      <span className="text-sm font-medium">{category.name}</span>
                     </div>
-                    <span className="text-sm text-gray-600 w-16 text-right">
-                      {category.percentage}%
-                    </span>
+                    <div className="flex items-center gap-4">
+                      <div className="w-24 bg-gray-200 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full ${
+                            index === 0 ? 'bg-blue-500' :
+                            index === 1 ? 'bg-green-500' :
+                            index === 2 ? 'bg-yellow-500' :
+                            index === 3 ? 'bg-purple-500' :
+                            index === 4 ? 'bg-pink-500' :
+                            'bg-gray-500'
+                          }`}
+                          style={{ width: `${category.percentage}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm text-gray-600 w-16 text-right">
+                        {category.percentage}%
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -262,34 +326,38 @@ export default function ReportsAnalyticsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Sản phẩm</TableHead>
-                  <TableHead>Lượt xem</TableHead>
-                  <TableHead>Đơn hàng</TableHead>
-                  <TableHead>Doanh thu</TableHead>
-                  <TableHead>Tăng trưởng</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {topProducts.map((product, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell>{formatNumber(product.views)}</TableCell>
-                    <TableCell>{formatNumber(product.orders)}</TableCell>
-                    <TableCell>{formatPrice(product.revenue)}</TableCell>
-                    <TableCell>
-                      <Badge variant="default" className="text-xs">
-                        {product.growth}
-                      </Badge>
-                    </TableCell>
+          {isLoadingProducts ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : topProducts.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              Không có dữ liệu
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Sản phẩm</TableHead>
+                    <TableHead>Lượt xem</TableHead>
+                    <TableHead>Đơn hàng</TableHead>
+                    <TableHead>Doanh thu</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {topProducts.map((product, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell>{formatNumber(product.views)}</TableCell>
+                      <TableCell>{formatNumber(product.sales)}</TableCell>
+                      <TableCell>{formatPrice(product.revenue)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -302,50 +370,56 @@ export default function ReportsAnalyticsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Người bán</TableHead>
-                  <TableHead>Đơn hàng</TableHead>
-                  <TableHead>Doanh thu</TableHead>
-                  <TableHead>Đánh giá</TableHead>
-                  <TableHead>Tăng trưởng</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {topSellers.map((seller, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{seller.name}</TableCell>
-                    <TableCell>{formatNumber(seller.orders)}</TableCell>
-                    <TableCell>{formatPrice(seller.revenue)}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm font-medium">{seller.rating}</span>
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <div
-                              key={i}
-                              className={`w-3 h-3 ${
-                                i < Math.floor(seller.rating) ? 'text-yellow-400' : 'text-gray-300'
-                              }`}
-                            >
-                              ★
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="default" className="text-xs">
-                        {seller.growth}
-                      </Badge>
-                    </TableCell>
+          {isLoadingSellers ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : topSellers.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              Không có dữ liệu
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Người bán</TableHead>
+                    <TableHead>Sản phẩm</TableHead>
+                    <TableHead>Đơn hàng</TableHead>
+                    <TableHead>Doanh thu</TableHead>
+                    <TableHead>Đánh giá</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {topSellers.map((seller, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{seller.name}</TableCell>
+                      <TableCell>{formatNumber(seller.products)}</TableCell>
+                      <TableCell>{formatNumber(seller.orders)}</TableCell>
+                      <TableCell>{formatPrice(seller.revenue)}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium">{seller.rating}</span>
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <div
+                                key={i}
+                                className={`w-3 h-3 ${
+                                  i < Math.floor(seller.rating) ? 'text-yellow-400' : 'text-gray-300'
+                                }`}
+                              >
+                                ★
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -354,38 +428,50 @@ export default function ReportsAnalyticsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            Thống kê hàng ngày (7 ngày qua)
+            Thống kê hàng ngày
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Ngày</TableHead>
-                  <TableHead>Lượt truy cập</TableHead>
-                  <TableHead>Đơn hàng</TableHead>
-                  <TableHead>Doanh thu</TableHead>
-                  <TableHead>Tỷ lệ chuyển đổi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {dailyStats.map((day, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">
-                      {new Date(day.date).toLocaleDateString('vi-VN')}
-                    </TableCell>
-                    <TableCell>{formatNumber(day.visitors)}</TableCell>
-                    <TableCell>{formatNumber(day.orders)}</TableCell>
-                    <TableCell>{formatPrice(day.revenue)}</TableCell>
-                    <TableCell>
-                      {((day.orders / day.visitors) * 100).toFixed(2)}%
-                    </TableCell>
+          {isLoadingDaily ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : dailyStats.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              Không có dữ liệu
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ngày</TableHead>
+                    <TableHead>Lượt truy cập</TableHead>
+                    <TableHead>Đơn hàng</TableHead>
+                    <TableHead>Doanh thu</TableHead>
+                    <TableHead>Người dùng mới</TableHead>
+                    <TableHead>Tỷ lệ chuyển đổi</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {dailyStats.map((day, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">
+                        {new Date(day.date).toLocaleDateString('vi-VN')}
+                      </TableCell>
+                      <TableCell>{formatNumber(day.visitors)}</TableCell>
+                      <TableCell>{formatNumber(day.orders)}</TableCell>
+                      <TableCell>{formatPrice(day.revenue)}</TableCell>
+                      <TableCell>{formatNumber(day.newUsers)}</TableCell>
+                      <TableCell>
+                        {day.visitors > 0 ? ((day.orders / day.visitors) * 100).toFixed(2) : 0}%
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

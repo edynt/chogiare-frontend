@@ -55,12 +55,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <NotificationProvider>
-        <AuthProvider>
-          <PerformanceOptimizer>
-              <Router>
-                <div className="min-h-screen bg-background">
-                  <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
-                    <Routes>
+        <Router>
+          <AuthProvider>
+            <PerformanceOptimizer>
+              <div className="min-h-screen bg-background">
+                <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+                  <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/chat" element={<ChatPage />} />
                     <Route path="/chat/:chatId" element={<ChatPage />} />
@@ -97,12 +97,12 @@ function App() {
                     <Route path="/addresses" element={<AddressManagementPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
-                  </Suspense>
-                  <Toaster />
-                </div>
-              </Router>
-          </PerformanceOptimizer>
-        </AuthProvider>
+                </Suspense>
+                <Toaster />
+              </div>
+            </PerformanceOptimizer>
+          </AuthProvider>
+        </Router>
       </NotificationProvider>
     </QueryClientProvider>
   )

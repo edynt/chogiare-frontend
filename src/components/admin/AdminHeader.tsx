@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
-import { Bell, Search, Settings, User, LogOut, Menu, Sun } from 'lucide-react'
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Bell, Search, Settings, User, LogOut, Menu, Sun, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -11,6 +12,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  useAdminHeaderNotifications,
+  useMarkHeaderNotificationAsRead,
+  useMarkAllHeaderNotificationsAsRead,
+} from '@/hooks/useAdmin'
 
 interface AdminHeaderProps {
   onMenuClick?: () => void
@@ -18,13 +24,22 @@ interface AdminHeaderProps {
 }
 
 export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
-  const [notifications] = useState([
-    { id: 1, title: 'Tài khoản mới cần duyệt', time: '2 phút trước', unread: true },
-    { id: 2, title: 'Sản phẩm vi phạm báo cáo', time: '15 phút trước', unread: true },
-    { id: 3, title: 'Yêu cầu hỗ trợ mới', time: '1 giờ trước', unread: false },
-  ])
+  const navigate = useNavigate()
+  const { data: notificationsData, isLoading } = useAdminHeaderNotifications(10)
+  const markAsRead = useMarkHeaderNotificationAsRead()
+  const markAllAsRead = useMarkAllHeaderNotificationsAsRead()
 
-  const unreadCount = notifications.filter(n => n.unread).length
+  const notifications = notificationsData?.items || []
+  const unreadCount = notificationsData?.unreadCount || 0
+
+  const handleNotificationClick = (notification: { id: string; link: string }) => {
+    markAsRead.mutate(notification.id)
+    navigate(notification.link)
+  }
+
+  const handleMarkAllAsRead = () => {
+    markAllAsRead.mutate()
+  }
 
   return (
     <header className="bg-white border-b border-gray-200 px-8 py-6">
@@ -64,13 +79,17 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative h-12 w-12">
-                <Bell className="h-5 w-5" />
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Bell className="h-5 w-5" />
+                )}
                 {unreadCount > 0 && (
-                  <Badge 
-                    variant="destructive" 
+                  <Badge
+                    variant="destructive"
                     className="absolute -top-1 -right-1 h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs"
                   >
-                    {unreadCount}
+                    {unreadCount > 99 ? '99+' : unreadCount}
                   </Badge>
                 )}
               </Button>
@@ -78,30 +97,50 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
             <DropdownMenuContent align="end" className="w-80">
               <DropdownMenuLabel className="flex items-center justify-between">
                 <span>Thông báo</span>
-                <Badge variant="outline" className="text-xs">
-                  {unreadCount} mới
-                </Badge>
+                {unreadCount > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto py-0 px-2 text-xs text-blue-600 hover:text-blue-700"
+                    onClick={handleMarkAllAsRead}
+                  >
+                    Đánh dấu đã đọc
+                  </Button>
+                )}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {notifications.map((notification) => (
-                <DropdownMenuItem key={notification.id} className="p-3">
-                  <div className="flex items-start gap-3 w-full">
-                    <div className={`w-2 h-2 rounded-full mt-2 ${
-                      notification.unread ? 'bg-blue-500' : 'bg-gray-300'
-                    }`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {notification.title}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {notification.time}
-                      </p>
+              {notifications.length === 0 ? (
+                <div className="p-4 text-center text-sm text-gray-500">
+                  Không có thông báo mới
+                </div>
+              ) : (
+                notifications.map((notification) => (
+                  <DropdownMenuItem
+                    key={notification.id}
+                    className="p-3 cursor-pointer"
+                    onClick={() => handleNotificationClick(notification)}
+                  >
+                    <div className="flex items-start gap-3 w-full">
+                      <div
+                        className={`w-2 h-2 rounded-full mt-2 ${
+                          notification.unread ? 'bg-blue-500' : 'bg-gray-300'
+                        }`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {notification.title}
+                        </p>
+                        <p className="text-xs text-gray-500">{notification.time}</p>
+                      </div>
                     </div>
-                  </div>
-                </DropdownMenuItem>
-              ))}
+                  </DropdownMenuItem>
+                ))
+              )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-center text-blue-600">
+              <DropdownMenuItem
+                className="text-center text-blue-600 cursor-pointer"
+                onClick={() => navigate('/admin/notifications')}
+              >
                 Xem tất cả thông báo
               </DropdownMenuItem>
             </DropdownMenuContent>

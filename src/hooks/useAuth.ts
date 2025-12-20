@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useLocation } from 'react-router-dom'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -49,9 +50,10 @@ export const useLogout = () => {
 
 export const useProfile = () => {
   const { tokens } = useAuthStore()
+  const location = useLocation()
 
   // Don't fetch profile on auth pages (login, register, reset-password, etc.)
-  const isAuthPage = typeof window !== 'undefined' && window.location.pathname.startsWith('/auth')
+  const isAuthPage = location.pathname.startsWith('/auth')
 
   return useQuery({
     queryKey: ['auth', 'profile'],

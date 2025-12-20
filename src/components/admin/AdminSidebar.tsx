@@ -1,8 +1,7 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
-import { APP_NAME } from '@/constants/app.constants'
-import { 
+import {
   LayoutDashboard,
   Users,
   Package,
@@ -15,76 +14,74 @@ import {
   Mail,
   ChevronLeft,
   Menu,
-  Database,
   Crown
 } from 'lucide-react'
+import {
+  useAdminUserStats,
+  useModerationStats,
+  useTicketStats,
+} from '@/hooks/useAdmin'
 
-const menuItems = [
+interface MenuItem {
+  title: string
+  href: string
+  icon: React.ElementType
+  badgeKey?: 'pendingUsers' | 'pendingProducts' | 'openTickets'
+}
+
+const menuItems: MenuItem[] = [
   {
     title: 'Tổng quan',
     href: '/admin',
     icon: LayoutDashboard,
-    badge: null
   },
   {
     title: 'Quản lý người dùng',
     href: '/admin/users',
     icon: Users,
-    badge: '12'
+    badgeKey: 'pendingUsers',
   },
   {
     title: 'Kiểm duyệt sản phẩm',
     href: '/admin/products',
     icon: Package,
-    badge: '5'
+    badgeKey: 'pendingProducts',
   },
   {
     title: 'Đơn hàng & Thanh toán',
     href: '/admin/orders',
     icon: ShoppingCart,
-    badge: null
   },
   {
     title: 'Gói dịch vụ',
     href: '/admin/subscriptions',
     icon: Crown,
-    badge: null
   },
   {
     title: 'Báo cáo & Thống kê',
     href: '/admin/reports',
     icon: BarChart3,
-    badge: null
   },
   {
     title: 'Quản lý nội dung',
     href: '/admin/cms',
     icon: FileText,
-    badge: null
   },
   {
     title: 'Hỗ trợ & Khiếu nại',
     href: '/admin/support',
     icon: MessageSquare,
-    badge: '3'
+    badgeKey: 'openTickets',
   },
   {
     title: 'Email & Thông báo',
     href: '/admin/notifications',
     icon: Mail,
-    badge: null
   },
   {
     title: 'Cài đặt hệ thống',
     href: '/admin/settings',
     icon: Settings,
-    badge: null
-  },
-  {
-    title: 'Data Seeder',
-    href: '/admin/seeder',
-    icon: Database,
-    badge: null
   }
 ]
 
@@ -95,6 +92,25 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
   const location = useLocation()
+
+  // Fetch badge counts from API
+  const { data: userStats } = useAdminUserStats()
+  const { data: moderationStats } = useModerationStats()
+  const { data: ticketStats } = useTicketStats()
+
+  // Build badge counts object
+  const badgeCounts: Record<string, number> = {
+    pendingUsers: userStats?.pending ?? 0,
+    pendingProducts: moderationStats?.pending ?? 0,
+    openTickets: (ticketStats?.open ?? 0) + (ticketStats?.inProgress ?? 0),
+  }
+
+  const getBadgeValue = (badgeKey?: string): string | null => {
+    if (!badgeKey) return null
+    const count = badgeCounts[badgeKey]
+    if (count > 0) return count > 99 ? '99+' : String(count)
+    return null
+  }
 
   return (
     <div className={cn(
@@ -132,10 +148,11 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
       <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           // Check if current path matches the menu item (exact match or starts with)
-          const isActive = location.pathname === item.href || 
+          const isActive = location.pathname === item.href ||
                           (item.href !== '/admin' && location.pathname.startsWith(item.href))
           const Icon = item.icon
-          
+          const badge = getBadgeValue(item.badgeKey)
+
           return (
             <Link
               key={item.href}
@@ -143,8 +160,8 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
               className={cn(
                 "flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                 "hover:bg-gray-100 group relative",
-                isActive 
-                  ? "bg-primary/10 text-primary" 
+                isActive
+                  ? "bg-primary/10 text-primary"
                   : "text-gray-700 hover:text-gray-900",
                 isCollapsed && "justify-center"
               )}
@@ -154,28 +171,28 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                 "h-5 w-5 flex-shrink-0",
                 isActive ? "text-primary" : "text-gray-500 group-hover:text-gray-700"
               )} />
-              
+
               {!isCollapsed && (
                 <>
                   <span className="flex-1">
                     {item.title}
                   </span>
-                  
-                  {item.badge && (
+
+                  {badge && (
                     <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">
-                      {item.badge}
+                      {badge}
                     </span>
                   )}
                 </>
               )}
-              
+
               {/* Badge indicator when collapsed */}
-              {isCollapsed && item.badge && (
+              {isCollapsed && badge && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  {item.badge}
+                  {badge}
                 </span>
               )}
-              
+
               {/* Active indicator when collapsed */}
               {isCollapsed && isActive && (
                 <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full" />

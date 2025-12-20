@@ -3,14 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { 
+import {
   Search,
   Filter,
   Eye,
@@ -28,9 +28,19 @@ import {
   User,
   Shield,
   Bot,
-  Flag
+  Flag,
+  Loader2
 } from 'lucide-react'
 import { PLACEHOLDER_IMAGE } from '@/lib/utils'
+import { toast } from 'sonner'
+import {
+  useModerationProducts,
+  useModerationStats,
+  useApproveProduct,
+  useRejectProduct,
+  useBulkApproveProducts,
+  useBulkRejectProducts,
+} from '@/hooks/useAdmin'
 
 export default function ProductModerationPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -38,141 +48,28 @@ export default function ProductModerationPage() {
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [selectedProducts, setSelectedProducts] = useState<string[]>([])
+  const [page, setPage] = useState(1)
+  const pageSize = 10
 
-  // Mock data
-  const products = [
-    {
-      id: '1',
-      title: 'iPhone 14 Pro Max 256GB - Chính hãng VN/A',
-      seller: 'TechStore Pro',
-      category: 'Điện thoại',
-      price: 25000000,
-      originalPrice: 30000000,
-      status: 'pending',
-      priority: 'high',
-      submittedAt: '2024-01-20T10:30:00Z',
-      reviewedAt: null,
-      reviewer: null,
-      images: [
-        'https://images.unsplash.com/photo-1592899677977-9c10b588e3e9?w=300&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=300&fit=crop'
-      ],
-      description: 'iPhone 14 Pro Max 256GB chính hãng Apple, bảo hành 12 tháng',
-      violations: ['potential_fake', 'price_manipulation'],
-      aiScore: 85,
-      manualReview: false,
-      tags: ['apple', 'iphone', 'premium'],
-      stock: 15,
-      views: 234,
-      sales: 0
-    },
-    {
-      id: '2',
-      title: 'AirPods Pro 2nd Gen - Hàng chính hãng Apple',
-      seller: 'Audio World',
-      category: 'Phụ kiện',
-      price: 4500000,
-      originalPrice: 5500000,
-      status: 'approved',
-      priority: 'medium',
-      submittedAt: '2024-01-19T14:20:00Z',
-      reviewedAt: '2024-01-19T16:45:00Z',
-      reviewer: 'Admin User',
-      images: [
-        'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=300&h=300&fit=crop'
-      ],
-      description: 'AirPods Pro 2nd Gen chính hãng Apple với công nghệ Active Noise Cancellation',
-      violations: [],
-      aiScore: 92,
-      manualReview: false,
-      tags: ['apple', 'airpods', 'wireless'],
-      stock: 25,
-      views: 156,
-      sales: 8
-    },
-    {
-      id: '3',
-      title: 'MacBook Air M2 13 inch - 256GB SSD',
-      seller: 'Laptop Center',
-      category: 'Laptop',
-      price: 28000000,
-      originalPrice: 32000000,
-      status: 'rejected',
-      priority: 'high',
-      submittedAt: '2024-01-18T09:15:00Z',
-      reviewedAt: '2024-01-18T11:30:00Z',
-      reviewer: 'Admin User',
-      images: [
-        'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=300&h=300&fit=crop'
-      ],
-      description: 'MacBook Air M2 13 inch 256GB SSD, hiệu năng mạnh mẽ',
-      violations: ['copyright_violation', 'misleading_title'],
-      aiScore: 45,
-      manualReview: true,
-      tags: ['apple', 'macbook', 'laptop'],
-      stock: 0,
-      views: 89,
-      sales: 0
-    },
-    {
-      id: '4',
-      title: 'Samsung Galaxy S23 Ultra 512GB',
-      seller: 'Mobile Store',
-      category: 'Điện thoại',
-      price: 22000000,
-      originalPrice: 25000000,
-      status: 'pending',
-      priority: 'low',
-      submittedAt: '2024-01-20T08:45:00Z',
-      reviewedAt: null,
-      reviewer: null,
-      images: [
-        'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=300&fit=crop'
-      ],
-      description: 'Samsung Galaxy S23 Ultra 512GB với camera 200MP',
-      violations: [],
-      aiScore: 78,
-      manualReview: false,
-      tags: ['samsung', 'galaxy', 'android'],
-      stock: 8,
-      views: 67,
-      sales: 0
-    },
-    {
-      id: '5',
-      title: 'Nike Air Max 270 - Size 42',
-      seller: 'Sneaker Shop',
-      category: 'Thời trang',
-      price: 2500000,
-      originalPrice: 3000000,
-      status: 'approved',
-      priority: 'low',
-      submittedAt: '2024-01-17T16:30:00Z',
-      reviewedAt: '2024-01-17T18:20:00Z',
-      reviewer: 'Admin User',
-      images: [
-        'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop'
-      ],
-      description: 'Nike Air Max 270 chính hãng, size 42, màu đen trắng',
-      violations: [],
-      aiScore: 88,
-      manualReview: false,
-      tags: ['nike', 'sneakers', 'sports'],
-      stock: 12,
-      views: 198,
-      sales: 3
-    }
-  ]
-
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.seller.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.category.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = statusFilter === 'all' || product.status === statusFilter
-    const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter
-    const matchesPriority = priorityFilter === 'all' || product.priority === priorityFilter
-    return matchesSearch && matchesStatus && matchesCategory && matchesPriority
+  const { data: productsData, isLoading } = useModerationProducts({
+    page,
+    pageSize,
+    search: searchQuery || undefined,
+    status: statusFilter !== 'all' ? statusFilter : undefined,
+    category: categoryFilter !== 'all' ? categoryFilter : undefined,
+    priority: priorityFilter !== 'all' ? priorityFilter : undefined,
   })
+
+  const { data: stats } = useModerationStats()
+
+  const approveProductMutation = useApproveProduct()
+  const rejectProductMutation = useRejectProduct()
+  const bulkApproveMutation = useBulkApproveProducts()
+  const bulkRejectMutation = useBulkRejectProducts()
+
+  const products = productsData?.items || []
+  const total = productsData?.total || 0
+  const totalPages = productsData?.totalPages || 1
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -250,8 +147,8 @@ export default function ProductModerationPage() {
   }
 
   const handleSelectProduct = (productId: string) => {
-    setSelectedProducts(prev => 
-      prev.includes(productId) 
+    setSelectedProducts(prev =>
+      prev.includes(productId)
         ? prev.filter(id => id !== productId)
         : [...prev, productId]
     )
@@ -259,25 +156,58 @@ export default function ProductModerationPage() {
 
   const handleSelectAll = () => {
     setSelectedProducts(
-      selectedProducts.length === filteredProducts.length 
-        ? [] 
-        : filteredProducts.map(product => product.id)
+      selectedProducts.length === products.length
+        ? []
+        : products.map(product => product.id)
     )
   }
 
   const handleBulkAction = (action: string) => {
-    console.log(`Bulk action: ${action} for products:`, selectedProducts)
-    // Implement bulk actions
+    if (selectedProducts.length === 0) return
+
+    if (action === 'approve') {
+      bulkApproveMutation.mutate(selectedProducts, {
+        onSuccess: (data) => {
+          toast.success(`Đã duyệt ${data.count} sản phẩm`)
+          setSelectedProducts([])
+        },
+        onError: () => {
+          toast.error('Có lỗi xảy ra khi duyệt sản phẩm')
+        },
+      })
+    } else if (action === 'reject') {
+      bulkRejectMutation.mutate({ productIds: selectedProducts }, {
+        onSuccess: (data) => {
+          toast.success(`Đã từ chối ${data.count} sản phẩm`)
+          setSelectedProducts([])
+        },
+        onError: () => {
+          toast.error('Có lỗi xảy ra khi từ chối sản phẩm')
+        },
+      })
+    }
   }
 
   const handleApprove = (productId: string) => {
-    console.log(`Approve product: ${productId}`)
-    // Implement approve logic
+    approveProductMutation.mutate(productId, {
+      onSuccess: () => {
+        toast.success('Đã duyệt sản phẩm')
+      },
+      onError: () => {
+        toast.error('Có lỗi xảy ra khi duyệt sản phẩm')
+      },
+    })
   }
 
   const handleReject = (productId: string) => {
-    console.log(`Reject product: ${productId}`)
-    // Implement reject logic
+    rejectProductMutation.mutate({ id: productId }, {
+      onSuccess: () => {
+        toast.success('Đã từ chối sản phẩm')
+      },
+      onError: () => {
+        toast.error('Có lỗi xảy ra khi từ chối sản phẩm')
+      },
+    })
   }
 
   return (
@@ -293,8 +223,15 @@ export default function ProductModerationPage() {
             <Bot className="h-4 w-4 mr-2" />
             Cài đặt AI
           </Button>
-          <Button>
-            <CheckCircle className="h-4 w-4 mr-2" />
+          <Button
+            disabled={selectedProducts.length === 0 || bulkApproveMutation.isPending}
+            onClick={() => handleBulkAction('approve')}
+          >
+            {bulkApproveMutation.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <CheckCircle className="h-4 w-4 mr-2" />
+            )}
             Duyệt hàng loạt
           </Button>
         </div>
@@ -310,13 +247,16 @@ export default function ProductModerationPage() {
                 <Input
                   placeholder="Tìm kiếm theo tên sản phẩm, người bán hoặc danh mục..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                    setPage(1)
+                  }}
                   className="pl-10"
                 />
               </div>
             </div>
             <div className="flex gap-3">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={statusFilter} onValueChange={(value) => { setStatusFilter(value); setPage(1) }}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Trạng thái" />
                 </SelectTrigger>
@@ -328,7 +268,7 @@ export default function ProductModerationPage() {
                   <SelectItem value="draft">Bản nháp</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <Select value={categoryFilter} onValueChange={(value) => { setCategoryFilter(value); setPage(1) }}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Danh mục" />
                 </SelectTrigger>
@@ -340,7 +280,7 @@ export default function ProductModerationPage() {
                   <SelectItem value="Thời trang">Thời trang</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+              <Select value={priorityFilter} onValueChange={(value) => { setPriorityFilter(value); setPage(1) }}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Ưu tiên" />
                 </SelectTrigger>
@@ -372,29 +312,39 @@ export default function ProductModerationPage() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => handleBulkAction('approve')}
+                  disabled={bulkApproveMutation.isPending}
                 >
-                  <CheckCircle className="h-4 w-4 mr-1" />
+                  {bulkApproveMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                  ) : (
+                    <CheckCircle className="h-4 w-4 mr-1" />
+                  )}
                   Duyệt
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => handleBulkAction('reject')}
+                  disabled={bulkRejectMutation.isPending}
                 >
-                  <XCircle className="h-4 w-4 mr-1" />
+                  {bulkRejectMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                  ) : (
+                    <XCircle className="h-4 w-4 mr-1" />
+                  )}
                   Từ chối
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
-                  onClick={() => handleBulkAction('flag')}
+                  onClick={() => setSelectedProducts([])}
                 >
                   <Flag className="h-4 w-4 mr-1" />
-                  Đánh dấu
+                  Bỏ chọn
                 </Button>
               </div>
             </div>
@@ -405,172 +355,219 @@ export default function ProductModerationPage() {
       {/* Products Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Danh sách sản phẩm ({filteredProducts.length})</CardTitle>
+          <CardTitle>Danh sách sản phẩm ({total})</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts.length === filteredProducts.length && filteredProducts.length > 0}
-                      onChange={handleSelectAll}
-                      className="rounded border-gray-300"
-                    />
-                  </TableHead>
-                  <TableHead>Sản phẩm</TableHead>
-                  <TableHead>Người bán</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead>Ưu tiên</TableHead>
-                  <TableHead>Vi phạm</TableHead>
-                  <TableHead>AI Score</TableHead>
-                  <TableHead>Thời gian</TableHead>
-                  <TableHead className="w-12">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredProducts.map((product) => (
-                  <TableRow key={product.id} className="hover:bg-gray-50">
-                    <TableCell>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              Không có sản phẩm nào
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">
                       <input
                         type="checkbox"
-                        checked={selectedProducts.includes(product.id)}
-                        onChange={() => handleSelectProduct(product.id)}
+                        checked={selectedProducts.length === products.length && products.length > 0}
+                        onChange={handleSelectAll}
                         className="rounded border-gray-300"
                       />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={product.images && product.images.length > 0 ? product.images[0] : PLACEHOLDER_IMAGE}
-                          alt={product.title}
-                          className="w-16 h-16 rounded-lg object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = PLACEHOLDER_IMAGE
-                          }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 line-clamp-2">{product.title}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-sm font-semibold text-green-600">
-                              {formatPrice(product.price)}
-                            </span>
-                            {product.originalPrice && (
-                              <span className="text-sm text-gray-500 line-through">
-                                {formatPrice(product.originalPrice)}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="text-xs">
-                              {product.category}
-                            </Badge>
-                            <span className="text-xs text-gray-500">
-                              {product.stock} sản phẩm
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm font-medium">{product.seller}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(product.status)}>
-                        {getStatusLabel(product.status)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={getPriorityColor(product.priority)}>
-                        {getPriorityLabel(product.priority)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {product.violations.length > 0 ? (
-                          product.violations.map((violation, index) => (
-                            <Badge 
-                              key={index} 
-                              className={`text-xs ${getViolationColor(violation)}`}
-                            >
-                              {getViolationLabel(violation)}
-                            </Badge>
-                          ))
-                        ) : (
-                          <span className="text-xs text-gray-500">Không có</span>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-12 h-2 rounded-full ${
-                          product.aiScore >= 80 ? 'bg-green-200' :
-                          product.aiScore >= 60 ? 'bg-yellow-200' :
-                          'bg-red-200'
-                        }`}>
-                          <div 
-                            className={`h-2 rounded-full ${
-                              product.aiScore >= 80 ? 'bg-green-500' :
-                              product.aiScore >= 60 ? 'bg-yellow-500' :
-                              'bg-red-500'
-                            }`}
-                            style={{ width: `${product.aiScore}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-medium">{product.aiScore}%</span>
-                        {product.manualReview && (
-                          <Shield className="h-4 w-4 text-blue-600" />
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <p className="text-gray-900">{formatDate(product.submittedAt)}</p>
-                        {product.reviewedAt && (
-                          <p className="text-gray-500">
-                            Duyệt: {formatDate(product.reviewedAt)}
-                          </p>
-                        )}
-                        {product.reviewer && (
-                          <p className="text-xs text-gray-500">
-                            Bởi: {product.reviewer}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          onClick={() => handleApprove(product.id)}
-                          className="text-green-600 hover:text-green-700"
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          onClick={() => handleReject(product.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <XCircle className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                    </TableHead>
+                    <TableHead>Sản phẩm</TableHead>
+                    <TableHead>Người bán</TableHead>
+                    <TableHead>Trạng thái</TableHead>
+                    <TableHead>Ưu tiên</TableHead>
+                    <TableHead>Vi phạm</TableHead>
+                    <TableHead>AI Score</TableHead>
+                    <TableHead>Thời gian</TableHead>
+                    <TableHead className="w-12">Thao tác</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {products.map((product) => (
+                    <TableRow key={product.id} className="hover:bg-gray-50">
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.includes(product.id)}
+                          onChange={() => handleSelectProduct(product.id)}
+                          className="rounded border-gray-300"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={product.images && product.images.length > 0 ? product.images[0] : PLACEHOLDER_IMAGE}
+                            alt={product.title}
+                            className="w-16 h-16 rounded-lg object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = PLACEHOLDER_IMAGE
+                            }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-900 line-clamp-2">{product.title}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-sm font-semibold text-green-600">
+                                {formatPrice(product.price)}
+                              </span>
+                              {product.originalPrice && (
+                                <span className="text-sm text-gray-500 line-through">
+                                  {formatPrice(product.originalPrice)}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge variant="outline" className="text-xs">
+                                {product.category}
+                              </Badge>
+                              <span className="text-xs text-gray-500">
+                                {product.stock} sản phẩm
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm font-medium">{product.seller}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(product.status)}>
+                          {getStatusLabel(product.status)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getPriorityColor(product.priority)}>
+                          {getPriorityLabel(product.priority)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {product.violations.length > 0 ? (
+                            product.violations.map((violation, index) => (
+                              <Badge
+                                key={index}
+                                className={`text-xs ${getViolationColor(violation)}`}
+                              >
+                                {getViolationLabel(violation)}
+                              </Badge>
+                            ))
+                          ) : (
+                            <span className="text-xs text-gray-500">Không có</span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className={`w-12 h-2 rounded-full ${
+                            product.aiScore >= 80 ? 'bg-green-200' :
+                            product.aiScore >= 60 ? 'bg-yellow-200' :
+                            'bg-red-200'
+                          }`}>
+                            <div
+                              className={`h-2 rounded-full ${
+                                product.aiScore >= 80 ? 'bg-green-500' :
+                                product.aiScore >= 60 ? 'bg-yellow-500' :
+                                'bg-red-500'
+                              }`}
+                              style={{ width: `${product.aiScore}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium">{product.aiScore}%</span>
+                          {product.manualReview && (
+                            <Shield className="h-4 w-4 text-blue-600" />
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          <p className="text-gray-900">{formatDate(product.submittedAt)}</p>
+                          {product.reviewedAt && (
+                            <p className="text-gray-500">
+                              Duyệt: {formatDate(product.reviewedAt)}
+                            </p>
+                          )}
+                          {product.reviewer && (
+                            <p className="text-xs text-gray-500">
+                              Bởi: {product.reviewer}
+                            </p>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleApprove(product.id)}
+                            disabled={approveProductMutation.isPending || product.status === 'approved'}
+                            className="text-green-600 hover:text-green-700"
+                          >
+                            {approveProductMutation.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <CheckCircle className="h-4 w-4" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleReject(product.id)}
+                            disabled={rejectProductMutation.isPending || product.status === 'rejected'}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            {rejectProductMutation.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <XCircle className="h-4 w-4" />
+                            )}
+                          </Button>
+                          <Button variant="ghost" size="icon">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4">
+              <p className="text-sm text-gray-500">
+                Trang {page} / {totalPages}
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                >
+                  Trước
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                >
+                  Sau
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -585,7 +582,7 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Chờ duyệt</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {products.filter(p => p.status === 'pending').length}
+                  {stats?.pending ?? 0}
                 </p>
               </div>
             </div>
@@ -600,7 +597,7 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Đã duyệt</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {products.filter(p => p.status === 'approved').length}
+                  {stats?.approved ?? 0}
                 </p>
               </div>
             </div>
@@ -615,7 +612,7 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Từ chối</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {products.filter(p => p.status === 'rejected').length}
+                  {stats?.rejected ?? 0}
                 </p>
               </div>
             </div>
@@ -630,7 +627,7 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">AI Score TB</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {Math.round(products.reduce((sum, p) => sum + p.aiScore, 0) / products.length)}%
+                  {stats?.avgAiScore ?? 0}%
                 </p>
               </div>
             </div>

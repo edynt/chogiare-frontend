@@ -2,17 +2,16 @@ import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
-
-import { 
+import {
   Search,
   Filter,
   Plus,
@@ -22,8 +21,6 @@ import {
   Clock,
   User,
   Calendar,
-  CreditCard,
-  Settings,
   Mail,
   Phone,
   Reply,
@@ -34,158 +31,45 @@ import {
   Send,
   FileText,
   Paperclip,
-  BarChart3
+  BarChart3,
+  Loader2
 } from 'lucide-react'
+import { toast } from 'sonner'
+import {
+  useTickets,
+  useTicketStats,
+  useUpdateTicketStatus,
+  useReplyToTicket,
+} from '@/hooks/useAdmin'
+import type { SupportTicket } from '@/api/admin'
 
 export default function CustomerSupportPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
-  const [selectedTicket, setSelectedTicket] = useState<string | null>(null)
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null)
   const [replyText, setReplyText] = useState('')
   const [activeTab, setActiveTab] = useState('tickets')
+  const [page, setPage] = useState(1)
+  const pageSize = 10
 
-  // Mock data
-  const tickets = [
-    {
-      id: 'TICKET-001',
-      title: 'Không thể đăng nhập vào tài khoản',
-      category: 'account',
-      priority: 'high',
-      status: 'open',
-      customer: {
-        name: 'Nguyễn Văn A',
-        email: 'nguyenvana@email.com',
-        phone: '0901234567',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face'
-      },
-      assignedTo: 'Support Team',
-      createdAt: '2024-01-26T10:30:00Z',
-      updatedAt: '2024-01-26T14:20:00Z',
-      lastReply: '2024-01-26T14:20:00Z',
-      replies: 3,
-      tags: ['login', 'account', 'urgent'],
-      description: 'Tôi không thể đăng nhập vào tài khoản của mình mặc dù đã nhập đúng mật khẩu. Hệ thống báo lỗi "Tài khoản không tồn tại" nhưng tôi chắc chắn đã đăng ký trước đó.',
-      attachments: ['screenshot1.png', 'error_log.txt']
-    },
-    {
-      id: 'TICKET-002',
-      title: 'Sản phẩm bị từ chối không rõ lý do',
-      category: 'product',
-      priority: 'medium',
-      status: 'in_progress',
-      customer: {
-        name: 'Trần Thị B',
-        email: 'tranthib@email.com',
-        phone: '0987654321',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=32&h=32&fit=crop&crop=face'
-      },
-      assignedTo: 'Moderation Team',
-      createdAt: '2024-01-25T15:45:00Z',
-      updatedAt: '2024-01-26T09:15:00Z',
-      lastReply: '2024-01-26T09:15:00Z',
-      replies: 5,
-      tags: ['product', 'moderation', 'rejection'],
-      description: 'Sản phẩm iPhone 14 Pro Max của tôi bị từ chối nhưng không có lý do cụ thể. Tôi đã tuân thủ đầy đủ các quy định về hình ảnh và mô tả sản phẩm.',
-      attachments: ['product_images.zip']
-    },
-    {
-      id: 'TICKET-003',
-      title: 'Yêu cầu rút tiền bị chậm',
-      category: 'payment',
-      priority: 'high',
-      status: 'pending',
-      customer: {
-        name: 'Lê Văn C',
-        email: 'levanc@email.com',
-        phone: '0912345678',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face'
-      },
-      assignedTo: 'Finance Team',
-      createdAt: '2024-01-24T11:20:00Z',
-      updatedAt: '2024-01-25T16:30:00Z',
-      lastReply: '2024-01-25T16:30:00Z',
-      replies: 2,
-      tags: ['withdrawal', 'payment', 'delay'],
-      description: 'Yêu cầu rút tiền 5 triệu VNĐ đã được gửi từ 3 ngày trước nhưng vẫn chưa được xử lý. Tôi cần tiền gấp để thanh toán hóa đơn.',
-      attachments: []
-    },
-    {
-      id: 'TICKET-004',
-      title: 'Lỗi hiển thị hình ảnh sản phẩm',
-      category: 'technical',
-      priority: 'low',
-      status: 'resolved',
-      customer: {
-        name: 'Phạm Thị D',
-        email: 'phamthid@email.com',
-        phone: '0923456789',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face'
-      },
-      assignedTo: 'Tech Team',
-      createdAt: '2024-01-23T14:15:00Z',
-      updatedAt: '2024-01-24T10:45:00Z',
-      lastReply: '2024-01-24T10:45:00Z',
-      replies: 4,
-      tags: ['technical', 'image', 'display'],
-      description: 'Hình ảnh sản phẩm không hiển thị đúng trên trang chi tiết. Một số hình ảnh bị méo hoặc không load được.',
-      attachments: ['bug_report.pdf']
-    },
-    {
-      id: 'TICKET-005',
-      title: 'Báo cáo gian lận từ người bán',
-      category: 'report',
-      priority: 'urgent',
-      status: 'open',
-      customer: {
-        name: 'Hoàng Văn E',
-        email: 'hoangvane@email.com',
-        phone: '0934567890',
-        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face'
-      },
-      assignedTo: 'Security Team',
-      createdAt: '2024-01-26T08:30:00Z',
-      updatedAt: '2024-01-26T12:15:00Z',
-      lastReply: '2024-01-26T12:15:00Z',
-      replies: 1,
-      tags: ['fraud', 'report', 'urgent'],
-      description: 'Tôi phát hiện người bán "TechStore Pro" có hành vi gian lận. Họ bán hàng giả và không giao hàng sau khi nhận tiền.',
-      attachments: ['evidence1.jpg', 'evidence2.jpg', 'chat_log.pdf']
-    },
-    {
-      id: 'TICKET-006',
-      title: 'Hướng dẫn sử dụng tính năng mới',
-      category: 'question',
-      priority: 'low',
-      status: 'resolved',
-      customer: {
-        name: 'Vũ Thị F',
-        email: 'vuthif@email.com',
-        phone: '0945678901',
-        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=32&h=32&fit=crop&crop=face'
-      },
-      assignedTo: 'Support Team',
-      createdAt: '2024-01-22T16:20:00Z',
-      updatedAt: '2024-01-23T11:30:00Z',
-      lastReply: '2024-01-23T11:30:00Z',
-      replies: 2,
-      tags: ['question', 'guide', 'feature'],
-      description: 'Tôi muốn biết cách sử dụng tính năng quảng cáo mới. Có thể hướng dẫn chi tiết không?',
-      attachments: []
-    }
-  ]
-
-  const filteredTickets = tickets.filter(ticket => {
-    const matchesSearch = ticket.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         ticket.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         ticket.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         ticket.id.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter
-    const matchesPriority = priorityFilter === 'all' || ticket.priority === priorityFilter
-    const matchesCategory = categoryFilter === 'all' || ticket.category === categoryFilter
-    return matchesSearch && matchesStatus && matchesPriority && matchesCategory
+  const { data: ticketsData, isLoading } = useTickets({
+    page,
+    pageSize,
+    search: searchQuery || undefined,
+    status: statusFilter !== 'all' ? statusFilter : undefined,
+    priority: priorityFilter !== 'all' ? priorityFilter : undefined,
+    category: categoryFilter !== 'all' ? categoryFilter : undefined,
   })
+
+  const { data: stats } = useTicketStats()
+  const updateStatusMutation = useUpdateTicketStatus()
+  const replyMutation = useReplyToTicket()
+
+  const tickets = ticketsData?.items || []
+  const total = ticketsData?.total || 0
+  const totalPages = ticketsData?.totalPages || 1
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -255,24 +139,28 @@ export default function CustomerSupportPage() {
     const now = new Date()
     const date = new Date(dateString)
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
-    
+
     if (diffInHours < 1) return 'Vừa xong'
     if (diffInHours < 24) return `${diffInHours} giờ trước`
     const diffInDays = Math.floor(diffInHours / 24)
     return `${diffInDays} ngày trước`
   }
 
-  const totalTickets = tickets.length
-  const openTickets = tickets.filter(ticket => ticket.status === 'open').length
-  const inProgressTickets = tickets.filter(ticket => ticket.status === 'in_progress').length
-  const resolvedTickets = tickets.filter(ticket => ticket.status === 'resolved').length
+  const handleReply = () => {
+    if (!selectedTicket || !replyText.trim()) return
 
-  const handleReply = (ticketId: string) => {
-    if (replyText.trim()) {
-      // Handle reply logic here
-      console.log(`Replying to ticket ${ticketId}: ${replyText}`)
-      setReplyText('')
-    }
+    replyMutation.mutate(
+      { id: selectedTicket.id, message: replyText },
+      {
+        onSuccess: () => {
+          toast.success('Đã gửi phản hồi')
+          setReplyText('')
+        },
+        onError: () => {
+          toast.error('Có lỗi xảy ra khi gửi phản hồi')
+        },
+      }
+    )
   }
 
   const tabs = [
@@ -335,8 +223,7 @@ export default function CustomerSupportPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Tổng ticket</p>
-                    <p className="text-2xl font-bold text-gray-900">{totalTickets}</p>
-                    <p className="text-xs text-green-600">+5 hôm nay</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats?.total ?? 0}</p>
                   </div>
                 </div>
               </CardContent>
@@ -349,7 +236,7 @@ export default function CustomerSupportPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Đang mở</p>
-                    <p className="text-2xl font-bold text-gray-900">{openTickets}</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats?.open ?? 0}</p>
                     <p className="text-xs text-red-600">Cần xử lý</p>
                   </div>
                 </div>
@@ -363,7 +250,7 @@ export default function CustomerSupportPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Đang xử lý</p>
-                    <p className="text-2xl font-bold text-gray-900">{inProgressTickets}</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats?.inProgress ?? 0}</p>
                     <p className="text-xs text-yellow-600">Trong tiến trình</p>
                   </div>
                 </div>
@@ -377,7 +264,7 @@ export default function CustomerSupportPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Đã giải quyết</p>
-                    <p className="text-2xl font-bold text-gray-900">{resolvedTickets}</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats?.resolved ?? 0}</p>
                     <p className="text-xs text-green-600">Tháng này</p>
                   </div>
                 </div>
@@ -395,13 +282,16 @@ export default function CustomerSupportPage() {
                     <Input
                       placeholder="Tìm kiếm theo ID, tiêu đề, khách hàng..."
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value)
+                        setPage(1)
+                      }}
                       className="pl-10"
                     />
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <Select value={statusFilter} onValueChange={(value) => { setStatusFilter(value); setPage(1) }}>
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="Trạng thái" />
                     </SelectTrigger>
@@ -414,7 +304,7 @@ export default function CustomerSupportPage() {
                       <SelectItem value="closed">Đã đóng</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                  <Select value={priorityFilter} onValueChange={(value) => { setPriorityFilter(value); setPage(1) }}>
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="Ưu tiên" />
                     </SelectTrigger>
@@ -426,7 +316,7 @@ export default function CustomerSupportPage() {
                       <SelectItem value="low">Thấp</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <Select value={categoryFilter} onValueChange={(value) => { setCategoryFilter(value); setPage(1) }}>
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="Danh mục" />
                     </SelectTrigger>
@@ -455,63 +345,94 @@ export default function CustomerSupportPage() {
             <div className="lg:col-span-2">
               <Card>
                 <CardHeader>
-                  <CardTitle>Danh sách ticket ({filteredTickets.length})</CardTitle>
+                  <CardTitle>Danh sách ticket ({total})</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {filteredTickets.map((ticket) => (
-                      <div 
-                        key={ticket.id} 
-                        className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                          selectedTicket === ticket.id ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        onClick={() => setSelectedTicket(ticket.id)}
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-medium text-gray-900">{ticket.title}</h3>
-                              <Badge className={getPriorityColor(ticket.priority)}>
-                                {getPriorityLabel(ticket.priority)}
-                              </Badge>
-                              <Badge className={getStatusColor(ticket.status)}>
-                                {getStatusLabel(ticket.status)}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-gray-500 mb-2">{ticket.id}</p>
-                            <p className="text-sm text-gray-600 line-clamp-2">{ticket.description}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <div className="flex items-center gap-1">
-                              <MessageSquare className="h-3 w-3" />
-                              <span>{ticket.replies} phản hồi</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              <span>{getTimeAgo(ticket.createdAt)}</span>
-                            </div>
-                            {ticket.attachments.length > 0 && (
-                              <div className="flex items-center gap-1">
-                                <Paperclip className="h-3 w-3" />
-                                <span>{ticket.attachments.length} file</span>
+                  {isLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  ) : tickets.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      Không có ticket nào
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {tickets.map((ticket) => (
+                        <div
+                          key={ticket.id}
+                          className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                            selectedTicket?.id === ticket.id ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => setSelectedTicket(ticket)}
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-medium text-gray-900">{ticket.title}</h3>
+                                <Badge className={getPriorityColor(ticket.priority)}>
+                                  {getPriorityLabel(ticket.priority)}
+                                </Badge>
+                                <Badge className={getStatusColor(ticket.status)}>
+                                  {getStatusLabel(ticket.status)}
+                                </Badge>
                               </div>
-                            )}
+                              <p className="text-sm text-gray-500 mb-2">{ticket.id}</p>
+                              <p className="text-sm text-gray-600 line-clamp-2">{ticket.description}</p>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Button variant="ghost" size="icon">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon">
-                              <Reply className="h-4 w-4" />
-                            </Button>
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <div className="flex items-center gap-1">
+                                <MessageSquare className="h-3 w-3" />
+                                <span>{ticket.replies} phản hồi</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                <span>{getTimeAgo(ticket.createdAt)}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Button variant="ghost" size="icon">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon">
+                                <Reply className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-4">
+                      <p className="text-sm text-gray-500">
+                        Trang {page} / {totalPages}
+                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPage(p => Math.max(1, p - 1))}
+                          disabled={page === 1}
+                        >
+                          Trước
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                          disabled={page === totalPages}
+                        >
+                          Sau
+                        </Button>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -524,139 +445,121 @@ export default function CustomerSupportPage() {
                     <CardTitle>Chi tiết ticket</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {(() => {
-                      const ticket = tickets.find(t => t.id === selectedTicket)
-                      if (!ticket) return null
-                      
-                      return (
-                        <div className="space-y-6">
-                          {/* Customer Info */}
+                    <div className="space-y-6">
+                      {/* Customer Info */}
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-3">Thông tin khách hàng</h4>
+                        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <User className="h-5 w-5 text-primary" />
+                          </div>
                           <div>
-                            <h4 className="font-medium text-gray-900 mb-3">Thông tin khách hàng</h4>
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                              <img 
-                                src={ticket.customer.avatar} 
-                                alt={ticket.customer.name}
-                                className="w-10 h-10 rounded-full"
-                              />
-                              <div>
-                                <p className="font-medium text-gray-900">{ticket.customer.name}</p>
-                                <div className="flex items-center gap-1 text-sm text-gray-500">
-                                  <Mail className="h-3 w-3" />
-                                  <span>{ticket.customer.email}</span>
-                                </div>
-                                <div className="flex items-center gap-1 text-sm text-gray-500">
-                                  <Phone className="h-3 w-3" />
-                                  <span>{ticket.customer.phone}</span>
-                                </div>
-                              </div>
+                            <p className="font-medium text-gray-900">{selectedTicket.customer.name}</p>
+                            <div className="flex items-center gap-1 text-sm text-gray-500">
+                              <Mail className="h-3 w-3" />
+                              <span>{selectedTicket.customer.email}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-sm text-gray-500">
+                              <Phone className="h-3 w-3" />
+                              <span>{selectedTicket.customer.phone}</span>
                             </div>
                           </div>
+                        </div>
+                      </div>
 
-                          {/* Ticket Info */}
-                          <div>
-                            <h4 className="font-medium text-gray-900 mb-3">Thông tin ticket</h4>
-                            <div className="space-y-2 text-sm">
-                              <div className="flex justify-between">
-                                <span className="text-gray-500">ID:</span>
-                                <span className="font-medium">{ticket.id}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-gray-500">Danh mục:</span>
-                                <span className="font-medium">{getCategoryLabel(ticket.category)}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-gray-500">Ưu tiên:</span>
-                                <Badge className={getPriorityColor(ticket.priority)}>
-                                  {getPriorityLabel(ticket.priority)}
-                                </Badge>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-gray-500">Trạng thái:</span>
-                                <Badge className={getStatusColor(ticket.status)}>
-                                  {getStatusLabel(ticket.status)}
-                                </Badge>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-gray-500">Phụ trách:</span>
-                                <span className="font-medium">{ticket.assignedTo}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-gray-500">Tạo lúc:</span>
-                                <span className="font-medium">{formatDate(ticket.createdAt)}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-gray-500">Cập nhật:</span>
-                                <span className="font-medium">{formatDate(ticket.updatedAt)}</span>
-                              </div>
-                            </div>
+                      {/* Ticket Info */}
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-3">Thông tin ticket</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">ID:</span>
+                            <span className="font-medium">{selectedTicket.id}</span>
                           </div>
-
-                          {/* Attachments */}
-                          {ticket.attachments.length > 0 && (
-                            <div>
-                              <h4 className="font-medium text-gray-900 mb-3">File đính kèm</h4>
-                              <div className="space-y-2">
-                                {ticket.attachments.map((file, index) => (
-                                  <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                                    <FileText className="h-4 w-4 text-gray-500" />
-                                    <span className="text-sm text-gray-700">{file}</span>
-                                    <Button variant="ghost" size="icon" className="ml-auto">
-                                      <Eye className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Reply Section */}
-                          <div>
-                            <h4 className="font-medium text-gray-900 mb-3">Phản hồi</h4>
-                            <div className="space-y-3">
-                              <div className="relative">
-                                <textarea
-                                  value={replyText}
-                                  onChange={(e) => setReplyText(e.target.value)}
-                                  placeholder="Nhập phản hồi..."
-                                  className="w-full p-3 border border-gray-300 rounded-lg resize-none"
-                                  rows={4}
-                                />
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Button 
-                                  size="sm"
-                                  onClick={() => handleReply(ticket.id)}
-                                  disabled={!replyText.trim()}
-                                >
-                                  <Send className="h-4 w-4 mr-1" />
-                                  Gửi phản hồi
-                                </Button>
-                                <Button variant="outline" size="sm">
-                                  <Paperclip className="h-4 w-4 mr-1" />
-                                  Đính kèm
-                                </Button>
-                              </div>
-                            </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Danh mục:</span>
+                            <span className="font-medium">{getCategoryLabel(selectedTicket.category)}</span>
                           </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Ưu tiên:</span>
+                            <Badge className={getPriorityColor(selectedTicket.priority)}>
+                              {getPriorityLabel(selectedTicket.priority)}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Trạng thái:</span>
+                            <Badge className={getStatusColor(selectedTicket.status)}>
+                              {getStatusLabel(selectedTicket.status)}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Phụ trách:</span>
+                            <span className="font-medium">{selectedTicket.assignedTo}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Tạo lúc:</span>
+                            <span className="font-medium">{formatDate(selectedTicket.createdAt)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Cập nhật:</span>
+                            <span className="font-medium">{formatDate(selectedTicket.updatedAt)}</span>
+                          </div>
+                        </div>
+                      </div>
 
-                          {/* Actions */}
-                          <div className="flex items-center gap-2 pt-4 border-t">
-                            <Button variant="outline" size="sm" className="flex-1">
-                              <Edit className="h-4 w-4 mr-1" />
-                              Chỉnh sửa
-                            </Button>
-                            <Button variant="outline" size="sm" className="flex-1">
-                              <Archive className="h-4 w-4 mr-1" />
-                              Lưu trữ
+                      {/* Description */}
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-3">Mô tả</h4>
+                        <p className="text-sm text-gray-600 p-3 bg-gray-50 rounded-lg">
+                          {selectedTicket.description}
+                        </p>
+                      </div>
+
+                      {/* Reply Section */}
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-3">Phản hồi</h4>
+                        <div className="space-y-3">
+                          <Textarea
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder="Nhập phản hồi..."
+                            rows={4}
+                          />
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              onClick={handleReply}
+                              disabled={!replyText.trim() || replyMutation.isPending}
+                            >
+                              {replyMutation.isPending ? (
+                                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                              ) : (
+                                <Send className="h-4 w-4 mr-1" />
+                              )}
+                              Gửi phản hồi
                             </Button>
                             <Button variant="outline" size="sm">
-                              <Trash2 className="h-4 w-4" />
+                              <Paperclip className="h-4 w-4 mr-1" />
+                              Đính kèm
                             </Button>
                           </div>
                         </div>
-                      )
-                    })()}
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2 pt-4 border-t">
+                        <Button variant="outline" size="sm" className="flex-1">
+                          <Edit className="h-4 w-4 mr-1" />
+                          Chỉnh sửa
+                        </Button>
+                        <Button variant="outline" size="sm" className="flex-1">
+                          <Archive className="h-4 w-4 mr-1" />
+                          Lưu trữ
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               ) : (
@@ -680,42 +583,10 @@ export default function CustomerSupportPage() {
               <CardTitle>Thống kê theo danh mục</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <User className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <span className="font-medium">Tài khoản</span>
-                  </div>
-                  <span className="text-lg font-bold">12</span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                      <MessageSquare className="h-4 w-4 text-green-600" />
-                    </div>
-                    <span className="font-medium">Sản phẩm</span>
-                  </div>
-                  <span className="text-lg font-bold">8</span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                      <CreditCard className="h-4 w-4 text-yellow-600" />
-                    </div>
-                    <span className="font-medium">Thanh toán</span>
-                  </div>
-                  <span className="text-lg font-bold">5</span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <Settings className="h-4 w-4 text-purple-600" />
-                    </div>
-                    <span className="font-medium">Kỹ thuật</span>
-                  </div>
-                  <span className="text-lg font-bold">3</span>
+              <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                <div className="text-center">
+                  <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-500">Biểu đồ thống kê sẽ được hiển thị ở đây</p>
                 </div>
               </div>
             </CardContent>
@@ -726,22 +597,10 @@ export default function CustomerSupportPage() {
               <CardTitle>Thống kê theo thời gian</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Hôm nay</span>
-                  <span className="font-medium">5 tickets</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Tuần này</span>
-                  <span className="font-medium">23 tickets</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Tháng này</span>
-                  <span className="font-medium">89 tickets</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Trung bình/ngày</span>
-                  <span className="font-medium">3.2 tickets</span>
+              <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                <div className="text-center">
+                  <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-500">Biểu đồ thống kê sẽ được hiển thị ở đây</p>
                 </div>
               </div>
             </CardContent>

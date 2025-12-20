@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -17,11 +17,8 @@ export function ResetPasswordForm() {
   const resetPasswordMutation = useResetPassword()
   const verifyTokenMutation = useVerifyResetToken()
   const token = searchParams.get('token')
-  const [isVerifying, setIsVerifying] = useState(true)
-  const [isTokenValid, setIsTokenValid] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  const hasVerifiedRef = useRef(false)
 
   const {
     register,
@@ -34,31 +31,17 @@ export function ResetPasswordForm() {
 
   const password = watch('password')
 
+  // Verify token on mount
   useEffect(() => {
-    if (hasVerifiedRef.current) {
-      return
+    if (token && verifyTokenMutation.isIdle) {
+      verifyTokenMutation.mutate(token)
     }
+  }, [token, verifyTokenMutation])
 
-    if (!token) {
-      setIsVerifying(false)
-      setIsTokenValid(false)
-      return
-    }
-
-    hasVerifiedRef.current = true
-
-    verifyTokenMutation.mutate(token, {
-      onSuccess: () => {
-        setIsTokenValid(true)
-        setIsVerifying(false)
-      },
-      onError: () => {
-        setIsVerifying(false)
-        setIsTokenValid(false)
-      },
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token])
+  // Determine states from mutation
+  const isVerifying = verifyTokenMutation.isPending
+  const isTokenValid = verifyTokenMutation.isSuccess && verifyTokenMutation.data?.valid === true
+  const hasVerificationError = verifyTokenMutation.isError || (verifyTokenMutation.isSuccess && !verifyTokenMutation.data?.valid)
 
   const onSubmit = (data: ResetPasswordFormData) => {
     if (!token || !isTokenValid) {
@@ -93,7 +76,7 @@ export function ResetPasswordForm() {
     )
   }
 
-  if (!token || !isTokenValid) {
+  if (!token || hasVerificationError) {
     return (
       <Card className="w-full max-w-md">
         <CardContent className="pt-6">
