@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -5,28 +6,25 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useLogin } from '@/hooks/useAuth'
-import { useNotification } from '@/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
-import { Loader2 } from 'lucide-react'
+import { Loader2, AlertCircle } from 'lucide-react'
 import { apiClient } from '@/api/axios'
 import { loginSchema, type LoginFormData } from '@/lib/schemas'
 
 export function LoginForm() {
-  const { notify } = useNotification()
   const navigate = useNavigate()
   const loginMutation = useLogin()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
   const { isLoading, execute } = useLoading({
     delay: 1000, // 1 second delay
     onSuccess: () => {
+      setErrorMessage(null)
       // Redirect to home page after successful login without notification
       navigate('/')
     },
     onError: (error: Error) => {
-      notify({
-        type: 'error',
-        title: 'Đăng nhập thất bại',
-        message: error.message,
-      })
+      setErrorMessage(error.message)
     },
   })
 
@@ -39,6 +37,7 @@ export function LoginForm() {
   })
 
   const onSubmit = (data: LoginFormData) => {
+    setErrorMessage(null) // Clear previous error
     execute(async () => {
       await new Promise((resolve, reject) => {
         loginMutation.mutate(data, {
@@ -106,6 +105,13 @@ export function LoginForm() {
               'Đăng nhập'
             )}
           </Button>
+
+          {errorMessage && (
+            <div className="flex items-center gap-2 rounded-lg border border-red-500 bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
 
           <div className="text-center">
             <Link

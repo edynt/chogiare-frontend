@@ -40,7 +40,7 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
   const { data: conversationsData, isLoading } = useConversations({ page: 1, pageSize: 100 })
 
   const mapConversationToChat = (conversation: Conversation): Chat | null => {
-    const otherParticipant = conversation.participants.find(p => p.userId !== user?.id)
+    const otherParticipant = conversation.participants.find(p => String(p.userId) !== String(user?.id))
     if (!otherParticipant) return null
 
     const lastMessage = conversation.lastMessage

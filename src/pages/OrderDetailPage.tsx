@@ -34,7 +34,7 @@ import {
 import { useOrder, useConfirmOrder, useUpdateOrderStatus } from '@/hooks/useOrders'
 import { ErrorBoundary } from '@/components/ui/error-boundary'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
+import { cn, getApiErrorMessage } from '@/lib/utils'
 
 export default function OrderDetailPage() {
   const { orderId } = useParams<{ orderId: string }>()
@@ -203,14 +203,14 @@ export default function OrderDetailPage() {
       setSellerNotes('')
       navigate(-1)
     } catch (error) {
-      toast.error('Có lỗi xảy ra khi xác nhận đơn hàng')
+      toast.error(getApiErrorMessage(error, 'Có lỗi xảy ra khi xác nhận đơn hàng'))
       console.error('Error confirming order:', error)
     }
   }
 
   const handleCancelOrder = async () => {
     if (!orderId) return
-    
+
     try {
       await updateOrderStatusMutation.mutateAsync({
         id: orderId,
@@ -221,14 +221,14 @@ export default function OrderDetailPage() {
       setCancelReason('')
       navigate(-1)
     } catch (error) {
-      toast.error('Có lỗi xảy ra khi hủy đơn hàng')
+      toast.error(getApiErrorMessage(error, 'Có lỗi xảy ra khi hủy đơn hàng'))
       console.error('Error cancelling order:', error)
     }
   }
 
   const handleStartPreparing = async () => {
     if (!orderId) return
-    
+
     try {
       await updateOrderStatusMutation.mutateAsync({
         id: orderId,
@@ -238,7 +238,7 @@ export default function OrderDetailPage() {
       setShowStartPreparingDialog(false)
       navigate(-1)
     } catch (error) {
-      toast.error('Có lỗi xảy ra khi cập nhật trạng thái')
+      toast.error(getApiErrorMessage(error, 'Có lỗi xảy ra khi cập nhật trạng thái'))
       console.error('Error updating order status:', error)
     }
   }

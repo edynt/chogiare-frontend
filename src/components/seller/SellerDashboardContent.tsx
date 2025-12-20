@@ -43,7 +43,7 @@ import {
   CreditCard,
   Clock
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, getApiErrorMessage } from '@/lib/utils'
 import type { Order } from '@/api/orders'
 
 interface StockInProduct {
@@ -176,7 +176,7 @@ export function SellerDashboardContent() {
       setSelectedOrderId(null)
       refetchOrders()
     } catch (error) {
-      toast.error('Có lỗi xảy ra khi xác nhận đơn hàng')
+      toast.error(getApiErrorMessage(error, 'Có lỗi xảy ra khi xác nhận đơn hàng'))
       console.error('Error confirming order:', error)
     }
   }
@@ -188,7 +188,7 @@ export function SellerDashboardContent() {
 
   const handleCancelOrder = async () => {
     if (!selectedOrderId) return
-    
+
     try {
       await updateOrderStatusMutation.mutateAsync({
         id: selectedOrderId,
@@ -200,7 +200,7 @@ export function SellerDashboardContent() {
       setSelectedOrderId(null)
       refetchOrders()
     } catch (error) {
-      toast.error('Có lỗi xảy ra khi hủy đơn hàng')
+      toast.error(getApiErrorMessage(error, 'Có lỗi xảy ra khi hủy đơn hàng'))
       console.error('Error cancelling order:', error)
     }
   }

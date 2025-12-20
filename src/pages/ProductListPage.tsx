@@ -63,7 +63,7 @@ export default function ProductListPage() {
     const params = new URLSearchParams()
 
     if (newFilters.query) params.set('query', newFilters.query)
-    if (newFilters.categoryId) params.set('category', newFilters.categoryId)
+    if (newFilters.categoryId) params.set('category', String(newFilters.categoryId))
     if (newFilters.minPrice) params.set('minPrice', newFilters.minPrice.toString())
     if (newFilters.maxPrice) params.set('maxPrice', newFilters.maxPrice.toString())
     if (newFilters.condition) params.set('condition', newFilters.condition)

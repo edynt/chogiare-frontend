@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,15 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useRegister } from '@/hooks/useAuth'
-import { useNotification } from '@/components/notification-provider'
 import { registerSchema, type RegisterFormData } from '@/lib/schemas'
 import { PasswordStrengthIndicator } from './PasswordStrengthIndicator'
+import { AlertCircle, CheckCircle } from 'lucide-react'
 import type { RegisterData } from '@/types'
 
 export function RegisterForm() {
-  const { notify } = useNotification()
   const navigate = useNavigate()
   const registerMutation = useRegister()
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   const {
     register,
@@ -28,6 +28,7 @@ export function RegisterForm() {
   const password = watch('password')
 
   const onSubmit = (data: RegisterFormData) => {
+    setMessage(null) // Clear previous message
     const { confirmPassword: _confirmPassword, ...registerData } = data
     const finalData: RegisterData = {
       fullName: registerData.name,
@@ -36,19 +37,13 @@ export function RegisterForm() {
     }
     registerMutation.mutate(finalData, {
       onSuccess: (response) => {
-        notify({
-          type: 'success',
-          title: 'Đăng ký thành công',
-          message: 'Mã OTP đã được gửi đến email của bạn',
-        })
-        navigate('/auth/verify-email', { state: { email: response.email } })
+        setMessage({ type: 'success', text: 'Đăng ký thành công! Mã OTP đã được gửi đến email của bạn' })
+        setTimeout(() => {
+          navigate('/auth/verify-email', { state: { email: response.email } })
+        }, 1500)
       },
       onError: error => {
-        notify({
-          type: 'error',
-          title: 'Đăng ký thất bại',
-          message: error.message,
-        })
+        setMessage({ type: 'error', text: error.message })
       },
     })
   }
@@ -139,6 +134,21 @@ export function RegisterForm() {
           >
             {registerMutation.isPending ? 'Đang đăng ký...' : 'Đăng ký'}
           </Button>
+
+          {message && (
+            <div className={`flex items-center gap-2 rounded-lg border p-3 text-sm ${
+              message.type === 'success'
+                ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
+                : 'border-red-500 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+            }`}>
+              {message.type === 'success' ? (
+                <CheckCircle className="h-4 w-4 flex-shrink-0" />
+              ) : (
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              )}
+              <span>{message.text}</span>
+            </div>
+          )}
 
           <div className="text-center text-sm">
             Đã có tài khoản?{' '}

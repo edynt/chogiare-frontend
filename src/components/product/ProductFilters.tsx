@@ -198,7 +198,7 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
             <div>
               <label className="text-sm font-medium mb-2 block">Danh mục</label>
               <Select
-                value={filters.categoryId || 'all'}
+                value={String(filters.categoryId || 'all')}
                 onValueChange={(value) => handleFilterChange('categoryId', value === 'all' ? undefined : value)}
               >
                 <SelectTrigger>

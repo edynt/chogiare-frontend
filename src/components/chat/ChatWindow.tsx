@@ -15,7 +15,7 @@ import {
   Check,
   CheckCheck
 } from 'lucide-react'
-import { cn, formatPrice } from '@/lib/utils'
+import { cn, formatPrice, getApiErrorMessage } from '@/lib/utils'
 import { useConversation, useConversationMessages, useSendMessage } from '@/hooks/useChat'
 import { useAuthStore } from '@/stores/authStore'
 import { toast } from 'sonner'
@@ -59,7 +59,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
   const isLoading = conversationLoading || messagesLoading
 
   const mapChatMessageToMessage = (msg: ChatMessage): Message => {
-    const isCurrentUser = msg.senderId === user?.id
+    const isCurrentUser = String(msg.senderId) === String(user?.id)
     const formatTime = (dateString: string) => {
       const date = new Date(dateString)
       return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
@@ -100,7 +100,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
       })
       setNewMessage('')
     } catch (error) {
-      toast.error('Không thể gửi tin nhắn. Vui lòng thử lại.')
+      toast.error(getApiErrorMessage(error, 'Không thể gửi tin nhắn. Vui lòng thử lại.'))
     }
   }
 
@@ -122,7 +122,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
     return null
   }
 
-  const otherParticipant = conversation?.participants.find(p => p.userId !== user?.id)
+  const otherParticipant = conversation?.participants.find(p => String(p.userId) !== String(user?.id))
   const participantName = conversation?.title || otherParticipant ? `User ${otherParticipant?.userId}` : 'Người dùng'
 
   if (isLoading) {

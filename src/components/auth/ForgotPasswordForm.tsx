@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,12 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useForgotPassword } from '@/hooks/useAuth'
-import { useNotification } from '@/components/notification-provider'
 import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/lib/schemas'
+import { AlertCircle, CheckCircle } from 'lucide-react'
 
 export function ForgotPasswordForm() {
-  const { notify } = useNotification()
   const forgotPasswordMutation = useForgotPassword()
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   const {
     register,
@@ -22,20 +22,13 @@ export function ForgotPasswordForm() {
   })
 
   const onSubmit = (data: ForgotPasswordFormData) => {
+    setMessage(null) // Clear previous message
     forgotPasswordMutation.mutate(data.email, {
       onSuccess: () => {
-        notify({
-          type: 'success',
-          title: 'Email đã được gửi',
-          message: 'Vui lòng kiểm tra email để đặt lại mật khẩu',
-        })
+        setMessage({ type: 'success', text: 'Email đã được gửi! Vui lòng kiểm tra email để đặt lại mật khẩu' })
       },
       onError: (error) => {
-        notify({
-          type: 'error',
-          title: 'Gửi email thất bại',
-          message: error.message,
-        })
+        setMessage({ type: 'error', text: error.message })
       },
     })
   }
@@ -70,6 +63,21 @@ export function ForgotPasswordForm() {
           >
             {forgotPasswordMutation.isPending ? 'Đang gửi...' : 'Gửi email đặt lại mật khẩu'}
           </Button>
+
+          {message && (
+            <div className={`flex items-center gap-2 rounded-lg border p-3 text-sm ${
+              message.type === 'success'
+                ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
+                : 'border-red-500 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+            }`}>
+              {message.type === 'success' ? (
+                <CheckCircle className="h-4 w-4 flex-shrink-0" />
+              ) : (
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              )}
+              <span>{message.text}</span>
+            </div>
+          )}
 
           <div className="text-center">
             <Link

@@ -193,7 +193,7 @@ export function ProductSearch({ onSearch, initialFilters = {}, categories = [], 
             <div>
               <label className="text-sm font-medium mb-2 block">Danh mục</label>
               <Select
-                value={filters.categoryId || ''}
+                value={String(filters.categoryId || '')}
                 onValueChange={(value) => handleFilterChange('categoryId', value || undefined)}
               >
                 <SelectTrigger>

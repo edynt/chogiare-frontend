@@ -19,6 +19,7 @@ import {
   Home
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { getApiErrorMessage } from '@/lib/utils'
 import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from '@/hooks/useNotifications'
 import type { Notification } from '@/api/notifications'
 
@@ -97,7 +98,7 @@ export default function SellerNotificationsPage() {
     try {
       await markAsReadMutation.mutateAsync(id)
     } catch (error) {
-      toast.error('Không thể đánh dấu đã đọc')
+      toast.error(getApiErrorMessage(error, 'Không thể đánh dấu đã đọc'))
     }
   }
 
@@ -106,7 +107,7 @@ export default function SellerNotificationsPage() {
       await markAllAsReadMutation.mutateAsync()
       toast.success('Đã đánh dấu tất cả là đã đọc')
     } catch (error) {
-      toast.error('Không thể đánh dấu tất cả là đã đọc')
+      toast.error(getApiErrorMessage(error, 'Không thể đánh dấu tất cả là đã đọc'))
     }
   }
 
@@ -116,7 +117,7 @@ export default function SellerNotificationsPage() {
       await refetch()
       toast.success('Đã làm mới danh sách')
     } catch (error) {
-      toast.error('Không thể làm mới danh sách')
+      toast.error(getApiErrorMessage(error, 'Không thể làm mới danh sách'))
     } finally {
       setIsRefreshing(false)
     }

@@ -6,14 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useResetPassword, useVerifyResetToken } from '@/hooks/useAuth'
-import { useNotification } from '@/components/notification-provider'
 import { resetPasswordSchema, type ResetPasswordFormData } from '@/lib/schemas'
 import { PasswordStrengthIndicator } from './PasswordStrengthIndicator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react'
 
 export function ResetPasswordForm() {
-  const { notify } = useNotification()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const resetPasswordMutation = useResetPassword()
@@ -22,8 +20,8 @@ export function ResetPasswordForm() {
   const [isVerifying, setIsVerifying] = useState(true)
   const [isTokenValid, setIsTokenValid] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const hasVerifiedRef = useRef(false)
-  const hasShownErrorRef = useRef(false)
 
   const {
     register,
@@ -42,17 +40,8 @@ export function ResetPasswordForm() {
     }
 
     if (!token) {
-      if (!hasShownErrorRef.current) {
-        hasShownErrorRef.current = true
-        notify({
-          type: 'error',
-          title: 'Token không hợp lệ',
-          message: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn',
-        })
-        setTimeout(() => {
-          navigate('/auth/login')
-        }, 2000)
-      }
+      setIsVerifying(false)
+      setIsTokenValid(false)
       return
     }
 
@@ -63,83 +52,30 @@ export function ResetPasswordForm() {
         setIsTokenValid(true)
         setIsVerifying(false)
       },
-      onError: (error: any) => {
+      onError: () => {
         setIsVerifying(false)
         setIsTokenValid(false)
-        
-        if (!hasShownErrorRef.current) {
-          hasShownErrorRef.current = true
-          const errorMessage = error?.response?.data?.message || error.message || 'Token không hợp lệ hoặc đã hết hạn'
-          const errorCode = error?.response?.data?.errorCode
-          
-          let title = 'Liên kết không hợp lệ'
-          let message = errorMessage
-          
-          if (errorCode === 'AUTH_RESET_TOKEN_ALREADY_USED' || errorMessage.includes('already been used')) {
-            title = 'Liên kết đã được sử dụng'
-            message = 'Liên kết đặt lại mật khẩu này đã được sử dụng. Vui lòng đăng nhập với mật khẩu mới.'
-          } else if (errorCode === 'AUTH_INVALID_RESET_TOKEN' || errorMessage.includes('expired') || errorMessage.includes('Invalid')) {
-            title = 'Liên kết không hợp lệ'
-            message = 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.'
-          }
-          
-          notify({
-            type: 'error',
-            title,
-            message,
-          })
-          
-          setTimeout(() => {
-            navigate('/auth/login')
-          }, 3000)
-        }
       },
     })
-  }, [token, navigate, notify, verifyTokenMutation])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token])
 
   const onSubmit = (data: ResetPasswordFormData) => {
     if (!token || !isTokenValid) {
       return
     }
 
+    setMessage(null) // Clear previous message
     resetPasswordMutation.mutate({ token, password: data.password }, {
       onSuccess: () => {
         setIsSuccess(true)
-        notify({
-          type: 'success',
-          title: 'Đặt lại mật khẩu thành công',
-          message: 'Bạn có thể đăng nhập với mật khẩu mới',
-        })
+        setMessage({ type: 'success', text: 'Đặt lại mật khẩu thành công! Đang chuyển hướng...' })
         setTimeout(() => {
           navigate('/auth/login')
         }, 2500)
       },
-      onError: (error: any) => {
-        const errorMessage = error?.response?.data?.message || error.message || 'Đặt lại mật khẩu thất bại'
-        const errorCode = error?.response?.data?.errorCode
-        
-        let title = 'Đặt lại mật khẩu thất bại'
-        let message = errorMessage
-        
-        if (errorCode === 'AUTH_RESET_TOKEN_ALREADY_USED' || errorMessage.includes('already been used')) {
-          title = 'Liên kết đã được sử dụng'
-          message = 'Liên kết đặt lại mật khẩu này đã được sử dụng. Vui lòng đăng nhập với mật khẩu mới.'
-          setTimeout(() => {
-            navigate('/auth/login')
-          }, 3000)
-        } else if (errorCode === 'AUTH_INVALID_RESET_TOKEN' || errorMessage.includes('expired') || errorMessage.includes('Invalid')) {
-          title = 'Liên kết không hợp lệ'
-          message = 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.'
-          setTimeout(() => {
-            navigate('/auth/login')
-          }, 3000)
-        }
-        
-        notify({
-          type: 'error',
-          title,
-          message,
-        })
+      onError: (error: Error) => {
+        setMessage({ type: 'error', text: error.message })
       },
     })
   }
@@ -265,6 +201,21 @@ export function ResetPasswordForm() {
           >
             {resetPasswordMutation.isPending ? 'Đang đặt lại...' : 'Đặt lại mật khẩu'}
           </Button>
+
+          {message && (
+            <div className={`flex items-center gap-2 rounded-lg border p-3 text-sm ${
+              message.type === 'success'
+                ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
+                : 'border-red-500 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+            }`}>
+              {message.type === 'success' ? (
+                <CheckCircle className="h-4 w-4 flex-shrink-0" />
+              ) : (
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              )}
+              <span>{message.text}</span>
+            </div>
+          )}
 
           <div className="text-center">
             <Link

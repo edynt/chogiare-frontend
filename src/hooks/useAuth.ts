@@ -49,11 +49,14 @@ export const useLogout = () => {
 
 export const useProfile = () => {
   const { tokens } = useAuthStore()
-  
+
+  // Don't fetch profile on auth pages (login, register, reset-password, etc.)
+  const isAuthPage = typeof window !== 'undefined' && window.location.pathname.startsWith('/auth')
+
   return useQuery({
     queryKey: ['auth', 'profile'],
     queryFn: authApi.getProfile,
-    enabled: !!tokens?.accessToken,
+    enabled: !!tokens?.accessToken && !isAuthPage,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   })

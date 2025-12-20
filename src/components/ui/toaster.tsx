@@ -16,7 +16,7 @@ interface ToasterProps {
 export function Toaster({ notifications, onRemove }: ToasterProps) {
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="fixed top-4 right-4 z-50 space-y-2 w-full max-w-sm">
       {notifications.map((notification) => (
         <div
           key={notification.id}

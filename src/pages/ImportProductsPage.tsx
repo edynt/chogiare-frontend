@@ -181,7 +181,7 @@ export default function ImportProductsPage() {
             price: product.price,
             originalPrice: product.originalPrice,
             stock: product.stock,
-            categoryId: product.categoryId,
+            categoryId: typeof product.categoryId === 'string' ? parseInt(product.categoryId, 10) : product.categoryId,
             images: product.images.length > 0 ? product.images : [PLACEHOLDER_IMAGE],
             condition: product.condition,
             tags: product.tags,
@@ -196,7 +196,7 @@ export default function ImportProductsPage() {
             isPromoted: false,
           }
 
-          await createProduct.mutateAsync(productData as Parameters<typeof createProduct.mutateAsync>[0])
+          await createProduct.mutateAsync(productData)
           success++
           setSuccessCount(success)
         } catch (error) {

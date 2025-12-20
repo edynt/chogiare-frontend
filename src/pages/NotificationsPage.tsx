@@ -6,15 +6,15 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Bell, 
-  Search, 
-  X, 
+import {
+  Bell,
+  Search,
+  X,
   ShoppingBag,
-  LocalOffer,
-  Inventory2,
+  Tag,
+  Package,
   Info,
-  Payment,
+  CreditCard,
   CheckCircle,
   RefreshCw,
   MessageCircle
@@ -30,12 +30,12 @@ const TYPE_INFO = {
     color: '#C81E1E'
   },
   promotion: {
-    icon: LocalOffer,
+    icon: Tag,
     label: 'Khuyến mãi',
     color: '#F59E0B'
   },
   product: {
-    icon: Inventory2,
+    icon: Package,
     label: 'Sản phẩm',
     color: '#10B981'
   },
@@ -45,7 +45,7 @@ const TYPE_INFO = {
     color: '#3B82F6'
   },
   payment: {
-    icon: Payment,
+    icon: CreditCard,
     label: 'Thanh toán',
     color: '#8B5CF6'
   },
