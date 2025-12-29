@@ -17,6 +17,7 @@ import {
   useMarkHeaderNotificationAsRead,
   useMarkAllHeaderNotificationsAsRead,
 } from '@/hooks/useAdmin'
+import { useLogout } from '@/hooks/useAuth'
 
 interface AdminHeaderProps {
   onMenuClick?: () => void
@@ -28,6 +29,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const { data: notificationsData, isLoading } = useAdminHeaderNotifications(10)
   const markAsRead = useMarkHeaderNotificationAsRead()
   const markAllAsRead = useMarkAllHeaderNotificationsAsRead()
+  const logoutMutation = useLogout()
 
   const notifications = notificationsData?.items || []
   const unreadCount = notificationsData?.unreadCount || 0
@@ -171,7 +173,19 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                 Cài đặt
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600">
+              <DropdownMenuItem 
+                className="text-red-600 cursor-pointer"
+                onSelect={(e) => {
+                  e.preventDefault() // Optional: keep menu open or not? Usually better to let it handle. 
+                  // But wait, if we redirect, components unmount.
+                  // Let's just run logic.
+                  // Removing preventDefault to allow menu to close (good UX)
+                  // But wait, user said "no api call". 
+                  // Let's keep it simple.
+                  console.log('Logout selected - triggering mutation')
+                  logoutMutation.mutate(true)
+                }}
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Đăng xuất
               </DropdownMenuItem>

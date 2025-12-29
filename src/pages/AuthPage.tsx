@@ -8,9 +8,16 @@ import { APP_NAME } from '@/constants/app.constants'
 
 export default function AuthPage() {
   const location = useLocation()
+  const isAdmin = location.pathname.includes('/admin')
   
   const getPageInfo = () => {
-    if (location.pathname.includes('/login')) {
+    if (isAdmin) {
+      return {
+        title: 'Đăng nhập Admin',
+        description: `Đăng nhập vào trang quản trị ${APP_NAME}`,
+        keywords: 'admin, đăng nhập, quản trị, chogiare'
+      }
+    } else if (location.pathname.includes('/login')) {
       return {
         title: 'Đăng nhập',
         description: `Đăng nhập vào tài khoản ${APP_NAME} để mua sắm và bán hàng trực tuyến`,
@@ -73,16 +80,18 @@ export default function AuthPage() {
             </div>
           </Link>
           <h1 className="text-3xl font-bold text-primary animate-in fade-in duration-1000 delay-200">{APP_NAME}</h1>
-          <p className="text-muted-foreground animate-in fade-in duration-1000 delay-300">Nền tảng rao bán uy tín</p>
+          <p className="text-muted-foreground animate-in fade-in duration-1000 delay-300">
+            {isAdmin ? 'Trang quản trị hệ thống' : 'Nền tảng rao bán uy tín'}
+          </p>
         </div>
         
         <div className="animate-in fade-in slide-in-from-bottom duration-500 delay-400">
           <Routes>
-            <Route path="/login" element={<LoginForm />} />
+            <Route path="/login" element={<LoginForm isAdmin={isAdmin} />} />
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/forgot-password" element={<ForgotPasswordForm />} />
             <Route path="/reset-password" element={<ResetPasswordForm />} />
-            <Route path="*" element={<LoginForm />} />
+            <Route path="*" element={<LoginForm isAdmin={isAdmin} />} />
           </Routes>
         </div>
       </div>

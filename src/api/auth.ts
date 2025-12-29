@@ -5,20 +5,51 @@ import type { LoginCredentials, RegisterData, AuthTokens, User, UserRole, ApiRes
 async function withErrorHandling<T>(apiCall: () => Promise<T>): Promise<T> {
   try {
     return await apiCall()
-  } catch (error) {
+  } catch (error: any) {
     const message = parseApiError(error)
-    throw new Error(message)
+    const customError = new Error(message) as any
+    // Preserve error code if available
+    if (error?.response?.data?.error?.code || error?.response?.data?.errorCode) {
+      customError.code = error.response.data.error?.code || error.response.data.errorCode
+    }
+    throw customError
   }
 }
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
+      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens; roles?: string[] }>>(
         '/auth/login',
         credentials
       )
-      return response.data.data
+      const data = response.data.data
+      const userWithRoles = {
+        ...data.user,
+        roles: (data.roles || []) as UserRole[]
+      }
+      return {
+        user: userWithRoles,
+        tokens: data.tokens
+      }
+    })
+  },
+
+  adminLogin: async (credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> => {
+    return withErrorHandling(async () => {
+      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens; roles?: string[] }>>(
+        '/auth/admin/login',
+        credentials
+      )
+      const data = response.data.data
+      const userWithRoles = {
+        ...data.user,
+        roles: (data.roles || []) as UserRole[]
+      }
+      return {
+        user: userWithRoles,
+        tokens: data.tokens
+      }
     })
   },
 
@@ -49,7 +80,14 @@ export const authApi = {
   },
 
   logout: async (): Promise<void> => {
-    await apiClient.post('/auth/logout')
+    await apiClient.get('/auth/logout') // Changed to GET
+    apiClient.clearAuthTokens()
+  },
+
+  adminLogout: async (): Promise<void> => {
+    console.log('Calling /auth/admin/logout API')
+    await apiClient.get('/auth/admin/logout') // Changed to GET
+    console.log('API call finished, clearing local tokens')
     apiClient.clearAuthTokens()
   },
 
@@ -105,6 +143,50 @@ export const authApi = {
         } | null
         roles: string[]
       }>>('/auth/profile')
+      const data = response.data.data
+      return {
+        id: data.id.toString(),
+        name: data.userInfo?.fullName || '',
+        email: data.email,
+        phone: data.userInfo?.phoneNumber || undefined,
+        avatar: data.userInfo?.avatarUrl || undefined,
+        gender: data.userInfo?.gender || undefined,
+        dateOfBirth: data.userInfo?.dateOfBirth || undefined,
+        address: data.userInfo?.address || undefined,
+        country: data.userInfo?.country || undefined,
+        language: data.language,
+        showEmail: data.userInfo?.showEmail ?? false,
+        showPhone: data.userInfo?.showPhone ?? false,
+        isVerified: data.isVerified,
+        roles: data.roles as UserRole[],
+        postCount: 0,
+        createdAt: '',
+        updatedAt: '',
+      }
+    })
+  },
+
+  getAdminProfile: async (): Promise<User> => {
+    return withErrorHandling(async () => {
+      const response = await apiClient.get<ApiResponse<{
+        id: number
+        email: string
+        isVerified: boolean
+        status: boolean
+        language: string
+        userInfo: {
+          fullName: string | null
+          avatarUrl: string | null
+          gender: string | null
+          dateOfBirth: string | null
+          phoneNumber: string | null
+          address: string | null
+          country: string | null
+          showEmail: boolean
+          showPhone: boolean
+        } | null
+        roles: string[]
+      }>>('/auth/admin/profile')
       const data = response.data.data
       return {
         id: data.id.toString(),

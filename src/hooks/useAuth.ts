@@ -3,12 +3,12 @@ import { useLocation } from 'react-router-dom'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/stores/authStore'
 
-export const useLogin = () => {
+export const useLogin = (isAdmin = false) => {
   const { login, setError } = useAuthStore()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: authApi.login,
+    mutationFn: isAdmin ? authApi.adminLogin : authApi.login,
     onSuccess: (data) => {
       login(data.user, data.tokens)
       queryClient.setQueryData(['auth', 'profile'], data.user)
@@ -38,27 +38,42 @@ export const useRegister = () => {
 export const useLogout = () => {
   const { logout } = useAuthStore()
   const queryClient = useQueryClient()
+  const location = useLocation()
+  
+  // Determind if we are in admin context based on URL
+  const isAdminContext = location.pathname.startsWith('/admin')
 
   return useMutation({
-    mutationFn: authApi.logout,
+    mutationFn: (isAdminOverride?: boolean) => {
+      // Use override if provided, otherwise default to context
+      const isAdmin = typeof isAdminOverride === 'boolean' ? isAdminOverride : isAdminContext
+      return isAdmin ? authApi.adminLogout() : authApi.logout()
+    },
     onSuccess: () => {
       logout()
       queryClient.clear()
+      // Let the router handle redirection
+    },
+    onError: (error: Error) => {
+      // Even if API fails, we should clear local state
+      logout()
+      queryClient.clear()
+      console.error('Logout failed:', error)
     },
   })
 }
 
 export const useProfile = () => {
-  const { tokens } = useAuthStore()
   const location = useLocation()
 
   // Don't fetch profile on auth pages (login, register, reset-password, etc.)
-  const isAuthPage = location.pathname.startsWith('/auth')
+  const isAuthPage = location.pathname.startsWith('/auth') || location.pathname === '/admin/login'
+  const isAdminPage = location.pathname.startsWith('/admin') && !location.pathname.startsWith('/admin/login')
 
   return useQuery({
-    queryKey: ['auth', 'profile'],
-    queryFn: authApi.getProfile,
-    enabled: !!tokens?.accessToken && !isAuthPage,
+    queryKey: ['auth', 'profile', isAdminPage ? 'admin' : 'user'],
+    queryFn: isAdminPage ? authApi.getAdminProfile : authApi.getProfile,
+    enabled: !isAuthPage,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   })

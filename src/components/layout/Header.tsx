@@ -19,13 +19,15 @@ import { createPortal } from 'react-dom'
 import { useCartStore } from '@/stores/cartStore'
 import { APP_NAME } from '@/constants/app.constants'
 import { useNotifications, useUnreadNotificationCount } from '@/hooks/useNotifications'
+import { useLogout } from '@/hooks/useAuth'
 
 export function Header() {
-  const { isAuthenticated, user, logout } = useAuthStore()
+  const { isAuthenticated, user } = useAuthStore()
   const { totalItems } = useCartStore()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const logoutMutation = useLogout()
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,7 +37,7 @@ export function Header() {
   }
 
   const handleLogout = () => {
-    logout()
+    logoutMutation.mutate()
     navigate('/')
   }
 
@@ -313,7 +315,14 @@ export function Header() {
                     <DropdownMenuSeparator />
                     
                     {/* Logout */}
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
+                    <DropdownMenuItem 
+                      onSelect={(e) => {
+                        e.preventDefault()
+                        console.log('User logout selected')
+                        handleLogout()
+                      }}
+                      className="text-red-600 hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
+                    >
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Đăng xuất</span>
                     </DropdownMenuItem>

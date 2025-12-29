@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/sonner'
 import { NotificationProvider } from '@/components/notification-provider'
 import { AuthProvider } from '@/components/auth/AuthProvider'
+import { AdminRoute } from '@/components/auth/AdminRoute'
 import { PerformanceOptimizer } from '@/components/seo/PerformanceOptimizer'
 
 // Lazy load pages
@@ -68,7 +69,8 @@ function App() {
                     <Route path="/top-up" element={<TopUpPage />} />
                     <Route path="/payment-qr" element={<PaymentQRPage />} />
                     <Route path="/boost-post" element={<BoostPostPage />} />
-                    <Route path="/admin/*" element={<AdminPage />} />
+                    <Route path="/admin/login" element={<AuthPage />} />
+                    <Route path="/admin/*" element={<AdminRoute><AdminPage /></AdminRoute>} />
                     <Route path="/seller/:id" element={<SellerDashboard />} />
                     <Route path="/dashboard" element={<SellerDashboard />} />
                     <Route path="/seller/products" element={<SellerProductsPage />} />

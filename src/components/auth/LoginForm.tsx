@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -11,23 +11,26 @@ import { Loader2, AlertCircle } from 'lucide-react'
 import { apiClient } from '@/api/axios'
 import { loginSchema, type LoginFormData } from '@/lib/schemas'
 
-export function LoginForm() {
+export function LoginForm({ isAdmin = false }: { isAdmin?: boolean }) {
   const navigate = useNavigate()
-  const loginMutation = useLogin()
+  const loginMutation = useLogin(isAdmin)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const redirectPath = React.useRef(isAdmin ? '/admin' : '/')
 
   const { isLoading, execute } = useLoading({
     delay: 1000, // 1 second delay
     onSuccess: () => {
       setErrorMessage(null)
-      // Redirect to home page after successful login without notification
-      navigate('/')
+      // Redirect based on user role
+      navigate(redirectPath.current)
     },
     onError: (error: Error) => {
       setErrorMessage(error.message)
     },
   })
 
+  // ... (useForm hook remains the same)
   const {
     register,
     handleSubmit,
@@ -44,9 +47,25 @@ export function LoginForm() {
           onSuccess: (response) => {
             // Store tokens in localStorage
             apiClient.setAuthTokens(response.tokens)
+            
+            // Check for admin role
+            if (response.user.roles && response.user.roles.includes('admin')) {
+              redirectPath.current = '/admin'
+            } else {
+              redirectPath.current = '/'
+            }
+            
             resolve(undefined)
           },
-          onError: (error: Error) => reject(error),
+          onError: (error: any) => {
+            // Check for admin trying to login as user
+            if (error.code === 'AUTH_USE_ADMIN_LOGIN' || error.message.includes('Admin users must use')) {
+              setErrorMessage('Tài khoản quản trị phải đăng nhập tại trang dành cho Admin')
+              setTimeout(() => navigate('/admin/login'), 2000)
+            } else {
+              reject(error)
+            }
+          },
         })
       })
     })
@@ -55,7 +74,7 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>Đăng nhập</CardTitle>
+        <CardTitle>{isAdmin ? 'Đăng nhập Admin' : 'Đăng nhập'}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -122,12 +141,14 @@ export function LoginForm() {
             </Link>
           </div>
 
-          <div className="text-center text-sm">
-            Chưa có tài khoản?{' '}
-            <Link to="/auth/register" className="text-primary hover:underline">
-              Đăng ký ngay
-            </Link>
-          </div>
+          {!isAdmin && (
+            <div className="text-center text-sm">
+              Chưa có tài khoản?{' '}
+              <Link to="/auth/register" className="text-primary hover:underline">
+                Đăng ký ngay
+              </Link>
+            </div>
+          )}
         </form>
       </CardContent>
     </Card>

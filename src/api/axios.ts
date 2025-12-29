@@ -125,19 +125,18 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
+      withCredentials: true, // Enable cookies to be sent with requests
     })
 
     this.setupInterceptors()
   }
 
   private setupInterceptors(): void {
-    // Request interceptor to add auth token
+    // Request interceptor - cookies handle auth automatically via withCredentials
     this.client.interceptors.request.use(
       (config) => {
-        const tokens = this.getStoredTokens()
-        if (tokens?.accessToken) {
-          config.headers.Authorization = `Bearer ${tokens.accessToken}`
-        }
+        // Cookies are sent automatically with withCredentials: true
+        // No need to manually set Authorization header for cookie-based auth
         return config
       },
       (error) => Promise.reject(error)
@@ -161,6 +160,7 @@ class ApiClient {
           '/auth/verify-reset-token',
           '/auth/google',
           '/auth/facebook',
+          '/admin/login',
         ]
         const isAuthEndpoint = authEndpoints.some(endpoint => requestUrl.includes(endpoint))
 
@@ -189,8 +189,10 @@ class ApiClient {
             this.refreshSubscribers = []
             this.clearStoredTokens()
             const isAuthPage = window.location.pathname.startsWith('/auth/')
+            const isAdminPage = window.location.pathname.startsWith('/admin')
             if (!isAuthPage) {
-              window.location.href = '/auth/login'
+              // Redirect to admin login for admin pages, user login for others
+              window.location.href = isAdminPage ? '/admin/login' : '/auth/login'
             }
             return Promise.reject(refreshError)
           } finally {
