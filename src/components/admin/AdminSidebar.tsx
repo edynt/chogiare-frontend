@@ -14,7 +14,8 @@ import {
   Mail,
   ChevronLeft,
   Menu,
-  Crown
+  Crown,
+  FolderTree,
 } from 'lucide-react'
 import {
   useAdminUserStats,
@@ -46,6 +47,11 @@ const menuItems: MenuItem[] = [
     href: '/admin/products',
     icon: Package,
     badgeKey: 'pendingProducts',
+  },
+  {
+    title: 'Quản lý danh mục',
+    href: '/admin/categories',
+    icon: FolderTree,
   },
   {
     title: 'Đơn hàng & Thanh toán',
@@ -82,7 +88,7 @@ const menuItems: MenuItem[] = [
     title: 'Cài đặt hệ thống',
     href: '/admin/settings',
     icon: Settings,
-  }
+  },
 ]
 
 interface AdminSidebarProps {
@@ -113,18 +119,20 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
   }
 
   return (
-    <div className={cn(
-      "fixed top-0 left-0 z-50 h-full bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out",
-      isCollapsed ? "w-20" : "w-80"
-    )}>
+    <div
+      className={cn(
+        'fixed top-0 left-0 z-50 h-full bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out',
+        isCollapsed ? 'w-20' : 'w-80'
+      )}
+    >
       {/* Logo / Toggle Button */}
       <button
         onClick={onToggle}
         className={cn(
-          "flex items-center justify-between p-6 border-b border-gray-200 hover:bg-gray-50 transition-colors",
-          isCollapsed && "justify-center"
+          'flex items-center justify-between p-6 border-b border-gray-200 hover:bg-gray-50 transition-colors',
+          isCollapsed && 'justify-center'
         )}
-        title={isCollapsed ? "Mở rộng sidebar" : "Thu nhỏ sidebar"}
+        title={isCollapsed ? 'Mở rộng sidebar' : 'Thu nhỏ sidebar'}
       >
         {!isCollapsed ? (
           <>
@@ -146,10 +154,11 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
-        {menuItems.map((item) => {
+        {menuItems.map(item => {
           // Check if current path matches the menu item (exact match or starts with)
-          const isActive = location.pathname === item.href ||
-                          (item.href !== '/admin' && location.pathname.startsWith(item.href))
+          const isActive =
+            location.pathname === item.href ||
+            (item.href !== '/admin' && location.pathname.startsWith(item.href))
           const Icon = item.icon
           const badge = getBadgeValue(item.badgeKey)
 
@@ -158,25 +167,27 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
               key={item.href}
               to={item.href}
               className={cn(
-                "flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
-                "hover:bg-gray-100 group relative",
+                'flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',
+                'hover:bg-gray-100 group relative',
                 isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-gray-700 hover:text-gray-900",
-                isCollapsed && "justify-center"
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-gray-700 hover:text-gray-900',
+                isCollapsed && 'justify-center'
               )}
               title={isCollapsed ? item.title : undefined}
             >
-              <Icon className={cn(
-                "h-5 w-5 flex-shrink-0",
-                isActive ? "text-primary" : "text-gray-500 group-hover:text-gray-700"
-              )} />
+              <Icon
+                className={cn(
+                  'h-5 w-5 flex-shrink-0',
+                  isActive
+                    ? 'text-primary'
+                    : 'text-gray-500 group-hover:text-gray-700'
+                )}
+              />
 
               {!isCollapsed && (
                 <>
-                  <span className="flex-1">
-                    {item.title}
-                  </span>
+                  <span className="flex-1">{item.title}</span>
 
                   {badge && (
                     <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">
@@ -213,9 +224,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
               <p className="text-sm font-medium text-gray-900 truncate">
                 Admin User
               </p>
-              <p className="text-xs text-gray-500 truncate">
-                Super Admin
-              </p>
+              <p className="text-xs text-gray-500 truncate">Super Admin</p>
             </div>
           </div>
         ) : (
