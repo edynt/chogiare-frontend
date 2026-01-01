@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { reportsApi, type QueryRevenueReportParams } from '@/api/reports'
+import { reportsApi, type QueryRevenueReportParams } from '@user/api/reports'
 
 export function useRevenueOverview(params?: QueryRevenueReportParams) {
   return useQuery({

@@ -1,5 +1,5 @@
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { productsApi, getCategories } from '@/api/products'
+import { productsApi, getCategories } from '@user/api/products'
 import type { Product, SearchFilters } from '@/types'
 
 export const useProducts = (filters: SearchFilters = {}) => {

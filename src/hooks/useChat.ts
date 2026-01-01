@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { chatApi } from '@/api/chat'
-import type { UpdateConversationRequest, CreateChatMessageRequest } from '@/api/chat'
+import { chatApi } from '@user/api/chat'
+import type { UpdateConversationRequest, CreateChatMessageRequest } from '@user/api/chat'
 
 export const useConversations = (filters?: { page?: number; pageSize?: number }) => {
   return useQuery({

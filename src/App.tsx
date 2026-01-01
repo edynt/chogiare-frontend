@@ -1,45 +1,51 @@
 import React, { Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Toaster } from '@/components/ui/sonner'
-import { NotificationProvider } from '@/components/notification-provider'
-import { AuthProvider } from '@/components/auth/AuthProvider'
-import { AdminRoute } from '@/components/auth/AdminRoute'
-import { PerformanceOptimizer } from '@/components/seo/PerformanceOptimizer'
+import { Toaster } from '@shared/components/ui/sonner'
+import { NotificationProvider } from '@shared/components/notification-provider'
+import { AuthProvider } from '@shared/components/auth/AuthProvider'
+import { AdminRoute } from '@shared/components/auth/AdminRoute'
+import { PerformanceOptimizer } from '@shared/components/seo/PerformanceOptimizer'
 
-// Lazy load pages
-const HomePage = React.lazy(() => import('@/pages/HomePage'))
-const ChatPage = React.lazy(() => import('@/pages/ChatPage'))
-const SellerNotificationsPage = React.lazy(() => import('@/pages/SellerNotificationsPage'))
-const TopUpPage = React.lazy(() => import('@/pages/TopUpPage'))
-const PaymentQRPage = React.lazy(() => import('@/pages/PaymentQRPage'))
-const BoostPostPage = React.lazy(() => import('@/pages/BoostPostPage'))
-const AdminPage = React.lazy(() => import('@/pages/admin/AdminPage'))
-const SellerDashboard = React.lazy(() => import('@/pages/SellerDashboard'))
-const SellerProductsPage = React.lazy(() => import('@/pages/SellerProductsPage'))
-const AddProductPage = React.lazy(() => import('@/pages/AddProductPage'))
-const EditProductPage = React.lazy(() => import('@/pages/EditProductPage'))
-const ImportProductsPage = React.lazy(() => import('@/pages/ImportProductsPage'))
-const CustomerManagementPage = React.lazy(() => import('@/pages/CustomerManagementPage'))
-const RevenueReportsPage = React.lazy(() => import('@/pages/RevenueReportsPage'))
-const SellerSupportPage = React.lazy(() => import('@/pages/SellerSupportPage'))
-const NotificationsPage = React.lazy(() => import('@/pages/NotificationsPage'))
-const AuthPage = React.lazy(() => import('@/pages/AuthPage'))
-const VerifyEmailPage = React.lazy(() => import('@/pages/VerifyEmailPage'))
-const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'))
-const OrdersPage = React.lazy(() => import('@/pages/OrdersPage'))
-const OrderDetailPage = React.lazy(() => import('@/pages/OrderDetailPage'))
-const PromotedProductDetailPage = React.lazy(() => import('@/pages/PromotedProductDetailPage'))
-const BuyerDashboardPage = React.lazy(() => import('@/pages/BuyerDashboardPage'))
-const CustomerOrdersPage = React.lazy(() => import('@/pages/CustomerOrdersPage'))
-const SellerDetailPage = React.lazy(() => import('@/pages/SellerDetailPage'))
-const ProductDetailPage = React.lazy(() => import('@/pages/ProductDetailPage'))
-const ProductListPage = React.lazy(() => import('@/pages/ProductListPage'))
-const CheckoutPage = React.lazy(() => import('@/pages/CheckoutPage'))
-const OrderConfirmationPage = React.lazy(() => import('@/pages/OrderConfirmationPage'))
-const CartPage = React.lazy(() => import('@/pages/CartPage'))
-const AddressManagementPage = React.lazy(() => import('@/pages/AddressManagementPage'))
-const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'))
+// Lazy load pages - Admin Domain
+const AdminPage = React.lazy(() => import('@admin/pages/AdminPage'))
+
+// Lazy load pages - User Domain (Buyer)
+const HomePage = React.lazy(() => import('@user/pages/buyer/HomePage'))
+const ChatPage = React.lazy(() => import('@user/pages/buyer/ChatPage'))
+const TopUpPage = React.lazy(() => import('@user/pages/buyer/TopUpPage'))
+const PaymentQRPage = React.lazy(() => import('@user/pages/buyer/PaymentQRPage'))
+const NotificationsPage = React.lazy(() => import('@user/pages/buyer/NotificationsPage'))
+const VerifyEmailPage = React.lazy(() => import('@user/pages/buyer/VerifyEmailPage'))
+const ProfilePage = React.lazy(() => import('@user/pages/buyer/ProfilePage'))
+const OrdersPage = React.lazy(() => import('@user/pages/buyer/OrdersPage'))
+const OrderDetailPage = React.lazy(() => import('@user/pages/buyer/OrderDetailPage'))
+const PromotedProductDetailPage = React.lazy(() => import('@user/pages/buyer/PromotedProductDetailPage'))
+const BuyerDashboardPage = React.lazy(() => import('@user/pages/buyer/BuyerDashboardPage'))
+const SellerDetailPage = React.lazy(() => import('@user/pages/buyer/SellerDetailPage'))
+const ProductDetailPage = React.lazy(() => import('@user/pages/buyer/ProductDetailPage'))
+const ProductListPage = React.lazy(() => import('@user/pages/buyer/ProductListPage'))
+const CheckoutPage = React.lazy(() => import('@user/pages/buyer/CheckoutPage'))
+const OrderConfirmationPage = React.lazy(() => import('@user/pages/buyer/OrderConfirmationPage'))
+const CartPage = React.lazy(() => import('@user/pages/buyer/CartPage'))
+const AddressManagementPage = React.lazy(() => import('@user/pages/buyer/AddressManagementPage'))
+
+// Lazy load pages - User Domain (Seller)
+const SellerNotificationsPage = React.lazy(() => import('@user/pages/seller/SellerNotificationsPage'))
+const BoostPostPage = React.lazy(() => import('@user/pages/seller/BoostPostPage'))
+const SellerDashboard = React.lazy(() => import('@user/pages/seller/SellerDashboard'))
+const SellerProductsPage = React.lazy(() => import('@user/pages/seller/SellerProductsPage'))
+const AddProductPage = React.lazy(() => import('@user/pages/seller/AddProductPage'))
+const EditProductPage = React.lazy(() => import('@user/pages/seller/EditProductPage'))
+const ImportProductsPage = React.lazy(() => import('@user/pages/seller/ImportProductsPage'))
+const CustomerManagementPage = React.lazy(() => import('@user/pages/seller/CustomerManagementPage'))
+const CustomerOrdersPage = React.lazy(() => import('@user/pages/seller/CustomerOrdersPage'))
+const RevenueReportsPage = React.lazy(() => import('@user/pages/seller/RevenueReportsPage'))
+const SellerSupportPage = React.lazy(() => import('@user/pages/seller/SellerSupportPage'))
+
+// Lazy load pages - Shared
+const AuthPage = React.lazy(() => import('@shared/pages/AuthPage'))
+const NotFoundPage = React.lazy(() => import('@shared/pages/NotFoundPage'))
 
 // Create a client
 const queryClient = new QueryClient({

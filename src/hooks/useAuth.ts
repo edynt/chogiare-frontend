@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocation } from 'react-router-dom'
-import { authApi } from '@/api/auth'
+import { authApi } from '@shared/api/auth'
 import { useAuthStore } from '@/stores/authStore'
 
 export const useLogin = (isAdmin = false) => {
@@ -65,15 +65,20 @@ export const useLogout = () => {
 
 export const useProfile = () => {
   const location = useLocation()
+  const { tokens, isAuthenticated } = useAuthStore()
 
   // Don't fetch profile on auth pages (login, register, reset-password, etc.)
   const isAuthPage = location.pathname.startsWith('/auth') || location.pathname === '/admin/login'
   const isAdminPage = location.pathname.startsWith('/admin') && !location.pathname.startsWith('/admin/login')
 
+  // For admin pages: always try to fetch (uses httpOnly cookies, not localStorage tokens)
+  // For user pages: only fetch if we have tokens or are authenticated
+  const hasAuth = isAdminPage || !!(tokens?.accessToken || isAuthenticated)
+
   return useQuery({
     queryKey: ['auth', 'profile', isAdminPage ? 'admin' : 'user'],
     queryFn: isAdminPage ? authApi.getAdminProfile : authApi.getProfile,
-    enabled: !isAuthPage,
+    enabled: !isAuthPage && hasAuth,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   })

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { walletApi } from '@/api/wallet'
-import type { DepositRequest, QueryTransactionParams } from '@/api/wallet'
+import { walletApi } from '@user/api/wallet'
+import type { DepositRequest, QueryTransactionParams } from '@user/api/wallet'
 import { queryKeys } from '@/constants/queryKeys'
 
 export const useWalletBalance = () => {

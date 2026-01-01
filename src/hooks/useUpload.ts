@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { uploadApi, type UploadProgress } from '@/api/upload'
+import { uploadApi, type UploadProgress } from '@shared/api/upload'
 
 export const useUploadFile = () => {
   return useMutation({

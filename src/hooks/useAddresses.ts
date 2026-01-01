@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { addressesApi } from '@/api/addresses'
+import { addressesApi } from '@user/api/addresses'
 import type { Address } from '@/types'
 
 export const useAddresses = () => {

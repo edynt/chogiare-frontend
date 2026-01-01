@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { cartApi } from '@/api/cart'
+import { cartApi } from '@user/api/cart'
 import { useCartStore } from '@/stores/cartStore'
-import type { UpdateCartItemQuantityRequest } from '@/api/cart'
+import type { UpdateCartItemQuantityRequest } from '@user/api/cart'
 
 export const useCart = () => {
   return useQuery({

@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { notificationsApi } from '@/api/notifications'
-import type { QueryNotificationParams, CreateNotificationRequest } from '@/api/notifications'
+import { notificationsApi } from '@user/api/notifications'
+import { adminNotificationsApi } from '@admin/api/notifications'
+import type { QueryNotificationParams } from '@user/api/notifications'
+import type { CreateNotificationRequest } from '@admin/api/notifications'
 import { queryKeys } from '@/constants/queryKeys'
 
 export const useNotifications = (params?: QueryNotificationParams) => {
@@ -82,7 +84,7 @@ export const useCreateNotification = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: CreateNotificationRequest) => notificationsApi.createNotification(data),
+    mutationFn: (data: CreateNotificationRequest) => adminNotificationsApi.createNotification(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() })
       queryClient.invalidateQueries({ queryKey: queryKeys.notifications.unreadCount })

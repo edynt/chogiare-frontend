@@ -14,7 +14,7 @@ import {
     type CreateNotificationData,
     type QueryAdminCategoriesParams,
     type CreateCategoryData,
-} from '@/api/admin'
+} from '@admin/api/admin'
 
 const defaultQueryOptions = {
     retry: (failureCount: number, error: unknown) => {
@@ -163,6 +163,18 @@ export function useBulkSuspendUsers() {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: (userIds: string[]) => adminApi.bulkSuspendUsers(userIds),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+            queryClient.invalidateQueries({ queryKey: ['admin-user-stats'] })
+            queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
+        },
+    })
+}
+
+export function useDeleteUser() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: (id: string) => adminApi.deleteUser(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] })
             queryClient.invalidateQueries({ queryKey: ['admin-user-stats'] })

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { reviewsApi } from '@/api/reviews'
-import type { UpdateReviewRequest } from '@/api/reviews'
+import { reviewsApi } from '@user/api/reviews'
+import type { UpdateReviewRequest } from '@user/api/reviews'
 
 export const useReviews = (filters?: { page?: number; pageSize?: number }) => {
   return useQuery({

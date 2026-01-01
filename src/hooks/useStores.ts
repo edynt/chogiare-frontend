@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { storesApi } from '@/api/stores'
-import type { UpdateStoreRequest, DashboardStats, LowStockProduct, PromotedProduct } from '@/api/stores'
+import { storesApi } from '@user/api/stores'
+import type { UpdateStoreRequest, DashboardStats, LowStockProduct, PromotedProduct } from '@user/api/stores'
 
 export const useStores = (filters?: { page?: number; pageSize?: number }) => {
   return useQuery({
