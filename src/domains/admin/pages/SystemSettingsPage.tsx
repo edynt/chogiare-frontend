@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@shared/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Textarea } from '@shared/components/ui/textarea'
@@ -21,7 +21,6 @@ import {
   RefreshCw,
   Shield,
   DollarSign,
-  Users,
   Package,
   Database,
   Key,
@@ -36,12 +35,9 @@ import {
   HardDrive,
   Cloud,
   Search,
-  Share2,
   FileText,
-  Clock,
   Download,
   Upload,
-  Zap,
   Image,
   Lock,
   Eye,
@@ -50,19 +46,9 @@ import {
   Check,
   Server,
   Activity,
-  Smartphone,
   CreditCard,
   Percent,
-  Timer,
   RotateCcw,
-  Palette,
-  Languages,
-  MapPin,
-  Facebook,
-  Instagram,
-  Twitter,
-  Youtube,
-  MessageCircle,
   Loader2
 } from 'lucide-react'
 import { toast } from 'sonner'

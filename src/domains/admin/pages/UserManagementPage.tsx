@@ -3,13 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@shared/components/ui/select'
+
+
 import {
   Table,
   TableBody,

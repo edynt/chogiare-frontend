@@ -9,7 +9,7 @@ export const useLogin = (isAdmin = false) => {
 
   return useMutation({
     mutationFn: isAdmin ? authApi.adminLogin : authApi.login,
-    onSuccess: (data) => {
+    onSuccess: data => {
       login(data.user, data.tokens)
       queryClient.setQueryData(['auth', 'profile'], data.user)
     },
@@ -24,7 +24,7 @@ export const useRegister = () => {
 
   return useMutation({
     mutationFn: authApi.register,
-    onSuccess: (data) => {
+    onSuccess: data => {
       // Don't automatically login after registration
       // Just show success message and let user confirm email first
       console.log('Registration successful:', data)
@@ -39,14 +39,15 @@ export const useLogout = () => {
   const { logout } = useAuthStore()
   const queryClient = useQueryClient()
   const location = useLocation()
-  
+
   // Determind if we are in admin context based on URL
   const isAdminContext = location.pathname.startsWith('/admin')
 
   return useMutation({
     mutationFn: (isAdminOverride?: boolean) => {
       // Use override if provided, otherwise default to context
-      const isAdmin = typeof isAdminOverride === 'boolean' ? isAdminOverride : isAdminContext
+      const isAdmin =
+        typeof isAdminOverride === 'boolean' ? isAdminOverride : isAdminContext
       return isAdmin ? authApi.adminLogout() : authApi.logout()
     },
     onSuccess: () => {
@@ -68,8 +69,12 @@ export const useProfile = () => {
   const { tokens, isAuthenticated } = useAuthStore()
 
   // Don't fetch profile on auth pages (login, register, reset-password, etc.)
-  const isAuthPage = location.pathname.startsWith('/auth') || location.pathname === '/admin/login'
-  const isAdminPage = location.pathname.startsWith('/admin') && !location.pathname.startsWith('/admin/login')
+  const isAuthPage =
+    location.pathname.startsWith('/auth') ||
+    location.pathname === '/admin/login'
+  const isAdminPage =
+    location.pathname.startsWith('/admin') &&
+    !location.pathname.startsWith('/admin/login')
 
   // For admin pages: always try to fetch (uses httpOnly cookies, not localStorage tokens)
   // For user pages: only fetch if we have tokens or are authenticated
@@ -89,7 +94,7 @@ export const useUpdateProfile = () => {
 
   return useMutation({
     mutationFn: authApi.updateProfile,
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.setQueryData(['auth', 'profile'], data)
     },
   })
@@ -97,8 +102,13 @@ export const useUpdateProfile = () => {
 
 export const useChangePassword = () => {
   return useMutation({
-    mutationFn: ({ currentPassword, newPassword }: { currentPassword: string; newPassword: string }) =>
-      authApi.changePassword(currentPassword, newPassword),
+    mutationFn: ({
+      currentPassword,
+      newPassword,
+    }: {
+      currentPassword: string
+      newPassword: string
+    }) => authApi.changePassword(currentPassword, newPassword),
   })
 }
 
@@ -126,9 +136,14 @@ export const useGoogleAuth = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ accessToken, providerId }: { accessToken: string; providerId?: string }) =>
-      authApi.googleAuth(accessToken, providerId),
-    onSuccess: (data) => {
+    mutationFn: ({
+      accessToken,
+      providerId,
+    }: {
+      accessToken: string
+      providerId?: string
+    }) => authApi.googleAuth(accessToken, providerId),
+    onSuccess: data => {
       login(data.user, data.tokens)
       queryClient.setQueryData(['auth', 'profile'], data.user)
     },
@@ -143,9 +158,14 @@ export const useFacebookAuth = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ accessToken, providerId }: { accessToken: string; providerId?: string }) =>
-      authApi.facebookAuth(accessToken, providerId),
-    onSuccess: (data) => {
+    mutationFn: ({
+      accessToken,
+      providerId,
+    }: {
+      accessToken: string
+      providerId?: string
+    }) => authApi.facebookAuth(accessToken, providerId),
+    onSuccess: data => {
       login(data.user, data.tokens)
       queryClient.setQueryData(['auth', 'profile'], data.user)
     },
@@ -161,7 +181,7 @@ export const useVerifyEmail = () => {
 
   return useMutation({
     mutationFn: authApi.verifyEmail,
-    onSuccess: (data) => {
+    onSuccess: data => {
       login(data.user, data.tokens)
       queryClient.setQueryData(['auth', 'profile'], data.user)
     },

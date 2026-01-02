@@ -10,7 +10,6 @@ import { APP_NAME } from '@/constants/app.constants'
 import { 
   ShoppingBag, 
   Package, 
-  Heart, 
   Store, 
   MessageSquare,
   TrendingUp,

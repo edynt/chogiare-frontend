@@ -15,18 +15,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@shared/components/ui/select'
-import { useProfile, useUpdateProfile, useChangePassword } from '@/hooks/useAuth'
+import { useUserProfile, useUserUpdateProfile, useUserChangePassword } from '@user/hooks/use-user-auth'
 import { toast } from 'sonner'
 import { useUserOrders } from '@/hooks/useOrders'
 import { 
   User, Mail, Phone, MapPin, Package, Eye, Calendar, 
-  Star, ShoppingBag, Shield, Award, TrendingUp,
+  Star, ShoppingBag, Award, TrendingUp,
   Settings, Edit, Camera, Globe, Store, Save, X, CheckCircle2
 } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 
 export function ProfileContent() {
-  const { data: profile, isLoading } = useProfile()
+  const { data: profile, isLoading } = useUserProfile()
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const tabFromUrl = searchParams.get('tab') as 'profile' | 'orders' | 'settings' | 'addresses' | null
@@ -56,8 +56,8 @@ export function ProfileContent() {
     confirmPassword: '',
   })
   const { data: ordersData, isLoading: isLoadingOrders } = useUserOrders({ page: 1, pageSize: 10 })
-  const updateProfileMutation = useUpdateProfile()
-  const changePasswordMutation = useChangePassword()
+  const updateProfileMutation = useUserUpdateProfile()
+  const changePasswordMutation = useUserChangePassword()
 
   useEffect(() => {
     if (tabFromUrl && ['profile', 'orders', 'settings', 'addresses'].includes(tabFromUrl)) {

@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '@shared/components/ui/avatar'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
-import { Card, CardContent } from '@shared/components/ui/card'
 import { 
   Send, 
   Phone, 
@@ -15,7 +13,7 @@ import {
   Check,
   CheckCheck
 } from 'lucide-react'
-import { cn, formatPrice, getApiErrorMessage } from '@/lib/utils'
+import { cn, getApiErrorMessage } from '@/lib/utils'
 import { useConversation, useConversationMessages, useSendMessage } from '@/hooks/useChat'
 import { useAuthStore } from '@/stores/authStore'
 import { toast } from 'sonner'

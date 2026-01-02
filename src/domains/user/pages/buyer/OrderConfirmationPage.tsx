@@ -9,7 +9,6 @@ import { useOrder } from '@/hooks/useOrders'
 import type { Order as ApiOrder } from '@user/api/orders'
 import { LoadingSpinner } from '@shared/components/ui/loading'
 import { ErrorMessage } from '@shared/components/ui/error-boundary'
-import { APP_NAME } from '@/constants/app.constants'
 import { 
   CheckCircle2, 
   Package,

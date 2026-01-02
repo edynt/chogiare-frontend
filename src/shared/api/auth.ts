@@ -19,14 +19,15 @@ async function withErrorHandling<T>(apiCall: () => Promise<T>): Promise<T> {
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens; roles?: string[] }>>(
+      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens; roles?: string[]; roleIds?: number[] }>>(
         '/auth/login',
         credentials
       )
       const data = response.data.data
       const userWithRoles = {
         ...data.user,
-        roles: (data.roles || []) as UserRole[]
+        roles: (data.roles || []) as UserRole[],
+        roleIds: data.roleIds || []
       }
       return {
         user: userWithRoles,
@@ -37,14 +38,15 @@ export const authApi = {
 
   adminLogin: async (credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens; roles?: string[] }>>(
+      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens; roles?: string[]; roleIds?: number[] }>>(
         '/auth/admin/login',
         credentials
       )
       const data = response.data.data
       const userWithRoles = {
         ...data.user,
-        roles: (data.roles || []) as UserRole[]
+        roles: (data.roles || []) as UserRole[],
+        roleIds: data.roleIds || []
       }
       return {
         user: userWithRoles,

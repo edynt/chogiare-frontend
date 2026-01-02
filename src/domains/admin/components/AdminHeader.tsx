@@ -1,8 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Search, Settings, User, LogOut, Menu, Sun, Loader2 } from 'lucide-react'
+import { Bell, Settings, User, LogOut, Menu, Loader2 } from 'lucide-react'
 import { Button } from '@shared/components/ui/button'
-import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
 import {
   DropdownMenu,
@@ -17,7 +16,7 @@ import {
   useMarkHeaderNotificationAsRead,
   useMarkAllHeaderNotificationsAsRead,
 } from '@/hooks/useAdmin'
-import { useLogout } from '@/hooks/useAuth'
+import { useAdminLogout } from '@admin/hooks/use-admin-auth'
 
 interface AdminHeaderProps {
   onMenuClick?: () => void
@@ -29,7 +28,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const { data: notificationsData, isLoading } = useAdminHeaderNotifications(10)
   const markAsRead = useMarkHeaderNotificationAsRead()
   const markAllAsRead = useMarkAllHeaderNotificationsAsRead()
-  const logoutMutation = useLogout()
+  const logoutMutation = useAdminLogout()
 
   const notifications = notificationsData?.items || []
   const unreadCount = notificationsData?.unreadCount || 0
@@ -169,7 +168,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                   // But wait, user said "no api call". 
                   // Let's keep it simple.
                   console.log('Logout selected - triggering mutation')
-                  logoutMutation.mutate(true)
+                  logoutMutation.mutate()
                 }}
               >
                 <LogOut className="h-4 w-4 mr-2" />

@@ -38,7 +38,7 @@ import {
   useNotifications,
   useUnreadNotificationCount,
 } from '@/hooks/useNotifications'
-import { useLogout } from '@/hooks/useAuth'
+import { useUserLogout } from '@user/hooks/use-user-auth'
 
 export function Header() {
   const { isAuthenticated, user } = useAuthStore()
@@ -46,7 +46,7 @@ export function Header() {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const logoutMutation = useLogout()
+  const logoutMutation = useUserLogout()
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()

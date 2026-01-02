@@ -27,7 +27,6 @@ import {
   DollarSign,
   ShoppingCart,
   CreditCard,
-  Truck,
   Phone,
   Mail,
   CheckCircle,

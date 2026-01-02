@@ -13,13 +13,51 @@ export interface User {
   showPhone?: boolean
   isVerified?: boolean
   roles: UserRole[]
+  roleIds?: number[]  // Numeric role IDs: 1=admin, 2=user
   postCount: number
   storeInfo?: StoreInfo
   createdAt: string
   updatedAt: string
 }
 
-export type UserRole = 'buyer' | 'seller' | 'admin'
+// String role names for backward compatibility
+export type UserRole = 'buyer' | 'seller' | 'admin' | 'user'
+
+/**
+ * Centralized Role Constants
+ * Must match backend role definitions
+ */
+export const ROLES = {
+  ADMIN: {
+    id: 1,
+    name: 'admin' as const,
+    description: 'Administrator with full system access',
+  },
+  USER: {
+    id: 2,
+    name: 'user' as const,
+    description: 'Regular user/buyer',
+  },
+  SELLER: {
+    id: 3,
+    name: 'seller' as const,
+    description: 'Seller with store management capabilities',
+  },
+} as const
+
+// Export role IDs for easy access
+export const ROLE_IDS = {
+  ADMIN: ROLES.ADMIN.id,
+  USER: ROLES.USER.id,
+  SELLER: ROLES.SELLER.id,
+} as const
+
+// Export role names for easy access
+export const ROLE_NAMES = {
+  ADMIN: ROLES.ADMIN.name,
+  USER: ROLES.USER.name,
+  SELLER: ROLES.SELLER.name,
+} as const
 
 export interface StoreInfo {
   id: string
