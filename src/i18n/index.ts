@@ -109,7 +109,6 @@ export interface Translation {
     productDetails: string
     specifications: string
     questions: string
-    shipping: string
     warranty: string
     returnPolicy: string
   }
@@ -256,9 +255,9 @@ export interface Translation {
     title: string
     orderSummary: string
     paymentMethod: string
-    shippingAddress: string
+    deliveryAddress: string
     billingAddress: string
-    sameAsShipping: string
+    sameAsDelivery: string
     placeOrder: string
     securePayment: string
     trust: {
@@ -392,7 +391,6 @@ export const translations: Record<Language, Translation> = {
       productDetails: 'Chi tiết sản phẩm',
       specifications: 'Thông số kỹ thuật',
       questions: 'Câu hỏi',
-      shipping: 'Vận chuyển',
       warranty: 'Bảo hành',
       returnPolicy: 'Chính sách đổi trả'
     },
@@ -527,9 +525,9 @@ export const translations: Record<Language, Translation> = {
       title: 'Thanh toán',
       orderSummary: 'Tóm tắt đơn hàng',
       paymentMethod: 'Phương thức thanh toán',
-      shippingAddress: 'Địa chỉ giao hàng',
+      deliveryAddress: 'Địa chỉ giao hàng',
       billingAddress: 'Địa chỉ thanh toán',
-      sameAsShipping: 'Giống địa chỉ giao hàng',
+      sameAsDelivery: 'Giống địa chỉ giao hàng',
       placeOrder: 'Đặt hàng',
       securePayment: 'Thanh toán an toàn',
       trust: {
@@ -661,7 +659,6 @@ export const translations: Record<Language, Translation> = {
       productDetails: 'Product Details',
       specifications: 'Specifications',
       questions: 'Questions',
-      shipping: 'Shipping',
       warranty: 'Warranty',
       returnPolicy: 'Return Policy'
     },
@@ -796,9 +793,9 @@ export const translations: Record<Language, Translation> = {
       title: 'Payment',
       orderSummary: 'Order Summary',
       paymentMethod: 'Payment Method',
-      shippingAddress: 'Shipping Address',
+      deliveryAddress: 'Delivery Address',
       billingAddress: 'Billing Address',
-      sameAsShipping: 'Same as shipping address',
+      sameAsDelivery: 'Same as delivery address',
       placeOrder: 'Place Order',
       securePayment: 'Secure Payment',
       trust: {

@@ -180,19 +180,6 @@ export default function PromotionManagementPage() {
       description: 'Áp dụng cho tất cả sản phẩm mỹ phẩm'
     },
     {
-      id: 'PROMO-002',
-      name: 'Miễn phí vận chuyển',
-      type: 'free_shipping',
-      status: 'active',
-      startDate: '2024-01-01',
-      endDate: '2024-12-31',
-      applicableProducts: 'all',
-      conditions: 'Đơn hàng từ 300k được miễn phí vận chuyển',
-      usageCount: 1234,
-      revenue: 1234000000,
-      description: 'Miễn phí vận chuyển cho đơn hàng từ 300k'
-    },
-    {
       id: 'PROMO-003',
       name: 'Giảm giá theo số lượng',
       type: 'bulk_discount',
@@ -632,8 +619,7 @@ export default function PromotionManagementPage() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {promotion.type === 'buy_x_get_y' ? 'Mua X tặng Y' :
-                         promotion.type === 'free_shipping' ? 'Miễn phí ship' : 'Giảm theo SL'}
+                        {promotion.type === 'buy_x_get_y' ? 'Mua X tặng Y' : 'Giảm theo SL'}
                       </Badge>
                     </TableCell>
                     <TableCell>

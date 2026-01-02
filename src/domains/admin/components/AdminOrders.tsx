@@ -20,18 +20,18 @@ export function AdminOrders() {
       customer: 'Nguyễn Văn A',
       product: 'iPhone 14 Pro Max',
       amount: 25000000,
-      status: 'delivered',
+      status: 'completed',
       orderDate: '2024-01-15',
-      deliveryDate: '2024-01-17'
+      completedDate: '2024-01-17'
     },
     {
       id: '12346',
       customer: 'Trần Thị B',
       product: 'MacBook Pro M2',
       amount: 35000000,
-      status: 'shipping',
+      status: 'confirmed',
       orderDate: '2024-01-16',
-      deliveryDate: null
+      completedDate: null
     },
     {
       id: '12347',
@@ -40,18 +40,20 @@ export function AdminOrders() {
       amount: 28000000,
       status: 'cancelled',
       orderDate: '2024-01-14',
-      deliveryDate: null
+      completedDate: null
     }
   ]
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'delivered':
-        return <Badge variant="success">Đã giao</Badge>
-      case 'shipping':
-        return <Badge variant="secondary">Đang giao</Badge>
+      case 'completed':
+        return <Badge variant="success">Hoàn thành</Badge>
+      case 'confirmed':
+        return <Badge variant="secondary">Đã xác nhận</Badge>
       case 'pending':
         return <Badge variant="warning">Chờ xử lý</Badge>
+      case 'ready_for_pickup':
+        return <Badge variant="secondary">Sẵn sàng lấy hàng</Badge>
       case 'cancelled':
         return <Badge variant="destructive">Đã hủy</Badge>
       default:
@@ -61,9 +63,10 @@ export function AdminOrders() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'delivered':
+      case 'completed':
         return <CheckCircle className="h-4 w-4 text-success" />
-      case 'shipping':
+      case 'confirmed':
+      case 'ready_for_pickup':
         return <Truck className="h-4 w-4 text-info" />
       case 'pending':
         return <Clock className="h-4 w-4 text-warning" />

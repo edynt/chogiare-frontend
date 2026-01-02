@@ -150,7 +150,7 @@ export interface Order {
   status: OrderStatus
   paymentMethod: PaymentMethod
   paymentStatus: PaymentStatus
-  shippingAddress: Address
+  deliveryAddress: Address
   notes?: string
   createdAt: string
   updatedAt: string
@@ -184,7 +184,6 @@ export interface Review {
   seller?: User
   rating: number
   comment?: string
-  images?: string[]
   isVerified: boolean
   createdAt: string
 }

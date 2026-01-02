@@ -318,7 +318,6 @@ const DEFAULT_SETTINGS: SystemSettings = {
       termsOfService: '/terms',
       privacyPolicy: '/privacy',
       refundPolicy: '/refund-policy',
-      shippingPolicy: '/shipping-policy',
       cookiePolicy: '/cookies',
       gdprCompliance: true,
       cookieConsent: true,
@@ -2028,14 +2027,6 @@ export default function SystemSettingsPage() {
                 <Label>Chính sách hoàn tiền</Label>
                 <Input
                   value={settings.legal.refundPolicy}
-                  disabled={!isEditing}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label>Chính sách vận chuyển</Label>
-                <Input
-                  value={settings.legal.shippingPolicy}
                   disabled={!isEditing}
                   className="mt-1"
                 />

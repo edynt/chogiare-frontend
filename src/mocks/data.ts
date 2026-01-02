@@ -183,7 +183,7 @@ export const demoData: DemoData = {
       discount: index % 3 === 0 ? Math.floor(order.total * 0.1) : 0,
       total: order.total - (index % 3 === 0 ? Math.floor(order.total * 0.1) : 0),
       currency: 'VND',
-      shippingAddress: addresses[index % addresses.length],
+      deliveryAddress: addresses[index % addresses.length],
       billingAddress: addresses[index % addresses.length],
       notes: index % 4 === 0 ? 'Giao hàng trong giờ hành chính' : '',
       storeName: 'TechStore Pro',

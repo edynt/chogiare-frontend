@@ -85,8 +85,6 @@ export default function AddProductPage() {
   const [isFactory, setIsFactory] = useState(false)
   const [isWarranty, setIsWarranty] = useState(false)
   const [isReturnable, setIsReturnable] = useState(false)
-  const [shippingNationwide, setShippingNationwide] = useState(false)
-  const [deliveryTime, setDeliveryTime] = useState('')
   const [returnPolicy, setReturnPolicy] = useState('')
 
   const {
@@ -747,23 +745,6 @@ export default function AddProductPage() {
                     onCheckedChange={(checked) => setIsFactory(checked as boolean)}
                   />
                   <Label htmlFor="isFactory">Là xưởng sản xuất</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="shippingNationwide"
-                    checked={shippingNationwide}
-                    onCheckedChange={(checked) => setShippingNationwide(checked as boolean)}
-                  />
-                  <Label htmlFor="shippingNationwide">Giao hàng toàn quốc</Label>
-                </div>
-                <div>
-                  <Label htmlFor="deliveryTime">Thời gian giao hàng dự kiến</Label>
-                  <Input
-                    id="deliveryTime"
-                    placeholder="VD: 3-5 ngày"
-                    value={deliveryTime}
-                    onChange={(e) => setDeliveryTime(e.target.value)}
-                  />
                 </div>
               </CardContent>
             </Card>

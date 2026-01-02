@@ -579,8 +579,7 @@ export const handlers = [
         totalOrders: demoData.orders.length,
         pendingOrders: 2,
         processingOrders: 1,
-        shippedOrders: 3,
-        deliveredOrders: 5,
+        completedOrders: 8,
         cancelledOrders: 1,
         totalRevenue: 5000000,
         averageOrderValue: 250000,
@@ -593,7 +592,7 @@ export const handlers = [
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const pageSize = parseInt(url.searchParams.get('page_size') || '10')
-    
+
     const reviews = Array.from({ length: 20 }, (_, i) => ({
       id: `review-${i + 1}`,
       productId: `prod-${(i % 5) + 1}`,
@@ -601,9 +600,7 @@ export const handlers = [
       rating: Math.floor(Math.random() * 5) + 1,
       title: `Review ${i + 1}`,
       comment: `This is review ${i + 1}`,
-      images: [],
       isVerified: Math.random() > 0.5,
-      helpful: Math.floor(Math.random() * 10),
       userName: 'User Name',
       userEmail: 'user@example.com',
       userAvatar: '/avatar.jpg',
@@ -612,7 +609,7 @@ export const handlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }))
-    
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -629,7 +626,7 @@ export const handlers = [
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const pageSize = parseInt(url.searchParams.get('page_size') || '10')
-    
+
     const reviews = Array.from({ length: 10 }, (_, i) => ({
       id: `review-${i + 1}`,
       productId: params.productId,
@@ -637,9 +634,7 @@ export const handlers = [
       rating: Math.floor(Math.random() * 5) + 1,
       title: `Review ${i + 1}`,
       comment: `This is review ${i + 1}`,
-      images: [],
       isVerified: Math.random() > 0.5,
-      helpful: Math.floor(Math.random() * 10),
       buyerId: `user-${i + 1}`,
       buyer: {
         id: `user-${i + 1}`,
@@ -657,7 +652,7 @@ export const handlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }))
-    
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -676,9 +671,7 @@ export const handlers = [
       id: `review-${Date.now()}`,
       ...data,
       userId: 1,
-      images: [],
       isVerified: false,
-      helpful: 0,
       userName: 'User Name',
       userEmail: 'user@example.com',
       userAvatar: '/avatar.jpg',
@@ -687,7 +680,7 @@ export const handlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: newReview,

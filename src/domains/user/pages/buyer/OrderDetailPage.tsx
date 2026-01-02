@@ -186,7 +186,7 @@ export default function OrderDetailPage() {
   
   const buyerName = order.userName || 'N/A'
   const buyerPhone = order.userEmail || 'N/A'
-  const fullAddress = order.shippingAddress || ''
+  const fullAddress = order.deliveryAddress || ''
   const buyerNotes = order.notes || ''
   const orderNumber = order.id
 

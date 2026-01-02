@@ -108,7 +108,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const [selectedBoostPackage, setSelectedBoostPackage] = useState<BoostPackage | null>(null)
   const [reviewRating, setReviewRating] = useState<number>(5)
   const [reviewComment, setReviewComment] = useState<string>('')
-  const [reviewImages, setReviewImages] = useState<string[]>([])
 
   const { data: product, isLoading, error, refetch } = useProduct(productIdToUse || '')
   const { data: reviewsData } = useProductReviews(productIdToUse || '', { page: 1, pageSize: 5 })
@@ -1358,38 +1357,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   rows={5}
                 />
               </div>
-              <div>
-                <Label className="mb-3 block">Thêm ảnh (tùy chọn, tối đa 5 ảnh)</Label>
-                <div className="flex gap-2 flex-wrap">
-                  {reviewImages.map((img, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={img}
-                        alt={`Review ${index + 1}`}
-                        className="w-20 h-20 object-cover rounded-lg"
-                      />
-                      <button
-                        onClick={() => setReviewImages(reviewImages.filter((_, i) => i !== index))}
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                  {reviewImages.length < 5 && (
-                    <button
-                      onClick={() => {
-                        // Simulate image upload
-                        const url = prompt('Nhập URL ảnh (demo)')
-                        if (url) setReviewImages([...reviewImages, url])
-                      }}
-                      className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-primary transition-colors"
-                    >
-                      <ImageIcon className="h-6 w-6 text-gray-400" />
-                    </button>
-                  )}
-                </div>
-              </div>
               <Button
                 className="w-full"
                 onClick={() => {
@@ -1400,7 +1367,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   // Handle submit review
                   alert('Đã gửi đánh giá thành công!')
                   setReviewComment('')
-                  setReviewImages([])
                   setReviewRating(5)
                 }}
               >

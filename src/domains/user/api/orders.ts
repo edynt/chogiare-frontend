@@ -51,8 +51,7 @@ export interface OrderStats {
   totalOrders: number
   pendingOrders: number
   processingOrders: number
-  shippedOrders: number
-  deliveredOrders: number
+  completedOrders: number
   cancelledOrders: number
   totalRevenue: number
   averageOrderValue: number
@@ -61,7 +60,7 @@ export interface OrderStats {
 export interface CreateOrderRequest {
   storeId: number
   paymentMethod?: string
-  shippingAddressId?: number
+  deliveryAddressId?: number
   billingAddressId?: number
   notes?: string
   items: CreateOrderItemRequest[]
@@ -75,7 +74,7 @@ export interface CreateOrderItemRequest {
 export interface CreateOrderFromCartRequest {
   storeId: number
   paymentMethod?: string
-  shippingAddressId?: number
+  deliveryAddressId?: number
   billingAddressId?: number
   notes?: string
 }
@@ -84,7 +83,7 @@ export interface UpdateOrderRequest {
   status?: string
   paymentStatus?: string
   paymentMethod?: string
-  shippingAddressId?: number
+  deliveryAddressId?: number
   billingAddressId?: number
   notes?: string
 }

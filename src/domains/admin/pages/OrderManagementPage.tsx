@@ -467,11 +467,6 @@ export default function OrderManagementPage() {
                         <TableCell>
                           <div>
                             <p className="font-medium text-gray-900">{order.id}</p>
-                            {order.trackingNumber && (
-                              <p className="text-sm text-gray-500">
-                                Tracking: {order.trackingNumber}
-                              </p>
-                            )}
                           </div>
                         </TableCell>
                         <TableCell>

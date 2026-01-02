@@ -66,7 +66,6 @@ interface ShopProfile {
   }
   policies: {
     returnPolicy: string
-    shippingPolicy: string
     warrantyPolicy: string
     privacyPolicy: string
   }
@@ -150,7 +149,6 @@ export default function ShopProfileSettingsPage() {
     },
     policies: {
       returnPolicy: 'Chấp nhận đổi trả trong 30 ngày với điều kiện sản phẩm còn nguyên vẹn.',
-      shippingPolicy: 'Miễn phí ship cho đơn hàng từ 500.000đ. Giao hàng toàn quốc.',
       warrantyPolicy: 'Bảo hành chính hãng theo quy định của nhà sản xuất.',
       privacyPolicy: 'Cam kết bảo mật thông tin khách hàng tuyệt đối.'
     },
@@ -611,16 +609,6 @@ export default function ShopProfileSettingsPage() {
                         id="returnPolicy"
                         value={formData.policies.returnPolicy}
                         onChange={(e) => handleNestedInputChange('policies', 'returnPolicy', e.target.value)}
-                        disabled={!isEditing}
-                        rows={3}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="shippingPolicy">Chính sách vận chuyển</Label>
-                      <Textarea
-                        id="shippingPolicy"
-                        value={formData.policies.shippingPolicy}
-                        onChange={(e) => handleNestedInputChange('policies', 'shippingPolicy', e.target.value)}
                         disabled={!isEditing}
                         rows={3}
                       />

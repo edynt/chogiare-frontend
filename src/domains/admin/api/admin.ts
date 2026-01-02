@@ -221,7 +221,7 @@ export interface AdminOrder {
   discount: number
   total: number
   currency: string
-  shippingAddress: string
+  deliveryAddress: string
   billingAddress: string
   notes?: string
   storeName?: string
@@ -236,7 +236,6 @@ export interface AdminOrder {
   createdAt: string
   updatedAt: string
   completedAt?: string
-  trackingNumber?: string
   commission?: number
   netAmount?: number
 }
@@ -255,7 +254,6 @@ export interface AdminOrderStats {
   totalCommission: number
   pendingOrders: number
   processingOrders: number
-  shippedOrders: number
   completedOrders: number
   cancelledOrders: number
 }
@@ -724,7 +722,6 @@ export const adminApi = {
   getUsers: async (
     params?: QueryAdminUsersParams
   ): Promise<AdminUserListResponse> => {
-    return
     try {
       const response = await apiClient.get<ApiResponse<AdminUserListResponse>>(
         '/admin/users',
@@ -752,7 +749,6 @@ export const adminApi = {
   },
 
   getUserStats: async (): Promise<AdminUserStats> => {
-    return
     try {
       const response =
         await apiClient.get<ApiResponse<AdminUserStats>>('/admin/users/stats')
@@ -855,7 +851,6 @@ export const adminApi = {
         totalCommission: 0,
         pendingOrders: 0,
         processingOrders: 0,
-        shippedOrders: 0,
         completedOrders: 0,
         cancelledOrders: 0,
       })

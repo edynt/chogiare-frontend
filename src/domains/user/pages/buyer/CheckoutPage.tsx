@@ -118,7 +118,7 @@ export default function CheckoutPage() {
       const orderData = {
         storeId,
         paymentMethod: 'bank_transfer' as const,
-        shippingAddressId: addressId,
+        deliveryAddressId: addressId,
         billingAddressId: addressId,
         items: orderItems.map(item => ({
           productId: typeof item.productId === 'string' ? parseInt(item.productId, 10) : item.productId,
