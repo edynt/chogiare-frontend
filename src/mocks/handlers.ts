@@ -1203,10 +1203,62 @@ export const handlers = [
       country: 'Việt Nam',
       isDefault: true,
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: address,
+    })
+  }),
+
+  // Admin Moderation Products endpoint
+  http.get('/api/admin/moderation/products', ({ request }) => {
+    const url = new URL(request.url)
+    const page = parseInt(url.searchParams.get('page') || '1')
+    const pageSize = parseInt(url.searchParams.get('pageSize') || '10')
+    const status = url.searchParams.get('status')
+    const category = url.searchParams.get('category')
+    const priority = url.searchParams.get('priority')
+    const search = url.searchParams.get('search')
+
+    let filteredProducts = [...(demoData.moderationProducts || [])]
+
+    // Apply filters
+    if (status) {
+      filteredProducts = filteredProducts.filter(p => p.status === status)
+    }
+
+    if (category) {
+      filteredProducts = filteredProducts.filter(p => p.category === category)
+    }
+
+    if (priority) {
+      filteredProducts = filteredProducts.filter(p => p.priority === priority)
+    }
+
+    if (search) {
+      const searchLower = search.toLowerCase()
+      filteredProducts = filteredProducts.filter(p =>
+        p.title.toLowerCase().includes(searchLower) ||
+        p.seller.toLowerCase().includes(searchLower) ||
+        p.description.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Pagination
+    const startIndex = (page - 1) * pageSize
+    const endIndex = startIndex + pageSize
+    const paginatedProducts = filteredProducts.slice(startIndex, endIndex)
+    const totalPages = Math.ceil(filteredProducts.length / pageSize)
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        items: paginatedProducts,
+        total: filteredProducts.length,
+        page,
+        pageSize,
+        totalPages,
+      },
     })
   }),
 ]

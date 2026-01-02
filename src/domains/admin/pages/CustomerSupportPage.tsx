@@ -37,7 +37,6 @@ import {
 import { toast } from 'sonner'
 import {
   useTickets,
-  useTicketStats,
   useUpdateTicketStatus,
   useReplyToTicket,
 } from '@/hooks/useAdmin'
@@ -63,7 +62,6 @@ export default function CustomerSupportPage() {
     category: categoryFilter !== 'all' ? categoryFilter : undefined,
   })
 
-  const { data: stats } = useTicketStats()
   const updateStatusMutation = useUpdateTicketStatus()
   const replyMutation = useReplyToTicket()
 
@@ -223,7 +221,7 @@ export default function CustomerSupportPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Tổng ticket</p>
-                    <p className="text-2xl font-bold text-gray-900">{stats?.total ?? 0}</p>
+                    <p className="text-2xl font-bold text-gray-900">0</p>
                   </div>
                 </div>
               </CardContent>
@@ -236,7 +234,7 @@ export default function CustomerSupportPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Đang mở</p>
-                    <p className="text-2xl font-bold text-gray-900">{stats?.open ?? 0}</p>
+                    <p className="text-2xl font-bold text-gray-900">0</p>
                     <p className="text-xs text-red-600">Cần xử lý</p>
                   </div>
                 </div>
@@ -250,7 +248,7 @@ export default function CustomerSupportPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Đang xử lý</p>
-                    <p className="text-2xl font-bold text-gray-900">{stats?.inProgress ?? 0}</p>
+                    <p className="text-2xl font-bold text-gray-900">0</p>
                     <p className="text-xs text-yellow-600">Trong tiến trình</p>
                   </div>
                 </div>
@@ -264,7 +262,7 @@ export default function CustomerSupportPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Đã giải quyết</p>
-                    <p className="text-2xl font-bold text-gray-900">{stats?.resolved ?? 0}</p>
+                    <p className="text-2xl font-bold text-gray-900">0</p>
                     <p className="text-xs text-green-600">Tháng này</p>
                   </div>
                 </div>

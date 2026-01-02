@@ -1,5 +1,68 @@
 import type { DemoData } from '@/types'
+import type { ModerationProduct } from '@admin/api/admin'
 import sampleData from '../../public/data/sample-products.json'
+
+function generateModerationProducts(): ModerationProduct[] {
+  const statuses: Array<'pending' | 'approved' | 'rejected' | 'draft'> = ['pending', 'approved', 'rejected', 'draft']
+  const priorities: Array<'high' | 'medium' | 'low'> = ['high', 'medium', 'low']
+  const categories = ['Điện thoại', 'Laptop', 'Máy tính bảng', 'Phụ kiện', 'Đồng hồ', 'Thiết bị âm thanh']
+  const sellers = [
+    { id: 'seller-1', name: 'TechStore Pro' },
+    { id: 'seller-2', name: 'Gadget World' },
+    { id: 'seller-3', name: 'Digital Plaza' },
+    { id: 'seller-4', name: 'Smart Devices' },
+    { id: 'seller-5', name: 'Elite Electronics' },
+  ]
+  const violations = [
+    'Hình ảnh không rõ ràng',
+    'Thiếu thông tin chi tiết',
+    'Giá không hợp lý',
+    'Mô tả sản phẩm không chính xác',
+    'Vi phạm chính sách nội dung',
+  ]
+  const tags = ['Hot', 'Sale', 'New', 'Trending', 'Limited']
+
+  const products: ModerationProduct[] = []
+
+  for (let i = 1; i <= 50; i++) {
+    const status = statuses[Math.floor(Math.random() * statuses.length)]
+    const priority = priorities[Math.floor(Math.random() * priorities.length)]
+    const seller = sellers[Math.floor(Math.random() * sellers.length)]
+    const category = categories[Math.floor(Math.random() * categories.length)]
+    const aiScore = Math.random() * 100
+    const hasViolations = aiScore < 70
+    const submittedDate = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000)
+
+    products.push({
+      id: `mod-prod-${i}`,
+      title: `Sản phẩm ${i} - ${category}`,
+      seller: seller.name,
+      sellerId: seller.id,
+      category,
+      price: Math.floor(Math.random() * 50000000) + 1000000,
+      originalPrice: Math.floor(Math.random() * 60000000) + 1000000,
+      status,
+      priority,
+      submittedAt: submittedDate.toISOString(),
+      reviewedAt: status !== 'pending' ? new Date(submittedDate.getTime() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString() : undefined,
+      reviewer: status !== 'pending' ? 'Admin User' : undefined,
+      images: [
+        `https://images.unsplash.com/photo-${1500000000000 + i}?w=400&h=400&fit=crop`,
+        `https://images.unsplash.com/photo-${1500000000001 + i}?w=400&h=400&fit=crop`,
+      ],
+      description: `Mô tả chi tiết cho sản phẩm ${i}. Đây là một sản phẩm chất lượng cao với nhiều tính năng ưu việt.`,
+      violations: hasViolations ? [violations[Math.floor(Math.random() * violations.length)]] : [],
+      aiScore: Math.round(aiScore),
+      manualReview: aiScore < 60 || hasViolations,
+      tags: [tags[Math.floor(Math.random() * tags.length)]],
+      stock: Math.floor(Math.random() * 100) + 1,
+      views: Math.floor(Math.random() * 1000),
+      sales: Math.floor(Math.random() * 50),
+    })
+  }
+
+  return products
+}
 
 export const demoData: DemoData = {
   categories: sampleData.categories.map(cat => ({
@@ -38,6 +101,7 @@ export const demoData: DemoData = {
     // Remove the old category field and ensure we have categoryId
     category: undefined,
   })),
+  moderationProducts: generateModerationProducts(),
   users: sampleData.users.map(user => ({
     ...user,
     roles: ['buyer'] as const,

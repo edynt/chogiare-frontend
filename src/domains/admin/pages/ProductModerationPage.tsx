@@ -35,7 +35,6 @@ import { PLACEHOLDER_IMAGE } from '@/lib/utils'
 import { toast } from 'sonner'
 import {
   useModerationProducts,
-  useModerationStats,
   useApproveProduct,
   useRejectProduct,
   useBulkApproveProducts,
@@ -59,8 +58,6 @@ export default function ProductModerationPage() {
     category: categoryFilter !== 'all' ? categoryFilter : undefined,
     priority: priorityFilter !== 'all' ? priorityFilter : undefined,
   })
-
-  const { data: stats } = useModerationStats()
 
   const approveProductMutation = useApproveProduct()
   const rejectProductMutation = useRejectProduct()
@@ -582,7 +579,7 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Chờ duyệt</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {stats?.pending ?? 0}
+                  {productsData?.items.filter(p => p.status === 'pending').length ?? 0}
                 </p>
               </div>
             </div>
@@ -597,7 +594,7 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Đã duyệt</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {stats?.approved ?? 0}
+                  {productsData?.items.filter(p => p.status === 'approved').length ?? 0}
                 </p>
               </div>
             </div>
@@ -612,7 +609,7 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Từ chối</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {stats?.rejected ?? 0}
+                  {productsData?.items.filter(p => p.status === 'rejected').length ?? 0}
                 </p>
               </div>
             </div>
@@ -627,7 +624,7 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">AI Score TB</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {stats?.avgAiScore ?? 0}%
+                  0%
                 </p>
               </div>
             </div>

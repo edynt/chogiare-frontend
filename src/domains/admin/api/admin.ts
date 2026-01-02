@@ -952,21 +952,6 @@ export const adminApi = {
     }
   },
 
-  getModerationStats: async (): Promise<ModerationStats> => {
-    try {
-      const response = await apiClient.get<ApiResponse<ModerationStats>>(
-        '/admin/moderation/stats'
-      )
-      return response.data.data
-    } catch (error) {
-      return handleApiError(error, {
-        pending: 0,
-        approved: 0,
-        rejected: 0,
-        avgAiScore: 0,
-      })
-    }
-  },
 
   approveProduct: async (id: string): Promise<ModerationProduct> => {
     const response = await apiClient.put<ApiResponse<ModerationProduct>>(

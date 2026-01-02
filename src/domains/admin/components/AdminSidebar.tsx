@@ -18,8 +18,6 @@ import {
 } from 'lucide-react'
 import {
   useAdminUserStats,
-  useModerationStats,
-  useTicketStats,
 } from '@/hooks/useAdmin'
 
 interface MenuItem {
@@ -95,14 +93,12 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
 
   // Fetch badge counts from API
   const { data: userStats } = useAdminUserStats()
-  const { data: moderationStats } = useModerationStats()
-  const { data: ticketStats } = useTicketStats()
 
   // Build badge counts object
   const badgeCounts: Record<string, number> = {
     pendingUsers: userStats?.pending ?? 0,
-    pendingProducts: moderationStats?.pending ?? 0,
-    openTickets: (ticketStats?.open ?? 0) + (ticketStats?.inProgress ?? 0),
+    pendingProducts: 0,
+    openTickets: 0,
   }
 
   const getBadgeValue = (badgeKey?: string): string | null => {

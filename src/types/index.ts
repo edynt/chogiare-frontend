@@ -270,6 +270,7 @@ export interface DemoData {
   categories: Category[]
   users: User[]
   orders: Order[]
+  moderationProducts?: any[]
 }
 
 export interface PaymentData {

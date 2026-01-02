@@ -266,13 +266,6 @@ export function useModerationProducts(params?: QueryModerationProductsParams) {
     })
 }
 
-export function useModerationStats() {
-    return useQuery({
-        queryKey: ['moderation-stats'],
-        queryFn: () => adminApi.getModerationStats(),
-        ...defaultQueryOptions,
-    })
-}
 
 export function useApproveProduct() {
     const queryClient = useQueryClient()
@@ -458,13 +451,6 @@ export function useTicket(id: string) {
     })
 }
 
-export function useTicketStats() {
-    return useQuery({
-        queryKey: ['admin-ticket-stats'],
-        queryFn: () => adminApi.getTicketStats(),
-        ...defaultQueryOptions,
-    })
-}
 
 export function useUpdateTicketStatus() {
     const queryClient = useQueryClient()
