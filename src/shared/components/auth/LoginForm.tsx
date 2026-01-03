@@ -45,16 +45,15 @@ export function LoginForm({ isAdmin = false }: { isAdmin?: boolean }) {
       await new Promise((resolve, reject) => {
         loginMutation.mutate(data, {
           onSuccess: (response) => {
-            // Store tokens in localStorage
-            apiClient.setAuthTokens(response.tokens)
-            
+            // Tokens are stored as HttpOnly cookies by the backend
+
             // Check for admin role
             if (response.user.roles && response.user.roles.includes('admin')) {
               redirectPath.current = '/admin'
             } else {
               redirectPath.current = '/'
             }
-            
+
             resolve(undefined)
           },
           onError: (error: unknown) => {

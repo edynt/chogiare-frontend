@@ -7,12 +7,12 @@ import { useAuthStore } from '@/stores/authStore'
  * User Authentication Hooks
  * Dedicated hooks for user authentication - no conditional logic
  * All hooks directly call user-specific API endpoints
- * Uses token-based authentication (localStorage)
+ * Uses cookie-based authentication (HttpOnly cookies)
  */
 
 /**
  * User Login Hook
- * Authenticates regular user and stores tokens in localStorage
+ * Authenticates regular user - tokens stored as HttpOnly cookies by backend
  * Redirects to home or intended page on success
  */
 export const useUserLogin = () => {
@@ -22,7 +22,9 @@ export const useUserLogin = () => {
   return useMutation({
     mutationFn: authApi.login,
     onSuccess: data => {
-      login(data.user, data.tokens)
+      // Tokens are stored as HttpOnly cookies by the backend
+      // We only store user info in the store
+      login(data.user)
       queryClient.setQueryData(['auth', 'profile', 'user'], data.user)
     },
     onError: (error: Error) => {
@@ -33,12 +35,11 @@ export const useUserLogin = () => {
 
 /**
  * User Profile Hook
- * Fetches user profile using token-based authentication (localStorage)
+ * Fetches user profile using cookie-based authentication (HttpOnly cookies)
  * Only enabled on non-admin routes (excluding auth pages)
  */
 export const useUserProfile = () => {
   const location = useLocation()
-  const { tokens, isAuthenticated } = useAuthStore()
 
   // Don't fetch on auth pages
   const isAuthPage = location.pathname.startsWith('/auth')
@@ -46,8 +47,8 @@ export const useUserProfile = () => {
   // Don't fetch on admin pages
   const isAdminPage = location.pathname.startsWith('/admin')
 
-  // Only fetch if we have tokens or are authenticated, and not on auth/admin pages
-  const shouldFetch = (tokens?.accessToken || isAuthenticated) && !isAuthPage && !isAdminPage
+  // Fetch on user pages (backend will check HttpOnly cookies)
+  const shouldFetch = !isAuthPage && !isAdminPage
 
   return useQuery({
     queryKey: ['auth', 'profile', 'user'],

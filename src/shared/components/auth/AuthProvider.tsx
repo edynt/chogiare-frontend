@@ -9,33 +9,9 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const location = useLocation()
-  const { isAuthenticated, tokens, setUser, setTokens, setLoading, setError } = useAuthStore()
+  const { isAuthenticated, setUser, setLoading, setError } = useAuthStore()
   const { data: profile, error, isLoading } = useProfile()
-  const hasInitialized = useRef(false)
   const errorHandled = useRef(false)
-
-  // Check if we're in admin context (admin cookies are httpOnly, not stored in localStorage)
-  const isAdminPage = location.pathname.startsWith('/admin') && !location.pathname.startsWith('/admin/login')
-
-  // Initialize tokens from localStorage (only for non-admin context)
-  useEffect(() => {
-    if (hasInitialized.current || isAdminPage) return
-
-    const storedTokens = localStorage.getItem('auth_tokens')
-    if (storedTokens) {
-      try {
-        const parsedTokens = JSON.parse(storedTokens)
-        if (parsedTokens.accessToken) {
-          setTokens(parsedTokens)
-        } else {
-          localStorage.removeItem('auth_tokens')
-        }
-      } catch {
-        localStorage.removeItem('auth_tokens')
-      }
-    }
-    hasInitialized.current = true
-  }, [setTokens, isAdminPage])
 
   // Sync profile to auth store
   useEffect(() => {
@@ -51,12 +27,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     errorHandled.current = true
 
     setUser(null)
-    setTokens(null)
-    if (!isAdminPage) {
-      localStorage.removeItem('auth_tokens')
-    }
     setError(null)
-  }, [setUser, setTokens, setError, isAdminPage])
+  }, [setUser, setError])
 
   useEffect(() => {
     if (error) {
@@ -69,12 +41,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Update loading state
   useEffect(() => {
-    const shouldLoad = !isAdminPage && tokens && !isAuthenticated
-    setLoading(shouldLoad ? isLoading : false)
-  }, [isLoading, tokens, isAuthenticated, setLoading, isAdminPage])
+    setLoading(isLoading && !isAuthenticated)
+  }, [isLoading, isAuthenticated, setLoading])
 
-  // Show loading only during initial non-admin auth check
-  if (isLoading && tokens && !isAuthenticated && !isAdminPage && !hasInitialized.current) {
+  // Show loading only during initial auth check
+  if (isLoading && !isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">

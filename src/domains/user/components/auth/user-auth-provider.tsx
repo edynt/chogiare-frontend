@@ -10,36 +10,15 @@ interface UserAuthProviderProps {
  * User Authentication Provider
  * Manages authentication state for user routes
  * Features:
- * - Token-based authentication (localStorage)
+ * - Cookie-based authentication (HttpOnly cookies)
  * - Automatic profile fetching on mount
  * - Error handling for 401 responses
- * - Token persistence across sessions
+ * - No localStorage interaction (cookies handled by browser)
  */
 export function UserAuthProvider({ children }: UserAuthProviderProps) {
-  const { setUser, setTokens, setLoading, setError, tokens, isAuthenticated } = useAuthStore()
+  const { setUser, setLoading, setError, isAuthenticated } = useAuthStore()
   const { data: profile, error, isLoading } = useUserProfile()
-  const hasInitialized = useRef(false)
   const errorHandled = useRef(false)
-
-  // Initialize tokens from localStorage
-  useEffect(() => {
-    if (hasInitialized.current) return
-
-    const storedTokens = localStorage.getItem('auth_tokens')
-    if (storedTokens) {
-      try {
-        const parsedTokens = JSON.parse(storedTokens)
-        if (parsedTokens.accessToken) {
-          setTokens(parsedTokens)
-        } else {
-          localStorage.removeItem('auth_tokens')
-        }
-      } catch {
-        localStorage.removeItem('auth_tokens')
-      }
-    }
-    hasInitialized.current = true
-  }, [setTokens])
 
   // Sync profile to auth store
   useEffect(() => {
@@ -55,10 +34,8 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
     errorHandled.current = true
 
     setUser(null)
-    setTokens(null)
-    localStorage.removeItem('auth_tokens')
     setError(null)
-  }, [setUser, setTokens, setError])
+  }, [setUser, setError])
 
   useEffect(() => {
     if (error) {
@@ -71,12 +48,11 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
 
   // Update loading state
   useEffect(() => {
-    const shouldLoad = tokens && !isAuthenticated
-    setLoading(shouldLoad ? isLoading : false)
-  }, [isLoading, tokens, isAuthenticated, setLoading])
+    setLoading(isLoading && !isAuthenticated)
+  }, [isLoading, isAuthenticated, setLoading])
 
   // Show loading during initial auth check
-  if (isLoading && tokens && !isAuthenticated && !hasInitialized.current) {
+  if (isLoading && !isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">

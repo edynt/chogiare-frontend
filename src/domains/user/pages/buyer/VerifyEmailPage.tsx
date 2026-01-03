@@ -68,8 +68,8 @@ export default function VerifyEmailPage() {
     }
 
     verifyMutation.mutate(code, {
-      onSuccess: (response) => {
-        apiClient.setAuthTokens(response.tokens)
+      onSuccess: () => {
+        // Tokens are stored as HttpOnly cookies by the backend
         notify({
           type: 'success',
           title: 'Xác minh thành công',

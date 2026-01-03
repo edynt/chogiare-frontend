@@ -10,7 +10,9 @@ export const useLogin = (isAdmin = false) => {
   return useMutation({
     mutationFn: isAdmin ? authApi.adminLogin : authApi.login,
     onSuccess: data => {
-      login(data.user, data.tokens)
+      // Tokens are stored as HttpOnly cookies by the backend
+      // We only store user info in the store
+      login(data.user)
       queryClient.setQueryData(['auth', 'profile'], data.user)
     },
     onError: (error: Error) => {
@@ -66,7 +68,6 @@ export const useLogout = () => {
 
 export const useProfile = () => {
   const location = useLocation()
-  const { tokens, isAuthenticated } = useAuthStore()
 
   // Don't fetch profile on auth pages (login, register, reset-password, etc.)
   const isAuthPage =
@@ -76,14 +77,14 @@ export const useProfile = () => {
     location.pathname.startsWith('/admin') &&
     !location.pathname.startsWith('/admin/login')
 
-  // For admin pages: always try to fetch (uses httpOnly cookies, not localStorage tokens)
-  // For user pages: only fetch if we have tokens or are authenticated
-  const hasAuth = isAdminPage || !!(tokens?.accessToken || isAuthenticated)
+  // Always try to fetch profile when not on auth pages
+  // The backend will check the HttpOnly cookies automatically
+  const shouldFetch = !isAuthPage
 
   return useQuery({
     queryKey: ['auth', 'profile', isAdminPage ? 'admin' : 'user'],
     queryFn: isAdminPage ? authApi.getAdminProfile : authApi.getProfile,
-    enabled: !isAuthPage && hasAuth,
+    enabled: shouldFetch,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   })
@@ -144,7 +145,8 @@ export const useGoogleAuth = () => {
       providerId?: string
     }) => authApi.googleAuth(accessToken, providerId),
     onSuccess: data => {
-      login(data.user, data.tokens)
+      // Tokens are stored as HttpOnly cookies by the backend
+      login(data.user)
       queryClient.setQueryData(['auth', 'profile'], data.user)
     },
     onError: (error: Error) => {
@@ -166,7 +168,8 @@ export const useFacebookAuth = () => {
       providerId?: string
     }) => authApi.facebookAuth(accessToken, providerId),
     onSuccess: data => {
-      login(data.user, data.tokens)
+      // Tokens are stored as HttpOnly cookies by the backend
+      login(data.user)
       queryClient.setQueryData(['auth', 'profile'], data.user)
     },
     onError: (error: Error) => {
@@ -182,7 +185,8 @@ export const useVerifyEmail = () => {
   return useMutation({
     mutationFn: authApi.verifyEmail,
     onSuccess: data => {
-      login(data.user, data.tokens)
+      // Tokens are stored as HttpOnly cookies by the backend
+      login(data.user)
       queryClient.setQueryData(['auth', 'profile'], data.user)
     },
     onError: (error: Error) => {

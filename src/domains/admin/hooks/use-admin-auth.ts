@@ -22,7 +22,8 @@ export const useAdminLogin = () => {
   return useMutation({
     mutationFn: authApi.adminLogin,
     onSuccess: data => {
-      login(data.user, data.tokens)
+      // Tokens are stored as HttpOnly cookies by the backend
+      login(data.user)
       queryClient.setQueryData(['auth', 'profile', 'admin'], data.user)
     },
     onError: (error: Error) => {
@@ -38,7 +39,6 @@ export const useAdminLogin = () => {
  */
 export const useAdminProfile = () => {
   const location = useLocation()
-  const { tokens, isAuthenticated } = useAuthStore()
 
   // Don't fetch on admin login page
   const isAdminLoginPage = location.pathname === '/admin/login'
@@ -47,13 +47,10 @@ export const useAdminProfile = () => {
   const isAdminRoute =
     location.pathname.startsWith('/admin') && !isAdminLoginPage
 
-  // For admin: try to fetch if we have tokens or are authenticated
-  const hasAuth = !!(tokens?.accessToken || isAuthenticated)
-
   return useQuery({
     queryKey: ['auth', 'profile', 'admin'],
     queryFn: authApi.getAdminProfile,
-    enabled: isAdminRoute && hasAuth,
+    enabled: isAdminRoute,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   })

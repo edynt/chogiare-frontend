@@ -8,10 +8,19 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    exclude: [
+      'node_modules',
+      'dist',
+      '.claude',
+      '**/*.node.test.js',
+    ],
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@admin': path.resolve(__dirname, './src/domains/admin'),
+      '@user': path.resolve(__dirname, './src/domains/user'),
+      '@shared': path.resolve(__dirname, './src/shared'),
     },
   },
 })

@@ -53,11 +53,9 @@ export function AdminLoginForm() {
     execute(async () => {
       const response = await authApi.adminLogin(data)
 
-      // Store tokens in localStorage for admin session
-      apiClient.setAuthTokens(response.tokens)
-
-      // Update auth store
-      login(response.user, response.tokens)
+      // Tokens are stored as HttpOnly cookies by the backend
+      // We only store user info in the store
+      login(response.user)
       queryClient.setQueryData(['auth', 'profile', 'admin'], response.user)
     })
   }

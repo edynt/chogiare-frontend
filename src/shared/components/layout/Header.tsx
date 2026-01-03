@@ -255,15 +255,13 @@ export function Header() {
             {/* User Menu */}
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
-                {/* Only show "Quản lý sản phẩm" for sellers */}
-                {user?.roles?.includes('seller') && (
-                  <Link to="/seller/products">
-                    <Button variant="ghost" size="sm">
-                      <Settings className="h-4 w-4 mr-2" />
-                      Quản lý sản phẩm
-                    </Button>
-                  </Link>
-                )}
+                {/* Show "Quản lý sản phẩm" for all authenticated users */}
+                <Link to="/seller/products">
+                  <Button variant="ghost" size="sm">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Quản lý sản phẩm
+                  </Button>
+                </Link>
 
                 {/* Profile Dropdown */}
                 <DropdownMenu>
@@ -356,32 +354,28 @@ export function Header() {
 
                     <DropdownMenuSeparator />
 
-                    {/* Business Section - Only for sellers */}
-                    {user?.roles?.includes('seller') && (
-                      <>
-                        <DropdownMenuGroup>
-                          <DropdownMenuItem asChild>
-                            <Link
-                              to="/seller/products"
-                              className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
-                            >
-                              <Settings className="mr-2 h-4 w-4" />
-                              <span>Quản lý sản phẩm</span>
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link
-                              to="/seller/support"
-                              className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
-                            >
-                              <HelpCircle className="mr-2 h-4 w-4" />
-                              <span>Hỗ trợ & Khiếu nại</span>
-                            </Link>
-                          </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                      </>
-                    )}
+                    {/* Business Section - Available to all authenticated users */}
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          to="/seller/products"
+                          className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
+                        >
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Quản lý sản phẩm</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          to="/seller/support"
+                          className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
+                        >
+                          <HelpCircle className="mr-2 h-4 w-4" />
+                          <span>Hỗ trợ & Khiếu nại</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
 
                     {/* Settings Section */}
                     <DropdownMenuGroup>
@@ -599,29 +593,25 @@ export function Header() {
                       <span>Đơn hàng của tôi</span>
                     </Link>
 
-                    {/* Seller Only Section */}
-                    {user?.roles?.includes('seller') && (
-                      <>
-                        <div className="my-2 border-t" />
-                        <Link
-                          to="/seller/products"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
-                        >
-                          <Settings className="h-5 w-5" />
-                          <span>Quản lý sản phẩm</span>
-                        </Link>
+                    {/* Business Section - Available to all authenticated users */}
+                    <div className="my-2 border-t" />
+                    <Link
+                      to="/seller/products"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                    >
+                      <Settings className="h-5 w-5" />
+                      <span>Quản lý sản phẩm</span>
+                    </Link>
 
-                        <Link
-                          to="/seller/support"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
-                        >
-                          <HelpCircle className="h-5 w-5" />
-                          <span>Hỗ trợ & Khiếu nại</span>
-                        </Link>
-                      </>
-                    )}
+                    <Link
+                      to="/seller/support"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                    >
+                      <HelpCircle className="h-5 w-5" />
+                      <span>Hỗ trợ & Khiếu nại</span>
+                    </Link>
 
                     <div className="my-2 border-t" />
 

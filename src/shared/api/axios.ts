@@ -115,8 +115,8 @@ export function parseApiError(error: unknown): string {
 class ApiClient {
   private client: AxiosInstance
   private isRefreshing = false
-  private refreshSubscribers: Array<(token: string) => void> = []
-  private refreshTokenPromise: Promise<string> | null = null
+  private refreshSubscribers: Array<() => void> = []
+  private refreshTokenPromise: Promise<void> | null = null
 
   constructor() {
     this.client = axios.create({
@@ -135,14 +135,14 @@ class ApiClient {
     // Request interceptor - cookies handle auth automatically via withCredentials
     this.client.interceptors.request.use(
       (config) => {
-        // Cookies are sent automatically with withCredentials: true
-        // No need to manually set Authorization header for cookie-based auth
+        // Cookies (accessToken, refreshToken) are sent automatically with withCredentials: true
+        // No need to manually set Authorization header
         return config
       },
       (error) => Promise.reject(error)
     )
 
-    // Response interceptor to handle token refresh
+    // Response interceptor to handle 401 errors
     this.client.interceptors.response.use(
       (response) => response,
       async (error) => {
@@ -160,30 +160,22 @@ class ApiClient {
           '/auth/verify-reset-token',
           '/auth/google',
           '/auth/facebook',
+          '/auth/refresh',
           '/admin/login',
         ]
         const isAuthEndpoint = authEndpoints.some(endpoint => requestUrl.includes(endpoint))
 
         if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
-          const isAdminPage = window.location.pathname.startsWith('/admin')
-          const isAuthPage = window.location.pathname.startsWith('/auth/')
+          const isAuthPage =
+            window.location.pathname.startsWith('/auth/') ||
+            window.location.pathname === '/admin/login'
 
-          // For admin pages, cookies are httpOnly - we can't refresh from frontend
-          // Just redirect to login when 401 occurs
-          if (isAdminPage) {
-            if (!isAuthPage && window.location.pathname !== '/admin/login') {
-              window.location.href = '/admin/login'
-            }
-            return Promise.reject(error)
-          }
-
-          // For user pages, try token refresh via localStorage
+          // Try token refresh with cookies
           if (this.isRefreshing) {
             // If already refreshing, queue this request
-            return new Promise((resolve) => {
-              this.refreshSubscribers.push((token: string) => {
-                originalRequest.headers.Authorization = `Bearer ${token}`
-                resolve(this.client(originalRequest))
+            return new Promise((resolve, reject) => {
+              this.refreshSubscribers.push(() => {
+                this.client(originalRequest).then(resolve).catch(reject)
               })
             })
           }
@@ -192,17 +184,19 @@ class ApiClient {
           this.isRefreshing = true
 
           try {
-            const newToken = await this.refreshAccessToken()
-            this.refreshSubscribers.forEach((callback) => callback(newToken))
+            await this.refreshAccessToken()
+            this.refreshSubscribers.forEach((callback) => callback())
             this.refreshSubscribers = []
-
-            originalRequest.headers.Authorization = `Bearer ${newToken}`
             return this.client(originalRequest)
           } catch (refreshError) {
             this.refreshSubscribers = []
-            this.clearStoredTokens()
+
+            // Redirect to appropriate login page
             if (!isAuthPage) {
-              window.location.href = '/auth/login'
+              const loginUrl = window.location.pathname.startsWith('/admin')
+                ? '/admin/login'
+                : '/auth/login'
+              window.location.href = loginUrl
             }
             return Promise.reject(refreshError)
           } finally {
@@ -215,58 +209,33 @@ class ApiClient {
     )
   }
 
-  private async refreshAccessToken(): Promise<string> {
+  private async refreshAccessToken(): Promise<void> {
     if (this.refreshTokenPromise) {
       return this.refreshTokenPromise
     }
 
     this.refreshTokenPromise = this.performTokenRefresh()
-    
+
     try {
-      const newToken = await this.refreshTokenPromise
-      return newToken
+      await this.refreshTokenPromise
     } finally {
       this.refreshTokenPromise = null
     }
   }
 
-  private async performTokenRefresh(): Promise<string> {
-    const tokens = this.getStoredTokens()
-    if (!tokens?.refreshToken) {
-      throw new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại')
-    }
-
+  private async performTokenRefresh(): Promise<void> {
     try {
       const baseURL = import.meta.env['VITE_API_URL'] || '/api'
-      const response = await axios.post(`${baseURL}/auth/refresh`, {
-        refreshToken: tokens.refreshToken,
-      })
-
-      const newTokens: AuthTokens = response.data.data || response.data
-      this.storeTokens(newTokens)
-      
-      return newTokens.accessToken
+      // The refresh token is sent automatically via cookies (withCredentials: true)
+      await axios.post(
+        `${baseURL}/auth/refresh`,
+        {},
+        { withCredentials: true }
+      )
+      // New tokens are set as cookies by the server
     } catch (error) {
-      this.clearStoredTokens()
-      throw error
+      throw new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại')
     }
-  }
-
-  private getStoredTokens(): AuthTokens | null {
-    try {
-      const tokens = localStorage.getItem('auth_tokens')
-      return tokens ? JSON.parse(tokens) : null
-    } catch {
-      return null
-    }
-  }
-
-  private storeTokens(tokens: AuthTokens): void {
-    localStorage.setItem('auth_tokens', JSON.stringify(tokens))
-  }
-
-  private clearStoredTokens(): void {
-    localStorage.removeItem('auth_tokens')
   }
 
   // Public methods
@@ -290,12 +259,14 @@ class ApiClient {
     return this.client.delete<T>(url, config)
   }
 
-  setAuthTokens(tokens: AuthTokens): void {
-    this.storeTokens(tokens)
-  }
-
+  /**
+   * Clear authentication state
+   * Note: HttpOnly cookies are cleared by the server on logout
+   * This method is kept for compatibility but does nothing
+   */
   clearAuthTokens(): void {
-    this.clearStoredTokens()
+    // Cookies are HttpOnly and managed by the server
+    // No client-side cleanup needed
   }
 }
 

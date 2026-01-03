@@ -22,6 +22,7 @@ export { addressesApi } from '@user/api/addresses'
 export { reportsApi } from '@user/api/reports'
 export { walletApi } from '@user/api/wallet'
 export { notificationsApi } from '@user/api/notifications'
+export { sellerApi } from '@user/api/seller'
 
 // Re-export types for convenience
 export type {
@@ -85,3 +86,9 @@ export type {
   QueryNotificationParams,
   MarkAsReadResponse
 } from '@user/api/notifications'
+
+export type {
+  SellerDashboardStats,
+  RevenueStats,
+  CustomerStats
+} from '@user/api/seller'

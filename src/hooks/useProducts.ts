@@ -1,5 +1,6 @@
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { productsApi, getCategories } from '@user/api/products'
+import { sellerApi } from '@user/api/seller'
 import type { Product, SearchFilters } from '@/types'
 
 export const useProducts = (filters: SearchFilters = {}) => {
@@ -67,7 +68,7 @@ export const useCreateProduct = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: productsApi.createProduct,
+    mutationFn: sellerApi.createProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] })
       queryClient.invalidateQueries({ queryKey: ['seller', 'products'] })
@@ -80,7 +81,7 @@ export const useUpdateProduct = () => {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<Product> }) =>
-      productsApi.updateProduct(id, data),
+      sellerApi.updateProduct(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['product', id] })
       queryClient.invalidateQueries({ queryKey: ['products'] })
@@ -93,7 +94,7 @@ export const useDeleteProduct = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: productsApi.deleteProduct,
+    mutationFn: sellerApi.deleteProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] })
       queryClient.invalidateQueries({ queryKey: ['seller', 'products'] })
@@ -104,7 +105,7 @@ export const useDeleteProduct = () => {
 export const useSellerProducts = (filters: Omit<SearchFilters, 'sellerId'> = {}) => {
   return useQuery({
     queryKey: ['seller', 'products', filters],
-    queryFn: () => productsApi.getMyProducts(filters),
+    queryFn: () => sellerApi.getMyProducts(filters),
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }
@@ -113,7 +114,7 @@ export const useBulkUpdateProducts = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: productsApi.bulkUpdateProducts,
+    mutationFn: sellerApi.bulkUpdateProducts,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['seller', 'products'] })
       queryClient.invalidateQueries({ queryKey: ['products'] })
@@ -124,7 +125,7 @@ export const useBulkUpdateProducts = () => {
 export const useMyProducts = (filters: Omit<SearchFilters, 'sellerId'> = {}) => {
   return useQuery({
     queryKey: ['products', 'my', filters],
-    queryFn: () => productsApi.getMyProducts(filters),
+    queryFn: () => sellerApi.getMyProducts(filters),
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }

@@ -57,11 +57,9 @@ export function UserLoginForm() {
     execute(async () => {
       const response = await authApi.login(data)
 
-      // Store tokens in localStorage
-      apiClient.setAuthTokens(response.tokens)
-
-      // Update auth store
-      login(response.user, response.tokens)
+      // Tokens are stored as HttpOnly cookies by the backend
+      // We only store user info in the store
+      login(response.user)
       queryClient.setQueryData(['auth', 'profile', 'user'], response.user)
     })
   }

@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { UserAuthProvider } from '@user/components/auth/user-auth-provider'
+import { UserRouteGuard } from '@user/components/auth/user-route-guard'
 import UserAuthPage from '@user/pages/user-auth-page'
 
 // Lazy load pages - User Domain (Buyer)
@@ -73,12 +74,8 @@ export function UserApp() {
           <Route path="/promoted-products/:productId" element={<PromotedProductDetailPage />} />
           <Route path="/shop/:id" element={<SellerDetailPage />} />
 
-          {/* User routes (buyer & seller) */}
-          <Route path="/chat" element={<ChatPage />} />
-          <Route path="/chat/:chatId" element={<ChatPage />} />
+          {/* Seller routes - Available to all authenticated users */}
           <Route path="/seller/notifications" element={<SellerNotificationsPage />} />
-          <Route path="/top-up" element={<TopUpPage />} />
-          <Route path="/payment-qr" element={<PaymentQRPage />} />
           <Route path="/boost-post" element={<BoostPostPage />} />
           <Route path="/seller/:id" element={<SellerDashboard />} />
           <Route path="/dashboard" element={<SellerDashboard />} />
@@ -90,6 +87,12 @@ export function UserApp() {
           <Route path="/seller/customers" element={<CustomerManagementPage />} />
           <Route path="/seller/revenue" element={<RevenueReportsPage />} />
           <Route path="/seller/support" element={<SellerSupportPage />} />
+
+          {/* Buyer/User routes - Requires authentication */}
+          <Route path="/chat" element={<ChatPage />} />
+          <Route path="/chat/:chatId" element={<ChatPage />} />
+          <Route path="/top-up" element={<TopUpPage />} />
+          <Route path="/payment-qr" element={<PaymentQRPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/customer-orders" element={<CustomerOrdersPage />} />
