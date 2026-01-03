@@ -112,6 +112,11 @@ export function parseApiError(error: unknown): string {
   }
 }
 
+// Session storage keys for tracking refresh failures
+const REFRESH_FAILURE_KEY = 'auth_refresh_failed'
+const REFRESH_FAILURE_TIMESTAMP_KEY = 'auth_refresh_failed_timestamp'
+const REFRESH_COOLDOWN_MS = 5000 
+
 class ApiClient {
   private client: AxiosInstance
   private isRefreshing = false
@@ -129,6 +134,35 @@ class ApiClient {
     })
 
     this.setupInterceptors()
+  }
+
+  /**
+   * Check if we're in refresh cooldown period to prevent rapid retry loops
+   * Returns true if in cooldown, false if can attempt refresh
+   */
+  private isInRefreshCooldown(): boolean {
+    const failedTimestamp = sessionStorage.getItem(REFRESH_FAILURE_TIMESTAMP_KEY)
+    if (!failedTimestamp) return false
+
+    const elapsed = Date.now() - parseInt(failedTimestamp, 10)
+    return elapsed < REFRESH_COOLDOWN_MS
+  }
+
+  /**
+   * Mark refresh as failed to prevent infinite loops
+   * Sets both flag and timestamp for cooldown tracking
+   */
+  private markRefreshFailed(loginUrl: string): void {
+    sessionStorage.setItem(REFRESH_FAILURE_KEY, loginUrl)
+    sessionStorage.setItem(REFRESH_FAILURE_TIMESTAMP_KEY, Date.now().toString())
+  }
+
+  /**
+   * Clear refresh failure flags (called on successful auth)
+   */
+  public clearRefreshFailureFlags(): void {
+    sessionStorage.removeItem(REFRESH_FAILURE_KEY)
+    sessionStorage.removeItem(REFRESH_FAILURE_TIMESTAMP_KEY)
   }
 
   private setupInterceptors(): void {
@@ -170,6 +204,18 @@ class ApiClient {
             window.location.pathname.startsWith('/auth/') ||
             window.location.pathname === '/admin/login'
 
+          const loginUrl = window.location.pathname.startsWith('/admin')
+            ? '/admin/login'
+            : '/auth/login'
+
+          // Check if we're in cooldown period - if yes, redirect immediately without retry
+          if (this.isInRefreshCooldown()) {
+            if (!isAuthPage) {
+              window.location.href = loginUrl
+            }
+            return Promise.reject(new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại'))
+          }
+
           // Try token refresh with cookies
           if (this.isRefreshing) {
             // If already refreshing, queue this request
@@ -185,17 +231,19 @@ class ApiClient {
 
           try {
             await this.refreshAccessToken()
+            // Refresh succeeded - clear failure flags
+            this.clearRefreshFailureFlags()
             this.refreshSubscribers.forEach((callback) => callback())
             this.refreshSubscribers = []
             return this.client(originalRequest)
           } catch (refreshError) {
             this.refreshSubscribers = []
 
+            // Mark refresh as failed to prevent immediate retry
+            this.markRefreshFailed(loginUrl)
+
             // Redirect to appropriate login page
             if (!isAuthPage) {
-              const loginUrl = window.location.pathname.startsWith('/admin')
-                ? '/admin/login'
-                : '/auth/login'
               window.location.href = loginUrl
             }
             return Promise.reject(refreshError)

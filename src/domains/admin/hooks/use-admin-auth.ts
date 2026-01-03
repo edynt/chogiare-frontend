@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocation } from 'react-router-dom'
 import { authApi } from '@shared/api/auth'
 import { useAuthStore } from '@/stores/authStore'
+import { apiClient } from '@shared/api/axios'
 
 /**
  * Admin Authentication Hooks
@@ -25,6 +26,7 @@ export const useAdminLogin = () => {
       // Tokens are stored as HttpOnly cookies by the backend
       login(data.user)
       queryClient.setQueryData(['auth', 'profile', 'admin'], data.user)
+      apiClient.clearRefreshFailureFlags()
     },
     onError: (error: Error) => {
       setError(error.message)
@@ -37,7 +39,7 @@ export const useAdminLogin = () => {
  * Fetches admin profile using cookie-based authentication
  * Only enabled on /admin/* routes (excluding /admin/login)
  */
-export const useAdminProfile = () => {
+export const useAdminProfile = (options?: { enabled?: boolean }) => {
   const location = useLocation()
 
   // Don't fetch on admin login page
@@ -47,10 +49,12 @@ export const useAdminProfile = () => {
   const isAdminRoute =
     location.pathname.startsWith('/admin') && !isAdminLoginPage
 
+  const enabled = options?.enabled !== undefined ? options.enabled : isAdminRoute
+
   return useQuery({
     queryKey: ['auth', 'profile', 'admin'],
     queryFn: authApi.getAdminProfile,
-    enabled: isAdminRoute,
+    enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   })

@@ -6,18 +6,26 @@ interface AdminAuthProviderProps {
   children: React.ReactNode
 }
 
+// Session storage key for tracking refresh failures
+const REFRESH_FAILURE_KEY = 'auth_refresh_failed'
+
 /**
  * Admin Authentication Provider
  * Manages authentication state for admin routes only
  * Features:
  * - Cookie-based authentication (HttpOnly cookies)
- * - Automatic profile fetching on mount
+ * - Automatic profile fetching on mount (unless refresh just failed)
  * - Error handling for 401 responses
  * - No localStorage interaction (cookies handled by browser)
+ * - Prevents infinite refresh loops via cooldown checking
  */
 export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   const { setUser, setLoading, setError, isAuthenticated } = useAuthStore()
-  const { data: profile, error, isLoading } = useAdminProfile()
+  const refreshJustFailed = sessionStorage.getItem(REFRESH_FAILURE_KEY) === '/admin/login'
+
+  const { data: profile, error, isLoading } = useAdminProfile({
+    enabled: !refreshJustFailed, 
+  })
   const errorHandled = useRef(false)
 
   // Sync profile to auth store
@@ -48,11 +56,18 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
 
   // Update loading state
   useEffect(() => {
-    setLoading(isLoading && !isAuthenticated)
-  }, [isLoading, isAuthenticated, setLoading])
+    setLoading(isLoading && !isAuthenticated && !refreshJustFailed)
+  }, [isLoading, isAuthenticated, refreshJustFailed, setLoading])
 
-  // Show loading during initial auth check
-  if (isLoading && !isAuthenticated) {
+  // If refresh just failed, redirect to login immediately (shouldn't auto-fetch profile)
+  useEffect(() => {
+    if (refreshJustFailed) {
+      window.location.href = '/admin/login'
+    }
+  }, [refreshJustFailed])
+
+  // Show loading during initial auth check (but not if refresh just failed)
+  if (isLoading && !isAuthenticated && !refreshJustFailed) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-900">
         <div className="text-center">

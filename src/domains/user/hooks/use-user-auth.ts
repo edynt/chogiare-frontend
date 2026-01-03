@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocation } from 'react-router-dom'
 import { authApi } from '@shared/api/auth'
 import { useAuthStore } from '@/stores/authStore'
+import { apiClient } from '@shared/api/axios'
 
 /**
  * User Authentication Hooks
@@ -26,6 +27,7 @@ export const useUserLogin = () => {
       // We only store user info in the store
       login(data.user)
       queryClient.setQueryData(['auth', 'profile', 'user'], data.user)
+      apiClient.clearRefreshFailureFlags()
     },
     onError: (error: Error) => {
       setError(error.message)
@@ -38,7 +40,7 @@ export const useUserLogin = () => {
  * Fetches user profile using cookie-based authentication (HttpOnly cookies)
  * Only enabled on non-admin routes (excluding auth pages)
  */
-export const useUserProfile = () => {
+export const useUserProfile = (options?: { enabled?: boolean }) => {
   const location = useLocation()
 
   // Don't fetch on auth pages
@@ -50,10 +52,12 @@ export const useUserProfile = () => {
   // Fetch on user pages (backend will check HttpOnly cookies)
   const shouldFetch = !isAuthPage && !isAdminPage
 
+  const enabled = options?.enabled !== undefined ? options.enabled : shouldFetch
+
   return useQuery({
     queryKey: ['auth', 'profile', 'user'],
     queryFn: authApi.getProfile,
-    enabled: shouldFetch,
+    enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   })

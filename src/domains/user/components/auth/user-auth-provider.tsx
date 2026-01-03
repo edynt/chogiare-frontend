@@ -6,18 +6,27 @@ interface UserAuthProviderProps {
   children: React.ReactNode
 }
 
+// Session storage key for tracking refresh failures
+const REFRESH_FAILURE_KEY = 'auth_refresh_failed'
+
 /**
  * User Authentication Provider
  * Manages authentication state for user routes
  * Features:
  * - Cookie-based authentication (HttpOnly cookies)
- * - Automatic profile fetching on mount
+ * - Automatic profile fetching on mount (unless refresh just failed)
  * - Error handling for 401 responses
  * - No localStorage interaction (cookies handled by browser)
+ * - Prevents infinite refresh loops via cooldown checking
  */
 export function UserAuthProvider({ children }: UserAuthProviderProps) {
   const { setUser, setLoading, setError, isAuthenticated } = useAuthStore()
-  const { data: profile, error, isLoading } = useUserProfile()
+
+  const refreshJustFailed = sessionStorage.getItem(REFRESH_FAILURE_KEY) === '/auth/login'
+
+  const { data: profile, error, isLoading } = useUserProfile({
+    enabled: !refreshJustFailed, // Disable profile fetch if refresh just failed
+  })
   const errorHandled = useRef(false)
 
   // Sync profile to auth store
@@ -48,11 +57,17 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
 
   // Update loading state
   useEffect(() => {
-    setLoading(isLoading && !isAuthenticated)
-  }, [isLoading, isAuthenticated, setLoading])
+    setLoading(isLoading && !isAuthenticated && !refreshJustFailed)
+  }, [isLoading, isAuthenticated, refreshJustFailed, setLoading])
 
-  // Show loading during initial auth check
-  if (isLoading && !isAuthenticated) {
+  useEffect(() => {
+    if (refreshJustFailed) {
+      window.location.href = '/auth/login'
+    }
+  }, [refreshJustFailed])
+
+  // Show loading during initial auth check (but not if refresh just failed)
+  if (isLoading && !isAuthenticated && !refreshJustFailed) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
