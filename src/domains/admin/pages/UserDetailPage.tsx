@@ -35,6 +35,18 @@ import {
   Home,
 } from 'lucide-react'
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@shared/components/ui/alert-dialog'
+import { USER_STATUS } from '@/constants/status.constants'
+import {
   useAdminUser,
   useApproveUser,
   useSuspendUser,
@@ -115,10 +127,6 @@ export default function UserDetailPage() {
     switch (status) {
       case 'active':
         return 'bg-green-100 text-green-800'
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'suspended':
-        return 'bg-red-100 text-red-800'
       case 'inactive':
         return 'bg-gray-100 text-gray-800'
       default:
@@ -130,10 +138,6 @@ export default function UserDetailPage() {
     switch (status) {
       case 'active':
         return 'Hoạt động'
-      case 'pending':
-        return 'Chờ duyệt'
-      case 'suspended':
-        return 'Tạm khóa'
       case 'inactive':
         return 'Không hoạt động'
       default:
@@ -142,23 +146,13 @@ export default function UserDetailPage() {
   }
 
   // Action handlers
-  const handleApprove = async () => {
-    if (!user) return
-    try {
-      await approveUserMutation.mutateAsync(user.id)
-      toast.success('Đã duyệt người dùng thành công')
-    } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Không thể duyệt người dùng'))
-    }
-  }
-
-  const handleSuspend = async () => {
+  const handleDeactivate = async () => {
     if (!user) return
     try {
       await suspendUserMutation.mutateAsync(user.id)
-      toast.success('Đã tạm khóa người dùng')
+      toast.success('Đã vô hiệu hóa người dùng')
     } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Không thể tạm khóa người dùng'))
+      toast.error(getApiErrorMessage(error, 'Không thể vô hiệu hóa người dùng'))
     }
   }
 
@@ -277,36 +271,65 @@ export default function UserDetailPage() {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
-          {user.status === 'pending' && (
-            <Button
-              onClick={handleApprove}
-              disabled={approveUserMutation.isPending}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              <UserCheck className="h-4 w-4 mr-2" />
-              Duyệt người dùng
-            </Button>
+          {user.status === USER_STATUS.ACTIVE && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="text-red-600 border-red-600 hover:bg-red-50"
+                >
+                  <UserX className="h-4 w-4 mr-2" />
+                  Vô hiệu hóa
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Xác nhận vô hiệu hóa người dùng</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Bạn có chắc chắn muốn vô hiệu hóa người dùng "{user.name}"?
+                    Người dùng sẽ không thể đăng nhập cho đến khi được kích hoạt lại.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Hủy</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeactivate}
+                    className="bg-red-600 hover:bg-red-700"
+                    disabled={suspendUserMutation.isPending}
+                  >
+                    {suspendUserMutation.isPending ? 'Đang xử lý...' : 'Vô hiệu hóa'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
-          {user.status === 'active' && (
-            <Button
-              onClick={handleSuspend}
-              disabled={suspendUserMutation.isPending}
-              variant="outline"
-              className="text-red-600 border-red-600 hover:bg-red-50"
-            >
-              <UserX className="h-4 w-4 mr-2" />
-              Tạm khóa
-            </Button>
-          )}
-          {user.status === 'suspended' && (
-            <Button
-              onClick={handleActivate}
-              disabled={activateUserMutation.isPending}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Kích hoạt
-            </Button>
+          {user.status === USER_STATUS.INACTIVE && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button className="bg-green-600 hover:bg-green-700">
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Kích hoạt
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Xác nhận kích hoạt người dùng</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Bạn có chắc chắn muốn kích hoạt lại người dùng "{user.name}"?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Hủy</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleActivate}
+                    className="bg-green-600 hover:bg-green-700"
+                    disabled={activateUserMutation.isPending}
+                  >
+                    {activateUserMutation.isPending ? 'Đang xử lý...' : 'Kích hoạt'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
       </div>

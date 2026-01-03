@@ -40,6 +40,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@shared/components/ui/alert-dialog'
+import { USER_STATUS } from '@/constants/status.constants'
 import {
   useAdminUsers,
   useApproveUser,
@@ -83,8 +84,19 @@ export default function UserManagementPage() {
   const deleteUserMutation = useDeleteUser()
 
   const users = usersData?.items || []
+  console.log('users', users)
   const totalUsers = usersData?.total || 0
   const totalPages = usersData?.totalPages || 0
+
+  // Debug: Log user status distribution
+  React.useEffect(() => {
+    if (users.length) {
+      const statusCounts = users.reduce((acc, u) => {
+        acc[u.status] = (acc[u.status] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+    }
+  }, [users])
 
   const formatCurrency = (amount: number) => {
     if (amount >= 1000000000) {
@@ -147,10 +159,6 @@ export default function UserManagementPage() {
     switch (status) {
       case 'active':
         return 'bg-green-100 text-green-800'
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'suspended':
-        return 'bg-red-100 text-red-800'
       case 'inactive':
         return 'bg-gray-100 text-gray-800'
       default:
@@ -162,10 +170,6 @@ export default function UserManagementPage() {
     switch (status) {
       case 'active':
         return 'Hoạt động'
-      case 'pending':
-        return 'Chờ duyệt'
-      case 'suspended':
-        return 'Tạm khóa'
       case 'inactive':
         return 'Không hoạt động'
       default:
@@ -209,13 +213,13 @@ export default function UserManagementPage() {
     if (selectedUsers.length === 0) return
 
     try {
-      if (action === 'approve') {
+      if (action === 'activate') {
         await bulkApproveMutation.mutateAsync(selectedUsers)
-        toast.success(`Đã duyệt ${selectedUsers.length} người dùng`)
+        toast.success(`Đã kích hoạt ${selectedUsers.length} người dùng`)
         setSelectedUsers([])
-      } else if (action === 'suspend') {
+      } else if (action === 'deactivate') {
         await bulkSuspendMutation.mutateAsync(selectedUsers)
-        toast.success(`Đã tạm khóa ${selectedUsers.length} người dùng`)
+        toast.success(`Đã vô hiệu hóa ${selectedUsers.length} người dùng`)
         setSelectedUsers([])
       } else if (action === 'email') {
         toast.info('Tính năng gửi email hàng loạt đang được phát triển')
@@ -350,7 +354,7 @@ export default function UserManagementPage() {
                       <TableHead>Trạng thái</TableHead>
                       <TableHead>Xác thực</TableHead>
                       <TableHead>Thống kê</TableHead>
-                      <TableHead className="w-12">Thao tác</TableHead>
+                      <TableHead className="w-32">Thao tác</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -437,41 +441,68 @@ export default function UserManagementPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
-                            {user.status === 'pending' && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleApprove(user.id)}
-                                disabled={approveUserMutation.isPending}
-                                className="text-green-600 hover:text-green-700"
-                                title="Duyệt"
-                              >
-                                <UserCheck className="h-4 w-4" />
-                              </Button>
+                            {user.status === USER_STATUS.ACTIVE && (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-red-600 hover:text-red-700"
+                                    title="Vô hiệu hóa"
+                                  >
+                                    <UserX className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Xác nhận vô hiệu hóa người dùng</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Bạn có chắc chắn muốn vô hiệu hóa người dùng "{user.name}"?
+                                      Người dùng sẽ không thể đăng nhập cho đến khi được kích hoạt lại.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Hủy</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleSuspend(user.id)}
+                                      className="bg-red-600 hover:bg-red-700"
+                                    >
+                                      Vô hiệu hóa
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             )}
-                            {user.status === 'active' && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleSuspend(user.id)}
-                                disabled={suspendUserMutation.isPending}
-                                className="text-red-600 hover:text-red-700"
-                                title="Tạm khóa"
-                              >
-                                <UserX className="h-4 w-4" />
-                              </Button>
-                            )}
-                            {user.status === 'suspended' && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleActivate(user.id)}
-                                disabled={activateUserMutation.isPending}
-                                className="text-green-600 hover:text-green-700"
-                                title="Kích hoạt"
-                              >
-                                <CheckCircle className="h-4 w-4" />
-                              </Button>
+                            {user.status === USER_STATUS.INACTIVE && (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-green-600 hover:text-green-700"
+                                    title="Kích hoạt"
+                                  >
+                                    <CheckCircle className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Xác nhận kích hoạt người dùng</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Bạn có chắc chắn muốn kích hoạt lại người dùng "{user.name}"?
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Hủy</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleActivate(user.id)}
+                                      className="bg-green-600 hover:bg-green-700"
+                                    >
+                                      Kích hoạt
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             )}
                             <Button
                               variant="ghost"
