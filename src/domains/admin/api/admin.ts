@@ -118,6 +118,55 @@ export interface AdminUser {
   rating: number
   location?: string
   avatar?: string
+  // Extended fields from getUserById endpoint
+  userInfo?: {
+    id?: number
+    fullName?: string
+    phoneNumber?: string
+    address?: string
+    avatarUrl?: string
+    gender?: string
+    dateOfBirth?: string
+    country?: string
+  }
+  userRoles?: Array<{
+    id: number
+    roleId: number
+    userId: number
+    role: {
+      id: number
+      name: string
+      description?: string
+    }
+  }>
+  orders?: Array<{
+    id: number
+    total: number
+    status: string
+    paymentStatus: string
+    createdAt: string
+    items?: Array<{
+      id: number
+      productId: number
+      quantity: number
+      price: number
+    }>
+  }>
+  products?: Array<{
+    id: number
+    name: string
+    slug: string
+    price: number
+    status: string
+    thumbnailUrl?: string
+  }>
+  stores?: Array<{
+    id: number
+    name: string
+    slug: string
+    status: string
+    description?: string
+  }>
 }
 
 export interface AdminUserListResponse {
@@ -142,6 +191,19 @@ export interface QueryAdminUsersParams {
   search?: string
   status?: string
   role?: string
+}
+
+export interface UpdateUserDto {
+  fullName?: string
+  phoneNumber?: string
+  address?: string
+  gender?: string
+  dateOfBirth?: string
+  country?: string
+}
+
+export interface UpdateUserRolesDto {
+  roleIds: number[]
 }
 
 export interface AdminCategory {
@@ -807,6 +869,22 @@ export const adminApi = {
 
   deleteUser: async (id: string): Promise<void> => {
     await apiClient.delete(`/admin/users/${id}`)
+  },
+
+  updateUser: async (id: string, data: UpdateUserDto): Promise<AdminUser> => {
+    const response = await apiClient.put<ApiResponse<AdminUser>>(
+      `/admin/users/${id}`,
+      data
+    )
+    return response.data.data
+  },
+
+  updateUserRoles: async (id: string, data: UpdateUserRolesDto): Promise<AdminUser> => {
+    const response = await apiClient.put<ApiResponse<AdminUser>>(
+      `/admin/users/${id}/roles`,
+      data
+    )
+    return response.data.data
   },
 
   getOrders: async (

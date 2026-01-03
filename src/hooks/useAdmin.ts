@@ -14,6 +14,8 @@ import {
     type CreateNotificationData,
     type QueryAdminCategoriesParams,
     type CreateCategoryData,
+    type UpdateUserDto,
+    type UpdateUserRolesDto,
 } from '@admin/api/admin'
 
 const defaultQueryOptions = {
@@ -179,6 +181,31 @@ export function useDeleteUser() {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] })
             queryClient.invalidateQueries({ queryKey: ['admin-user-stats'] })
             queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
+        },
+    })
+}
+
+export function useUpdateUser() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: UpdateUserDto }) =>
+            adminApi.updateUser(id, data),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['admin-user', variables.id] })
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+        },
+    })
+}
+
+export function useUpdateUserRoles() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: UpdateUserRolesDto }) =>
+            adminApi.updateUserRoles(id, data),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['admin-user', variables.id] })
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+            queryClient.invalidateQueries({ queryKey: ['admin-user-stats'] })
         },
     })
 }
