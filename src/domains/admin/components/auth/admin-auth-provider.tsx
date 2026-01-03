@@ -59,13 +59,6 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     setLoading(isLoading && !isAuthenticated && !refreshJustFailed)
   }, [isLoading, isAuthenticated, refreshJustFailed, setLoading])
 
-  // If refresh just failed, redirect to login immediately (shouldn't auto-fetch profile)
-  useEffect(() => {
-    if (refreshJustFailed) {
-      window.location.href = '/admin/login'
-    }
-  }, [refreshJustFailed])
-
   // Show loading during initial auth check (but not if refresh just failed)
   if (isLoading && !isAuthenticated && !refreshJustFailed) {
     return (
