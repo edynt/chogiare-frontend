@@ -15,6 +15,15 @@ const routeMap: Record<string, string> = {
   '/admin/notifications': 'Email & Thông báo',
 }
 
+// Dynamic route patterns
+const getRouteLabel = (path: string, segment: string): string => {
+  // Check if it matches /admin/users/:id pattern
+  if (path.match(/^\/admin\/users\/[^/]+$/)) {
+    return 'Chi tiết người dùng'
+  }
+  return routeMap[path] || segment
+}
+
 export function AdminBreadcrumb() {
   const location = useLocation()
   
@@ -22,7 +31,7 @@ export function AdminBreadcrumb() {
   const breadcrumbs = pathSegments.map((segment, index) => {
     const path = '/' + pathSegments.slice(0, index + 1).join('/')
     return {
-      label: routeMap[path] || segment,
+      label: getRouteLabel(path, segment),
       path: path,
       isLast: index === pathSegments.length - 1
     }

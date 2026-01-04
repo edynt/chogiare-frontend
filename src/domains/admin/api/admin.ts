@@ -425,6 +425,21 @@ export interface QueryModerationProductsParams {
 }
 
 // Service Package Types
+// Backend BoostPackage response structure
+export interface BoostPackageResponse {
+  id: string
+  name: string
+  type: string
+  price: number | string // Decimal from backend
+  description: string | null
+  config: Record<string, any>
+  isActive: boolean
+  metadata: Record<string, any>
+  createdAt: number | string
+  updatedAt: number | string
+}
+
+// Frontend ServicePackage structure
 export interface ServicePackage {
   id: number
   name: string
@@ -435,6 +450,14 @@ export interface ServicePackage {
   isActive: boolean
   subscribers: number
   revenue: number
+}
+
+export interface ServicePackageListResponse {
+  items: ServicePackage[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
 }
 
 export interface PackageStats {
@@ -1066,11 +1089,71 @@ export const adminApi = {
   },
 
   // Service Packages APIs
+  // Helper function to transform BoostPackage to ServicePackage
+  transformBoostPackage: (pkg: BoostPackageResponse): ServicePackage => {
+    // Extract duration from config based on package type
+    let duration = 'N/A'
+    if (pkg.type === 'payPerDay' && pkg.config.durationDays) {
+      duration = `${pkg.config.durationDays} ngày`
+    } else if (pkg.type === 'payPerView' && pkg.config.validityDays) {
+      duration = `${pkg.config.validityDays} ngày`
+    }
+
+    // Parse features from config based on package type
+    const features: string[] = []
+    if (pkg.type === 'payPerView') {
+      features.push(`${pkg.config.viewLimit || 0} lượt tiếp cận`)
+      features.push(`Hiệu lực ${pkg.config.validityDays || 0} ngày`)
+      features.push(`Tối đa ${pkg.config.maxProductsPerBoost || 1} sản phẩm`)
+    } else if (pkg.type === 'payPerDay') {
+      features.push(`Đẩy tin ${pkg.config.durationDays || 0} ngày`)
+      features.push(`Độ ưu tiên ${pkg.config.priority || 1}`)
+      features.push(`Tối đa ${pkg.config.maxProducts || 1} sản phẩm`)
+    }
+
+    // Default limitations
+    const limitations: string[] = ['Không hoàn tiền', 'Hiệu lực sau khi kích hoạt']
+
+    // Safely parse price with validation
+    const parsePrice = (price: number | string | null | undefined): number => {
+      // Handle null/undefined
+      if (price == null) return 0
+
+      // Handle string conversion
+      if (typeof price === 'string') {
+        // Handle empty string
+        if (price.trim() === '') return 0
+
+        const parsed = parseFloat(price)
+        // Handle NaN result
+        return isNaN(parsed) ? 0 : parsed
+      }
+
+      // Handle number type
+      return isNaN(price) ? 0 : price
+    }
+
+    return {
+      id: parseInt(pkg.id.substring(0, 8), 36), // Convert string ID to number for UI
+      name: pkg.name,
+      price: parsePrice(pkg.price),
+      duration,
+      features,
+      limitations,
+      isActive: pkg.isActive,
+      subscribers: 0, // TODO: Calculate from productBoosts relation
+      revenue: 0, // TODO: Calculate from actual usage
+    }
+  },
+
   getPackages: async (): Promise<ServicePackage[]> => {
     try {
-      const response =
-        await apiClient.get<ApiResponse<ServicePackage[]>>('/admin/packages')
-      return response.data.data
+      const response = await apiClient.get<
+        ApiResponse<{ items: BoostPackageResponse[]; total: number; page: number; pageSize: number }>
+      >('/admin/packages')
+
+      // Transform backend BoostPackage to frontend ServicePackage
+      return response.data.data.items.map(adminApi.transformBoostPackage)
     } catch (error) {
       return handleApiError(error, [])
     }
@@ -1094,22 +1177,43 @@ export const adminApi = {
   },
 
   createPackage: async (data: CreatePackageData): Promise<ServicePackage> => {
-    const response = await apiClient.post<ApiResponse<ServicePackage>>(
+    // Transform frontend CreatePackageData to backend CreatePackageDto
+    const backendData = {
+      name: data.name,
+      type: 'payPerDay', // Default, should be determined by duration parsing
+      price: data.price,
+      description: `${data.features.join(', ')}`,
+      config: {
+        durationDays: parseInt(data.duration) || 30,
+      },
+      isActive: data.isActive,
+      metadata: {},
+    }
+
+    const response = await apiClient.post<ApiResponse<BoostPackageResponse>>(
       '/admin/packages',
-      data
+      backendData
     )
-    return response.data.data
+    return adminApi.transformBoostPackage(response.data.data)
   },
 
   updatePackage: async (
     id: number,
     data: Partial<CreatePackageData>
   ): Promise<ServicePackage> => {
-    const response = await apiClient.put<ApiResponse<ServicePackage>>(
+    // Transform frontend data to backend format
+    const backendData: any = {}
+    if (data.name) backendData.name = data.name
+    if (data.price) backendData.price = data.price
+    if (data.features) backendData.description = data.features.join(', ')
+    if (data.duration) backendData.config = { durationDays: parseInt(data.duration) || 30 }
+    if (data.isActive !== undefined) backendData.isActive = data.isActive
+
+    const response = await apiClient.put<ApiResponse<BoostPackageResponse>>(
       `/admin/packages/${id}`,
-      data
+      backendData
     )
-    return response.data.data
+    return adminApi.transformBoostPackage(response.data.data)
   },
 
   deletePackage: async (id: number): Promise<void> => {
@@ -1117,10 +1221,10 @@ export const adminApi = {
   },
 
   togglePackageStatus: async (id: number): Promise<ServicePackage> => {
-    const response = await apiClient.put<ApiResponse<ServicePackage>>(
+    const response = await apiClient.patch<ApiResponse<BoostPackageResponse>>(
       `/admin/packages/${id}/toggle-status`
     )
-    return response.data.data
+    return adminApi.transformBoostPackage(response.data.data)
   },
 
   // Content Management APIs

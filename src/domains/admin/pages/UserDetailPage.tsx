@@ -31,8 +31,6 @@ import {
   User,
   Globe,
   Edit,
-  ChevronRight,
-  Home,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -193,26 +191,6 @@ export default function UserDetailPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Breadcrumb */}
-      <nav className="flex items-center text-sm text-gray-600 mb-4">
-        <button
-          onClick={() => navigate('/admin')}
-          className="flex items-center hover:text-gray-900 transition-colors"
-        >
-          <Home className="h-4 w-4 mr-1" />
-          Trang chủ
-        </button>
-        <ChevronRight className="h-4 w-4 mx-2" />
-        <button
-          onClick={() => navigate('/admin/users')}
-          className="hover:text-gray-900 transition-colors"
-        >
-          Quản lý người dùng
-        </button>
-        <ChevronRight className="h-4 w-4 mx-2" />
-        <span className="text-gray-900 font-medium">Chi tiết người dùng</span>
-      </nav>
-
       {/* Header Section */}
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-4">

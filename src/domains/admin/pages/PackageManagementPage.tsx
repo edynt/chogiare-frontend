@@ -66,6 +66,11 @@ export default function PackageManagementPage() {
   const toggleStatusMutation = useTogglePackageStatus()
 
   const formatPrice = (price: number) => {
+    // Defense-in-depth: Handle NaN, null, undefined at UI layer
+    if (price == null || isNaN(price)) {
+      return 'Liên hệ'
+    }
+
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
       currency: 'VND'
@@ -73,6 +78,11 @@ export default function PackageManagementPage() {
   }
 
   const formatNumber = (num: number) => {
+    // Defense-in-depth: Handle NaN, null, undefined
+    if (num == null || isNaN(num)) {
+      return '0'
+    }
+
     return new Intl.NumberFormat('vi-VN').format(num)
   }
 
