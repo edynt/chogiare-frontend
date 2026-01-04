@@ -60,12 +60,6 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
     setLoading(isLoading && !isAuthenticated && !refreshJustFailed)
   }, [isLoading, isAuthenticated, refreshJustFailed, setLoading])
 
-  useEffect(() => {
-    if (refreshJustFailed) {
-      window.location.href = '/auth/login'
-    }
-  }, [refreshJustFailed])
-
   // Show loading during initial auth check (but not if refresh just failed)
   if (isLoading && !isAuthenticated && !refreshJustFailed) {
     return (

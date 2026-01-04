@@ -84,6 +84,7 @@ export const authApi = {
   logout: async (): Promise<void> => {
     await apiClient.get('/auth/logout') // Changed to GET
     apiClient.clearAuthTokens()
+    apiClient.clearRefreshFailureFlags()
   },
 
   adminLogout: async (): Promise<void> => {
@@ -91,6 +92,7 @@ export const authApi = {
     await apiClient.get('/auth/admin/logout') // Changed to GET
     console.log('API call finished, clearing local tokens')
     apiClient.clearAuthTokens()
+    apiClient.clearRefreshFailureFlags()
   },
 
   refreshToken: async (refreshToken: string): Promise<AuthTokens> => {

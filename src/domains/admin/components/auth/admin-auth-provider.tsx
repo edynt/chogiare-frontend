@@ -15,7 +15,7 @@ const REFRESH_FAILURE_KEY = 'auth_refresh_failed'
  * Features:
  * - Cookie-based authentication (HttpOnly cookies)
  * - Automatic profile fetching on mount (unless refresh just failed)
- * - Error handling for 401 responses
+ * - Error handling for 401 (Unauthorized) and 403 (Insufficient Permissions) responses
  * - No localStorage interaction (cookies handled by browser)
  * - Prevents infinite refresh loops via cooldown checking
  */
@@ -47,9 +47,24 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
 
   useEffect(() => {
     if (error) {
-      const axiosError = error as { response?: { status?: number } }
+      const axiosError = error as {
+        response?: {
+          status?: number
+          data?: { errorCode?: string }
+        }
+      }
+
+      // Handle 401 Unauthorized
       if (axiosError.response?.status === 401) {
         handleAuthError()
+      }
+
+      // Handle 403 Forbidden (insufficient permissions)
+      if (
+        axiosError.response?.status === 403 &&
+        axiosError.response?.data?.errorCode === 'AUTH_INSUFFICIENT_PERMISSIONS'
+      ) {
+        handleAuthError() // Clear state, will trigger redirect in AdminRouteGuard
       }
     }
   }, [error, handleAuthError])
