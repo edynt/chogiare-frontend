@@ -29,6 +29,7 @@ import {
   Search,
   ShoppingCart,
   X,
+  Wallet,
 } from 'lucide-react'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -326,6 +327,15 @@ export function Header() {
                           <span>Đơn hàng của tôi</span>
                         </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          to="/top-up"
+                          className="flex items-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
+                        >
+                          <Wallet className="mr-2 h-4 w-4" />
+                          <span>Ví của tôi</span>
+                        </Link>
+                      </DropdownMenuItem>
                     </DropdownMenuGroup>
 
                     <DropdownMenuSeparator />
@@ -591,6 +601,15 @@ export function Header() {
                     >
                       <ShoppingBag className="h-5 w-5" />
                       <span>Đơn hàng của tôi</span>
+                    </Link>
+
+                    <Link
+                      to="/top-up"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                    >
+                      <Wallet className="h-5 w-5" />
+                      <span>Ví của tôi</span>
                     </Link>
 
                     {/* Business Section - Available to all authenticated users */}

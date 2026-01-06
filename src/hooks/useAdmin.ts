@@ -9,7 +9,6 @@ import {
     type QueryTicketsParams,
     type QueryReportsParams,
     type QueryNotificationsParams,
-    type CreatePackageData,
     type CreateContentData,
     type CreateNotificationData,
     type QueryAdminCategoriesParams,
@@ -334,67 +333,6 @@ export function useBulkRejectProducts() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['moderation-products'] })
             queryClient.invalidateQueries({ queryKey: ['moderation-stats'] })
-        },
-    })
-}
-
-// Service Packages Hooks
-export function usePackages() {
-    return useQuery({
-        queryKey: ['admin-packages'],
-        queryFn: () => adminApi.getPackages(),
-        ...defaultQueryOptions,
-    })
-}
-
-export function usePackageStats() {
-    return useQuery({
-        queryKey: ['admin-package-stats'],
-        queryFn: () => adminApi.getPackageStats(),
-        ...defaultQueryOptions,
-    })
-}
-
-export function useCreatePackage() {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: (data: CreatePackageData) => adminApi.createPackage(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['admin-packages'] })
-            queryClient.invalidateQueries({ queryKey: ['admin-package-stats'] })
-        },
-    })
-}
-
-export function useUpdatePackage() {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: ({ id, data }: { id: number; data: Partial<CreatePackageData> }) => adminApi.updatePackage(id, data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['admin-packages'] })
-            queryClient.invalidateQueries({ queryKey: ['admin-package-stats'] })
-        },
-    })
-}
-
-export function useDeletePackage() {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: (id: number) => adminApi.deletePackage(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['admin-packages'] })
-            queryClient.invalidateQueries({ queryKey: ['admin-package-stats'] })
-        },
-    })
-}
-
-export function useTogglePackageStatus() {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: (id: number) => adminApi.togglePackageStatus(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['admin-packages'] })
-            queryClient.invalidateQueries({ queryKey: ['admin-package-stats'] })
         },
     })
 }

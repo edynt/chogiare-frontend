@@ -14,7 +14,6 @@ const VerifyEmailPage = React.lazy(() => import('@user/pages/buyer/VerifyEmailPa
 const ProfilePage = React.lazy(() => import('@user/pages/buyer/ProfilePage'))
 const OrdersPage = React.lazy(() => import('@user/pages/buyer/OrdersPage'))
 const OrderDetailPage = React.lazy(() => import('@user/pages/buyer/OrderDetailPage'))
-const PromotedProductDetailPage = React.lazy(() => import('@user/pages/buyer/PromotedProductDetailPage'))
 const BuyerDashboardPage = React.lazy(() => import('@user/pages/buyer/BuyerDashboardPage'))
 const SellerDetailPage = React.lazy(() => import('@user/pages/buyer/SellerDetailPage'))
 const ProductDetailPage = React.lazy(() => import('@user/pages/buyer/ProductDetailPage'))
@@ -26,7 +25,6 @@ const AddressManagementPage = React.lazy(() => import('@user/pages/buyer/Address
 
 // Lazy load pages - User Domain (Seller)
 const SellerNotificationsPage = React.lazy(() => import('@user/pages/seller/SellerNotificationsPage'))
-const BoostPostPage = React.lazy(() => import('@user/pages/seller/BoostPostPage'))
 const SellerDashboard = React.lazy(() => import('@user/pages/seller/SellerDashboard'))
 const SellerProductsPage = React.lazy(() => import('@user/pages/seller/SellerProductsPage'))
 const AddProductPage = React.lazy(() => import('@user/pages/seller/AddProductPage'))
@@ -71,12 +69,10 @@ export function UserApp() {
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ProductListPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
-          <Route path="/promoted-products/:productId" element={<PromotedProductDetailPage />} />
           <Route path="/shop/:id" element={<SellerDetailPage />} />
 
           {/* Seller routes - Available to all authenticated users */}
           <Route path="/seller/notifications" element={<SellerNotificationsPage />} />
-          <Route path="/boost-post" element={<BoostPostPage />} />
           <Route path="/seller/:id" element={<SellerDashboard />} />
           <Route path="/dashboard" element={<SellerDashboard />} />
           <Route path="/seller/products" element={<SellerProductsPage />} />

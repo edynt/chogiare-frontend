@@ -28,30 +28,6 @@ import { formatCurrency, formatDate, PLACEHOLDER_IMAGE } from '@/lib/utils'
 import { SecurityWarning } from '@shared/components/ui/security-warning'
 import { useCartStore } from '@/stores/cartStore'
 import { toast } from 'sonner'
-import { BOOST_PACKAGES, type BoostPackage } from '@/lib/boostPackages'
-
-const TYPE_INFO = {
-  payPerView: {
-    label: 'Trả theo lượt xem',
-    description: 'Trả phí theo số lượt xem thực tế (mỗi 1000 view)',
-    icon: Eye
-  },
-  payPerDay: {
-    label: 'Trả theo ngày',
-    description: 'Đẩy bài trong N ngày với giá cố định',
-    icon: Calendar
-  },
-  featuredSlot: {
-    label: 'Vị trí nổi bật',
-    description: 'Hiển thị ở banner và top danh sách',
-    icon: Star
-  },
-  boostToCategory: {
-    label: 'Đẩy lên danh mục',
-    description: 'Đẩy sản phẩm lên đầu danh mục',
-    icon: TrendingUp
-  }
-}
 import { 
   Star, 
   Share2, 
@@ -103,17 +79,11 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const [quoteQuantity, setQuoteQuantity] = useState<string>('')
   const [quoteMessage, setQuoteMessage] = useState<string>('')
   const [quoteMethod, setQuoteMethod] = useState<'chat' | 'email'>('chat')
-  const [showPromoteDialog, setShowPromoteDialog] = useState(false)
-  const [selectedBoostType, setSelectedBoostType] = useState<keyof typeof BOOST_PACKAGES>('payPerDay')
-  const [selectedBoostPackage, setSelectedBoostPackage] = useState<BoostPackage | null>(null)
   const [reviewRating, setReviewRating] = useState<number>(5)
   const [reviewComment, setReviewComment] = useState<string>('')
 
   const { data: product, isLoading, error, refetch } = useProduct(productIdToUse || '')
   const { data: reviewsData } = useProductReviews(productIdToUse || '', { page: 1, pageSize: 5 })
-  
-  // Mock balance - in production, fetch from API
-  const balance = 15750000
 
   // Initialize selling price (1.5x wholesale price as suggestion)
   React.useEffect(() => {
@@ -1698,202 +1668,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Promote Post Dialog */}
-
-      <Dialog open={showPromoteDialog} onOpenChange={(open) => {
-        setShowPromoteDialog(open)
-        if (!open) {
-          setSelectedBoostType('payPerDay')
-          setSelectedBoostPackage(null)
-        }
-      }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-orange-600" />
-              Đẩy bài viết
-            </DialogTitle>
-            <DialogDescription>
-              Tăng độ hiển thị cho sản phẩm <strong>{product.title}</strong>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {/* Type Selector */}
-            <div>
-              <h3 className="text-sm font-semibold mb-3">Chọn loại đẩy bài</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                {Object.entries(TYPE_INFO).map(([type, info]) => {
-                  const Icon = info.icon
-                  const isSelected = selectedBoostType === type
-                  return (
-                    <button
-                      key={type}
-                      onClick={() => {
-                        setSelectedBoostType(type as keyof typeof BOOST_PACKAGES)
-                        setSelectedBoostPackage(null)
-                      }}
-                      className={`p-3 rounded-lg border-2 transition-all text-left ${
-                        isSelected
-                          ? 'border-primary bg-primary/10'
-                          : 'border-border bg-background hover:border-primary/50'
-                      }`}
-                    >
-                      <div className="flex flex-col gap-1">
-                        <Icon className={`h-5 w-5 mb-1 ${
-                          isSelected ? 'text-primary' : 'text-muted-foreground'
-                        }`} />
-                        <span className={`font-medium text-xs ${
-                          isSelected ? 'text-primary' : 'text-foreground'
-                        }`}>
-                          {info.label}
-                        </span>
-                        <span className="text-xs text-muted-foreground line-clamp-2">
-                          {info.description}
-                        </span>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Package Options */}
-            <div>
-              <h3 className="text-sm font-semibold mb-3">Chọn gói</h3>
-              <div className="space-y-2">
-                {BOOST_PACKAGES[selectedBoostType]?.map((pkg) => {
-                  const isSelected = selectedBoostPackage?.id === pkg.id
-                  return (
-                    <button
-                      key={pkg.id}
-                      onClick={() => setSelectedBoostPackage(pkg)}
-                      className={`w-full p-3 rounded-lg border-2 transition-all text-left ${
-                        isSelected
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border bg-background hover:border-primary/50'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className={`font-semibold text-sm ${
-                              isSelected ? 'text-primary' : 'text-foreground'
-                            }`}>
-                              {pkg.name}
-                            </h4>
-                            {isSelected && (
-                              <CheckCircle className="h-4 w-4 text-primary" />
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground mb-1">
-                            {pkg.description}
-                          </p>
-                          <p className={`text-sm font-bold ${
-                            isSelected ? 'text-primary' : 'text-foreground'
-                          }`}>
-                            {formatCurrency(pkg.price)}
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Balance Info */}
-            {selectedBoostPackage && (
-              <div className={`p-3 rounded-lg border ${
-                balance >= selectedBoostPackage.price 
-                  ? 'bg-green-50 border-green-200' 
-                  : 'bg-yellow-50 border-yellow-200'
-              }`}>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Số dư ví:</span>
-                  <span className={`font-bold ${
-                    balance >= selectedBoostPackage.price ? 'text-green-600' : 'text-yellow-600'
-                  }`}>
-                    {formatCurrency(balance)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-sm mt-1">
-                  <span className="text-muted-foreground">Chi phí:</span>
-                  <span className="font-semibold">{formatCurrency(selectedBoostPackage.price)}</span>
-                </div>
-                {balance < selectedBoostPackage.price && (
-                  <div className="mt-2 pt-2 border-t border-yellow-300">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-red-600">Còn thiếu:</span>
-                      <span className="font-bold text-red-600">
-                        {formatCurrency(selectedBoostPackage.price - balance)}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowPromoteDialog(false)
-                setSelectedBoostType('payPerDay')
-                setSelectedBoostPackage(null)
-              }}
-            >
-              Hủy
-            </Button>
-            {(() => {
-              const hasEnoughBalance = selectedBoostPackage ? balance >= selectedBoostPackage.price : false
-              const shortage = selectedBoostPackage ? selectedBoostPackage.price - balance : 0
-              
-              const handleConfirm = () => {
-                if (!selectedBoostPackage) {
-                  toast.error('Vui lòng chọn gói đẩy bài')
-                  return
-                }
-
-                if (!hasEnoughBalance) {
-                  toast.error('Số dư không đủ. Vui lòng nạp thêm tiền.')
-                  setShowPromoteDialog(false)
-                  window.location.href = `/top-up?amount=${shortage}`
-                  return
-                }
-
-                // Process boost
-                toast.success(`Đã đẩy bài thành công với gói ${selectedBoostPackage.name}`)
-                setShowPromoteDialog(false)
-                setSelectedBoostType('payPerDay')
-                setSelectedBoostPackage(null)
-              }
-              
-              return (
-                <Button
-                  onClick={handleConfirm}
-                  disabled={!selectedBoostPackage}
-                  className={hasEnoughBalance 
-                    ? "bg-orange-600 hover:bg-orange-700" 
-                    : "bg-blue-600 hover:bg-blue-700"
-                  }
-                >
-                  {hasEnoughBalance ? (
-                    <>
-                      <TrendingUp className="h-4 w-4 mr-2" />
-                      Xác nhận đẩy bài
-                    </>
-                  ) : (
-                    <>
-                      <Wallet className="h-4 w-4 mr-2" />
-                      Nạp thêm
-                    </>
-                  )}
-                </Button>
-              )
-            })()}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

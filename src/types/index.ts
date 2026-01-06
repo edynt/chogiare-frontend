@@ -20,8 +20,8 @@ export interface User {
   updatedAt: string
 }
 
-// String role names for backward compatibility
-export type UserRole = 'buyer' | 'seller' | 'admin' | 'user'
+// String role names
+export type UserRole = 'admin' | 'user'
 
 /**
  * Centralized Role Constants
@@ -36,12 +36,7 @@ export const ROLES = {
   USER: {
     id: 2,
     name: 'user' as const,
-    description: 'Regular user/buyer',
-  },
-  SELLER: {
-    id: 3,
-    name: 'seller' as const,
-    description: 'Seller with store management capabilities',
+    description: 'Regular user',
   },
 } as const
 
@@ -49,14 +44,12 @@ export const ROLES = {
 export const ROLE_IDS = {
   ADMIN: ROLES.ADMIN.id,
   USER: ROLES.USER.id,
-  SELLER: ROLES.SELLER.id,
 } as const
 
 // Export role names for easy access
 export const ROLE_NAMES = {
   ADMIN: ROLES.ADMIN.name,
   USER: ROLES.USER.name,
-  SELLER: ROLES.SELLER.name,
 } as const
 
 export interface StoreInfo {
