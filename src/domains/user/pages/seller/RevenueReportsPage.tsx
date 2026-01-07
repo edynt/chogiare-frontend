@@ -72,6 +72,10 @@ export default function RevenueReportsPage() {
     useCategoryRevenue({ timeRange })
 
   const formatNumber = (num: number): string => {
+    if(!num) {
+        return null;
+    }
+    
     if (num >= 1000000000) {
       return `${(num / 1000000000).toFixed(1)}B`
     }

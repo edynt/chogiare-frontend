@@ -29,6 +29,10 @@ export default function AdminDashboardPage() {
   const { data: topSellers = [], isLoading: sellersLoading } = useAdminTopSellers(5)
 
   const formatNumber = (num: number) => {
+    if(!num) {
+        return null;
+    }
+    
     if (num >= 1000000000) {
       return `${(num / 1000000000).toFixed(1)}B`
     }

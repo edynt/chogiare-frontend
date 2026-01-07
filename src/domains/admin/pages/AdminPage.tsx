@@ -5,7 +5,6 @@ import AdminDashboardPage from './AdminDashboardPage'
 import UserManagementPage from './UserManagementPage'
 import ProductModerationPage from './ProductModerationPage'
 import OrderManagementPage from './OrderManagementPage'
-import PackageManagementPage from './PackageManagementPage'
 import ReportsAnalyticsPage from './ReportsAnalyticsPage'
 import ContentManagementPage from './ContentManagementPage'
 import CustomerSupportPage from './CustomerSupportPage'
@@ -24,7 +23,6 @@ export default function AdminPage() {
         <Route path="/users/:id" element={<UserDetailPage />} />
         <Route path="/products" element={<ProductModerationPage />} />
         <Route path="/orders" element={<OrderManagementPage />} />
-        <Route path="/subscriptions" element={<PackageManagementPage />} />
         <Route path="/categories" element={<CategoryManagementPage />} />
         <Route path="/reports" element={<ReportsAnalyticsPage />} />
         <Route path="/cms" element={<ContentManagementPage />} />
