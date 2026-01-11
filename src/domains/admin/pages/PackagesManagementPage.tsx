@@ -1,5 +1,10 @@
 import React, { useState, useMemo } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Label } from '@shared/components/ui/label'
@@ -64,6 +69,185 @@ import {
 import { getApiErrorMessage } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { AdminPackage, CreatePackageData } from '@admin/api/admin'
+
+interface PackageFormDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  formData: PackageFormData
+  setFormData: React.Dispatch<React.SetStateAction<PackageFormData>>
+  handleCloseDialogs: () => void
+  handleSubmit: () => void
+  createPending: boolean
+  updatePending: boolean
+}
+
+const PackageFormDialog: React.FC<PackageFormDialogProps> = ({
+  open,
+  onOpenChange,
+  title,
+  formData,
+  setFormData,
+  handleCloseDialogs,
+  handleSubmit,
+  createPending,
+  updatePending,
+}) => (
+  <Dialog open={open} onOpenChange={onOpenChange}>
+    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogHeader>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>
+          Điền thông tin gói dịch vụ premium
+        </DialogDescription>
+      </DialogHeader>
+      <div className="space-y-4 py-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="displayName">
+              Tên hiển thị <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="displayName"
+              placeholder="Gói 1 Ngày"
+              value={formData.displayName}
+              onChange={e =>
+                setFormData({ ...formData, displayName: e.target.value })
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="name">
+              Tên gói <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="name"
+              placeholder="goi_1_ngay"
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="description">Mô tả</Label>
+          <Input
+            id="description"
+            placeholder="Gói dùng thử cho người mới"
+            value={formData.description}
+            onChange={e =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="durationDays">
+              Thời hạn (ngày) <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="durationDays"
+              type="number"
+              min="1"
+              value={formData.durationDays}
+              onChange={e =>
+                setFormData({
+                  ...formData,
+                  durationDays: parseInt(e.target.value) || 1,
+                })
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="price">
+              Giá (VNĐ) <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="price"
+              type="number"
+              min="0"
+              value={formData.price}
+              onChange={e =>
+                setFormData({
+                  ...formData,
+                  price: parseInt(e.target.value) || 0,
+                })
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="displayOrder">Thứ tự hiển thị</Label>
+            <Input
+              id="displayOrder"
+              type="number"
+              min="0"
+              value={formData.displayOrder}
+              onChange={e =>
+                setFormData({
+                  ...formData,
+                  displayOrder: parseInt(e.target.value) || 0,
+                })
+              }
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="features">Tính năng (mỗi dòng một tính năng)</Label>
+          <textarea
+            id="features"
+            className="w-full min-h-[120px] px-3 py-2 border border-gray-300 rounded-md"
+            placeholder="Đăng sản phẩm không giới hạn&#10;Hiển thị nổi bật&#10;Hỗ trợ ưu tiên"
+            value={formData.featuresText}
+            onChange={e =>
+              setFormData({ ...formData, featuresText: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="isActive"
+            checked={formData.isActive}
+            onChange={e =>
+              setFormData({ ...formData, isActive: e.target.checked })
+            }
+            className="rounded border-gray-300"
+          />
+          <Label htmlFor="isActive" className="cursor-pointer">
+            Kích hoạt gói dịch vụ
+          </Label>
+        </div>
+      </div>
+      <DialogFooter>
+        <Button
+          variant="outline"
+          onClick={handleCloseDialogs}
+          disabled={createPending || updatePending} // Thêm disable cho nút Hủy
+        >
+          Hủy
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          disabled={createPending || updatePending}
+        >
+          {createPending || updatePending ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              {formData.id ? 'Đang cập nhật...' : 'Đang tạo...'}
+            </>
+          ) : formData.id ? (
+            'Cập nhật'
+          ) : (
+            'Tạo mới'
+          )}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+)
 
 interface PackageFormData extends CreatePackageData {
   id?: number
@@ -221,7 +405,9 @@ export default function PackagesManagementPage() {
       toast.error(
         getApiErrorMessage(
           error,
-          formData.id ? 'Không thể cập nhật gói dịch vụ' : 'Không thể tạo gói dịch vụ'
+          formData.id
+            ? 'Không thể cập nhật gói dịch vụ'
+            : 'Không thể tạo gói dịch vụ'
         )
       )
     }
@@ -236,177 +422,14 @@ export default function PackagesManagementPage() {
     }
   }
 
-  const PackageFormDialog = ({
-    open,
-    onOpenChange,
-    title,
-  }: {
-    open: boolean
-    onOpenChange: (open: boolean) => void
-    title: string
-  }) => (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            Điền thông tin gói dịch vụ premium
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="displayName">
-                Tên hiển thị <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="displayName"
-                placeholder="Gói 1 Ngày"
-                value={formData.displayName}
-                onChange={e =>
-                  setFormData({ ...formData, displayName: e.target.value })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="name">
-                Tên gói <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                placeholder="goi_1_ngay"
-                value={formData.name}
-                onChange={e =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Mô tả</Label>
-            <Input
-              id="description"
-              placeholder="Gói dùng thử cho người mới"
-              value={formData.description}
-              onChange={e =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="durationDays">
-                Thời hạn (ngày) <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="durationDays"
-                type="number"
-                min="1"
-                value={formData.durationDays}
-                onChange={e =>
-                  setFormData({
-                    ...formData,
-                    durationDays: parseInt(e.target.value) || 1,
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="price">
-                Giá (VNĐ) <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="price"
-                type="number"
-                min="0"
-                value={formData.price}
-                onChange={e =>
-                  setFormData({
-                    ...formData,
-                    price: parseInt(e.target.value) || 0,
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="displayOrder">Thứ tự hiển thị</Label>
-              <Input
-                id="displayOrder"
-                type="number"
-                min="0"
-                value={formData.displayOrder}
-                onChange={e =>
-                  setFormData({
-                    ...formData,
-                    displayOrder: parseInt(e.target.value) || 0,
-                  })
-                }
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="features">Tính năng (mỗi dòng một tính năng)</Label>
-            <textarea
-              id="features"
-              className="w-full min-h-[120px] px-3 py-2 border border-gray-300 rounded-md"
-              placeholder="Đăng sản phẩm không giới hạn&#10;Hiển thị nổi bật&#10;Hỗ trợ ưu tiên"
-              value={formData.featuresText}
-              onChange={e =>
-                setFormData({ ...formData, featuresText: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="isActive"
-              checked={formData.isActive}
-              onChange={e =>
-                setFormData({ ...formData, isActive: e.target.checked })
-              }
-              className="rounded border-gray-300"
-            />
-            <Label htmlFor="isActive" className="cursor-pointer">
-              Kích hoạt gói dịch vụ
-            </Label>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={handleCloseDialogs}>
-            Hủy
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={
-              createPackageMutation.isPending || updatePackageMutation.isPending
-            }
-          >
-            {createPackageMutation.isPending || updatePackageMutation.isPending ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Đang xử lý...
-              </>
-            ) : formData.id ? (
-              'Cập nhật'
-            ) : (
-              'Tạo mới'
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Quản lý gói dịch vụ</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Quản lý gói dịch vụ
+          </h1>
           <p className="text-gray-600 mt-1">
             Quản lý các gói premium membership cho người dùng
           </p>
@@ -546,7 +569,9 @@ export default function PackagesManagementPage() {
             <div className="flex items-center justify-center py-8">
               <div className="text-center">
                 <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                <p className="text-red-600">Không thể tải danh sách gói dịch vụ</p>
+                <p className="text-red-600">
+                  Không thể tải danh sách gói dịch vụ
+                </p>
               </div>
             </div>
           ) : packagesLoading ? (
@@ -665,8 +690,9 @@ export default function PackagesManagementPage() {
                                     Xác nhận xóa gói dịch vụ
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Bạn có chắc chắn muốn xóa gói "{pkg.displayName}"?
-                                    Hành động này sẽ vô hiệu hóa gói dịch vụ.
+                                    Bạn có chắc chắn muốn xóa gói "
+                                    {pkg.displayName}"? Hành động này sẽ vô hiệu
+                                    hóa gói dịch vụ.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
@@ -722,6 +748,12 @@ export default function PackagesManagementPage() {
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
         title="Tạo gói dịch vụ mới"
+        formData={formData}
+        setFormData={setFormData}
+        handleCloseDialogs={handleCloseDialogs}
+        handleSubmit={handleSubmit}
+        createPending={createPackageMutation.isPending}
+        updatePending={updatePackageMutation.isPending}
       />
 
       {/* Edit Dialog */}
@@ -729,6 +761,12 @@ export default function PackagesManagementPage() {
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         title="Chỉnh sửa gói dịch vụ"
+        formData={formData}
+        setFormData={setFormData}
+        handleCloseDialogs={handleCloseDialogs}
+        handleSubmit={handleSubmit}
+        createPending={createPackageMutation.isPending}
+        updatePending={updatePackageMutation.isPending}
       />
     </div>
   )
