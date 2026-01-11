@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
+import { PasswordInput } from '@shared/components/ui/password-input'
 import { useLoading } from '@/hooks/useLoading'
 import { Loader2, AlertCircle, ShieldCheck, Mail, Lock } from 'lucide-react'
 import { apiClient } from '@shared/api/axios'
@@ -101,9 +102,8 @@ export function AdminLoginForm() {
               <Lock className="h-4 w-4" />
               Password
             </label>
-            <Input
+            <PasswordInput
               id="admin-password"
-              type="password"
               {...register('password')}
               className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
               placeholder="Enter your password"

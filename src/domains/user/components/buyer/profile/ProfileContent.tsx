@@ -3,6 +3,7 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
+import { PasswordInput } from '@shared/components/ui/password-input'
 import { Badge } from '@shared/components/ui/badge'
 import { Switch } from '@shared/components/ui/switch'
 import { Label } from '@shared/components/ui/label'
@@ -701,9 +702,8 @@ export function ProfileContent() {
                   <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
                     <div>
                       <Label htmlFor="current-password">Mật khẩu hiện tại</Label>
-                      <Input
+                      <PasswordInput
                         id="current-password"
-                        type="password"
                         value={passwordFormData.currentPassword}
                         onChange={(e) => setPasswordFormData(prev => ({ ...prev, currentPassword: e.target.value }))}
                         placeholder="Nhập mật khẩu hiện tại"
@@ -711,9 +711,8 @@ export function ProfileContent() {
                     </div>
                     <div>
                       <Label htmlFor="new-password">Mật khẩu mới</Label>
-                      <Input
+                      <PasswordInput
                         id="new-password"
-                        type="password"
                         value={passwordFormData.newPassword}
                         onChange={(e) => setPasswordFormData(prev => ({ ...prev, newPassword: e.target.value }))}
                         placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)"
@@ -721,9 +720,8 @@ export function ProfileContent() {
                     </div>
                     <div>
                       <Label htmlFor="confirm-password">Xác nhận mật khẩu mới</Label>
-                      <Input
+                      <PasswordInput
                         id="confirm-password"
-                        type="password"
                         value={passwordFormData.confirmPassword}
                         onChange={(e) => setPasswordFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                         placeholder="Nhập lại mật khẩu mới"

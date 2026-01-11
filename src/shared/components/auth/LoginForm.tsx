@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
+import { PasswordInput } from '@shared/components/ui/password-input'
 import { useLogin } from '@/hooks/useAuth'
 import { useLoading } from '@/hooks/useLoading'
 import { Loader2, AlertCircle } from 'lucide-react'
@@ -91,9 +92,8 @@ export function LoginForm({ isAdmin = false }: { isAdmin?: boolean }) {
             <label htmlFor="password" className="text-sm font-medium">
               Mật khẩu
             </label>
-            <Input
+            <PasswordInput
               id="password"
-              type="password"
               {...register('password')}
               className="mt-1"
               placeholder="Nhập mật khẩu"

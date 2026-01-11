@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
+import { PasswordInput } from '@shared/components/ui/password-input'
 import { useRegister } from '@/hooks/useAuth'
 import { registerSchema, type RegisterFormData } from '@/lib/schemas'
 import { PasswordStrengthIndicator } from './PasswordStrengthIndicator'
@@ -92,9 +93,8 @@ export function RegisterForm() {
             <label htmlFor="password" className="text-sm font-medium">
               Mật khẩu
             </label>
-            <Input
+            <PasswordInput
               id="password"
-              type="password"
               {...register('password')}
               className="mt-1"
               placeholder="Nhập mật khẩu"
@@ -113,9 +113,8 @@ export function RegisterForm() {
             <label htmlFor="confirmPassword" className="text-sm font-medium">
               Xác nhận mật khẩu
             </label>
-            <Input
+            <PasswordInput
               id="confirmPassword"
-              type="password"
               {...register('confirmPassword')}
               className="mt-1"
               placeholder="Nhập lại mật khẩu"

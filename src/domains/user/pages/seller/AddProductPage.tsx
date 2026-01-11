@@ -369,7 +369,7 @@ export default function AddProductPage() {
                       type="number"
                       placeholder="1"
                       value={moq}
-                      onChange={(e) => setMoq(parseInt(e.target.value) || 1)}
+                      onChange={(e) => setMoq(parseInt(e.target.value))}
                     />
                     <p className="text-sm text-muted-foreground mt-1">
                       Số lượng tối thiểu khách hàng phải mua
