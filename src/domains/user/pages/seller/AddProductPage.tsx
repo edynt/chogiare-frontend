@@ -91,6 +91,7 @@ export default function AddProductPage() {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -264,6 +265,7 @@ export default function AddProductPage() {
                   <div>
                     <Label htmlFor="categoryId">Danh mục *</Label>
                     <Select
+                      value={watch('categoryId')?.toString()}
                       onValueChange={value => setValue('categoryId', parseInt(value, 10))}
                     >
                       <SelectTrigger
@@ -275,7 +277,7 @@ export default function AddProductPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {categories?.map(category => (
-                          <SelectItem key={category.id} value={category.id}>
+                          <SelectItem key={category.id} value={category.id.toString()}>
                             {category.name}
                           </SelectItem>
                         ))}
@@ -291,6 +293,7 @@ export default function AddProductPage() {
                   <div>
                     <Label htmlFor="condition">Tình trạng *</Label>
                     <Select
+                      value={watch('condition')}
                       onValueChange={value =>
                         setValue('condition', value as ProductCondition)
                       }
