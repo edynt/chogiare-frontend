@@ -609,6 +609,56 @@ export interface QueryReportsParams {
   dateTo?: string
 }
 
+// Package Types
+export interface AdminPackage {
+  id: number
+  displayName: string
+  name: string
+  description: string | null
+  durationDays: number
+  price: number
+  displayOrder: number
+  isActive: boolean
+  features: string[]
+  createdAt: string
+  updatedAt: string
+  purchaseCount?: number
+}
+
+export interface AdminPackageListResponse {
+  items: AdminPackage[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+export interface AdminPackageStats {
+  totalPackages: number
+  activePackages: number
+  totalPurchases: number
+  totalRevenue: number
+}
+
+export interface QueryAdminPackagesParams {
+  page?: number
+  pageSize?: number
+  isActive?: boolean
+  sortBy?: 'displayOrder' | 'price' | 'durationDays'
+  sortOrder?: 'asc' | 'desc'
+}
+
+export interface CreatePackageData {
+  displayName: string
+  name: string
+  description?: string
+  durationDays: number
+  price: number
+  displayOrder?: number
+  isActive?: boolean
+  features?: string[]
+}
+
 export const adminApi = {
   getDashboardStats: async (): Promise<AdminDashboardStats> => {
     try {
@@ -1489,6 +1539,72 @@ export const adminApi = {
 
   deleteCategory: async (id: number): Promise<void> => {
     await apiClient.delete(`/categories/${id}`)
+  },
+
+  // Package APIs
+  getPackages: async (
+    params?: QueryAdminPackagesParams
+  ): Promise<AdminPackageListResponse> => {
+    try {
+      const response = await apiClient.get<
+        ApiResponse<AdminPackageListResponse>
+      >('/admin/packages', { params })
+      return response.data.data
+    } catch (error) {
+      return handleApiError(error, {
+        items: [],
+        total: 0,
+        page: params?.page || 1,
+        pageSize: params?.pageSize || 10,
+        totalPages: 0,
+      })
+    }
+  },
+
+  getPackage: async (id: number): Promise<AdminPackage> => {
+    const response = await apiClient.get<ApiResponse<AdminPackage>>(
+      `/admin/packages/${id}`
+    )
+    return response.data.data
+  },
+
+  getPackageStats: async (): Promise<AdminPackageStats> => {
+    try {
+      const response = await apiClient.get<ApiResponse<AdminPackageStats>>(
+        '/admin/packages/statistics'
+      )
+      return response.data.data
+    } catch (error) {
+      return handleApiError(error, {
+        totalPackages: 0,
+        activePackages: 0,
+        totalPurchases: 0,
+        totalRevenue: 0,
+      })
+    }
+  },
+
+  createPackage: async (data: CreatePackageData): Promise<AdminPackage> => {
+    const response = await apiClient.post<ApiResponse<AdminPackage>>(
+      '/admin/packages',
+      data
+    )
+    return response.data.data
+  },
+
+  updatePackage: async (
+    id: number,
+    data: Partial<CreatePackageData>
+  ): Promise<AdminPackage> => {
+    const response = await apiClient.put<ApiResponse<AdminPackage>>(
+      `/admin/packages/${id}`,
+      data
+    )
+    return response.data.data
+  },
+
+  deletePackage: async (id: number): Promise<void> => {
+    await apiClient.delete(`/admin/packages/${id}`)
   },
 }
 

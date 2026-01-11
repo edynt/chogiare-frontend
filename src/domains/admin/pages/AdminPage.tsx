@@ -13,6 +13,7 @@ import NotificationManagementPage from './NotificationManagementPage'
 import CreateNotificationPage from './CreateNotificationPage'
 import CategoryManagementPage from './CategoryManagementPage'
 import UserDetailPage from './UserDetailPage'
+import PackagesManagementPage from './PackagesManagementPage'
 
 export default function AdminPage() {
   return (
@@ -24,6 +25,7 @@ export default function AdminPage() {
         <Route path="/products" element={<ProductModerationPage />} />
         <Route path="/orders" element={<OrderManagementPage />} />
         <Route path="/categories" element={<CategoryManagementPage />} />
+        <Route path="/subscriptions" element={<PackagesManagementPage />} />
         <Route path="/reports" element={<ReportsAnalyticsPage />} />
         <Route path="/cms" element={<ContentManagementPage />} />
         <Route path="/support" element={<CustomerSupportPage />} />
