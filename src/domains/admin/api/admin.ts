@@ -1085,6 +1085,10 @@ export const adminApi = {
     return response.data.data
   },
 
+  deleteProduct: async (id: string): Promise<void> => {
+    await apiClient.delete(`/products/${id}`)
+  },
+
   // Content Management APIs
   getContents: async (
     params?: QueryContentParams

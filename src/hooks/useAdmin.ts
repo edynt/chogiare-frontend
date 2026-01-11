@@ -339,6 +339,16 @@ export function useBulkRejectProducts() {
     })
 }
 
+export function useDeleteProduct() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: (id: string) => adminApi.deleteProduct(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['moderation-products'] })
+        },
+    })
+}
+
 // Content Management Hooks
 export function useContents(params?: QueryContentParams) {
     return useQuery({

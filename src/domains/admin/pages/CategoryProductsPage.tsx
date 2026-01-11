@@ -25,12 +25,29 @@ import {
   Eye,
   User,
   Loader2,
+  CheckCircle,
+  Trash2,
+  Edit,
 } from 'lucide-react'
 import { PLACEHOLDER_IMAGE } from '@/lib/utils'
+import { toast } from 'sonner'
 import {
   useModerationProducts,
   useAdminCategories,
+  useApproveProduct,
+  useDeleteProduct,
 } from '@/hooks/useAdmin'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@shared/components/ui/alert-dialog'
 
 export default function CategoryProductsPage() {
   const { categoryId } = useParams<{ categoryId: string }>()
@@ -50,6 +67,10 @@ export default function CategoryProductsPage() {
     status: statusFilter !== 'all' ? statusFilter : undefined,
     category: categoryId,
   })
+
+  const approveProductMutation = useApproveProduct()
+  const deleteProductMutation = useDeleteProduct()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
 
   const products = productsData?.items || []
   const total = productsData?.total || 0
@@ -94,6 +115,32 @@ export default function CategoryProductsPage() {
     })
   }
 
+  const handleApprove = (productId: string) => {
+    approveProductMutation.mutate(productId, {
+      onSuccess: () => {
+        toast.success('Đã duyệt sản phẩm')
+      },
+      onError: () => {
+        toast.error('Có lỗi xảy ra khi duyệt sản phẩm')
+      },
+    })
+  }
+
+  const handleDelete = (productId: string) => {
+    deleteProductMutation.mutate(productId, {
+      onSuccess: () => {
+        toast.success('Đã xóa sản phẩm')
+        setDeleteDialogOpen(null)
+      },
+      onError: () => {
+        toast.error('Có lỗi xảy ra khi xóa sản phẩm')
+      },
+    })
+  }
+
+  const handleEdit = (productId: string) => {
+    navigate(`/seller/products/${productId}/edit`)
+  }
 
   return (
     <div className="space-y-6">
@@ -229,9 +276,72 @@ export default function CategoryProductsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="icon">
-                          <Eye className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleApprove(product.id)}
+                            disabled={approveProductMutation.isPending || product.status === 'approved'}
+                            className="text-green-600 hover:text-green-700"
+                            title="Duyệt sản phẩm"
+                          >
+                            {approveProductMutation.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <CheckCircle className="h-4 w-4" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(product.id)}
+                            className="text-blue-600 hover:text-blue-700"
+                            title="Sửa sản phẩm"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <AlertDialog open={deleteDialogOpen === product.id} onOpenChange={(open) => setDeleteDialogOpen(open ? product.id : null)}>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-red-600 hover:text-red-700"
+                                title="Xóa sản phẩm"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Xác nhận xóa sản phẩm</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Bạn có chắc chắn muốn xóa sản phẩm "{product.title}"? Hành động này không thể hoàn tác.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Hủy</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(product.id)}
+                                  className="bg-red-600 hover:bg-red-700"
+                                  disabled={deleteProductMutation.isPending}
+                                >
+                                  {deleteProductMutation.isPending ? (
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                  ) : null}
+                                  Xóa
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-gray-600 hover:text-gray-700"
+                            title="Xem chi tiết"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
