@@ -12,6 +12,7 @@ import SystemSettingsPage from './SystemSettingsPage'
 import NotificationManagementPage from './NotificationManagementPage'
 import CreateNotificationPage from './CreateNotificationPage'
 import CategoryManagementPage from './CategoryManagementPage'
+import CategoryProductsPage from './CategoryProductsPage'
 import UserDetailPage from './UserDetailPage'
 import PackagesManagementPage from './PackagesManagementPage'
 
@@ -23,6 +24,7 @@ export default function AdminPage() {
         <Route path="/users" element={<UserManagementPage />} />
         <Route path="/users/:id" element={<UserDetailPage />} />
         <Route path="/products" element={<ProductModerationPage />} />
+        <Route path="/products/category/:categoryId" element={<CategoryProductsPage />} />
         <Route path="/orders" element={<OrderManagementPage />} />
         <Route path="/categories" element={<CategoryManagementPage />} />
         <Route path="/subscriptions" element={<PackagesManagementPage />} />

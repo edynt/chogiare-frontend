@@ -579,7 +579,7 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Chờ duyệt</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {productsData?.items.filter(p => p.status === 'pending').length ?? 0}
+                  {productsData?.items?.filter(p => p.status === 'pending').length ?? 0}
                 </p>
               </div>
             </div>
@@ -594,7 +594,7 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Đã duyệt</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {productsData?.items.filter(p => p.status === 'approved').length ?? 0}
+                  {productsData?.items?.filter(p => p.status === 'approved').length ?? 0}
                 </p>
               </div>
             </div>
@@ -609,7 +609,7 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Từ chối</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {productsData?.items.filter(p => p.status === 'rejected').length ?? 0}
+                  {productsData?.items?.filter(p => p.status === 'rejected').length ?? 0}
                 </p>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
@@ -36,6 +37,7 @@ import {
   XCircle,
   Loader2,
   AlertCircle,
+  Eye,
 } from 'lucide-react'
 import {
   useAdminCategories,
@@ -63,6 +65,7 @@ const categorySchema = z.object({
 type CategoryFormValues = z.infer<typeof categorySchema>
 
 export default function CategoryManagementPage() {
+  const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -308,6 +311,20 @@ export default function CategoryManagementPage() {
                       <TableCell>{category.displayOrder}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          {category.productCount > 0 && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                navigate(`/admin/products/category/${category.id}`)
+                              }}
+                              className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+                              title="Xem sản phẩm trong danh mục"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="icon"
@@ -352,7 +369,7 @@ export default function CategoryManagementPage() {
             </DialogDescription>
           </DialogHeader>
           <form
-            onSubmit={handleSubmit(onSubmit as any)}
+            onSubmit={handleSubmit(onSubmit as SubmitHandler<CategoryFormValues>)}
             className="space-y-4 py-4"
           >
             <div className="space-y-2">
