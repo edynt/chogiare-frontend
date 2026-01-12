@@ -37,10 +37,11 @@ export const useAdminLogin = () => {
 /**
  * Admin Profile Hook
  * Fetches admin profile using cookie-based authentication
- * Only enabled on /admin/* routes (excluding /admin/login)
+ * Only enabled on /admin/* routes (excluding /admin/login) AND user has admin role
  */
 export const useAdminProfile = (options?: { enabled?: boolean }) => {
   const location = useLocation()
+  const { user } = useAuthStore()
 
   // Don't fetch on admin login page
   const isAdminLoginPage = location.pathname === '/admin/login'
@@ -49,7 +50,11 @@ export const useAdminProfile = (options?: { enabled?: boolean }) => {
   const isAdminRoute =
     location.pathname.startsWith('/admin') && !isAdminLoginPage
 
-  const enabled = options?.enabled !== undefined ? options.enabled : isAdminRoute
+  const hasAdminRole = user?.roles?.includes('admin') || false
+  
+  const shouldFetch = isAdminRoute && hasAdminRole
+
+  const enabled = options?.enabled !== undefined ? options.enabled : shouldFetch
 
   return useQuery({
     queryKey: ['auth', 'profile', 'admin'],
