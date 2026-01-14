@@ -61,6 +61,13 @@ export interface QueryTransactionParams {
   status?: 'pending' | 'completed' | 'failed' | 'cancelled'
 }
 
+export interface DepositPackage {
+  id: number
+  name: string
+  amount: number
+  displayOrder: number
+}
+
 export const walletApi = {
   getBalance: async (): Promise<WalletBalance> => {
     const response = await apiClient.get<ApiResponse<WalletBalance>>('/payments/balance')
@@ -86,6 +93,11 @@ export const walletApi = {
 
   deposit: async (data: DepositRequest): Promise<DepositResponse> => {
     const response = await apiClient.post<ApiResponse<DepositResponse>>('/payments/deposit', data)
+    return response.data.data
+  },
+
+  getDepositPackages: async (): Promise<DepositPackage[]> => {
+    const response = await apiClient.get<ApiResponse<DepositPackage[]>>('/payments/deposit-packages')
     return response.data.data
   },
 }

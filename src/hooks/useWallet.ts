@@ -41,4 +41,12 @@ export const useDeposit = () => {
   })
 }
 
+export const useDepositPackages = () => {
+  return useQuery({
+    queryKey: queryKeys.wallet.depositPackages,
+    queryFn: () => walletApi.getDepositPackages(),
+    staleTime: 5 * 60 * 1000, // Cache 5 minutes
+  })
+}
+
 

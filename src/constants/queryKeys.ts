@@ -68,6 +68,7 @@ export const queryKeys = {
     balance: ['wallet', 'balance'] as const,
     transactions: (params?: unknown) => ['wallet', 'transactions', params] as const,
     transaction: (id: number | string) => ['wallet', 'transaction', id] as const,
+    depositPackages: ['wallet', 'deposit-packages'] as const,
   },
   notifications: {
     all: (params?: unknown) => ['notifications', params] as const,

@@ -25,10 +25,8 @@ import {
   CreditCard
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useWalletBalance, useTransactions, useDeposit } from '@/hooks/useWallet'
+import { useWalletBalance, useTransactions, useDeposit, useDepositPackages } from '@/hooks/useWallet'
 import type { Transaction } from '@user/api/wallet'
-
-const PRESET_AMOUNTS = [50000, 100000, 200000, 500000, 1000000, 2000000]
 
 export default function TopUpPage() {
   const navigate = useNavigate()
@@ -43,6 +41,7 @@ export default function TopUpPage() {
     page: 1,
     pageSize: 50,
   })
+  const { data: depositPackages, isLoading: packagesLoading } = useDepositPackages()
   const depositMutation = useDeposit()
 
   const balance = balanceData
@@ -329,18 +328,28 @@ export default function TopUpPage() {
                     {/* Preset Amounts */}
                     <div>
                       <Label className="mb-3 block">Chọn số tiền nạp nhanh</Label>
-                      <div className="grid grid-cols-3 gap-3">
-                        {PRESET_AMOUNTS.map((amount) => (
-                          <Button
-                            key={amount}
-                            variant={selectedPreset === amount ? 'default' : 'outline'}
-                            onClick={() => handlePresetSelect(amount)}
-                            className="h-16"
-                          >
-                            {formatPrice(amount)}
-                          </Button>
-                        ))}
-                      </div>
+                      {packagesLoading ? (
+                        <div className="grid grid-cols-3 gap-3">
+                          {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="h-16 bg-muted rounded animate-pulse" />
+                          ))}
+                        </div>
+                      ) : depositPackages && depositPackages.length > 0 ? (
+                        <div className="grid grid-cols-3 gap-3">
+                          {depositPackages.map((pkg) => (
+                            <Button
+                              key={pkg.id}
+                              variant={selectedPreset === pkg.amount ? 'default' : 'outline'}
+                              onClick={() => handlePresetSelect(pkg.amount)}
+                              className="h-16"
+                            >
+                              {formatPrice(pkg.amount)}
+                            </Button>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground text-sm">Không có gói nạp tiền nào</p>
+                      )}
                     </div>
 
                     {/* Custom Amount */}

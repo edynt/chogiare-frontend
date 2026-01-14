@@ -4,18 +4,6 @@ import { authApi } from '@shared/api/auth'
 import { useAuthStore } from '@/stores/authStore'
 import { apiClient } from '@shared/api/axios'
 
-/**
- * Admin Authentication Hooks
- * Dedicated hooks for admin authentication - no conditional logic
- * All hooks directly call admin-specific API endpoints
- * Uses cookie-based authentication (httpOnly cookies set by backend)
- */
-
-/**
- * Admin Login Hook
- * Authenticates admin user and stores session
- * Redirects to /admin dashboard on success
- */
 export const useAdminLogin = () => {
   const { login, setError } = useAuthStore()
   const queryClient = useQueryClient()
