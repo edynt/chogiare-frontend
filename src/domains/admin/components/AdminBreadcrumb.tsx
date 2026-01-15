@@ -50,9 +50,9 @@ export function AdminBreadcrumb() {
     <nav className="bg-white border-b border-gray-200 px-8 py-4">
       <ol className="flex items-center space-x-3 text-sm">
         <li>
-          <a 
-            href="/admin" 
-            className="flex items-center text-gray-500 hover:text-gray-700 p-1 rounded-md hover:bg-gray-100"
+          <a
+            href="/admin"
+            className="flex items-center text-gray-500 p-1 rounded-md hover:bg-gray-100"
           >
             <Home className="h-5 w-5" />
           </a>
@@ -63,9 +63,9 @@ export function AdminBreadcrumb() {
             <ChevronRight className="h-5 w-5 text-gray-400" />
             <span 
               className={cn(
-                breadcrumb.isLast 
-                  ? "text-gray-900 font-medium" 
-                  : "text-gray-500 hover:text-gray-700 cursor-pointer px-2 py-1 rounded-md hover:bg-gray-100"
+                breadcrumb.isLast
+                  ? "text-gray-900 font-medium"
+                  : "text-gray-500 cursor-pointer px-2 py-1 rounded-md hover:bg-gray-100"
               )}
             >
               {breadcrumb.label}

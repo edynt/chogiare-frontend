@@ -287,7 +287,7 @@ export default function PromotionManagementPage() {
               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === tab.id
                   ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-600'
               }`}
             >
               <Icon className="h-4 w-4" />

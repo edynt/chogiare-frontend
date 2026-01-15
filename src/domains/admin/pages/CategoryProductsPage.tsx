@@ -336,7 +336,7 @@ export default function CategoryProductsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-gray-600 hover:text-gray-700"
+                            className="text-gray-600"
                             title="Xem chi tiết"
                           >
                             <Eye className="h-4 w-4" />
