@@ -137,7 +137,7 @@ export default function DepositPackagesManagementPage() {
       await createPackageMutation.mutateAsync(formData)
       toast.success('Tạo gói nạp tiền thành công')
       setIsCreateDialogOpen(false)
-    } catch (errory) {
+    } catch (error: any) {
       toast.error(
         error.response?.data?.message || 'Có lỗi xảy ra khi tạo gói nạp tiền'
       )

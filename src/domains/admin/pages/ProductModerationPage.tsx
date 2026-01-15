@@ -515,7 +515,7 @@ export default function ProductModerationPage() {
                             size="icon"
                             onClick={() => handleReject(product.id)}
                             disabled={rejectProductMutation.isPending || product.status === 'rejected'}
-                            className="text-red-600 hover:text-red-700"
+                            className="text-red-600"
                           >
                             {rejectProductMutation.isPending ? (
                               <Loader2 className="h-4 w-4 animate-spin" />

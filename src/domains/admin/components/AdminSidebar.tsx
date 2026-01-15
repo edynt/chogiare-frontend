@@ -163,7 +163,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                 'hover:bg-gray-100 group relative',
                 isActive
                   ? 'bg-primary/10 text-primary'
-                  : 'text-gray-700 hover:text-gray-900',
+                  : 'text-gray-700',
                 isCollapsed && 'justify-center'
               )}
               title={isCollapsed ? item.title : undefined}
@@ -173,7 +173,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                   'h-5 w-5 flex-shrink-0',
                   isActive
                     ? 'text-primary'
-                    : 'text-gray-500 group-hover:text-gray-700'
+                    : 'text-gray-500'
                 )}
               />
 

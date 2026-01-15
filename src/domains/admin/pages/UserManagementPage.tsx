@@ -447,7 +447,7 @@ export default function UserManagementPage() {
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="text-red-600 hover:text-red-700"
+                                    className="text-red-600"
                                     title="Vô hiệu hóa"
                                   >
                                     <UserX className="h-4 w-4" />
@@ -517,7 +517,7 @@ export default function UserManagementPage() {
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="text-red-600 hover:text-red-700"
+                                  className="text-red-600"
                                   title="Xóa người dùng"
                                 >
                                   <Trash2 className="h-4 w-4" />

@@ -343,7 +343,7 @@ export default function CategoryManagementPage() {
                                 ? 'Không thể xóa danh mục có sản phẩm'
                                 : 'Xóa danh mục'
                             }
-                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            className="h-8 w-8 text-red-600 hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
