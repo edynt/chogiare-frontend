@@ -216,10 +216,6 @@ export default function ProductModerationPage() {
           <p className="text-gray-600 mt-1">Duyệt và quản lý sản phẩm đăng bán trên nền tảng</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline">
-            <Bot className="h-4 w-4 mr-2" />
-            Cài đặt AI
-          </Button>
           <Button
             disabled={selectedProducts.length === 0 || bulkApproveMutation.isPending}
             onClick={() => handleBulkAction('approve')}

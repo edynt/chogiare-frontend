@@ -6,19 +6,14 @@ import {
   Users,
   Package,
   ShoppingCart,
-  Settings,
-  FileText,
-  MessageSquare,
   Shield,
-  Mail,
   ChevronLeft,
   Menu,
   Crown,
   FolderTree,
+  Wallet,
 } from 'lucide-react'
-import {
-  useAdminUserStats,
-} from '@/hooks/useAdmin'
+import { useAdminUserStats } from '@/hooks/useAdmin'
 
 interface MenuItem {
   title: string
@@ -61,26 +56,31 @@ const menuItems: MenuItem[] = [
     icon: Crown,
   },
   {
-    title: 'Quản lý nội dung',
-    href: '/admin/cms',
-    icon: FileText,
+    title: 'Gói nạp tiền',
+    href: '/admin/deposit-packages',
+    icon: Wallet,
   },
-  {
-    title: 'Hỗ trợ & Khiếu nại',
-    href: '/admin/support',
-    icon: MessageSquare,
-    badgeKey: 'openTickets',
-  },
-  {
-    title: 'Email & Thông báo',
-    href: '/admin/notifications',
-    icon: Mail,
-  },
-  {
-    title: 'Cài đặt hệ thống',
-    href: '/admin/settings',
-    icon: Settings,
-  },
+  //   {
+  //     title: 'Quản lý nội dung',
+  //     href: '/admin/cms',
+  //     icon: FileText,
+  //   },
+  //   {
+  //     title: 'Hỗ trợ & Khiếu nại',
+  //     href: '/admin/support',
+  //     icon: MessageSquare,
+  //     badgeKey: 'openTickets',
+  //   },
+  //   {
+  //     title: 'Email & Thông báo',
+  //     href: '/admin/notifications',
+  //     icon: Mail,
+  //   },
+  //   {
+  //     title: 'Cài đặt hệ thống',
+  //     href: '/admin/settings',
+  //     icon: Settings,
+  //   },
 ]
 
 interface AdminSidebarProps {
@@ -132,7 +132,9 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
-                <p className="text-sm text-gray-500">Chợ Giá Rẻ | Marketplace</p>
+                <p className="text-sm text-gray-500">
+                  Chợ Giá Rẻ | Marketplace
+                </p>
               </div>
             </div>
             <ChevronLeft className="h-5 w-5 text-gray-600" />

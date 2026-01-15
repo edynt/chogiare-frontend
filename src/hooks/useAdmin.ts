@@ -17,6 +17,8 @@ import {
     type UpdateUserRolesDto,
     type QueryAdminPackagesParams,
     type CreatePackageData,
+    type QueryDepositPackagesParams,
+    type CreateDepositPackageData,
 } from '@admin/api/admin'
 
 const defaultQueryOptions = {
@@ -742,6 +744,55 @@ export function useDeletePackage() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-packages'] })
             queryClient.invalidateQueries({ queryKey: ['admin-package-stats'] })
+        },
+    })
+}
+
+// Deposit Package Hooks
+export function useDepositPackages(params?: QueryDepositPackagesParams) {
+    return useQuery({
+        queryKey: ['admin-deposit-packages', params],
+        queryFn: () => adminApi.getDepositPackages(params),
+        ...defaultQueryOptions,
+    })
+}
+
+export function useDepositPackage(id: number) {
+    return useQuery({
+        queryKey: ['admin-deposit-package', id],
+        queryFn: () => adminApi.getDepositPackage(id),
+        enabled: !!id,
+        ...defaultQueryOptions,
+    })
+}
+
+export function useCreateDepositPackage() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: (data: CreateDepositPackageData) => adminApi.createDepositPackage(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-deposit-packages'] })
+        },
+    })
+}
+
+export function useUpdateDepositPackage() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({ id, data }: { id: number; data: Partial<CreateDepositPackageData> }) =>
+            adminApi.updateDepositPackage(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-deposit-packages'] })
+        },
+    })
+}
+
+export function useDeleteDepositPackage() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: (id: number) => adminApi.deleteDepositPackage(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-deposit-packages'] })
         },
     })
 }

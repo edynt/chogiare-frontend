@@ -15,6 +15,7 @@ import CategoryManagementPage from './CategoryManagementPage'
 import CategoryProductsPage from './CategoryProductsPage'
 import UserDetailPage from './UserDetailPage'
 import PackagesManagementPage from './PackagesManagementPage'
+import DepositPackagesManagementPage from './DepositPackagesManagementPage'
 
 export default function AdminPage() {
   return (
@@ -28,6 +29,7 @@ export default function AdminPage() {
         <Route path="/orders" element={<OrderManagementPage />} />
         <Route path="/categories" element={<CategoryManagementPage />} />
         <Route path="/subscriptions" element={<PackagesManagementPage />} />
+        <Route path="/deposit-packages" element={<DepositPackagesManagementPage />} />
         <Route path="/reports" element={<ReportsAnalyticsPage />} />
         <Route path="/cms" element={<ContentManagementPage />} />
         <Route path="/support" element={<CustomerSupportPage />} />

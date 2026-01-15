@@ -659,6 +659,40 @@ export interface CreatePackageData {
   features?: string[]
 }
 
+// Deposit Package Types
+export interface DepositPackage {
+  id: number
+  name: string
+  amount: number
+  displayOrder: number
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface DepositPackageListResponse {
+  items: DepositPackage[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+export interface QueryDepositPackagesParams {
+  page?: number
+  limit?: number
+  isActive?: boolean
+  sortBy?: 'displayOrder' | 'amount' | 'name' | 'createdAt'
+  sortOrder?: 'asc' | 'desc'
+}
+
+export interface CreateDepositPackageData {
+  name: string
+  amount: number
+  displayOrder?: number
+  isActive?: boolean
+}
+
 export const adminApi = {
   getDashboardStats: async (): Promise<AdminDashboardStats> => {
     try {
@@ -825,9 +859,9 @@ export const adminApi = {
 
   getUser: async (id: string): Promise<AdminUser> => {
     const response = await apiClient.get<ApiResponse<AdminUser>>(
-        `/admin/users/${id}`
-      )
-      return response.data.data
+      `/admin/users/${id}`
+    )
+    return response.data.data
   },
 
   getUserStats: async (): Promise<AdminUserStats> => {
@@ -899,7 +933,10 @@ export const adminApi = {
     return response.data.data
   },
 
-  updateUserRoles: async (id: string, data: UpdateUserRolesDto): Promise<AdminUser> => {
+  updateUserRoles: async (
+    id: string,
+    data: UpdateUserRolesDto
+  ): Promise<AdminUser> => {
     const response = await apiClient.put<ApiResponse<AdminUser>>(
       `/admin/users/${id}/roles`,
       data
@@ -930,10 +967,10 @@ export const adminApi = {
   },
 
   getOrder: async (id: string): Promise<AdminOrder> => {
-     const response = await apiClient.get<ApiResponse<AdminOrder>>(
-        `/admin/orders/${id}`
-      )
-      return response.data.data
+    const response = await apiClient.get<ApiResponse<AdminOrder>>(
+      `/admin/orders/${id}`
+    )
+    return response.data.data
   },
 
   getOrderStats: async (): Promise<AdminOrderStats> => {
@@ -1002,9 +1039,9 @@ export const adminApi = {
 
   getTransaction: async (id: number): Promise<AdminTransaction> => {
     const response = await apiClient.get<ApiResponse<AdminTransaction>>(
-        `/admin/payments/transactions/${id}`
-      )
-      return response.data.data
+      `/admin/payments/transactions/${id}`
+    )
+    return response.data.data
   },
 
   getPaymentStats: async (): Promise<AdminPaymentStats> => {
@@ -1044,7 +1081,6 @@ export const adminApi = {
       })
     }
   },
-
 
   approveProduct: async (id: string): Promise<ModerationProduct> => {
     const response = await apiClient.put<ApiResponse<ModerationProduct>>(
@@ -1609,6 +1645,58 @@ export const adminApi = {
 
   deletePackage: async (id: number): Promise<void> => {
     await apiClient.delete(`/admin/packages/${id}`)
+  },
+
+  // Deposit Package APIs
+  getDepositPackages: async (
+    params?: QueryDepositPackagesParams
+  ): Promise<DepositPackageListResponse> => {
+    try {
+      const response = await apiClient.get<
+        ApiResponse<DepositPackageListResponse>
+      >('/admin/deposit-packages', { params })
+      return response.data.data
+    } catch (error) {
+      return handleApiError(error, {
+        items: [],
+        total: 0,
+        page: 1,
+        limit: 10,
+        totalPages: 0,
+      })
+    }
+  },
+
+  getDepositPackage: async (id: number): Promise<DepositPackage> => {
+    const response = await apiClient.get<ApiResponse<DepositPackage>>(
+      `/admin/deposit-packages/${id}`
+    )
+    return response.data.data
+  },
+
+  createDepositPackage: async (
+    data: CreateDepositPackageData
+  ): Promise<DepositPackage> => {
+    const response = await apiClient.post<ApiResponse<DepositPackage>>(
+      '/admin/deposit-packages',
+      data
+    )
+    return response.data.data
+  },
+
+  updateDepositPackage: async (
+    id: number,
+    data: Partial<CreateDepositPackageData>
+  ): Promise<DepositPackage> => {
+    const response = await apiClient.put<ApiResponse<DepositPackage>>(
+      `/admin/deposit-packages/${id}`,
+      data
+    )
+    return response.data.data
+  },
+
+  deleteDepositPackage: async (id: number): Promise<void> => {
+    await apiClient.delete(`/admin/deposit-packages/${id}`)
   },
 }
 
