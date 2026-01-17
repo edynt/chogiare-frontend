@@ -64,7 +64,7 @@ export default function AddProductPage() {
 
   const [images, setImages] = useState<ImageItem[]>([])
   const [selectedBadges, setSelectedBadges] = useState<string[]>([])
-  const [status, setStatus] = useState<ProductStatus>('draft')
+  const [status, setStatus] = useState<ProductStatus>('active')
   const [inStock, setInStock] = useState(true)
   const [moq, setMoq] = useState(1)
   const [sku, setSku] = useState('')
@@ -129,6 +129,7 @@ export default function AddProductPage() {
         condition: data.condition,
         location: data.location || undefined,
         stock: data.stock,
+        status, // Include status (default: 'active')
         tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : undefined,
         badges: selectedBadges.length > 0 ? selectedBadges : undefined,
         minStock: minStock > 0 ? minStock : undefined,
