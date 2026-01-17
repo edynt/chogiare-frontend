@@ -6,22 +6,27 @@ import { Card, CardContent } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@shared/components/ui/select'
 import { useMyProducts, useDeleteProduct } from '@/hooks/useProducts'
 import { useNotification } from '@shared/components/notification-provider'
-import { 
-  Plus, 
-  Search, 
-  Grid, 
-  List, 
-  Eye, 
-  Edit, 
-  Trash2, 
+import {
+  Plus,
+  Search,
+  Eye,
+  Edit,
+  Trash2,
   MoreVertical,
   Package,
   TrendingUp,
   DollarSign,
-  Star
+  Star,
+  Filter,
 } from 'lucide-react'
 import { formatPrice, PLACEHOLDER_IMAGE } from '@/lib/utils'
 import type { ProductStatus } from '@/types'
@@ -29,20 +34,49 @@ import type { ProductStatus } from '@/types'
 export default function SellerProductsPage() {
   const navigate = useNavigate()
   const { notify } = useNotification()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [sortBy, setSortBy] = useState('newest')
 
-  const { data: productsData, isLoading, error } = useMyProducts({
-    query: searchQuery || undefined,
-    sortBy: sortBy as 'createdAt' | 'price' | 'rating' | 'viewCount',
+  // Pending values (before submit)
+  const [pendingSearch, setPendingSearch] = useState('')
+  const [pendingStatus, setPendingStatus] = useState<string>('all')
+  const [pendingSortBy, setPendingSortBy] = useState('newest')
+
+  // Applied values (after submit)
+  const [appliedSearch, setAppliedSearch] = useState('')
+  const [appliedStatus, setAppliedStatus] = useState<string>('all')
+  const [appliedSortBy, setAppliedSortBy] = useState('newest')
+
+  const {
+    data: productsData,
+    isLoading,
+    error,
+  } = useMyProducts({
+    query: appliedSearch || undefined,
+    status: appliedStatus !== 'all' ? appliedStatus : undefined,
+    sortBy: appliedSortBy as 'createdAt' | 'price' | 'rating' | 'viewCount',
   })
+
+  // Handle filter submit
+  const handleFilterSubmit = () => {
+    setAppliedSearch(pendingSearch)
+    setAppliedStatus(pendingStatus)
+    setAppliedSortBy(pendingSortBy)
+  }
+
+  // Handle Enter key in search input
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleFilterSubmit()
+    }
+  }
 
   const { mutate: deleteProduct } = useDeleteProduct()
 
   const handleDeleteProduct = (productId: string) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.')) {
+    if (
+      window.confirm(
+        'Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.'
+      )
+    ) {
       deleteProduct(productId, {
         onSuccess: () => {
           notify({
@@ -51,11 +85,14 @@ export default function SellerProductsPage() {
             message: 'Sản phẩm đã được xóa khỏi hệ thống.',
           })
         },
-        onError: (error) => {
+        onError: error => {
           notify({
             type: 'error',
             title: 'Xóa thất bại',
-            message: error instanceof Error ? error.message : 'Có lỗi xảy ra khi xóa sản phẩm.',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Có lỗi xảy ra khi xóa sản phẩm.',
           })
         },
       })
@@ -111,8 +148,13 @@ export default function SellerProductsPage() {
     active: productsData?.items?.filter(p => p.status === 'active').length || 0,
     draft: productsData?.items?.filter(p => p.status === 'draft').length || 0,
     sold: productsData?.items?.filter(p => p.status === 'sold').length || 0,
-    totalViews: productsData?.items?.reduce((sum, p) => sum + (p.viewCount || 0), 0) || 0,
-    totalRevenue: productsData?.items?.reduce((sum, p) => sum + (p.price * (p.stock || 0)), 0) || 0,
+    totalViews:
+      productsData?.items?.reduce((sum, p) => sum + (p.viewCount || 0), 0) || 0,
+    totalRevenue:
+      productsData?.items?.reduce(
+        (sum, p) => sum + p.price * (p.stock || 0),
+        0
+      ) || 0,
   }
 
   if (error) {
@@ -122,7 +164,9 @@ export default function SellerProductsPage() {
         <main className="container mx-auto px-4 py-8">
           <Card>
             <CardContent className="text-center py-12">
-              <h2 className="text-2xl font-bold text-destructive mb-4">Lỗi tải sản phẩm</h2>
+              <h2 className="text-2xl font-bold text-destructive mb-4">
+                Lỗi tải sản phẩm
+              </h2>
               <p className="text-muted-foreground mb-4">
                 Đã có lỗi xảy ra khi tải danh sách sản phẩm: {error.message}
               </p>
@@ -157,7 +201,9 @@ export default function SellerProductsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Tổng sản phẩm</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Tổng sản phẩm
+                    </p>
                     <p className="text-2xl font-bold">{stats.total}</p>
                   </div>
                   <Package className="h-8 w-8 text-muted-foreground" />
@@ -169,8 +215,12 @@ export default function SellerProductsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Đang bán</p>
-                    <p className="text-2xl font-bold text-success">{stats.active}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Đang bán
+                    </p>
+                    <p className="text-2xl font-bold text-success">
+                      {stats.active}
+                    </p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-success" />
                 </div>
@@ -181,8 +231,12 @@ export default function SellerProductsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Lượt xem</p>
-                    <p className="text-2xl font-bold">{stats.totalViews.toLocaleString()}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Lượt xem
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {stats.totalViews.toLocaleString()}
+                    </p>
                   </div>
                   <Eye className="h-8 w-8 text-muted-foreground" />
                 </div>
@@ -193,8 +247,12 @@ export default function SellerProductsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Tổng giá trị</p>
-                    <p className="text-2xl font-bold">{formatPrice(stats.totalRevenue)}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Tổng giá trị
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {formatPrice(stats.totalRevenue)}
+                    </p>
                   </div>
                   <DollarSign className="h-8 w-8 text-muted-foreground" />
                 </div>
@@ -208,13 +266,14 @@ export default function SellerProductsPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Tìm kiếm sản phẩm..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={pendingSearch}
+                onChange={e => setPendingSearch(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
                 className="pl-10"
               />
             </div>
 
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={pendingStatus} onValueChange={setPendingStatus}>
               <SelectTrigger className="w-full sm:w-48">
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
@@ -228,7 +287,7 @@ export default function SellerProductsPage() {
               </SelectContent>
             </Select>
 
-            <Select value={sortBy} onValueChange={setSortBy}>
+            <Select value={pendingSortBy} onValueChange={setPendingSortBy}>
               <SelectTrigger className="w-full sm:w-48">
                 <SelectValue placeholder="Sắp xếp" />
               </SelectTrigger>
@@ -241,24 +300,10 @@ export default function SellerProductsPage() {
               </SelectContent>
             </Select>
 
-            <div className="flex border rounded-lg">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="rounded-r-none"
-              >
-                <Grid className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="rounded-l-none"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button variant="secondary" onClick={handleFilterSubmit}>
+              <Filter className="h-4 w-4 mr-2" />
+              Lọc
+            </Button>
 
             <Button onClick={() => navigate('/seller/products/add')}>
               <Plus className="h-4 w-4 mr-2" />
@@ -269,7 +314,8 @@ export default function SellerProductsPage() {
           {/* Results Count */}
           {productsData && productsData.items && (
             <div className="mb-4 text-sm text-muted-foreground">
-              Hiển thị {productsData.items.length} trong tổng số {productsData.total} sản phẩm
+              Hiển thị {productsData.items.length} trong tổng số{' '}
+              {productsData.total} sản phẩm
             </div>
           )}
 
@@ -296,7 +342,9 @@ export default function SellerProductsPage() {
                 <Card>
                   <CardContent className="text-center py-12">
                     <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold mb-2">Chưa có sản phẩm nào</h3>
+                    <h3 className="text-xl font-semibold mb-2">
+                      Chưa có sản phẩm nào
+                    </h3>
                     <p className="text-muted-foreground mb-6">
                       Bắt đầu bán hàng bằng cách thêm sản phẩm đầu tiên của bạn
                     </p>
@@ -307,21 +355,22 @@ export default function SellerProductsPage() {
                   </CardContent>
                 </Card>
               ) : (
-                <div
-                  className={`grid gap-6 ${
-                    viewMode === 'grid'
-                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                      : 'grid-cols-1'
-                  }`}
-                >
-                  {productsData.items.map((product) => (
-                    <Card key={product.id} className="group hover:shadow-lg transition-shadow">
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {productsData.items.map(product => (
+                    <Card
+                      key={product.id}
+                      className="group hover:shadow-lg transition-shadow"
+                    >
                       <div className="relative">
                         <img
-                          src={product.images && product.images.length > 0 ? product.images[0] : PLACEHOLDER_IMAGE}
+                          src={
+                            product.images && product.images.length > 0
+                              ? product.images[0]
+                              : PLACEHOLDER_IMAGE
+                          }
                           alt={product.title}
                           className="w-full h-48 object-cover rounded-t-lg"
-                          onError={(e) => {
+                          onError={e => {
                             e.currentTarget.src = PLACEHOLDER_IMAGE
                           }}
                         />
@@ -338,7 +387,9 @@ export default function SellerProductsPage() {
                       <CardContent className="p-4">
                         <div className="space-y-3">
                           <div>
-                            <h3 className="font-semibold line-clamp-2 mb-1">{product.title}</h3>
+                            <h3 className="font-semibold line-clamp-2 mb-1">
+                              {product.title}
+                            </h3>
                             <p className="text-lg font-bold text-primary">
                               {formatPrice(product.price)}
                             </p>
@@ -363,7 +414,9 @@ export default function SellerProductsPage() {
                               variant="outline"
                               size="sm"
                               className="flex-1"
-                              onClick={() => navigate(`/products/${product.id}`)}
+                              onClick={() =>
+                                navigate(`/products/${product.id}`)
+                              }
                             >
                               <Eye className="h-3 w-3 mr-1" />
                               Xem
@@ -372,7 +425,9 @@ export default function SellerProductsPage() {
                               variant="outline"
                               size="sm"
                               className="flex-1"
-                              onClick={() => navigate(`/seller/products/edit/${product.id}`)}
+                              onClick={() =>
+                                navigate(`/seller/products/edit/${product.id}`)
+                              }
                             >
                               <Edit className="h-3 w-3 mr-1" />
                               Sửa
