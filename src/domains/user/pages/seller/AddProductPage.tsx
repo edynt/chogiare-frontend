@@ -26,7 +26,6 @@ import { useNotification } from '@shared/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
 import {
   Plus,
-  X,
   Package,
   DollarSign,
   Tag,
@@ -34,6 +33,7 @@ import {
   Save,
   ArrowLeft,
 } from 'lucide-react'
+import { ImageUploadWithReorder, type ImageItem } from '@shared/components/ui/image-upload-with-reorder'
 import type { ProductCondition, ProductStatus } from '@/types'
 
 // Using Zod schema from lib/schemas.ts
@@ -62,8 +62,7 @@ export default function AddProductPage() {
     },
   })
 
-  const [imageFiles, setImageFiles] = useState<File[]>([])
-  const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([])
+  const [images, setImages] = useState<ImageItem[]>([])
   const [selectedBadges, setSelectedBadges] = useState<string[]>([])
   const [status, setStatus] = useState<ProductStatus>('draft')
   const [inStock, setInStock] = useState(true)
@@ -112,25 +111,6 @@ export default function AddProductPage() {
     { value: 'poor', label: 'Cũ' },
   ]
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files) {
-      const newFiles = Array.from(files)
-      setImageFiles(prev => [...prev, ...newFiles])
-      setImagePreviewUrls(prev => [
-        ...prev,
-        ...newFiles.map(file => URL.createObjectURL(file))
-      ])
-    }
-  }
-
-  const removeImage = (index: number) => {
-    // Revoke blob URL to prevent memory leak
-    URL.revokeObjectURL(imagePreviewUrls[index])
-    setImageFiles(prev => prev.filter((_, i) => i !== index))
-    setImagePreviewUrls(prev => prev.filter((_, i) => i !== index))
-  }
-
   const handleBadgeToggle = (badge: string) => {
     setSelectedBadges(prev =>
       prev.includes(badge) ? prev.filter(b => b !== badge) : [...prev, badge]
@@ -157,6 +137,9 @@ export default function AddProductPage() {
         sellingPrice: data.price > 0 ? data.price : undefined,
         sku: sku || undefined,
       }
+
+      // Extract files from images array in order (first image = representative image)
+      const imageFiles = images.map(img => img.file)
 
       await new Promise((resolve, reject) => {
         createProductMutation.mutate(
@@ -601,52 +584,12 @@ export default function AddProductPage() {
                   Hình ảnh sản phẩm
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="images">Tải lên hình ảnh</Label>
-                  <div className="mt-2">
-                    <Input
-                      id="images"
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="cursor-pointer"
-                    />
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Tải lên tối đa 10 hình ảnh. Hình đầu tiên sẽ là ảnh đại
-                    diện.
-                  </p>
-                </div>
-
-                {imagePreviewUrls.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {imagePreviewUrls.map((image, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={image}
-                          alt={`Product ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg border"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => removeImage(index)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                        {index === 0 && (
-                          <Badge className="absolute bottom-2 left-2">
-                            Ảnh chính
-                          </Badge>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
+              <CardContent>
+                <ImageUploadWithReorder
+                  images={images}
+                  onImagesChange={setImages}
+                  maxImages={10}
+                />
               </CardContent>
             </Card>
 
