@@ -778,12 +778,18 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 <div className="relative">
                   <Input
                     id="selling-price"
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
+                    pattern="[0-9]*\.?[0-9]*"
                     value={sellingPrice || ''}
-                    onChange={(e) => setSellingPrice(Number(e.target.value) || 0)}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                        setSellingPrice(parseFloat(value) || 0)
+                      }
+                    }}
                     placeholder="Nhập giá bán dự kiến"
                     className="pl-10 text-lg"
-                    min={0}
                   />
                   <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 </div>

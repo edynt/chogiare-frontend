@@ -343,9 +343,11 @@ export default function EditProductPage() {
                     <Label htmlFor="price">Giá bán * (VNĐ)</Label>
                     <Input
                       id="price"
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
+                      pattern="[0-9]*\.?[0-9]*"
                       placeholder="0"
-                      {...register('price', { valueAsNumber: true })}
+                      {...register('price')}
                       className={errors.price ? 'border-destructive' : ''}
                     />
                     {errors.price && <p className="text-sm text-destructive mt-1">{errors.price.message}</p>}
@@ -355,9 +357,11 @@ export default function EditProductPage() {
                     <Label htmlFor="originalPrice">Giá gốc (VNĐ)</Label>
                     <Input
                       id="originalPrice"
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
+                      pattern="[0-9]*\.?[0-9]*"
                       placeholder="0"
-                      {...register('originalPrice', { valueAsNumber: true })}
+                      {...register('originalPrice')}
                     />
                     <p className="text-sm text-muted-foreground mt-1">Để trống nếu không có giá gốc</p>
                   </div>
@@ -467,10 +471,17 @@ export default function EditProductPage() {
                   <Label htmlFor="costPrice">Giá nhập (VNĐ)</Label>
                   <Input
                     id="costPrice"
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
+                    pattern="[0-9]*\.?[0-9]*"
                     placeholder="0"
                     value={costPrice}
-                    onChange={(e) => setCostPrice(parseInt(e.target.value) || 0)}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                        setCostPrice(parseFloat(value) || 0)
+                      }
+                    }}
                   />
                   <p className="text-sm text-muted-foreground mt-1">
                     Giá nhập hàng từ nhà cung cấp

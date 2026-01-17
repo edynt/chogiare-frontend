@@ -165,15 +165,19 @@ const PackageFormDialog: React.FC<PackageFormDialogProps> = ({
             </Label>
             <Input
               id="price"
-              type="number"
-              min="0"
+              type="text"
+              inputMode="decimal"
+              pattern="[0-9]*\.?[0-9]*"
               value={formData.price}
-              onChange={e =>
-                setFormData({
-                  ...formData,
-                  price: parseInt(e.target.value) || 0,
-                })
-              }
+              onChange={e => {
+                const value = e.target.value
+                if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                  setFormData({
+                    ...formData,
+                    price: parseFloat(value) || 0,
+                  })
+                }
+              }}
             />
           </div>
           <div className="space-y-2">

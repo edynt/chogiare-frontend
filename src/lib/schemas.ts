@@ -43,8 +43,16 @@ export const resetPasswordSchema = z.object({
 export const productSchema = z.object({
   title: z.string().min(1, 'Tên sản phẩm là bắt buộc'),
   description: z.string().optional(),
-  price: z.number().min(0, 'Giá phải lớn hơn 0'),
-  originalPrice: z.number().min(0, 'Giá gốc phải lớn hơn 0').optional(),
+  price: z.union([
+    z.string().min(1, 'Giá là bắt buộc').regex(/^\d+(\.\d+)?$/, 'Giá phải là số hợp lệ').transform((val) => parseFloat(val)),
+    z.number()
+  ]).refine((val) => val >= 0, 'Giá phải lớn hơn hoặc bằng 0'),
+  originalPrice: z.union([
+    z.string().regex(/^\d+(\.\d+)?$/, 'Giá gốc phải là số hợp lệ').transform((val) => parseFloat(val)),
+    z.literal('').transform(() => undefined),
+    z.number(),
+    z.undefined()
+  ]).optional().refine((val) => val === undefined || val >= 0, 'Giá gốc phải lớn hơn hoặc bằng 0'),
   categoryId: z.number().min(1, 'Danh mục là bắt buộc'),
   condition: z.enum(['new', 'like_new', 'good', 'fair', 'poor']),
   location: z.string().optional(),

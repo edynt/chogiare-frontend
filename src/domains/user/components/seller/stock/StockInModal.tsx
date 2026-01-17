@@ -23,7 +23,11 @@ import {
 // Stock In Modal Schema
 const stockInModalSchema = z.object({
   quantity: z.number().min(1, 'Số lượng phải lớn hơn 0'),
-  costPrice: z.number().min(0, 'Giá nhập không được âm'),
+  costPrice: z.union([
+    z.string().regex(/^\d+(\.\d+)?$/, 'Giá nhập phải là số hợp lệ').transform((val) => parseFloat(val)),
+    z.literal('').transform(() => 0),
+    z.number()
+  ]).refine((val) => val >= 0, 'Giá nhập không được âm').optional(),
   supplier: z.string().min(1, 'Vui lòng nhập nhà cung cấp'),
   batchNumber: z.string().optional(),
   expiryDate: z.string().optional(),
@@ -220,9 +224,10 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
               <Label htmlFor="costPrice">Giá nhập (VNĐ)</Label>
               <Input
                 id="costPrice"
-                type="number"
-                min="0"
-                {...register('costPrice', { valueAsNumber: true })}
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]*\.?[0-9]*"
+                {...register('costPrice')}
                 placeholder="0"
               />
               {errors.costPrice && (
