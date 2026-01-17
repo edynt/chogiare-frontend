@@ -7,6 +7,8 @@ import type {
   Order,
   User
 } from '@/types'
+import { constructProductFormData } from '@shared/utils/form-data'
+import type { CreateProductFormDataInput } from '@shared/utils/form-data'
 
 /**
  * Seller API
@@ -83,6 +85,34 @@ export const sellerApi = {
     return response.data.data
   },
 
+  /**
+   * Create product with multipart/form-data (includes image files)
+   * Uploads images in same request as product creation
+   */
+  createProductWithImages: async (
+    data: CreateProductFormDataInput,
+    files: File[],
+  ): Promise<Product> => {
+    const formData = constructProductFormData(data, files)
+
+    // Must explicitly set Content-Type to undefined to let browser set multipart/form-data with boundary
+    const response = await apiClient.post<ApiResponse<Product>>(
+      '/seller/products',
+      formData,
+      {
+        headers: {
+          'Content-Type': undefined,
+        },
+      }
+    )
+
+    return response.data.data
+  },
+
+  /**
+   * Create product with JSON (backward compatibility)
+   * Use this when images are pre-uploaded
+   */
   createProduct: async (data: {
     title: string
     description?: string
@@ -100,6 +130,7 @@ export const sellerApi = {
     sellingPrice?: number
     sku?: string
     storeId?: number
+    images?: string[]
   }): Promise<Product> => {
     const response = await apiClient.post<ApiResponse<Product>>('/seller/products', data)
     return response.data.data

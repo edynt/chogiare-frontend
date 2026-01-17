@@ -17,6 +17,7 @@ import { useProduct, useUpdateProduct } from '@/hooks/useProducts'
 import { useCategories } from '@/hooks/useProducts'
 import { useNotification } from '@shared/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
+import { useUploadProductImages } from '@/hooks/useUpload'
 import { 
   Edit, 
   X, 
@@ -42,6 +43,7 @@ export default function EditProductPage() {
   const { notify } = useNotification()
   const { data: product, isLoading: isLoadingProduct } = useProduct(id || '')
   const updateProductMutation = useUpdateProduct()
+  const uploadImagesMutation = useUploadProductImages()
   const { data: categories } = useCategories()
   const { isLoading, execute } = useLoading({
     delay: 1000,
@@ -62,7 +64,9 @@ export default function EditProductPage() {
     },
   })
 
-  const [images, setImages] = useState<string[]>([])
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([])
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([])
+  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([])
   const [selectedBadges, setSelectedBadges] = useState<string[]>([])
   const [stockInQuantity, setStockInQuantity] = useState(1)
   const [stockInCostPrice, setStockInCostPrice] = useState(0)
@@ -118,7 +122,11 @@ export default function EditProductPage() {
         tags: product.tags.join(', '),
         status: product.status,
       })
-      setImages(product.images)
+      // Load existing images from product
+      const imageUrls = Array.isArray(product.images)
+        ? product.images.map((img: any) => typeof img === 'string' ? img : img.imageUrl || img.url)
+        : []
+      setExistingImageUrls(imageUrls)
       setSelectedBadges(product.badges)
     }
   }, [product, reset])
@@ -126,14 +134,26 @@ export default function EditProductPage() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files) {
-      const newImages = Array.from(files).map(file => URL.createObjectURL(file))
-      setImages(prev => [...prev, ...newImages])
+      const filesArray = Array.from(files)
+      setNewImageFiles(prev => [...prev, ...filesArray])
+      setNewImagePreviews(prev => [
+        ...prev,
+        ...filesArray.map(file => URL.createObjectURL(file))
+      ])
     }
   }
 
-  const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index))
+  const removeExistingImage = (index: number) => {
+    setExistingImageUrls(prev => prev.filter((_, i) => i !== index))
   }
+
+  const removeNewImage = (index: number) => {
+    // Revoke blob URL to prevent memory leak
+    URL.revokeObjectURL(newImagePreviews[index])
+    setNewImageFiles(prev => prev.filter((_, i) => i !== index))
+    setNewImagePreviews(prev => prev.filter((_, i) => i !== index))
+  }
+
 
   const handleBadgeToggle = (badge: string) => {
     setSelectedBadges(prev => 
@@ -147,6 +167,18 @@ export default function EditProductPage() {
     if (!id) return
 
     execute(async () => {
+      // Upload new images if any
+      let newImageUrls: string[] = []
+      if (newImageFiles.length > 0) {
+        const uploadResults = await uploadImagesMutation.mutateAsync({
+          files: newImageFiles,
+        })
+        newImageUrls = uploadResults.map(result => result.url)
+      }
+
+      // Combine existing and new image URLs
+      const allImageUrls = [...existingImageUrls, ...newImageUrls]
+
       const productData: Partial<Product> = {
         title: data.title,
         description: data.description,
@@ -159,6 +191,7 @@ export default function EditProductPage() {
         status: data.status,
         tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : undefined,
         badges: selectedBadges.length > 0 ? (selectedBadges as ProductBadge[]) : undefined,
+        images: allImageUrls as any,
       }
 
       await new Promise((resolve, reject) => {
@@ -516,9 +549,44 @@ export default function EditProductPage() {
                   </p>
                 </div>
 
-                {images.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {images.map((image, index) => (
+                {/* Existing Images */}
+                {existingImageUrls.length > 0 && (
+                  <div>
+                    <Label className="mb-2 block">Hình ảnh hiện tại</Label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {existingImageUrls.map((image, index) => (
+                        <div key={`existing-${index}`} className="relative group">
+                          <img
+                            src={image}
+                            alt={`Existing ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-lg border"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => removeExistingImage(index)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                          {index === 0 && (
+                            <Badge className="absolute bottom-2 left-2">
+                              Ảnh chính
+                            </Badge>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* New Images */}
+                {newImagePreviews.length > 0 && (
+                  <div>
+                    <Label className="mb-2 block">Hình ảnh mới</Label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {newImagePreviews.map((image, index) => (
                       <div key={index} className="relative group">
                         <img
                           src={image}
@@ -530,7 +598,7 @@ export default function EditProductPage() {
                           variant="destructive"
                           size="icon"
                           className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => removeImage(index)}
+                          onClick={() => removeNewImage(index)}
                         >
                           <X className="h-3 w-3" />
                         </Button>
@@ -539,6 +607,7 @@ export default function EditProductPage() {
                         )}
                       </div>
                     ))}
+                    </div>
                   </div>
                 )}
               </CardContent>

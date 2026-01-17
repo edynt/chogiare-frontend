@@ -24,17 +24,19 @@ export const useUploadProductImages = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ 
-      productId, 
-      files, 
-      onProgress 
-    }: { 
-      productId: string; 
-      files: File[]; 
-      onProgress?: (fileIndex: number, progress: UploadProgress) => void 
-    }) => uploadApi.uploadProductImages(productId, files, onProgress),
+    mutationFn: ({
+      files,
+      productId,
+      onProgress
+    }: {
+      files: File[];
+      productId?: string;
+      onProgress?: (fileIndex: number, progress: UploadProgress) => void
+    }) => uploadApi.uploadProductImages(files, productId, onProgress),
     onSuccess: (_, { productId }) => {
-      queryClient.invalidateQueries({ queryKey: ['products', productId] })
+      if (productId) {
+        queryClient.invalidateQueries({ queryKey: ['products', productId] })
+      }
       queryClient.invalidateQueries({ queryKey: ['products'] })
     },
   })

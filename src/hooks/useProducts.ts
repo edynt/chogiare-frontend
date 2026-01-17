@@ -76,6 +76,19 @@ export const useCreateProduct = () => {
   })
 }
 
+export const useCreateProductWithImages = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ data, files }: { data: Parameters<typeof sellerApi.createProductWithImages>[0]; files: File[] }) =>
+      sellerApi.createProductWithImages(data, files),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+      queryClient.invalidateQueries({ queryKey: ['seller', 'products'] })
+    },
+  })
+}
+
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient()
 

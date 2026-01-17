@@ -44,9 +44,6 @@ export const uploadApi = {
     formData.append('file', file)
 
     const response = await apiClient.post<ApiResponse<UploadResult>>('/upload/file', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
           const progress: UploadProgress = {
@@ -70,9 +67,6 @@ export const uploadApi = {
     })
 
     const response = await apiClient.post<ApiResponse<UploadResult[]>>('/upload/files', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
           const progress: UploadProgress = {
@@ -93,17 +87,14 @@ export const uploadApi = {
   },
 
   // Product images upload
-  uploadProductImages: async (productId: string, files: File[], onProgress?: (fileIndex: number, progress: UploadProgress) => void): Promise<UploadResult[]> => {
+  uploadProductImages: async (files: File[], productId?: string, onProgress?: (fileIndex: number, progress: UploadProgress) => void): Promise<UploadResult[]> => {
     const formData = new FormData()
     files.forEach((file) => {
       formData.append('files', file)
     })
 
     const response = await apiClient.post<ApiResponse<UploadResult[]>>('/upload/product-images', formData, {
-      params: { productId },
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      params: productId ? { productId } : undefined,
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
           const progress: UploadProgress = {
@@ -128,9 +119,6 @@ export const uploadApi = {
 
     const response = await apiClient.post<ApiResponse<UploadResult>>('/upload/store-image', formData, {
       params: { storeId },
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
           const progress: UploadProgress = {
@@ -152,9 +140,6 @@ export const uploadApi = {
     formData.append('file', file)
 
     const response = await apiClient.post<ApiResponse<UploadResult>>('/upload/avatar', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
           const progress: UploadProgress = {

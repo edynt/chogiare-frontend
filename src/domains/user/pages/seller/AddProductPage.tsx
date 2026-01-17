@@ -20,7 +20,7 @@ import {
 } from '@shared/components/ui/select'
 import { Checkbox } from '@shared/components/ui/checkbox'
 import { Badge } from '@shared/components/ui/badge'
-import { useCreateProduct } from '@/hooks/useProducts'
+import { useCreateProductWithImages } from '@/hooks/useProducts'
 import { useCategories } from '@/hooks/useProducts'
 import { useNotification } from '@shared/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
@@ -41,7 +41,7 @@ import type { ProductCondition, ProductStatus } from '@/types'
 export default function AddProductPage() {
   const navigate = useNavigate()
   const { notify } = useNotification()
-  const createProductMutation = useCreateProduct()
+  const createProductMutation = useCreateProductWithImages()
   const { data: categories } = useCategories()
   const { isLoading, execute } = useLoading({
     delay: 1000,
@@ -62,7 +62,8 @@ export default function AddProductPage() {
     },
   })
 
-  const [images, setImages] = useState<string[]>([])
+  const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([])
   const [selectedBadges, setSelectedBadges] = useState<string[]>([])
   const [status, setStatus] = useState<ProductStatus>('draft')
   const [inStock, setInStock] = useState(true)
@@ -114,13 +115,20 @@ export default function AddProductPage() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files) {
-      const newImages = Array.from(files).map(file => URL.createObjectURL(file))
-      setImages(prev => [...prev, ...newImages])
+      const newFiles = Array.from(files)
+      setImageFiles(prev => [...prev, ...newFiles])
+      setImagePreviewUrls(prev => [
+        ...prev,
+        ...newFiles.map(file => URL.createObjectURL(file))
+      ])
     }
   }
 
   const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index))
+    // Revoke blob URL to prevent memory leak
+    URL.revokeObjectURL(imagePreviewUrls[index])
+    setImageFiles(prev => prev.filter((_, i) => i !== index))
+    setImagePreviewUrls(prev => prev.filter((_, i) => i !== index))
   }
 
   const handleBadgeToggle = (badge: string) => {
@@ -151,10 +159,13 @@ export default function AddProductPage() {
       }
 
       await new Promise((resolve, reject) => {
-        createProductMutation.mutate(productData as Parameters<typeof createProductMutation.mutate>[0], {
-          onSuccess: () => resolve(undefined),
-          onError: (error: Error) => reject(error),
-        })
+        createProductMutation.mutate(
+          { data: productData, files: imageFiles },
+          {
+            onSuccess: () => resolve(undefined),
+            onError: (error: Error) => reject(error),
+          }
+        )
       })
     })
   }
@@ -609,9 +620,9 @@ export default function AddProductPage() {
                   </p>
                 </div>
 
-                {images.length > 0 && (
+                {imagePreviewUrls.length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {images.map((image, index) => (
+                    {imagePreviewUrls.map((image, index) => (
                       <div key={index} className="relative group">
                         <img
                           src={image}
@@ -741,32 +752,6 @@ export default function AddProductPage() {
                     />
                   </div>
                 )}
-              </CardContent>
-            </Card>
-
-            {/* Video and Options */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Tùy chọn</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="videoUrl">Video sản phẩm</Label>
-                  <Input
-                    id="videoUrl"
-                    placeholder="URL video từ kho (YouTube, Vimeo, ...)"
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="isFactory"
-                    checked={isFactory}
-                    onCheckedChange={(checked) => setIsFactory(checked as boolean)}
-                  />
-                  <Label htmlFor="isFactory">Là xưởng sản xuất</Label>
-                </div>
               </CardContent>
             </Card>
 
