@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
 import {
@@ -17,16 +18,33 @@ import {
   Info,
   ArrowLeft,
   QrCode,
+  Loader2,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { walletApi } from '@user/api/wallet'
 
 export default function PaymentQRPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [copied, setCopied] = useState(false)
 
   const amount = parseFloat(searchParams.get('amount') || '0')
-  const transactionId = searchParams.get('transactionId') || `TXN${Date.now()}`
+  const transactionId = searchParams.get('transactionId') || ''
+
+  const confirmMutation = useMutation({
+    mutationFn: () => walletApi.confirmDeposit(Number(transactionId)),
+    onSuccess: (result) => {
+      const newBalance = result.data.balance.newBalance
+      toast.success(`Nạp tiền thành công! Số dư mới: ${formatPrice(newBalance)}`)
+      queryClient.invalidateQueries({ queryKey: ['wallet-balance'] })
+      queryClient.invalidateQueries({ queryKey: ['transactions'] })
+      navigate('/top-up')
+    },
+    onError: () => {
+      toast.error('Có lỗi xảy ra khi xác nhận thanh toán. Vui lòng thử lại.')
+    },
+  })
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -222,11 +240,23 @@ export default function PaymentQRPage() {
               variant="outline"
               onClick={() => navigate('/top-up')}
               className="flex-1"
+              disabled={confirmMutation.isPending}
             >
               Quay lại
             </Button>
-            <Button onClick={() => navigate('/top-up')} className="flex-1">
-              Đã thanh toán
+            <Button
+              onClick={() => confirmMutation.mutate()}
+              className="flex-1"
+              disabled={confirmMutation.isPending || !transactionId}
+            >
+              {confirmMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Đang xử lý...
+                </>
+              ) : (
+                'Đã thanh toán'
+              )}
             </Button>
           </div>
         </div>

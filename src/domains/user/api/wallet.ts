@@ -99,12 +99,12 @@ export const walletApi = {
     return response.data.data
   },
 
-  deposit: async (data: DepositRequest): Promise<DepositResponse> => {
+  deposit: async (data: DepositRequest): Promise<ApiResponse<DepositResponse>> => {
     const response = await apiClient.post<ApiResponse<DepositResponse>>(
       '/payments/deposit',
       data
     )
-    return response.data.data
+    return response.data
   },
 
   getDepositPackages: async (): Promise<DepositPackage[]> => {
@@ -112,5 +112,12 @@ export const walletApi = {
       '/payments/deposit-packages'
     )
     return response.data.data
+  },
+
+  confirmDeposit: async (transactionId: number): Promise<ApiResponse<DepositResponse>> => {
+    const response = await apiClient.post<ApiResponse<DepositResponse>>(
+      `/payments/deposit/${transactionId}/confirm`
+    )
+    return response.data
   },
 }
