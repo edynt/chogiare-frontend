@@ -28,8 +28,8 @@ export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
   // Show loading while checking auth
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-900">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <div className="fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-50">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
       </div>
     )
   }

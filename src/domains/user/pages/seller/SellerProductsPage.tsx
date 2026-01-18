@@ -23,8 +23,6 @@ import {
   Trash2,
   MoreVertical,
   Package,
-  TrendingUp,
-  DollarSign,
   Star,
   Filter,
 } from 'lucide-react'

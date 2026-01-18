@@ -14,17 +14,17 @@ const AdminPage = React.lazy(() => import('@admin/pages/AdminPage'))
  * - Admin auth provider wrapping all routes
  * - Separate admin login page at /admin/login
  * - Protected admin dashboard and sub-routes
- * - Dark loading indicator
+ * - White blur loading overlay
  */
 export function AdminApp() {
   return (
     <AdminAuthProvider>
       <Suspense
         fallback={
-          <div className="flex items-center justify-center min-h-screen bg-slate-900">
+          <div className="fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-50">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-slate-400">Loading...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-500 mx-auto mb-4"></div>
+              <p className="text-gray-500">Loading...</p>
             </div>
           </div>
         }
