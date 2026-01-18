@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { useProfile } from '@/hooks'
+import { useNotificationSocket } from '@/hooks/useNotificationSocket'
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -12,6 +13,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { isAuthenticated, setUser, setLoading, setError } = useAuthStore()
   const { data: profile, error, isLoading } = useProfile()
   const errorHandled = useRef(false)
+
+  // Connect to notification WebSocket for real-time notifications
+  useNotificationSocket()
 
   // Sync profile to auth store
   useEffect(() => {
