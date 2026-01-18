@@ -262,6 +262,12 @@ export interface AuthTokens {
   expiresIn: number
 }
 
+export interface AdminTokens {
+  adminAccessToken: string
+  adminRefreshToken: string
+  expiresIn: number
+}
+
 export interface LoginCredentials {
   email: string
   password: string

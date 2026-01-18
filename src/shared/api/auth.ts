@@ -3,6 +3,7 @@ import type {
   LoginCredentials,
   RegisterData,
   AuthTokens,
+  AdminTokens,
   User,
   UserRole,
   ApiResponse,
@@ -55,12 +56,12 @@ export const authApi = {
 
   adminLogin: async (
     credentials: LoginCredentials
-  ): Promise<{ user: User; tokens: AuthTokens }> => {
+  ): Promise<{ user: User; tokens: AdminTokens }> => {
     return withErrorHandling(async () => {
       const response = await apiClient.post<
         ApiResponse<{
           user: User
-          tokens: AuthTokens
+          tokens: AdminTokens
           roles?: string[]
           roleIds?: number[]
         }>

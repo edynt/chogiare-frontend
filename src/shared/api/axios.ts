@@ -203,7 +203,8 @@ class ApiClient {
           '/auth/google',
           '/auth/facebook',
           '/auth/refresh',
-          '/admin/login',
+          '/auth/admin/login',
+          '/auth/admin/refresh',
         ]
         const isAuthEndpoint = authEndpoints.some(endpoint =>
           requestUrl.includes(endpoint)
@@ -290,8 +291,14 @@ class ApiClient {
   private async performTokenRefresh(): Promise<void> {
     try {
       const baseURL = import.meta.env['VITE_API_URL'] || '/api'
+      // Determine if we're on admin pages to use the correct refresh endpoint
+      const isAdminPage = window.location.pathname.startsWith('/admin')
+      const refreshEndpoint = isAdminPage
+        ? `${baseURL}/auth/admin/refresh`
+        : `${baseURL}/auth/refresh`
       // The refresh token is sent automatically via cookies (withCredentials: true)
-      await axios.post(`${baseURL}/auth/refresh`, {}, { withCredentials: true })
+      // Admin uses adminRefreshToken cookie, user uses refreshToken cookie
+      await axios.post(refreshEndpoint, {}, { withCredentials: true })
       // New tokens are set as cookies by the server
     } catch (error) {
       throw new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại')

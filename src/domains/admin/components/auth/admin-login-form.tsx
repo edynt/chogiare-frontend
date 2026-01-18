@@ -59,6 +59,9 @@ export function AdminLoginForm() {
     execute(async () => {
       const response = await authApi.adminLogin(data)
 
+      // Clear any previous auth failure flags
+      apiClient.clearRefreshFailureFlags()
+
       // Tokens are stored as HttpOnly cookies by the backend
       // We only store user info in the store
       login(response.user)
