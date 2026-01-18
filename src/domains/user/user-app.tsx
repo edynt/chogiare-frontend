@@ -68,6 +68,9 @@ const CustomerManagementPage = React.lazy(
 const CustomerOrdersPage = React.lazy(
   () => import('@user/pages/seller/CustomerOrdersPage')
 )
+const SellerCustomerOrdersPage = React.lazy(
+  () => import('@user/pages/seller/SellerCustomerOrdersPage')
+)
 const RevenueReportsPage = React.lazy(
   () => import('@user/pages/seller/RevenueReportsPage')
 )
@@ -135,6 +138,10 @@ export function UserApp() {
           <Route
             path="/seller/customers"
             element={<CustomerManagementPage />}
+          />
+          <Route
+            path="/seller/customers/:customerId/orders"
+            element={<SellerCustomerOrdersPage />}
           />
           <Route path="/seller/revenue" element={<RevenueReportsPage />} />
           <Route path="/seller/support" element={<SellerSupportPage />} />

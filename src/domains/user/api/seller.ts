@@ -42,6 +42,7 @@ export interface RevenueStats {
 // Customer stats
 export interface CustomerStats {
   totalCustomers: number
+  activeCustomers: number
   newCustomers: number
   returningCustomers: number
   topCustomers: Array<{
@@ -51,6 +52,38 @@ export interface CustomerStats {
     totalOrders: number
     totalSpent: number
   }>
+}
+
+// Seller customer (aggregated from orders)
+export interface SellerCustomer {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  avatar?: string
+  totalOrders: number
+  totalSpent: number
+  lastOrderDate?: string
+  status: 'active' | 'inactive'
+}
+
+// Seller customer order (simplified order for customer history)
+export interface SellerCustomerOrder {
+  id: string
+  status: string
+  paymentStatus: string
+  total: number
+  itemCount: number
+  items: Array<{
+    id: string
+    productId: string
+    productName: string
+    productImage: string | null
+    quantity: number
+    price: number
+    subtotal: number
+  }>
+  createdAt: string
 }
 
 export const sellerApi = {
@@ -240,8 +273,8 @@ export const sellerApi = {
     page?: number
     pageSize?: number
     search?: string
-  }): Promise<PaginatedResponse<User>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<User>>>(
+  }): Promise<PaginatedResponse<SellerCustomer>> => {
+    const response = await apiClient.get<ApiResponse<PaginatedResponse<SellerCustomer>>>(
       '/seller/customers',
       { params }
     )
@@ -261,8 +294,8 @@ export const sellerApi = {
       page?: number
       pageSize?: number
     }
-  ): Promise<PaginatedResponse<Order>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Order>>>(
+  ): Promise<PaginatedResponse<SellerCustomerOrder>> => {
+    const response = await apiClient.get<ApiResponse<PaginatedResponse<SellerCustomerOrder>>>(
       `/seller/customers/${customerId}/orders`,
       { params }
     )
