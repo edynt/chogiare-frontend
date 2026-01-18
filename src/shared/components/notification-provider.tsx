@@ -10,16 +10,24 @@ interface NotificationContextType {
   }) => void
 }
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined)
+const NotificationContext = createContext<NotificationContextType | undefined>(
+  undefined
+)
 
-export function NotificationProvider({ children }: { children: React.ReactNode }) {
-  const [notifications, setNotifications] = useState<Array<{
-    id: string
-    type: 'success' | 'error' | 'warning' | 'info'
-    title: string
-    message?: string
-    duration?: number
-  }>>([])
+export function NotificationProvider({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const [notifications, setNotifications] = useState<
+    Array<{
+      id: string
+      type: 'success' | 'error' | 'warning' | 'info'
+      title: string
+      message?: string
+      duration?: number
+    }>
+  >([])
 
   const notify = (notification: {
     type: 'success' | 'error' | 'warning' | 'info'
@@ -29,7 +37,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   }) => {
     const id = Math.random().toString(36).substr(2, 9)
     setNotifications(prev => [...prev, { ...notification, id }])
-    
+
     setTimeout(() => {
       setNotifications(prev => prev.filter(n => n.id !== id))
     }, notification.duration || 5000)
@@ -50,7 +58,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 export function useNotification() {
   const context = useContext(NotificationContext)
   if (context === undefined) {
-    throw new Error('useNotification must be used within a NotificationProvider')
+    throw new Error(
+      'useNotification must be used within a NotificationProvider'
+    )
   }
   return context
 }

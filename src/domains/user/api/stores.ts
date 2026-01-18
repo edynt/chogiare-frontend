@@ -101,36 +101,54 @@ export const storesApi = {
     return response.data.data
   },
 
-  getStores: async (filters?: { page?: number; pageSize?: number }): Promise<StoreListResponse> => {
-    const response = await apiClient.get<ApiResponse<StoreListResponse>>('/stores', {
-      params: { 
-        page: filters?.page || 1, 
-        pageSize: filters?.pageSize || 10 
+  getStores: async (filters?: {
+    page?: number
+    pageSize?: number
+  }): Promise<StoreListResponse> => {
+    const response = await apiClient.get<ApiResponse<StoreListResponse>>(
+      '/stores',
+      {
+        params: {
+          page: filters?.page || 1,
+          pageSize: filters?.pageSize || 10,
+        },
       }
-    })
+    )
     return response.data.data
   },
 
   listStores: async (page = 1, pageSize = 10): Promise<StoreListResponse> => {
-    const response = await apiClient.get<ApiResponse<StoreListResponse>>('/stores', {
-      params: { page, pageSize }
-    })
+    const response = await apiClient.get<ApiResponse<StoreListResponse>>(
+      '/stores',
+      {
+        params: { page, pageSize },
+      }
+    )
     return response.data.data
   },
 
-  searchStores: async (query: string, filters?: { page?: number; pageSize?: number }): Promise<StoreListResponse> => {
-    const response = await apiClient.get<ApiResponse<StoreListResponse>>('/stores/search', {
-      params: { 
-        q: query, 
-        page: filters?.page || 1, 
-        pageSize: filters?.pageSize || 10 
+  searchStores: async (
+    query: string,
+    filters?: { page?: number; pageSize?: number }
+  ): Promise<StoreListResponse> => {
+    const response = await apiClient.get<ApiResponse<StoreListResponse>>(
+      '/stores/search',
+      {
+        params: {
+          q: query,
+          page: filters?.page || 1,
+          pageSize: filters?.pageSize || 10,
+        },
       }
-    })
+    )
     return response.data.data
   },
 
   updateStore: async (id: string, data: UpdateStoreRequest): Promise<Store> => {
-    const response = await apiClient.put<ApiResponse<Store>>(`/stores/${id}`, data)
+    const response = await apiClient.put<ApiResponse<Store>>(
+      `/stores/${id}`,
+      data
+    )
     return response.data.data
   },
 
@@ -140,34 +158,45 @@ export const storesApi = {
 
   // Statistics
   getStoreStats: async (): Promise<StoreStats> => {
-    const response = await apiClient.get<ApiResponse<StoreStats>>('/stores/stats')
+    const response =
+      await apiClient.get<ApiResponse<StoreStats>>('/stores/stats')
     return response.data.data
   },
 
   getUserStoreStats: async (): Promise<StoreStats> => {
-    const response = await apiClient.get<ApiResponse<StoreStats>>('/stores/stats/my')
+    const response =
+      await apiClient.get<ApiResponse<StoreStats>>('/stores/stats/my')
     return response.data.data
   },
 
   getStoreStatsById: async (storeId: string): Promise<StoreStats> => {
-    const response = await apiClient.get<ApiResponse<StoreStats>>(`/stores/stats/${storeId}`)
+    const response = await apiClient.get<ApiResponse<StoreStats>>(
+      `/stores/stats/${storeId}`
+    )
     return response.data.data
   },
 
   getDashboardStats: async (): Promise<DashboardStats> => {
-    const response = await apiClient.get<ApiResponse<DashboardStats>>('/stores/dashboard/stats')
+    const response = await apiClient.get<ApiResponse<DashboardStats>>(
+      '/stores/dashboard/stats'
+    )
     return response.data.data
   },
 
   getLowStockProducts: async (limit?: number): Promise<LowStockProduct[]> => {
-    const response = await apiClient.get<ApiResponse<LowStockProduct[]>>('/stores/dashboard/low-stock', {
-      params: { limit },
-    })
+    const response = await apiClient.get<ApiResponse<LowStockProduct[]>>(
+      '/stores/dashboard/low-stock',
+      {
+        params: { limit },
+      }
+    )
     return response.data.data
   },
 
   getPromotedProducts: async (): Promise<PromotedProduct[]> => {
-    const response = await apiClient.get<ApiResponse<PromotedProduct[]>>('/stores/dashboard/promoted')
+    const response = await apiClient.get<ApiResponse<PromotedProduct[]>>(
+      '/stores/dashboard/promoted'
+    )
     return response.data.data
   },
 }

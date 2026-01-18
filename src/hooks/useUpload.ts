@@ -3,19 +3,24 @@ import { uploadApi, type UploadProgress } from '@shared/api/upload'
 
 export const useUploadFile = () => {
   return useMutation({
-    mutationFn: ({ file, onProgress }: { file: File; onProgress?: (progress: UploadProgress) => void }) =>
-      uploadApi.uploadFile(file, onProgress),
+    mutationFn: ({
+      file,
+      onProgress,
+    }: {
+      file: File
+      onProgress?: (progress: UploadProgress) => void
+    }) => uploadApi.uploadFile(file, onProgress),
   })
 }
 
 export const useUploadFiles = () => {
   return useMutation({
-    mutationFn: ({ 
-      files, 
-      onProgress 
-    }: { 
-      files: File[]; 
-      onProgress?: (fileIndex: number, progress: UploadProgress) => void 
+    mutationFn: ({
+      files,
+      onProgress,
+    }: {
+      files: File[]
+      onProgress?: (fileIndex: number, progress: UploadProgress) => void
     }) => uploadApi.uploadFiles(files, onProgress),
   })
 }
@@ -27,10 +32,10 @@ export const useUploadProductImages = () => {
     mutationFn: ({
       files,
       productId,
-      onProgress
+      onProgress,
     }: {
-      files: File[];
-      productId?: string;
+      files: File[]
+      productId?: string
       onProgress?: (fileIndex: number, progress: UploadProgress) => void
     }) => uploadApi.uploadProductImages(files, productId, onProgress),
     onSuccess: (_, { productId }) => {
@@ -46,14 +51,14 @@ export const useUploadStoreImage = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ 
-      storeId, 
-      file, 
-      onProgress 
-    }: { 
-      storeId: string; 
-      file: File; 
-      onProgress?: (progress: UploadProgress) => void 
+    mutationFn: ({
+      storeId,
+      file,
+      onProgress,
+    }: {
+      storeId: string
+      file: File
+      onProgress?: (progress: UploadProgress) => void
     }) => uploadApi.uploadStoreImage(storeId, file, onProgress),
     onSuccess: (_, { storeId }) => {
       queryClient.invalidateQueries({ queryKey: ['stores', storeId] })
@@ -66,12 +71,12 @@ export const useUploadAvatar = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ 
-      file, 
-      onProgress 
-    }: { 
-      file: File; 
-      onProgress?: (progress: UploadProgress) => void 
+    mutationFn: ({
+      file,
+      onProgress,
+    }: {
+      file: File
+      onProgress?: (progress: UploadProgress) => void
     }) => uploadApi.uploadAvatar(file, onProgress),
     onSuccess: () => {
       // Update user profile with new avatar

@@ -1,14 +1,30 @@
 import React, { useState } from 'react'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Label } from '@shared/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/components/ui/tabs'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@shared/components/ui/select'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@shared/components/ui/tabs'
 import { Badge } from '@shared/components/ui/badge'
 import { useNotification } from '@shared/components/notification-provider'
-import { 
+import {
   Download,
   FileText,
   BarChart3,
@@ -20,7 +36,7 @@ import {
   Printer,
   Mail,
   ArrowLeft,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react'
 
 interface ReportData {
@@ -67,7 +83,7 @@ export default function InventoryReportPage() {
       type: 'inventory',
       generatedAt: '2024-01-31T10:30:00Z',
       fileSize: '2.5 MB',
-      status: 'ready'
+      status: 'ready',
     },
     {
       id: '2',
@@ -75,7 +91,7 @@ export default function InventoryReportPage() {
       type: 'low_stock',
       generatedAt: '2024-01-30T14:20:00Z',
       fileSize: '1.2 MB',
-      status: 'ready'
+      status: 'ready',
     },
     {
       id: '3',
@@ -83,8 +99,8 @@ export default function InventoryReportPage() {
       type: 'stock_movement',
       generatedAt: '2024-01-29T09:15:00Z',
       fileSize: '3.1 MB',
-      status: 'ready'
-    }
+      status: 'ready',
+    },
   ]
 
   const mockInventoryData: InventoryItem[] = [
@@ -103,7 +119,7 @@ export default function InventoryReportPage() {
       status: 'in_stock',
       lastUpdated: '2024-01-15T10:30:00Z',
       supplier: 'Apple Vietnam',
-      location: 'Kho A - Kệ 1'
+      location: 'Kho A - Kệ 1',
     },
     {
       id: '2',
@@ -120,7 +136,7 @@ export default function InventoryReportPage() {
       status: 'low_stock',
       lastUpdated: '2024-01-14T14:20:00Z',
       supplier: 'Apple Vietnam',
-      location: 'Kho A - Kệ 2'
+      location: 'Kho A - Kệ 2',
     },
     {
       id: '3',
@@ -137,14 +153,14 @@ export default function InventoryReportPage() {
       status: 'out_of_stock',
       lastUpdated: '2024-01-13T09:15:00Z',
       supplier: 'Apple Vietnam',
-      location: 'Kho B - Kệ 3'
-    }
+      location: 'Kho B - Kệ 3',
+    },
   ]
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -154,50 +170,63 @@ export default function InventoryReportPage() {
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'in_stock': return 'bg-green-100 text-green-800'
-      case 'low_stock': return 'bg-yellow-100 text-yellow-800'
-      case 'out_of_stock': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'in_stock':
+        return 'bg-green-100 text-green-800'
+      case 'low_stock':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'out_of_stock':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'in_stock': return 'Còn hàng'
-      case 'low_stock': return 'Sắp hết hàng'
-      case 'out_of_stock': return 'Hết hàng'
-      default: return status
+      case 'in_stock':
+        return 'Còn hàng'
+      case 'low_stock':
+        return 'Sắp hết hàng'
+      case 'out_of_stock':
+        return 'Hết hàng'
+      default:
+        return status
     }
   }
 
   const getReportTypeLabel = (type: string) => {
     switch (type) {
-      case 'inventory': return 'Báo cáo tồn kho'
-      case 'sales': return 'Báo cáo bán hàng'
-      case 'stock_movement': return 'Báo cáo nhập xuất'
-      case 'low_stock': return 'Báo cáo sắp hết hàng'
-      default: return type
+      case 'inventory':
+        return 'Báo cáo tồn kho'
+      case 'sales':
+        return 'Báo cáo bán hàng'
+      case 'stock_movement':
+        return 'Báo cáo nhập xuất'
+      case 'low_stock':
+        return 'Báo cáo sắp hết hàng'
+      default:
+        return type
     }
   }
 
   const handleGenerateReport = async () => {
     setIsGenerating(true)
-    
+
     // Simulate report generation
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     notify({
       type: 'success',
       title: 'Tạo báo cáo thành công',
       message: 'Báo cáo đã được tạo và sẵn sàng tải xuống',
     })
-    
+
     setIsGenerating(false)
   }
 
@@ -223,9 +252,16 @@ export default function InventoryReportPage() {
 
   // Calculate statistics
   const totalProducts = mockInventoryData.length
-  const lowStockProducts = mockInventoryData.filter(item => item.status === 'low_stock').length
-  const outOfStockProducts = mockInventoryData.filter(item => item.status === 'out_of_stock').length
-  const totalValue = mockInventoryData.reduce((sum, item) => sum + (item.currentStock * item.costPrice), 0)
+  const lowStockProducts = mockInventoryData.filter(
+    item => item.status === 'low_stock'
+  ).length
+  const outOfStockProducts = mockInventoryData.filter(
+    item => item.status === 'out_of_stock'
+  ).length
+  const totalValue = mockInventoryData.reduce(
+    (sum, item) => sum + item.currentStock * item.costPrice,
+    0
+  )
 
   return (
     <div className="min-h-screen bg-background">
@@ -241,7 +277,9 @@ export default function InventoryReportPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold">Báo cáo tồn kho</h1>
-                <p className="text-muted-foreground">Tạo và quản lý các báo cáo tồn kho</p>
+                <p className="text-muted-foreground">
+                  Tạo và quản lý các báo cáo tồn kho
+                </p>
               </div>
             </div>
             <Button variant="outline" onClick={() => window.location.reload()}>
@@ -256,7 +294,9 @@ export default function InventoryReportPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Tổng sản phẩm</p>
+                    <p className="text-sm text-muted-foreground">
+                      Tổng sản phẩm
+                    </p>
                     <p className="text-2xl font-bold">{totalProducts}</p>
                   </div>
                   <Package className="h-8 w-8 text-primary" />
@@ -267,8 +307,12 @@ export default function InventoryReportPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Sắp hết hàng</p>
-                    <p className="text-2xl font-bold text-yellow-600">{lowStockProducts}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Sắp hết hàng
+                    </p>
+                    <p className="text-2xl font-bold text-yellow-600">
+                      {lowStockProducts}
+                    </p>
                   </div>
                   <AlertTriangle className="h-8 w-8 text-yellow-600" />
                 </div>
@@ -279,7 +323,9 @@ export default function InventoryReportPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Hết hàng</p>
-                    <p className="text-2xl font-bold text-red-600">{outOfStockProducts}</p>
+                    <p className="text-2xl font-bold text-red-600">
+                      {outOfStockProducts}
+                    </p>
                   </div>
                   <TrendingDown className="h-8 w-8 text-red-600" />
                 </div>
@@ -289,8 +335,12 @@ export default function InventoryReportPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Tổng giá trị</p>
-                    <p className="text-lg font-bold text-green-600">{formatPrice(totalValue)}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Tổng giá trị
+                    </p>
+                    <p className="text-lg font-bold text-green-600">
+                      {formatPrice(totalValue)}
+                    </p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-green-600" />
                 </div>
@@ -321,10 +371,16 @@ export default function InventoryReportPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="inventory">Báo cáo tồn kho</SelectItem>
+                        <SelectItem value="inventory">
+                          Báo cáo tồn kho
+                        </SelectItem>
                         <SelectItem value="sales">Báo cáo bán hàng</SelectItem>
-                        <SelectItem value="stock_movement">Báo cáo nhập xuất kho</SelectItem>
-                        <SelectItem value="low_stock">Báo cáo sắp hết hàng</SelectItem>
+                        <SelectItem value="stock_movement">
+                          Báo cáo nhập xuất kho
+                        </SelectItem>
+                        <SelectItem value="low_stock">
+                          Báo cáo sắp hết hàng
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -349,7 +405,10 @@ export default function InventoryReportPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="categoryFilter">Danh mục</Label>
-                      <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                      <Select
+                        value={categoryFilter}
+                        onValueChange={setCategoryFilter}
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -364,14 +423,19 @@ export default function InventoryReportPage() {
 
                     <div className="space-y-2">
                       <Label htmlFor="statusFilter">Trạng thái</Label>
-                      <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <Select
+                        value={statusFilter}
+                        onValueChange={setStatusFilter}
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">Tất cả</SelectItem>
                           <SelectItem value="in_stock">Còn hàng</SelectItem>
-                          <SelectItem value="low_stock">Sắp hết hàng</SelectItem>
+                          <SelectItem value="low_stock">
+                            Sắp hết hàng
+                          </SelectItem>
                           <SelectItem value="out_of_stock">Hết hàng</SelectItem>
                         </SelectContent>
                       </Select>
@@ -380,7 +444,7 @@ export default function InventoryReportPage() {
 
                   {/* Generate Button */}
                   <div className="flex gap-4">
-                    <Button 
+                    <Button
                       onClick={handleGenerateReport}
                       disabled={isGenerating}
                       className="flex-1"
@@ -415,19 +479,26 @@ export default function InventoryReportPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {mockInventoryData.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    {mockInventoryData.map(item => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
                         <div className="flex items-center gap-4">
                           <div>
                             <h4 className="font-medium">{item.name}</h4>
-                            <p className="text-sm text-muted-foreground">SKU: {item.sku}</p>
+                            <p className="text-sm text-muted-foreground">
+                              SKU: {item.sku}
+                            </p>
                           </div>
                           <Badge className={getStatusColor(item.status)}>
                             {getStatusLabel(item.status)}
                           </Badge>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium">{item.currentStock} sản phẩm</p>
+                          <p className="font-medium">
+                            {item.currentStock} sản phẩm
+                          </p>
                           <p className="text-sm text-muted-foreground">
                             {formatPrice(item.currentStock * item.costPrice)}
                           </p>
@@ -449,38 +520,45 @@ export default function InventoryReportPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {mockReports.map((report) => (
-                      <div key={report.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    {mockReports.map(report => (
+                      <div
+                        key={report.id}
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
                         <div className="flex items-center gap-4">
                           <div>
                             <h4 className="font-medium">{report.name}</h4>
                             <p className="text-sm text-muted-foreground">
-                              {getReportTypeLabel(report.type)} • {report.fileSize} • {formatDate(report.generatedAt)}
+                              {getReportTypeLabel(report.type)} •{' '}
+                              {report.fileSize} •{' '}
+                              {formatDate(report.generatedAt)}
                             </p>
                           </div>
                           <Badge variant="outline">
-                            {report.status === 'ready' ? 'Sẵn sàng' : report.status}
+                            {report.status === 'ready'
+                              ? 'Sẵn sàng'
+                              : report.status}
                           </Badge>
                         </div>
                         <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             onClick={handleDownloadReport}
                           >
                             <Download className="h-4 w-4 mr-2" />
                             Tải xuống
                           </Button>
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             onClick={handlePrintReport}
                           >
                             <Printer className="h-4 w-4 mr-2" />
                             In
                           </Button>
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             onClick={handleEmailReport}
                           >

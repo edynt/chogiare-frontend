@@ -1,16 +1,21 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
-import { 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  Eye, 
+import {
+  Search,
+  Filter,
+  MoreVertical,
+  Eye,
   Truck,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
 } from 'lucide-react'
 
 export function AdminOrders() {
@@ -22,7 +27,7 @@ export function AdminOrders() {
       amount: 25000000,
       status: 'completed',
       orderDate: '2024-01-15',
-      completedDate: '2024-01-17'
+      completedDate: '2024-01-17',
     },
     {
       id: '12346',
@@ -31,7 +36,7 @@ export function AdminOrders() {
       amount: 35000000,
       status: 'confirmed',
       orderDate: '2024-01-16',
-      completedDate: null
+      completedDate: null,
     },
     {
       id: '12347',
@@ -40,8 +45,8 @@ export function AdminOrders() {
       amount: 28000000,
       status: 'cancelled',
       orderDate: '2024-01-14',
-      completedDate: null
-    }
+      completedDate: null,
+    },
   ]
 
   const getStatusBadge = (status: string) => {
@@ -98,10 +103,7 @@ export function AdminOrders() {
         <CardContent className="p-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Tìm kiếm đơn hàng..."
-              className="pl-10"
-            />
+            <Input placeholder="Tìm kiếm đơn hàng..." className="pl-10" />
           </div>
         </CardContent>
       </Card>
@@ -113,26 +115,29 @@ export function AdminOrders() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {orders.map((order) => (
-              <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
+            {orders.map(order => (
+              <div
+                key={order.id}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
                     <span className="text-lg">📦</span>
                   </div>
-                  
+
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
                       <h3 className="font-semibold">#{order.id}</h3>
                       {getStatusIcon(order.status)}
                       {getStatusBadge(order.status)}
                     </div>
-                    
+
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <span>Khách hàng: {order.customer}</span>
                       <span>Sản phẩm: {order.product}</span>
                       <span>Giá: {order.amount.toLocaleString()} VNĐ</span>
                     </div>
-                    
+
                     <div className="flex items-center space-x-4 text-xs text-muted-foreground mt-1">
                       <span>Ngày đặt: {order.orderDate}</span>
                       {order.deliveryDate && (
@@ -141,14 +146,18 @@ export function AdminOrders() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   <Button variant="outline" size="sm">
                     <Eye className="h-4 w-4 mr-1" />
                     Chi tiết
                   </Button>
                   {order.status === 'pending' && (
-                    <Button variant="outline" size="sm" className="text-success">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-success"
+                    >
                       <CheckCircle className="h-4 w-4 mr-1" />
                       Xác nhận
                     </Button>

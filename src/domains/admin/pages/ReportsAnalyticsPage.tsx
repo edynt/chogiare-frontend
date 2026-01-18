@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
 import {
@@ -29,7 +34,7 @@ import {
   Activity,
   ArrowUpRight,
   ArrowDownLeft,
-  Loader2
+  Loader2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -48,17 +53,21 @@ export default function ReportsAnalyticsPage() {
 
   const params: QueryReportsParams = { timeRange }
 
-  const { data: overview, isLoading: isLoadingOverview } = useReportsOverview(params)
+  const { data: overview, isLoading: isLoadingOverview } =
+    useReportsOverview(params)
   const { data: revenueChart = [] } = useRevenueChart(params)
   const { data: categoryDistribution = [] } = useCategoryDistribution()
-  const { data: topProducts = [], isLoading: isLoadingProducts } = useTopProductsReport({ limit: 5, timeRange })
-  const { data: topSellers = [], isLoading: isLoadingSellers } = useTopSellersReport({ limit: 5, timeRange })
-  const { data: dailyStats = [], isLoading: isLoadingDaily } = useDailyStats(params)
+  const { data: topProducts = [], isLoading: isLoadingProducts } =
+    useTopProductsReport({ limit: 5, timeRange })
+  const { data: topSellers = [], isLoading: isLoadingSellers } =
+    useTopSellersReport({ limit: 5, timeRange })
+  const { data: dailyStats = [], isLoading: isLoadingDaily } =
+    useDailyStats(params)
   const exportMutation = useExportReport()
 
   const handleExport = () => {
     exportMutation.mutate(params, {
-      onSuccess: (blob) => {
+      onSuccess: blob => {
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
@@ -82,7 +91,7 @@ export default function ReportsAnalyticsPage() {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -107,7 +116,9 @@ export default function ReportsAnalyticsPage() {
     {
       title: 'Tổng lượt truy cập',
       value: overview ? formatValue(overview.totalViews.value) : '0',
-      change: overview ? `${overview.totalViews.change > 0 ? '+' : ''}${overview.totalViews.change}%` : '0%',
+      change: overview
+        ? `${overview.totalViews.change > 0 ? '+' : ''}${overview.totalViews.change}%`
+        : '0%',
       changeType: overview?.totalViews.changeType || 'positive',
       icon: Eye,
       color: 'blue',
@@ -115,7 +126,9 @@ export default function ReportsAnalyticsPage() {
     {
       title: 'Người dùng mới',
       value: overview ? formatValue(overview.newUsers.value) : '0',
-      change: overview ? `${overview.newUsers.change > 0 ? '+' : ''}${overview.newUsers.change}%` : '0%',
+      change: overview
+        ? `${overview.newUsers.change > 0 ? '+' : ''}${overview.newUsers.change}%`
+        : '0%',
       changeType: overview?.newUsers.changeType || 'positive',
       icon: Users,
       color: 'green',
@@ -123,7 +136,9 @@ export default function ReportsAnalyticsPage() {
     {
       title: 'Đơn hàng',
       value: overview ? formatValue(overview.orders.value) : '0',
-      change: overview ? `${overview.orders.change > 0 ? '+' : ''}${overview.orders.change}%` : '0%',
+      change: overview
+        ? `${overview.orders.change > 0 ? '+' : ''}${overview.orders.change}%`
+        : '0%',
       changeType: overview?.orders.changeType || 'positive',
       icon: ShoppingCart,
       color: 'purple',
@@ -131,11 +146,13 @@ export default function ReportsAnalyticsPage() {
     {
       title: 'Doanh thu',
       value: overview ? formatValue(overview.revenue.value) + ' VNĐ' : '0 VNĐ',
-      change: overview ? `${overview.revenue.change > 0 ? '+' : ''}${overview.revenue.change}%` : '0%',
+      change: overview
+        ? `${overview.revenue.change > 0 ? '+' : ''}${overview.revenue.change}%`
+        : '0%',
       changeType: overview?.revenue.changeType || 'positive',
       icon: DollarSign,
       color: 'orange',
-    }
+    },
   ]
 
   return (
@@ -143,11 +160,20 @@ export default function ReportsAnalyticsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Báo cáo & Thống kê</h1>
-          <p className="text-gray-600 mt-1">Phân tích dữ liệu và hiệu suất của nền tảng</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Báo cáo & Thống kê
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Phân tích dữ liệu và hiệu suất của nền tảng
+          </p>
         </div>
         <div className="flex items-center gap-3">
-          <Select value={timeRange} onValueChange={(value: '7d' | '30d' | '90d' | '1y') => setTimeRange(value)}>
+          <Select
+            value={timeRange}
+            onValueChange={(value: '7d' | '30d' | '90d' | '1y') =>
+              setTimeRange(value)
+            }
+          >
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Thời gian" />
             </SelectTrigger>
@@ -158,7 +184,11 @@ export default function ReportsAnalyticsPage() {
               <SelectItem value="1y">1 năm qua</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" onClick={handleExport} disabled={exportMutation.isPending}>
+          <Button
+            variant="outline"
+            onClick={handleExport}
+            disabled={exportMutation.isPending}
+          >
             {exportMutation.isPending ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : (
@@ -171,55 +201,75 @@ export default function ReportsAnalyticsPage() {
 
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {isLoadingOverview ? (
-          Array(4).fill(0).map((_, index) => (
-            <Card key={index} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-24 bg-gray-200 rounded"></div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          overviewStats.map((stat, index) => {
-            const Icon = stat.icon
-            const ChangeIcon = getChangeIcon(stat.changeType)
-            return (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                      <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+        {isLoadingOverview
+          ? Array(4)
+              .fill(0)
+              .map((_, index) => (
+                <Card key={index} className="animate-pulse">
+                  <CardContent className="p-6">
+                    <div className="h-24 bg-gray-200 rounded"></div>
+                  </CardContent>
+                </Card>
+              ))
+          : overviewStats.map((stat, index) => {
+              const Icon = stat.icon
+              const ChangeIcon = getChangeIcon(stat.changeType)
+              return (
+                <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">
+                          {stat.title}
+                        </p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {stat.value}
+                        </p>
+                      </div>
+                      <div
+                        className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                          stat.color === 'blue'
+                            ? 'bg-blue-100'
+                            : stat.color === 'green'
+                              ? 'bg-green-100'
+                              : stat.color === 'purple'
+                                ? 'bg-purple-100'
+                                : 'bg-orange-100'
+                        }`}
+                      >
+                        <Icon
+                          className={`h-6 w-6 ${
+                            stat.color === 'blue'
+                              ? 'text-blue-600'
+                              : stat.color === 'green'
+                                ? 'text-green-600'
+                                : stat.color === 'purple'
+                                  ? 'text-purple-600'
+                                  : 'text-orange-600'
+                          }`}
+                        />
+                      </div>
                     </div>
-                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                      stat.color === 'blue' ? 'bg-blue-100' :
-                      stat.color === 'green' ? 'bg-green-100' :
-                      stat.color === 'purple' ? 'bg-purple-100' :
-                      'bg-orange-100'
-                    }`}>
-                      <Icon className={`h-6 w-6 ${
-                        stat.color === 'blue' ? 'text-blue-600' :
-                        stat.color === 'green' ? 'text-green-600' :
-                        stat.color === 'purple' ? 'text-purple-600' :
-                        'text-orange-600'
-                      }`} />
+                    <div className="flex items-center">
+                      <Badge
+                        variant={
+                          stat.changeType === 'positive'
+                            ? 'default'
+                            : 'destructive'
+                        }
+                        className="text-xs"
+                      >
+                        <ChangeIcon className="h-3 w-3 mr-1" />
+                        {stat.change}
+                      </Badge>
+                      <span className="text-xs text-gray-500 ml-2">
+                        so với kỳ trước
+                      </span>
                     </div>
-                  </div>
-                  <div className="flex items-center">
-                    <Badge
-                      variant={stat.changeType === 'positive' ? 'default' : 'destructive'}
-                      className="text-xs"
-                    >
-                      <ChangeIcon className="h-3 w-3 mr-1" />
-                      {stat.change}
-                    </Badge>
-                    <span className="text-xs text-gray-500 ml-2">so với kỳ trước</span>
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })
-        )}
+                  </CardContent>
+                </Card>
+              )
+            })}
       </div>
 
       {/* Charts Row */}
@@ -243,13 +293,22 @@ export default function ReportsAnalyticsPage() {
             ) : (
               <div className="h-64 flex items-end gap-1">
                 {revenueChart.slice(-14).map((item, index) => {
-                  const maxRevenue = Math.max(...revenueChart.map(r => r.revenue))
-                  const height = maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0
+                  const maxRevenue = Math.max(
+                    ...revenueChart.map(r => r.revenue)
+                  )
+                  const height =
+                    maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0
                   return (
-                    <div key={index} className="flex-1 flex flex-col items-center">
+                    <div
+                      key={index}
+                      className="flex-1 flex flex-col items-center"
+                    >
                       <div
                         className="w-full bg-blue-500 rounded-t hover:bg-blue-600 transition-colors"
-                        style={{ height: `${height}%`, minHeight: item.revenue > 0 ? '4px' : '0' }}
+                        style={{
+                          height: `${height}%`,
+                          minHeight: item.revenue > 0 ? '4px' : '0',
+                        }}
                         title={`${item.date}: ${formatPrice(item.revenue)}`}
                       />
                       <span className="text-xs text-gray-500 mt-1 truncate w-full text-center">
@@ -279,28 +338,45 @@ export default function ReportsAnalyticsPage() {
             ) : (
               <div className="space-y-4">
                 {categoryDistribution.map((category, index) => (
-                  <div key={index} className="flex items-center justify-between">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex items-center gap-3">
-                      <div className={`w-4 h-4 rounded-full ${
-                        index === 0 ? 'bg-blue-500' :
-                        index === 1 ? 'bg-green-500' :
-                        index === 2 ? 'bg-yellow-500' :
-                        index === 3 ? 'bg-purple-500' :
-                        index === 4 ? 'bg-pink-500' :
-                        'bg-gray-500'
-                      }`}></div>
-                      <span className="text-sm font-medium">{category.name}</span>
+                      <div
+                        className={`w-4 h-4 rounded-full ${
+                          index === 0
+                            ? 'bg-blue-500'
+                            : index === 1
+                              ? 'bg-green-500'
+                              : index === 2
+                                ? 'bg-yellow-500'
+                                : index === 3
+                                  ? 'bg-purple-500'
+                                  : index === 4
+                                    ? 'bg-pink-500'
+                                    : 'bg-gray-500'
+                        }`}
+                      ></div>
+                      <span className="text-sm font-medium">
+                        {category.name}
+                      </span>
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="w-24 bg-gray-200 rounded-full h-2">
                         <div
                           className={`h-2 rounded-full ${
-                            index === 0 ? 'bg-blue-500' :
-                            index === 1 ? 'bg-green-500' :
-                            index === 2 ? 'bg-yellow-500' :
-                            index === 3 ? 'bg-purple-500' :
-                            index === 4 ? 'bg-pink-500' :
-                            'bg-gray-500'
+                            index === 0
+                              ? 'bg-blue-500'
+                              : index === 1
+                                ? 'bg-green-500'
+                                : index === 2
+                                  ? 'bg-yellow-500'
+                                  : index === 3
+                                    ? 'bg-purple-500'
+                                    : index === 4
+                                      ? 'bg-pink-500'
+                                      : 'bg-gray-500'
                           }`}
                           style={{ width: `${category.percentage}%` }}
                         ></div>
@@ -348,7 +424,9 @@ export default function ReportsAnalyticsPage() {
                 <TableBody>
                   {topProducts.map((product, index) => (
                     <TableRow key={index}>
-                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell className="font-medium">
+                        {product.name}
+                      </TableCell>
                       <TableCell>{formatNumber(product.views)}</TableCell>
                       <TableCell>{formatNumber(product.sales)}</TableCell>
                       <TableCell>{formatPrice(product.revenue)}</TableCell>
@@ -393,19 +471,25 @@ export default function ReportsAnalyticsPage() {
                 <TableBody>
                   {topSellers.map((seller, index) => (
                     <TableRow key={index}>
-                      <TableCell className="font-medium">{seller.name}</TableCell>
+                      <TableCell className="font-medium">
+                        {seller.name}
+                      </TableCell>
                       <TableCell>{formatNumber(seller.products)}</TableCell>
                       <TableCell>{formatNumber(seller.orders)}</TableCell>
                       <TableCell>{formatPrice(seller.revenue)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          <span className="text-sm font-medium">{seller.rating}</span>
+                          <span className="text-sm font-medium">
+                            {seller.rating}
+                          </span>
                           <div className="flex">
                             {[...Array(5)].map((_, i) => (
                               <div
                                 key={i}
                                 className={`w-3 h-3 ${
-                                  i < Math.floor(seller.rating) ? 'text-yellow-400' : 'text-gray-300'
+                                  i < Math.floor(seller.rating)
+                                    ? 'text-yellow-400'
+                                    : 'text-gray-300'
                                 }`}
                               >
                                 ★
@@ -464,7 +548,10 @@ export default function ReportsAnalyticsPage() {
                       <TableCell>{formatPrice(day.revenue)}</TableCell>
                       <TableCell>{formatNumber(day.newUsers)}</TableCell>
                       <TableCell>
-                        {day.visitors > 0 ? ((day.orders / day.visitors) * 100).toFixed(2) : 0}%
+                        {day.visitors > 0
+                          ? ((day.orders / day.visitors) * 100).toFixed(2)
+                          : 0}
+                        %
                       </TableCell>
                     </TableRow>
                   ))}

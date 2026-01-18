@@ -57,12 +57,21 @@ export const cartApi = {
 
   // Cart item operations
   addItem: async (data: AddCartItemRequest): Promise<CartItem> => {
-    const response = await apiClient.post<ApiResponse<CartItem>>('/cart/items', data)
+    const response = await apiClient.post<ApiResponse<CartItem>>(
+      '/cart/items',
+      data
+    )
     return response.data.data
   },
 
-  updateItemQuantity: async (itemId: string, data: UpdateCartItemQuantityRequest): Promise<CartItem> => {
-    const response = await apiClient.patch<ApiResponse<CartItem>>(`/cart/items/${itemId}`, data)
+  updateItemQuantity: async (
+    itemId: string,
+    data: UpdateCartItemQuantityRequest
+  ): Promise<CartItem> => {
+    const response = await apiClient.patch<ApiResponse<CartItem>>(
+      `/cart/items/${itemId}`,
+      data
+    )
     return response.data.data
   },
 

@@ -1,8 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/components/ui/select'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@shared/components/ui/select'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Badge } from '@shared/components/ui/badge'
 import { Slider } from '@shared/components/ui/slider'
 import { Checkbox } from '@shared/components/ui/checkbox'
@@ -18,7 +29,13 @@ interface ProductFiltersProps {
   showSort?: boolean
 }
 
-export function ProductFilters({ onSearch, initialFilters = {}, categories = [], className, showSort = true }: ProductFiltersProps) {
+export function ProductFilters({
+  onSearch,
+  initialFilters = {},
+  categories = [],
+  className,
+  showSort = true,
+}: ProductFiltersProps) {
   const [filters, setFilters] = useState<SearchFilters>({
     query: '',
     categoryId: undefined,
@@ -48,7 +65,11 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
       }))
     } else {
       // When sort is hidden, preserve sortBy and sortOrder from current state
-      const { sortBy: _sortBy, sortOrder: _sortOrder, ...restInitialFilters } = initialFilters
+      const {
+        sortBy: _sortBy,
+        sortOrder: _sortOrder,
+        ...restInitialFilters
+      } = initialFilters
       setFilters(prev => ({
         ...prev,
         ...restInitialFilters,
@@ -148,10 +169,14 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
     { value: 'viewCount', label: 'Lượt xem' },
   ]
 
-  const activeFiltersCount = Object.values(filters).filter(value => 
-    value !== undefined && value !== '' && value !== 0 && 
-    (Array.isArray(value) ? value.length > 0 : true)
-  ).length - 3 // Exclude page, limit, sortBy, sortOrder
+  const activeFiltersCount =
+    Object.values(filters).filter(
+      value =>
+        value !== undefined &&
+        value !== '' &&
+        value !== 0 &&
+        (Array.isArray(value) ? value.length > 0 : true)
+    ).length - 3 // Exclude page, limit, sortBy, sortOrder
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -162,7 +187,7 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
           <Input
             placeholder="Tìm kiếm sản phẩm..."
             value={filters.query || ''}
-            onChange={(e) => handleFilterChange('query', e.target.value)}
+            onChange={e => handleFilterChange('query', e.target.value)}
             className="pl-10"
           />
         </div>
@@ -174,7 +199,10 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
           <Filter className="h-4 w-4 mr-2" />
           {showFilters ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
           {activeFiltersCount > 0 && (
-            <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+            <Badge
+              variant="destructive"
+              className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
+            >
               {activeFiltersCount}
             </Badge>
           )}
@@ -199,14 +227,19 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
               <label className="text-sm font-medium mb-2 block">Danh mục</label>
               <Select
                 value={String(filters.categoryId || 'all')}
-                onValueChange={(value) => handleFilterChange('categoryId', value === 'all' ? undefined : value)}
+                onValueChange={value =>
+                  handleFilterChange(
+                    'categoryId',
+                    value === 'all' ? undefined : value
+                  )
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn danh mục" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tất cả danh mục</SelectItem>
-                  {categories.map((category) => (
+                  {categories.map(category => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
                     </SelectItem>
@@ -218,7 +251,8 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
             {/* Price Range */}
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Khoảng giá: {filters.minPrice?.toLocaleString()} - {filters.maxPrice?.toLocaleString()} VNĐ
+                Khoảng giá: {filters.minPrice?.toLocaleString()} -{' '}
+                {filters.maxPrice?.toLocaleString()} VNĐ
               </label>
               <Slider
                 value={[filters.minPrice || 0, filters.maxPrice || 10000000]}
@@ -232,17 +266,24 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
 
             {/* Condition */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Tình trạng</label>
+              <label className="text-sm font-medium mb-2 block">
+                Tình trạng
+              </label>
               <Select
                 value={filters.condition || 'all'}
-                onValueChange={(value) => handleFilterChange('condition', value === 'all' ? undefined : value)}
+                onValueChange={value =>
+                  handleFilterChange(
+                    'condition',
+                    value === 'all' ? undefined : value
+                  )
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn tình trạng" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tất cả</SelectItem>
-                  {conditionOptions.map((option) => (
+                  {conditionOptions.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
@@ -259,7 +300,9 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
                 <Input
                   placeholder="Nhập địa điểm..."
                   value={filters.location || ''}
-                  onChange={(e) => handleFilterChange('location', e.target.value || undefined)}
+                  onChange={e =>
+                    handleFilterChange('location', e.target.value || undefined)
+                  }
                   className="pl-10"
                 />
               </div>
@@ -267,10 +310,15 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
 
             {/* Badges */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Nhãn sản phẩm</label>
+              <label className="text-sm font-medium mb-2 block">
+                Nhãn sản phẩm
+              </label>
               <div className="space-y-2">
-                {badgeOptions.map((option) => (
-                  <div key={option.value} className="flex items-center space-x-2">
+                {badgeOptions.map(option => (
+                  <div
+                    key={option.value}
+                    className="flex items-center space-x-2"
+                  >
                     <Checkbox
                       id={option.value}
                       checked={filters.badges?.includes(option.value) || false}
@@ -294,7 +342,7 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
               </label>
               <Slider
                 value={[filters.rating || 0]}
-                onValueChange={(value) => handleFilterChange('rating', value[0])}
+                onValueChange={value => handleFilterChange('rating', value[0])}
                 max={5}
                 min={0}
                 step={0.5}
@@ -306,16 +354,18 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
             {showSort && (
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Sắp xếp theo</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Sắp xếp theo
+                  </label>
                   <Select
                     value={filters.sortBy || 'createdAt'}
-                    onValueChange={(value) => handleFilterChange('sortBy', value)}
+                    onValueChange={value => handleFilterChange('sortBy', value)}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {sortOptions.map((option) => (
+                      {sortOptions.map(option => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -324,10 +374,14 @@ export function ProductFilters({ onSearch, initialFilters = {}, categories = [],
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Thứ tự</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Thứ tự
+                  </label>
                   <Select
                     value={filters.sortOrder || 'desc'}
-                    onValueChange={(value) => handleFilterChange('sortOrder', value)}
+                    onValueChange={value =>
+                      handleFilterChange('sortOrder', value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />

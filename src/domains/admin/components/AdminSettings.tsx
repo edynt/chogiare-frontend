@@ -1,18 +1,23 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Label } from '@shared/components/ui/label'
 import { Switch } from '@shared/components/ui/switch'
 import { Textarea } from '@shared/components/ui/textarea'
 import { APP_NAME } from '@/constants/app.constants'
-import { 
-  Settings, 
-  Save, 
-  Shield, 
-  Mail, 
+import {
+  Settings,
+  Save,
+  Shield,
+  Mail,
   Bell,
   Database,
-  Server
+  Server,
 } from 'lucide-react'
 
 export function AdminSettings() {
@@ -40,15 +45,19 @@ export function AdminSettings() {
             </div>
             <div>
               <Label htmlFor="site-description">Mô tả trang web</Label>
-              <Textarea 
-                id="site-description" 
+              <Textarea
+                id="site-description"
                 defaultValue="Nền tảng mua bán trực tuyến uy tín"
                 rows={3}
               />
             </div>
             <div>
               <Label htmlFor="admin-email">Email quản trị</Label>
-              <Input id="admin-email" type="email" defaultValue="admin@chogiare.com" />
+              <Input
+                id="admin-email"
+                type="email"
+                defaultValue="admin@chogiare.com"
+              />
             </div>
             <div className="flex items-center space-x-2">
               <Switch id="maintenance" />
@@ -67,11 +76,15 @@ export function AdminSettings() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="session-timeout">Thời gian hết phiên (phút)</Label>
+              <Label htmlFor="session-timeout">
+                Thời gian hết phiên (phút)
+              </Label>
               <Input id="session-timeout" type="number" defaultValue="30" />
             </div>
             <div>
-              <Label htmlFor="max-login-attempts">Số lần đăng nhập tối đa</Label>
+              <Label htmlFor="max-login-attempts">
+                Số lần đăng nhập tối đa
+              </Label>
               <Input id="max-login-attempts" type="number" defaultValue="5" />
             </div>
             <div className="flex items-center space-x-2">

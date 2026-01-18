@@ -4,11 +4,15 @@ import { demoData } from './data'
 export const handlers = [
   // Auth endpoints
   http.post('/api/auth/login', async ({ request }) => {
-    const { email } = await request.json() as { email: string; password: string }
-    
+    const { email } = (await request.json()) as {
+      email: string
+      password: string
+    }
+
     // Mock login - accept any email/password for demo
-    const user = demoData.users.find(u => u.email === email) || demoData.users[0]
-    
+    const user =
+      demoData.users.find(u => u.email === email) || demoData.users[0]
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -23,8 +27,8 @@ export const handlers = [
   }),
 
   http.post('/api/auth/register', async ({ request }) => {
-    const data = await request.json() as Record<string, unknown>
-    
+    const data = (await request.json()) as Record<string, unknown>
+
     const newUser = {
       id: Math.random().toString(36).substr(2, 9),
       ...data,
@@ -32,7 +36,7 @@ export const handlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -88,21 +92,28 @@ export const handlers = [
 
     // Apply filters
     if (categoryId) {
-      filteredProducts = filteredProducts.filter(p => p.categoryId === categoryId)
+      filteredProducts = filteredProducts.filter(
+        p => p.categoryId === categoryId
+      )
     }
 
     if (minPrice) {
-      filteredProducts = filteredProducts.filter(p => p.price >= parseInt(minPrice))
+      filteredProducts = filteredProducts.filter(
+        p => p.price >= parseInt(minPrice)
+      )
     }
 
     if (maxPrice) {
-      filteredProducts = filteredProducts.filter(p => p.price <= parseInt(maxPrice))
+      filteredProducts = filteredProducts.filter(
+        p => p.price <= parseInt(maxPrice)
+      )
     }
 
     if (query) {
-      filteredProducts = filteredProducts.filter(p => 
-        p.title.toLowerCase().includes(query.toLowerCase()) ||
-        p.description.toLowerCase().includes(query.toLowerCase())
+      filteredProducts = filteredProducts.filter(
+        p =>
+          p.title.toLowerCase().includes(query.toLowerCase()) ||
+          p.description.toLowerCase().includes(query.toLowerCase())
       )
     }
 
@@ -111,7 +122,7 @@ export const handlers = [
     }
 
     if (location) {
-      filteredProducts = filteredProducts.filter(p => 
+      filteredProducts = filteredProducts.filter(p =>
         p.location?.toLowerCase().includes(location.toLowerCase())
       )
     }
@@ -123,15 +134,15 @@ export const handlers = [
 
     if (badges) {
       const badgeList = badges.split(',')
-      filteredProducts = filteredProducts.filter(p => 
-        p.badges && p.badges.some(badge => badgeList.includes(badge))
+      filteredProducts = filteredProducts.filter(
+        p => p.badges && p.badges.some(badge => badgeList.includes(badge))
       )
     }
 
     // Apply sorting
     filteredProducts.sort((a, b) => {
       let aValue, bValue
-      
+
       switch (sortBy) {
         case 'price':
           aValue = a.price
@@ -182,7 +193,7 @@ export const handlers = [
 
   http.get('/api/products/:id', ({ params }) => {
     const product = demoData.products.find(p => p.id === params.id)
-    
+
     if (!product) {
       return HttpResponse.json(
         { success: false, message: 'Product not found' },
@@ -200,7 +211,7 @@ export const handlers = [
       seller: product.seller || {
         id: 'seller-1',
         name: 'Default Seller',
-        avatar: '/avatar.jpg'
+        avatar: '/avatar.jpg',
       },
       store: product.store || null,
       location: product.location || 'Hồ Chí Minh',
@@ -223,7 +234,7 @@ export const handlers = [
   http.get('/api/products/featured', ({ request }) => {
     const url = new URL(request.url)
     const limit = parseInt(url.searchParams.get('limit') || '10')
-    
+
     const featuredProducts = demoData.products
       .filter(p => p.isFeatured)
       .slice(0, limit)
@@ -244,7 +255,7 @@ export const handlers = [
 
   http.get('/api/categories/:id', ({ params }) => {
     const category = demoData.categories.find(c => c.id === params.id)
-    
+
     if (!category) {
       return HttpResponse.json(
         { success: false, message: 'Category not found' },
@@ -263,10 +274,12 @@ export const handlers = [
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const limit = parseInt(url.searchParams.get('limit') || '20')
-    
+
     // Mock seller products (first user's products)
-    const sellerProducts = demoData.products.filter(p => p.sellerId === demoData.users[0].id)
-    
+    const sellerProducts = demoData.products.filter(
+      p => p.sellerId === demoData.users[0].id
+    )
+
     const startIndex = (page - 1) * limit
     const endIndex = startIndex + limit
     const paginatedProducts = sellerProducts.slice(startIndex, endIndex)
@@ -302,9 +315,10 @@ export const handlers = [
     }
 
     if (query) {
-      filteredProducts = filteredProducts.filter(p => 
-        p.title.toLowerCase().includes(query.toLowerCase()) ||
-        p.description.toLowerCase().includes(query.toLowerCase())
+      filteredProducts = filteredProducts.filter(
+        p =>
+          p.title.toLowerCase().includes(query.toLowerCase()) ||
+          p.description.toLowerCase().includes(query.toLowerCase())
       )
     }
 
@@ -330,16 +344,16 @@ export const handlers = [
   }),
 
   http.post('/api/products', async ({ request }) => {
-    const body = await request.json() as any
+    const body = (await request.json()) as any
     const newProduct = {
       id: `prod${Date.now()}`,
       ...body,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    
+
     demoData.products.push(newProduct)
-    
+
     return HttpResponse.json({
       success: true,
       data: newProduct,
@@ -348,8 +362,8 @@ export const handlers = [
 
   http.patch('/api/products/:id', async ({ params, request }) => {
     const productId = params.id as string
-    const updates = await request.json() as any
-    
+    const updates = (await request.json()) as any
+
     const productIndex = demoData.products.findIndex(p => p.id === productId)
     if (productIndex === -1) {
       return HttpResponse.json(
@@ -396,7 +410,7 @@ export const handlers = [
   }),
 
   http.post('/api/cart/items', async ({ request }) => {
-    const data = await request.json() as any
+    const data = (await request.json()) as any
     const newItem = {
       id: `item-${Date.now()}`,
       cartId: 'cart-1',
@@ -411,7 +425,7 @@ export const handlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: newItem,
@@ -419,7 +433,7 @@ export const handlers = [
   }),
 
   http.patch('/api/cart/items/:itemId', async ({ params, request }) => {
-    const data = await request.json() as any
+    const data = (await request.json()) as any
     return HttpResponse.json({
       success: true,
       data: {
@@ -443,7 +457,7 @@ export const handlers = [
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const pageSize = parseInt(url.searchParams.get('page_size') || '10')
-    
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -460,7 +474,7 @@ export const handlers = [
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const pageSize = parseInt(url.searchParams.get('page_size') || '10')
-    
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -477,10 +491,12 @@ export const handlers = [
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const pageSize = parseInt(url.searchParams.get('page_size') || '10')
-    
+
     // Filter orders by storeId
-    const storeOrders = demoData.orders.filter(order => (order as any).storeId === params.storeId)
-    
+    const storeOrders = demoData.orders.filter(
+      order => (order as any).storeId === params.storeId
+    )
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -495,7 +511,7 @@ export const handlers = [
 
   http.get('/api/orders/:id', ({ params }) => {
     const order = demoData.orders.find(o => o.id === params.id)
-    
+
     if (!order) {
       return HttpResponse.json(
         { success: false, message: 'Order not found' },
@@ -510,7 +526,7 @@ export const handlers = [
   }),
 
   http.post('/api/orders', async ({ request }) => {
-    const data = await request.json() as any
+    const data = (await request.json()) as any
     const newOrder = {
       id: `order-${Date.now()}`,
       ...data,
@@ -526,9 +542,9 @@ export const handlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    
+
     demoData.orders.push(newOrder)
-    
+
     return HttpResponse.json({
       success: true,
       data: newOrder,
@@ -536,10 +552,10 @@ export const handlers = [
   }),
 
   http.patch('/api/orders/:id/status', async ({ params, request }) => {
-    const data = await request.json() as any
+    const data = (await request.json()) as any
     const order = demoData.orders.find(o => o.id === params.id)
     if (order) {
-      (order as any).status = data.status
+      ;(order as any).status = data.status
       ;(order as any).updatedAt = new Date().toISOString()
     }
     return HttpResponse.json({
@@ -553,7 +569,7 @@ export const handlers = [
   }),
 
   http.patch('/api/orders/:id/confirm', async ({ params, request }) => {
-    const data = await request.json() as any
+    const data = (await request.json()) as any
     const order = demoData.orders.find(o => o.id === params.id)
     if (order) {
       ;(order as any).status = 'confirmed'
@@ -666,7 +682,7 @@ export const handlers = [
   }),
 
   http.post('/api/reviews', async ({ request }) => {
-    const data = await request.json() as any
+    const data = (await request.json()) as any
     const newReview = {
       id: `review-${Date.now()}`,
       ...data,
@@ -704,7 +720,7 @@ export const handlers = [
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const pageSize = parseInt(url.searchParams.get('page_size') || '10')
-    
+
     const stores = Array.from({ length: 15 }, (_, i) => ({
       id: `store-${i + 1}`,
       userId: 1,
@@ -731,7 +747,7 @@ export const handlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }))
-    
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -827,7 +843,7 @@ export const handlers = [
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const pageSize = parseInt(url.searchParams.get('page_size') || '10')
-    
+
     const conversations = Array.from({ length: 20 }, (_, i) => ({
       id: `conv-${i + 1}`,
       type: 'direct',
@@ -839,7 +855,7 @@ export const handlers = [
           userId: 1,
           role: 'member',
           joinedAt: new Date().toISOString(),
-        }
+        },
       ],
       lastMessage: {
         id: `msg-${i + 1}`,
@@ -858,11 +874,14 @@ export const handlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }))
-    
+
     return HttpResponse.json({
       success: true,
       data: {
-        conversations: conversations.slice((page - 1) * pageSize, page * pageSize),
+        conversations: conversations.slice(
+          (page - 1) * pageSize,
+          page * pageSize
+        ),
         total: conversations.length,
         page,
         pageSize,
@@ -885,7 +904,7 @@ export const handlers = [
             userId: 1,
             role: 'member',
             joinedAt: new Date().toISOString(),
-          }
+          },
         ],
         lastMessage: {
           id: 'msg-1',
@@ -911,7 +930,7 @@ export const handlers = [
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const pageSize = parseInt(url.searchParams.get('page_size') || '50')
-    
+
     const messages = Array.from({ length: 50 }, (_, i) => ({
       id: `msg-${i + 1}`,
       conversationId: params.id,
@@ -925,7 +944,7 @@ export const handlers = [
       createdAt: new Date(Date.now() - i * 60000).toISOString(),
       updatedAt: new Date(Date.now() - i * 60000).toISOString(),
     }))
-    
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -938,27 +957,30 @@ export const handlers = [
     })
   }),
 
-  http.post('/api/chat/conversations/:id/messages', async ({ params, request }) => {
-    const data = await request.json() as any
-    const newMessage = {
-      id: `msg-${Date.now()}`,
-      conversationId: params.id,
-      senderId: 1,
-      messageType: data.messageType || 'text',
-      content: data.content,
-      isRead: false,
-      senderName: 'User Name',
-      senderEmail: 'user@example.com',
-      senderAvatar: '/avatar.jpg',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+  http.post(
+    '/api/chat/conversations/:id/messages',
+    async ({ params, request }) => {
+      const data = (await request.json()) as any
+      const newMessage = {
+        id: `msg-${Date.now()}`,
+        conversationId: params.id,
+        senderId: 1,
+        messageType: data.messageType || 'text',
+        content: data.content,
+        isRead: false,
+        senderName: 'User Name',
+        senderEmail: 'user@example.com',
+        senderAvatar: '/avatar.jpg',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+
+      return HttpResponse.json({
+        success: true,
+        data: newMessage,
+      })
     }
-    
-    return HttpResponse.json({
-      success: true,
-      data: newMessage,
-    })
-  }),
+  ),
 
   http.get('/api/chat/stats', () => {
     return HttpResponse.json({
@@ -976,7 +998,7 @@ export const handlers = [
   http.post('/api/upload/file', async ({ request }) => {
     const formData = await request.formData()
     const file = formData.get('file') as File
-    
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -993,7 +1015,7 @@ export const handlers = [
   http.post('/api/upload/files', async ({ request }) => {
     const formData = await request.formData()
     const files = formData.getAll('files') as File[]
-    
+
     const results = files.map((file, index) => ({
       id: `file-${Date.now()}-${index}`,
       url: `/uploads/sample-${index}.jpg`,
@@ -1002,7 +1024,7 @@ export const handlers = [
       mimeType: file.type,
       uploadedAt: new Date().toISOString(),
     }))
-    
+
     return HttpResponse.json({
       success: true,
       data: results,
@@ -1012,7 +1034,7 @@ export const handlers = [
   http.post('/api/upload/avatar', async ({ request }) => {
     const formData = await request.formData()
     const file = formData.get('avatar') as File
-    
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -1046,11 +1068,11 @@ export const handlers = [
 
   // Demo data seeding
   http.post('/api/demo/seed', async ({ request }) => {
-    const data = await request.json() as Record<string, unknown>
-    
+    const data = (await request.json()) as Record<string, unknown>
+
     // In a real app, this would save to database
     console.log('Seeding demo data:', data)
-    
+
     return HttpResponse.json({
       success: true,
       message: 'Demo data seeded successfully',
@@ -1100,7 +1122,7 @@ export const handlers = [
         isDefault: false,
       },
     ]
-    
+
     return HttpResponse.json({
       success: true,
       data: addresses,
@@ -1121,7 +1143,7 @@ export const handlers = [
       country: 'Việt Nam',
       isDefault: true,
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: defaultAddress,
@@ -1143,7 +1165,7 @@ export const handlers = [
       country: 'Việt Nam',
       isDefault: true,
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: address,
@@ -1151,12 +1173,12 @@ export const handlers = [
   }),
 
   http.post('/api/addresses', async ({ request }) => {
-    const data = await request.json() as Record<string, unknown>
+    const data = (await request.json()) as Record<string, unknown>
     const newAddress = {
       id: `addr-${Date.now()}`,
       ...data,
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: newAddress,
@@ -1165,12 +1187,12 @@ export const handlers = [
 
   http.put('/api/addresses/:id', async ({ params, request }) => {
     const id = params.id as string
-    const data = await request.json() as Record<string, unknown>
+    const data = (await request.json()) as Record<string, unknown>
     const updatedAddress = {
       id,
       ...data,
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: updatedAddress,
@@ -1230,10 +1252,11 @@ export const handlers = [
 
     if (search) {
       const searchLower = search.toLowerCase()
-      filteredProducts = filteredProducts.filter(p =>
-        p.title.toLowerCase().includes(searchLower) ||
-        p.seller.toLowerCase().includes(searchLower) ||
-        p.description.toLowerCase().includes(searchLower)
+      filteredProducts = filteredProducts.filter(
+        p =>
+          p.title.toLowerCase().includes(searchLower) ||
+          p.seller.toLowerCase().includes(searchLower) ||
+          p.description.toLowerCase().includes(searchLower)
       )
     }
 

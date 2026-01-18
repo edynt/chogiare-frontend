@@ -2,13 +2,23 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Label } from '@shared/components/ui/label'
 import { Badge } from '@shared/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/components/ui/tabs'
-import { 
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@shared/components/ui/tabs'
+import {
   Wallet,
   TrendingUp,
   TrendingDown,
@@ -22,10 +32,15 @@ import {
   DollarSign,
   Plus,
   Info,
-  CreditCard
+  CreditCard,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useWalletBalance, useTransactions, useDeposit, useDepositPackages } from '@/hooks/useWallet'
+import {
+  useWalletBalance,
+  useTransactions,
+  useDeposit,
+  useDepositPackages,
+} from '@/hooks/useWallet'
 import type { Transaction } from '@user/api/wallet'
 
 export default function TopUpPage() {
@@ -37,11 +52,13 @@ export default function TopUpPage() {
   const [searchQuery, setSearchQuery] = useState('')
 
   const { data: balanceData, isLoading: balanceLoading } = useWalletBalance()
-  const { data: transactionsData, isLoading: transactionsLoading } = useTransactions({
-    page: 1,
-    pageSize: 50,
-  })
-  const { data: depositPackages, isLoading: packagesLoading } = useDepositPackages()
+  const { data: transactionsData, isLoading: transactionsLoading } =
+    useTransactions({
+      page: 1,
+      pageSize: 50,
+    })
+  const { data: depositPackages, isLoading: packagesLoading } =
+    useDepositPackages()
   const depositMutation = useDeposit()
 
   const balance = balanceData
@@ -65,7 +82,7 @@ export default function TopUpPage() {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -75,19 +92,26 @@ export default function TopUpPage() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
   const getTransactionIcon = (type: string) => {
     switch (type) {
-      case 'deposit': return <ArrowDownLeft className="h-4 w-4" />
-      case 'sale': return <TrendingUp className="h-4 w-4" />
-      case 'refund': return <TrendingDown className="h-4 w-4" />
-      case 'commission': return <DollarSign className="h-4 w-4" />
-      case 'bonus': return <Plus className="h-4 w-4" />
-      case 'boost': return <TrendingUp className="h-4 w-4" />
-      default: return <DollarSign className="h-4 w-4" />
+      case 'deposit':
+        return <ArrowDownLeft className="h-4 w-4" />
+      case 'sale':
+        return <TrendingUp className="h-4 w-4" />
+      case 'refund':
+        return <TrendingDown className="h-4 w-4" />
+      case 'commission':
+        return <DollarSign className="h-4 w-4" />
+      case 'bonus':
+        return <Plus className="h-4 w-4" />
+      case 'boost':
+        return <TrendingUp className="h-4 w-4" />
+      default:
+        return <DollarSign className="h-4 w-4" />
     }
   }
 
@@ -98,23 +122,35 @@ export default function TopUpPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-500'
-      case 'pending': return 'bg-yellow-500'
-      case 'processing': return 'bg-blue-500'
-      case 'failed': return 'bg-red-500'
-      case 'cancelled': return 'bg-gray-500'
-      default: return 'bg-gray-500'
+      case 'completed':
+        return 'bg-green-500'
+      case 'pending':
+        return 'bg-yellow-500'
+      case 'processing':
+        return 'bg-blue-500'
+      case 'failed':
+        return 'bg-red-500'
+      case 'cancelled':
+        return 'bg-gray-500'
+      default:
+        return 'bg-gray-500'
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'completed': return 'Hoàn thành'
-      case 'pending': return 'Chờ xử lý'
-      case 'processing': return 'Đang xử lý'
-      case 'failed': return 'Thất bại'
-      case 'cancelled': return 'Đã hủy'
-      default: return status
+      case 'completed':
+        return 'Hoàn thành'
+      case 'pending':
+        return 'Chờ xử lý'
+      case 'processing':
+        return 'Đang xử lý'
+      case 'failed':
+        return 'Thất bại'
+      case 'cancelled':
+        return 'Đã hủy'
+      default:
+        return status
     }
   }
 
@@ -125,7 +161,7 @@ export default function TopUpPage() {
 
   const handleTopUp = async () => {
     const amount = selectedPreset || parseFloat(depositAmount)
-    
+
     if (!amount || amount < 10000) {
       toast.error('Số tiền tối thiểu là 10,000 VNĐ')
       return
@@ -139,11 +175,15 @@ export default function TopUpPage() {
       })
 
       if (depositMethod === 'bank_transfer') {
-        navigate(`/payment-qr?amount=${amount}&transactionId=${result.transaction.id}`)
+        navigate(
+          `/payment-qr?amount=${amount}&transactionId=${result.transaction.id}`
+        )
         return
       }
 
-      toast.success(`Đã tạo yêu cầu nạp tiền ${formatPrice(amount)}. Vui lòng hoàn tất thanh toán.`)
+      toast.success(
+        `Đã tạo yêu cầu nạp tiền ${formatPrice(amount)}. Vui lòng hoàn tất thanh toán.`
+      )
       setDepositAmount('')
       setSelectedPreset(null)
     } catch {
@@ -152,32 +192,45 @@ export default function TopUpPage() {
   }
 
   const TransactionCard = ({ transaction }: { transaction: Transaction }) => {
-    const displayAmount = transaction.type === 'boost' || transaction.type === 'commission' || transaction.type === 'refund'
-      ? -Math.abs(transaction.amount)
-      : transaction.amount
+    const displayAmount =
+      transaction.type === 'boost' ||
+      transaction.type === 'commission' ||
+      transaction.type === 'refund'
+        ? -Math.abs(transaction.amount)
+        : transaction.amount
 
     return (
       <Card className="hover:shadow-md transition-shadow">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                displayAmount > 0 ? 'bg-green-100' : 'bg-red-100'
-              }`}>
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  displayAmount > 0 ? 'bg-green-100' : 'bg-red-100'
+                }`}
+              >
                 {getTransactionIcon(transaction.type)}
               </div>
               <div>
-                <h3 className="font-medium">{transaction.description || 'Giao dịch'}</h3>
+                <h3 className="font-medium">
+                  {transaction.description || 'Giao dịch'}
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  {transaction.reference || `TXN-${transaction.id}`} • {formatDate(transaction.createdAt)}
+                  {transaction.reference || `TXN-${transaction.id}`} •{' '}
+                  {formatDate(transaction.createdAt)}
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <p className={`font-semibold ${getTransactionColor(transaction.type, displayAmount)}`}>
-                {displayAmount > 0 ? '+' : ''}{formatPrice(Math.abs(displayAmount))}
+              <p
+                className={`font-semibold ${getTransactionColor(transaction.type, displayAmount)}`}
+              >
+                {displayAmount > 0 ? '+' : ''}
+                {formatPrice(Math.abs(displayAmount))}
               </p>
-              <Badge className={`${getStatusColor(transaction.status)} text-white text-xs`}>
+              <Badge
+                className={`${getStatusColor(transaction.status)} text-white text-xs`}
+              >
                 {getStatusLabel(transaction.status)}
               </Badge>
               {transaction.paymentMethod && (
@@ -219,7 +272,11 @@ export default function TopUpPage() {
                     size="icon"
                     onClick={() => setShowBalance(!showBalance)}
                   >
-                    {showBalance ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showBalance ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </Button>
                 </CardTitle>
               </CardHeader>
@@ -236,28 +293,40 @@ export default function TopUpPage() {
                   <>
                     <div className="text-center">
                       <div className="text-3xl font-bold text-primary mb-2">
-                        {showBalance ? formatPrice(balance.available) : '••••••••'}
+                        {showBalance
+                          ? formatPrice(balance.available)
+                          : '••••••••'}
                       </div>
-                      <p className="text-sm text-muted-foreground">Có thể sử dụng</p>
+                      <p className="text-sm text-muted-foreground">
+                        Có thể sử dụng
+                      </p>
                     </div>
-                    
+
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Đang chờ:</span>
-                        <span className="font-medium">{formatPrice(balance.pending)}</span>
+                        <span className="font-medium">
+                          {formatPrice(balance.pending)}
+                        </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Tổng cộng:</span>
-                        <span className="font-medium">{formatPrice(balance.total)}</span>
+                        <span className="text-muted-foreground">
+                          Tổng cộng:
+                        </span>
+                        <span className="font-medium">
+                          {formatPrice(balance.total)}
+                        </span>
                       </div>
                     </div>
                   </>
                 )}
 
                 <div className="pt-4 border-t">
-                  <Button 
-                    className="w-full" 
-                    onClick={() => document.getElementById('deposit-tab')?.click()}
+                  <Button
+                    className="w-full"
+                    onClick={() =>
+                      document.getElementById('deposit-tab')?.click()
+                    }
                   >
                     <ArrowDownLeft className="h-4 w-4 mr-2" />
                     Nạp tiền ngay
@@ -291,7 +360,9 @@ export default function TopUpPage() {
                     <DollarSign className="h-4 w-4 text-blue-600" />
                     <span className="text-sm">Số dư hiện tại</span>
                   </div>
-                  <span className="font-medium text-green-600">{formatPrice(balance.available)}</span>
+                  <span className="font-medium text-green-600">
+                    {formatPrice(balance.available)}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -319,7 +390,9 @@ export default function TopUpPage() {
                   <CardContent className="space-y-6">
                     {/* Current Balance Display */}
                     <div className="p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-                      <p className="text-sm text-muted-foreground mb-2">Số dư hiện tại</p>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Số dư hiện tại
+                      </p>
                       <p className="text-3xl font-bold text-primary">
                         {formatPrice(balance.available)}
                       </p>
@@ -327,19 +400,28 @@ export default function TopUpPage() {
 
                     {/* Preset Amounts */}
                     <div>
-                      <Label className="mb-3 block">Chọn số tiền nạp nhanh</Label>
+                      <Label className="mb-3 block">
+                        Chọn số tiền nạp nhanh
+                      </Label>
                       {packagesLoading ? (
                         <div className="grid grid-cols-3 gap-3">
                           {Array.from({ length: 6 }).map((_, i) => (
-                            <div key={i} className="h-16 bg-muted rounded animate-pulse" />
+                            <div
+                              key={i}
+                              className="h-16 bg-muted rounded animate-pulse"
+                            />
                           ))}
                         </div>
                       ) : depositPackages && depositPackages.length > 0 ? (
                         <div className="grid grid-cols-3 gap-3">
-                          {depositPackages.map((pkg) => (
+                          {depositPackages.map(pkg => (
                             <Button
                               key={pkg.id}
-                              variant={selectedPreset === pkg.amount ? 'default' : 'outline'}
+                              variant={
+                                selectedPreset === pkg.amount
+                                  ? 'default'
+                                  : 'outline'
+                              }
                               onClick={() => handlePresetSelect(pkg.amount)}
                               className="h-16"
                             >
@@ -348,18 +430,22 @@ export default function TopUpPage() {
                           ))}
                         </div>
                       ) : (
-                        <p className="text-muted-foreground text-sm">Không có gói nạp tiền nào</p>
+                        <p className="text-muted-foreground text-sm">
+                          Không có gói nạp tiền nào
+                        </p>
                       )}
                     </div>
 
                     {/* Custom Amount */}
                     <div>
-                      <Label htmlFor="deposit-amount">Hoặc nhập số tiền tùy chọn (VND)</Label>
+                      <Label htmlFor="deposit-amount">
+                        Hoặc nhập số tiền tùy chọn (VND)
+                      </Label>
                       <Input
                         id="deposit-amount"
                         type="number"
                         value={depositAmount}
-                        onChange={(e) => {
+                        onChange={e => {
                           setDepositAmount(e.target.value)
                           setSelectedPreset(null)
                         }}
@@ -374,17 +460,27 @@ export default function TopUpPage() {
 
                     {/* Payment Method */}
                     <div>
-                      <Label htmlFor="deposit-method">Phương thức thanh toán</Label>
+                      <Label htmlFor="deposit-method">
+                        Phương thức thanh toán
+                      </Label>
                       <div className="grid grid-cols-1 gap-3 mt-2">
                         <Button
-                          variant={depositMethod === 'bank_transfer' ? 'default' : 'outline'}
+                          variant={
+                            depositMethod === 'bank_transfer'
+                              ? 'default'
+                              : 'outline'
+                          }
                           onClick={() => setDepositMethod('bank_transfer')}
                           className="justify-start h-auto p-4"
                         >
                           <CreditCard className="h-5 w-5 mr-3" />
                           <div className="text-left">
-                            <div className="font-medium">Chuyển khoản ngân hàng</div>
-                            <div className="text-sm">Thẻ ATM, Internet Banking</div>
+                            <div className="font-medium">
+                              Chuyển khoản ngân hàng
+                            </div>
+                            <div className="text-sm">
+                              Thẻ ATM, Internet Banking
+                            </div>
                           </div>
                         </Button>
                       </div>
@@ -394,22 +490,34 @@ export default function TopUpPage() {
                     {(selectedPreset || parseFloat(depositAmount) >= 10000) && (
                       <Card className="bg-muted/50">
                         <CardContent className="p-4">
-                          <h3 className="font-semibold mb-3">Thông tin giao dịch</h3>
+                          <h3 className="font-semibold mb-3">
+                            Thông tin giao dịch
+                          </h3>
                           <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
                               <span>Số tiền nạp:</span>
                               <span className="font-medium">
-                                {formatPrice(selectedPreset || parseFloat(depositAmount) || 0)}
+                                {formatPrice(
+                                  selectedPreset ||
+                                    parseFloat(depositAmount) ||
+                                    0
+                                )}
                               </span>
                             </div>
                             <div className="flex justify-between">
                               <span>Phương thức:</span>
-                              <span className="font-medium">Chuyển khoản ngân hàng</span>
+                              <span className="font-medium">
+                                Chuyển khoản ngân hàng
+                              </span>
                             </div>
                             <div className="flex justify-between font-semibold text-lg pt-2 border-t">
                               <span>Số tiền sẽ nạp:</span>
                               <span className="text-primary">
-                                {formatPrice(selectedPreset || parseFloat(depositAmount) || 0)}
+                                {formatPrice(
+                                  selectedPreset ||
+                                    parseFloat(depositAmount) ||
+                                    0
+                                )}
                               </span>
                             </div>
                           </div>
@@ -417,11 +525,12 @@ export default function TopUpPage() {
                       </Card>
                     )}
 
-                    <Button 
+                    <Button
                       onClick={handleTopUp}
                       disabled={
                         depositMutation.isPending ||
-                        (!selectedPreset && (!depositAmount || parseFloat(depositAmount) < 10000))
+                        (!selectedPreset &&
+                          (!depositAmount || parseFloat(depositAmount) < 10000))
                       }
                       className="w-full"
                       size="lg"
@@ -432,7 +541,10 @@ export default function TopUpPage() {
 
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Info className="h-4 w-4" />
-                      <span>Thời gian xử lý: 5-10 phút sau khi chuyển khoản thành công</span>
+                      <span>
+                        Thời gian xử lý: 5-10 phút sau khi chuyển khoản thành
+                        công
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
@@ -448,7 +560,7 @@ export default function TopUpPage() {
                         placeholder="Tìm kiếm giao dịch..."
                         className="pl-10"
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={e => setSearchQuery(e.target.value)}
                       />
                     </div>
                   </div>
@@ -488,24 +600,35 @@ export default function TopUpPage() {
                   <Card>
                     <CardContent className="p-8 text-center">
                       <History className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">Chưa có giao dịch nào</h3>
-                      <p className="text-muted-foreground">Các giao dịch của bạn sẽ hiển thị ở đây</p>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Chưa có giao dịch nào
+                      </h3>
+                      <p className="text-muted-foreground">
+                        Các giao dịch của bạn sẽ hiển thị ở đây
+                      </p>
                     </CardContent>
                   </Card>
                 ) : (
                   <div className="space-y-4">
                     {transactions
-                      .filter((transaction) => {
+                      .filter(transaction => {
                         if (!searchQuery) return true
                         const query = searchQuery.toLowerCase()
                         return (
-                          transaction.description?.toLowerCase().includes(query) ||
-                          transaction.reference?.toLowerCase().includes(query) ||
+                          transaction.description
+                            ?.toLowerCase()
+                            .includes(query) ||
+                          transaction.reference
+                            ?.toLowerCase()
+                            .includes(query) ||
                           transaction.id.toString().includes(query)
                         )
                       })
-                      .map((transaction) => (
-                        <TransactionCard key={transaction.id} transaction={transaction} />
+                      .map(transaction => (
+                        <TransactionCard
+                          key={transaction.id}
+                          transaction={transaction}
+                        />
                       ))}
                   </div>
                 )}
@@ -518,4 +641,3 @@ export default function TopUpPage() {
     </div>
   )
 }
-

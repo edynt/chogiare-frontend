@@ -1,16 +1,21 @@
 import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@shared/components/ui/select'
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -18,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from '@shared/components/ui/table'
-import { 
+import {
   Plus,
   Edit,
   Trash2,
@@ -32,7 +37,7 @@ import {
   Settings,
   Tag,
   Share2,
-  Download
+  Download,
 } from 'lucide-react'
 
 export default function PromotionManagementPage() {
@@ -57,7 +62,7 @@ export default function PromotionManagementPage() {
       status: 'active',
       applicableProducts: 'all',
       applicableUsers: 'new_users',
-      description: 'Áp dụng cho khách hàng đăng ký lần đầu'
+      description: 'Áp dụng cho khách hàng đăng ký lần đầu',
     },
     {
       id: 'COUPON-002',
@@ -74,7 +79,7 @@ export default function PromotionManagementPage() {
       status: 'active',
       applicableProducts: 'electronics',
       applicableUsers: 'all',
-      description: 'Áp dụng cho sản phẩm điện tử'
+      description: 'Áp dụng cho sản phẩm điện tử',
     },
     {
       id: 'COUPON-003',
@@ -91,7 +96,7 @@ export default function PromotionManagementPage() {
       status: 'active',
       applicableProducts: 'all',
       applicableUsers: 'vip',
-      description: 'Dành riêng cho khách hàng VIP'
+      description: 'Dành riêng cho khách hàng VIP',
     },
     {
       id: 'COUPON-004',
@@ -108,8 +113,8 @@ export default function PromotionManagementPage() {
       status: 'expired',
       applicableProducts: 'all',
       applicableUsers: 'all',
-      description: 'Coupon đã hết hạn'
-    }
+      description: 'Coupon đã hết hạn',
+    },
   ]
 
   // Mock data for campaigns
@@ -128,7 +133,7 @@ export default function PromotionManagementPage() {
       orders: 2340,
       revenue: 2340000000,
       conversionRate: 12.5,
-      description: 'Chương trình Black Friday với giảm giá lên đến 70%'
+      description: 'Chương trình Black Friday với giảm giá lên đến 70%',
     },
     {
       id: 'CAMP-002',
@@ -144,7 +149,7 @@ export default function PromotionManagementPage() {
       orders: 1567,
       revenue: 1567000000,
       conversionRate: 8.9,
-      description: 'Chương trình Tết với nhiều ưu đãi đặc biệt'
+      description: 'Chương trình Tết với nhiều ưu đãi đặc biệt',
     },
     {
       id: 'CAMP-003',
@@ -160,8 +165,8 @@ export default function PromotionManagementPage() {
       orders: 0,
       revenue: 0,
       conversionRate: 0,
-      description: 'Chương trình dành cho học sinh, sinh viên'
-    }
+      description: 'Chương trình dành cho học sinh, sinh viên',
+    },
   ]
 
   // Mock data for promotions
@@ -177,7 +182,7 @@ export default function PromotionManagementPage() {
       conditions: 'Mua 2 sản phẩm bất kỳ, tặng 1 sản phẩm có giá trị thấp nhất',
       usageCount: 456,
       revenue: 456000000,
-      description: 'Áp dụng cho tất cả sản phẩm mỹ phẩm'
+      description: 'Áp dụng cho tất cả sản phẩm mỹ phẩm',
     },
     {
       id: 'PROMO-003',
@@ -190,42 +195,54 @@ export default function PromotionManagementPage() {
       conditions: 'Mua 3 sản phẩm giảm 10%, 5 sản phẩm giảm 15%',
       usageCount: 234,
       revenue: 234000000,
-      description: 'Giảm giá theo số lượng sản phẩm mua'
-    }
+      description: 'Giảm giá theo số lượng sản phẩm mua',
+    },
   ]
 
   const tabs = [
     { id: 'coupons', label: 'Coupon Codes', icon: Tag },
     { id: 'campaigns', label: 'Campaigns', icon: Target },
-    { id: 'promotions', label: 'Promotions', icon: Gift }
+    { id: 'promotions', label: 'Promotions', icon: Gift },
   ]
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'expired': return 'bg-red-100 text-red-800'
-      case 'scheduled': return 'bg-blue-100 text-blue-800'
-      case 'completed': return 'bg-gray-100 text-gray-800'
-      case 'paused': return 'bg-yellow-100 text-yellow-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'active':
+        return 'bg-green-100 text-green-800'
+      case 'expired':
+        return 'bg-red-100 text-red-800'
+      case 'scheduled':
+        return 'bg-blue-100 text-blue-800'
+      case 'completed':
+        return 'bg-gray-100 text-gray-800'
+      case 'paused':
+        return 'bg-yellow-100 text-yellow-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'active': return 'Hoạt động'
-      case 'expired': return 'Hết hạn'
-      case 'scheduled': return 'Đã lên lịch'
-      case 'completed': return 'Hoàn thành'
-      case 'paused': return 'Tạm dừng'
-      default: return status
+      case 'active':
+        return 'Hoạt động'
+      case 'expired':
+        return 'Hết hạn'
+      case 'scheduled':
+        return 'Đã lên lịch'
+      case 'completed':
+        return 'Hoàn thành'
+      case 'paused':
+        return 'Tạm dừng'
+      default:
+        return status
     }
   }
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -238,21 +255,29 @@ export default function PromotionManagementPage() {
   }
 
   const filteredCoupons = coupons.filter(coupon => {
-    const matchesSearch = coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         coupon.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = statusFilter === 'all' || coupon.status === statusFilter
+    const matchesSearch =
+      coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      coupon.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesStatus =
+      statusFilter === 'all' || coupon.status === statusFilter
     return matchesSearch && matchesStatus
   })
 
   const filteredCampaigns = campaigns.filter(campaign => {
-    const matchesSearch = campaign.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = statusFilter === 'all' || campaign.status === statusFilter
+    const matchesSearch = campaign.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+    const matchesStatus =
+      statusFilter === 'all' || campaign.status === statusFilter
     return matchesSearch && matchesStatus
   })
 
   const filteredPromotions = promotions.filter(promotion => {
-    const matchesSearch = promotion.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = statusFilter === 'all' || promotion.status === statusFilter
+    const matchesSearch = promotion.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+    const matchesStatus =
+      statusFilter === 'all' || promotion.status === statusFilter
     return matchesSearch && matchesStatus
   })
 
@@ -261,8 +286,12 @@ export default function PromotionManagementPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Quản lý khuyến mãi</h1>
-          <p className="text-gray-600 mt-1">Quản lý coupon codes, campaigns và promotions</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Quản lý khuyến mãi
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Quản lý coupon codes, campaigns và promotions
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline">
@@ -278,7 +307,7 @@ export default function PromotionManagementPage() {
 
       {/* Tabs */}
       <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-        {tabs.map((tab) => {
+        {tabs.map(tab => {
           const Icon = tab.icon
           return (
             <button
@@ -307,8 +336,13 @@ export default function PromotionManagementPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Tổng coupon</p>
-                <p className="text-2xl font-bold text-gray-900">{coupons.length}</p>
-                <p className="text-xs text-green-600">{coupons.filter(c => c.status === 'active').length} đang hoạt động</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {coupons.length}
+                </p>
+                <p className="text-xs text-green-600">
+                  {coupons.filter(c => c.status === 'active').length} đang hoạt
+                  động
+                </p>
               </div>
             </div>
           </CardContent>
@@ -321,8 +355,13 @@ export default function PromotionManagementPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Tổng campaign</p>
-                <p className="text-2xl font-bold text-gray-900">{campaigns.length}</p>
-                <p className="text-xs text-blue-600">{campaigns.filter(c => c.status === 'active').length} đang chạy</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {campaigns.length}
+                </p>
+                <p className="text-xs text-blue-600">
+                  {campaigns.filter(c => c.status === 'active').length} đang
+                  chạy
+                </p>
               </div>
             </div>
           </CardContent>
@@ -335,8 +374,13 @@ export default function PromotionManagementPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Tổng promotion</p>
-                <p className="text-2xl font-bold text-gray-900">{promotions.length}</p>
-                <p className="text-xs text-purple-600">{promotions.filter(p => p.status === 'active').length} đang hoạt động</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {promotions.length}
+                </p>
+                <p className="text-xs text-purple-600">
+                  {promotions.filter(p => p.status === 'active').length} đang
+                  hoạt động
+                </p>
               </div>
             </div>
           </CardContent>
@@ -349,8 +393,12 @@ export default function PromotionManagementPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Doanh thu tháng</p>
-                <p className="text-2xl font-bold text-gray-900">{formatPrice(2340000000)}</p>
-                <p className="text-xs text-green-600">+15.2% so với tháng trước</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatPrice(2340000000)}
+                </p>
+                <p className="text-xs text-green-600">
+                  +15.2% so với tháng trước
+                </p>
               </div>
             </div>
           </CardContent>
@@ -366,7 +414,7 @@ export default function PromotionManagementPage() {
                 <Input
                   placeholder="Tìm kiếm theo tên, mã code..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -398,7 +446,9 @@ export default function PromotionManagementPage() {
       {activeTab === 'coupons' && (
         <Card>
           <CardHeader>
-            <CardTitle>Danh sách Coupon Codes ({filteredCoupons.length})</CardTitle>
+            <CardTitle>
+              Danh sách Coupon Codes ({filteredCoupons.length})
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -415,7 +465,7 @@ export default function PromotionManagementPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCoupons.map((coupon) => (
+                {filteredCoupons.map(coupon => (
                   <TableRow key={coupon.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -429,8 +479,12 @@ export default function PromotionManagementPage() {
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium text-gray-900">{coupon.name}</p>
-                        <p className="text-sm text-gray-500">{coupon.description}</p>
+                        <p className="font-medium text-gray-900">
+                          {coupon.name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {coupon.description}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -441,7 +495,9 @@ export default function PromotionManagementPage() {
                     <TableCell>
                       <div>
                         <p className="font-medium text-gray-900">
-                          {coupon.type === 'percentage' ? `${coupon.value}%` : formatPrice(coupon.value)}
+                          {coupon.type === 'percentage'
+                            ? `${coupon.value}%`
+                            : formatPrice(coupon.value)}
                         </p>
                         <p className="text-sm text-gray-500">
                           Đơn tối thiểu: {formatPrice(coupon.minOrder)}
@@ -454,17 +510,23 @@ export default function PromotionManagementPage() {
                           {coupon.usedCount}/{coupon.usageLimit}
                         </p>
                         <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                          <div 
-                            className="bg-primary h-2 rounded-full" 
-                            style={{ width: `${(coupon.usedCount / coupon.usageLimit) * 100}%` }}
+                          <div
+                            className="bg-primary h-2 rounded-full"
+                            style={{
+                              width: `${(coupon.usedCount / coupon.usageLimit) * 100}%`,
+                            }}
                           ></div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="text-sm text-gray-900">{formatDate(coupon.startDate)}</p>
-                        <p className="text-sm text-gray-500">đến {formatDate(coupon.endDate)}</p>
+                        <p className="text-sm text-gray-900">
+                          {formatDate(coupon.startDate)}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          đến {formatDate(coupon.endDate)}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -483,7 +545,11 @@ export default function PromotionManagementPage() {
                         <Button variant="ghost" size="icon">
                           <Share2 className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="text-red-600">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-red-600"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -500,7 +566,9 @@ export default function PromotionManagementPage() {
       {activeTab === 'campaigns' && (
         <Card>
           <CardHeader>
-            <CardTitle>Danh sách Campaigns ({filteredCampaigns.length})</CardTitle>
+            <CardTitle>
+              Danh sách Campaigns ({filteredCampaigns.length})
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -518,44 +586,63 @@ export default function PromotionManagementPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCampaigns.map((campaign) => (
+                {filteredCampaigns.map(campaign => (
                   <TableRow key={campaign.id}>
                     <TableCell>
                       <div>
-                        <p className="font-medium text-gray-900">{campaign.name}</p>
-                        <p className="text-sm text-gray-500">{campaign.description}</p>
+                        <p className="font-medium text-gray-900">
+                          {campaign.name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {campaign.description}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {campaign.type === 'flash_sale' ? 'Flash Sale' :
-                         campaign.type === 'seasonal' ? 'Theo mùa' : 'Targeted'}
+                        {campaign.type === 'flash_sale'
+                          ? 'Flash Sale'
+                          : campaign.type === 'seasonal'
+                            ? 'Theo mùa'
+                            : 'Targeted'}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <p className="font-medium text-gray-900">{formatPrice(campaign.budget)}</p>
+                      <p className="font-medium text-gray-900">
+                        {formatPrice(campaign.budget)}
+                      </p>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium text-gray-900">{formatPrice(campaign.spent)}</p>
+                        <p className="font-medium text-gray-900">
+                          {formatPrice(campaign.spent)}
+                        </p>
                         <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                          <div 
-                            className="bg-primary h-2 rounded-full" 
-                            style={{ width: `${(campaign.spent / campaign.budget) * 100}%` }}
+                          <div
+                            className="bg-primary h-2 rounded-full"
+                            style={{
+                              width: `${(campaign.spent / campaign.budget) * 100}%`,
+                            }}
                           ></div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <p className="font-medium text-gray-900">{formatNumber(campaign.orders)}</p>
+                      <p className="font-medium text-gray-900">
+                        {formatNumber(campaign.orders)}
+                      </p>
                     </TableCell>
                     <TableCell>
-                      <p className="font-medium text-gray-900">{formatPrice(campaign.revenue)}</p>
+                      <p className="font-medium text-gray-900">
+                        {formatPrice(campaign.revenue)}
+                      </p>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <TrendingUp className="h-4 w-4 text-green-600" />
-                        <span className="font-medium text-gray-900">{campaign.conversionRate}%</span>
+                        <span className="font-medium text-gray-900">
+                          {campaign.conversionRate}%
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -574,7 +661,11 @@ export default function PromotionManagementPage() {
                         <Button variant="ghost" size="icon">
                           <BarChart3 className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="text-red-600">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-red-600"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -591,7 +682,9 @@ export default function PromotionManagementPage() {
       {activeTab === 'promotions' && (
         <Card>
           <CardHeader>
-            <CardTitle>Danh sách Promotions ({filteredPromotions.length})</CardTitle>
+            <CardTitle>
+              Danh sách Promotions ({filteredPromotions.length})
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -609,22 +702,30 @@ export default function PromotionManagementPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredPromotions.map((promotion) => (
+                {filteredPromotions.map(promotion => (
                   <TableRow key={promotion.id}>
                     <TableCell>
                       <div>
-                        <p className="font-medium text-gray-900">{promotion.name}</p>
-                        <p className="text-sm text-gray-500">{promotion.description}</p>
+                        <p className="font-medium text-gray-900">
+                          {promotion.name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {promotion.description}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {promotion.type === 'buy_x_get_y' ? 'Mua X tặng Y' : 'Giảm theo SL'}
+                        {promotion.type === 'buy_x_get_y'
+                          ? 'Mua X tặng Y'
+                          : 'Giảm theo SL'}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary">
-                        {promotion.applicableProducts === 'all' ? 'Tất cả' : promotion.applicableProducts}
+                        {promotion.applicableProducts === 'all'
+                          ? 'Tất cả'
+                          : promotion.applicableProducts}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -633,15 +734,23 @@ export default function PromotionManagementPage() {
                       </p>
                     </TableCell>
                     <TableCell>
-                      <p className="font-medium text-gray-900">{formatNumber(promotion.usageCount)}</p>
+                      <p className="font-medium text-gray-900">
+                        {formatNumber(promotion.usageCount)}
+                      </p>
                     </TableCell>
                     <TableCell>
-                      <p className="font-medium text-gray-900">{formatPrice(promotion.revenue)}</p>
+                      <p className="font-medium text-gray-900">
+                        {formatPrice(promotion.revenue)}
+                      </p>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="text-sm text-gray-900">{formatDate(promotion.startDate)}</p>
-                        <p className="text-sm text-gray-500">đến {formatDate(promotion.endDate)}</p>
+                        <p className="text-sm text-gray-900">
+                          {formatDate(promotion.startDate)}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          đến {formatDate(promotion.endDate)}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -660,7 +769,11 @@ export default function PromotionManagementPage() {
                         <Button variant="ghost" size="icon">
                           <Settings className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="text-red-600">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-red-600"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>

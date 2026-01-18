@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { PasswordInput } from '@shared/components/ui/password-input'
@@ -19,7 +24,10 @@ export function ResetPasswordForm() {
   const verifyTokenMutation = useVerifyResetToken()
   const token = searchParams.get('token')
   const [isSuccess, setIsSuccess] = useState(false)
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error'
+    text: string
+  } | null>(null)
 
   const {
     register,
@@ -41,8 +49,11 @@ export function ResetPasswordForm() {
 
   // Determine states from mutation
   const isVerifying = verifyTokenMutation.isPending
-  const isTokenValid = verifyTokenMutation.isSuccess && verifyTokenMutation.data?.valid === true
-  const hasVerificationError = verifyTokenMutation.isError || (verifyTokenMutation.isSuccess && !verifyTokenMutation.data?.valid)
+  const isTokenValid =
+    verifyTokenMutation.isSuccess && verifyTokenMutation.data?.valid === true
+  const hasVerificationError =
+    verifyTokenMutation.isError ||
+    (verifyTokenMutation.isSuccess && !verifyTokenMutation.data?.valid)
 
   const onSubmit = (data: ResetPasswordFormData) => {
     if (!token || !isTokenValid) {
@@ -50,18 +61,24 @@ export function ResetPasswordForm() {
     }
 
     setMessage(null) // Clear previous message
-    resetPasswordMutation.mutate({ token, password: data.password }, {
-      onSuccess: () => {
-        setIsSuccess(true)
-        setMessage({ type: 'success', text: 'Đặt lại mật khẩu thành công! Đang chuyển hướng...' })
-        setTimeout(() => {
-          navigate('/auth/login')
-        }, 2500)
-      },
-      onError: (error: Error) => {
-        setMessage({ type: 'error', text: error.message })
-      },
-    })
+    resetPasswordMutation.mutate(
+      { token, password: data.password },
+      {
+        onSuccess: () => {
+          setIsSuccess(true)
+          setMessage({
+            type: 'success',
+            text: 'Đặt lại mật khẩu thành công! Đang chuyển hướng...',
+          })
+          setTimeout(() => {
+            navigate('/auth/login')
+          }, 2500)
+        },
+        onError: (error: Error) => {
+          setMessage({ type: 'error', text: error.message })
+        },
+      }
+    )
   }
 
   if (isVerifying) {
@@ -70,7 +87,9 @@ export function ResetPasswordForm() {
         <CardContent className="pt-6">
           <div className="flex flex-col items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-sm text-muted-foreground">Đang kiểm tra liên kết...</p>
+            <p className="text-sm text-muted-foreground">
+              Đang kiểm tra liên kết...
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -84,7 +103,8 @@ export function ResetPasswordForm() {
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập hoặc yêu cầu liên kết mới.
+              Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Vui lòng
+              đăng nhập hoặc yêu cầu liên kết mới.
             </AlertDescription>
           </Alert>
           <div className="mt-4 text-center space-y-2">
@@ -124,12 +144,16 @@ export function ResetPasswordForm() {
                 <path d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">Đặt lại mật khẩu thành công</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              Đặt lại mật khẩu thành công
+            </h3>
             <p className="text-sm text-muted-foreground text-center mb-4">
               Bạn có thể đăng nhập với mật khẩu mới
             </p>
             <Loader2 className="h-5 w-5 animate-spin text-primary" />
-            <p className="text-xs text-muted-foreground mt-2">Đang chuyển hướng...</p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Đang chuyển hướng...
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -157,7 +181,9 @@ export function ResetPasswordForm() {
               <PasswordStrengthIndicator password={password} className="mt-2" />
             )}
             {errors.password && (
-              <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -172,7 +198,9 @@ export function ResetPasswordForm() {
               placeholder="Nhập lại mật khẩu mới"
             />
             {errors.confirmPassword && (
-              <p className="text-sm text-red-500 mt-1">{errors.confirmPassword.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
@@ -181,15 +209,19 @@ export function ResetPasswordForm() {
             className="w-full"
             disabled={resetPasswordMutation.isPending}
           >
-            {resetPasswordMutation.isPending ? 'Đang đặt lại...' : 'Đặt lại mật khẩu'}
+            {resetPasswordMutation.isPending
+              ? 'Đang đặt lại...'
+              : 'Đặt lại mật khẩu'}
           </Button>
 
           {message && (
-            <div className={`flex items-center gap-2 rounded-lg border p-3 text-sm ${
-              message.type === 'success'
-                ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
-                : 'border-red-500 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
-            }`}>
+            <div
+              className={`flex items-center gap-2 rounded-lg border p-3 text-sm ${
+                message.type === 'success'
+                  ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
+                  : 'border-red-500 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+              }`}
+            >
               {message.type === 'success' ? (
                 <CheckCircle className="h-4 w-4 flex-shrink-0" />
               ) : (

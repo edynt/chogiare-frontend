@@ -46,7 +46,11 @@ export function getCookie(name: string): string | null {
  * Set a cookie
  * Note: Cannot set/modify HttpOnly cookies from JavaScript
  */
-export function setCookie(name: string, value: string, options: CookieOptions = {}): void {
+export function setCookie(
+  name: string,
+  value: string,
+  options: CookieOptions = {}
+): void {
   let cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`
 
   if (options.expires) {

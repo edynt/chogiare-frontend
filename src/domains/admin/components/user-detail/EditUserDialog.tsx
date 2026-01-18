@@ -29,7 +29,11 @@ interface EditUserDialogProps {
   onOpenChange: (open: boolean) => void
 }
 
-export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps) {
+export function EditUserDialog({
+  user,
+  open,
+  onOpenChange,
+}: EditUserDialogProps) {
   const updateUserMutation = useUpdateUser()
 
   // Form state

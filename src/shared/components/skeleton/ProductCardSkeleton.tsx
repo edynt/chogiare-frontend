@@ -7,20 +7,22 @@ interface ProductCardSkeletonProps {
 
 export function ProductCardSkeleton({ className }: ProductCardSkeletonProps) {
   return (
-    <Card className={`group overflow-hidden relative hover:shadow-lg transition-shadow duration-300 ${className}`}>
+    <Card
+      className={`group overflow-hidden relative hover:shadow-lg transition-shadow duration-300 ${className}`}
+    >
       <div className="relative h-48 overflow-hidden">
         <Skeleton className="w-full h-full" />
         <div className="absolute top-2 right-2">
           <Skeleton className="h-5 w-12 rounded-full" />
         </div>
       </div>
-      
+
       <CardContent className="p-4">
         <div className="space-y-2 mb-3">
           <Skeleton className="h-5 w-full" />
           <Skeleton className="h-4 w-3/4" />
         </div>
-        
+
         <div className="flex items-center justify-between mb-3">
           <div className="space-y-1">
             <Skeleton className="h-5 w-20" />
@@ -31,7 +33,7 @@ export function ProductCardSkeleton({ className }: ProductCardSkeletonProps) {
             <Skeleton className="h-4 w-8" />
           </div>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Skeleton className="h-4 w-4" />

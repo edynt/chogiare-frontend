@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Textarea } from '@shared/components/ui/textarea'
@@ -43,7 +48,7 @@ import {
   Eye,
   Edit,
   Loader2,
-  Send
+  Send,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -62,7 +67,9 @@ export default function SupportTicketsPage() {
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [page, setPage] = useState(1)
   const pageSize = 10
-  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null)
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(
+    null
+  )
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
   const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false)
   const [replyMessage, setReplyMessage] = useState('')
@@ -87,55 +94,84 @@ export default function SupportTicketsPage() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800'
-      case 'high': return 'bg-orange-100 text-orange-800'
-      case 'medium': return 'bg-yellow-100 text-yellow-800'
-      case 'low': return 'bg-green-100 text-green-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'urgent':
+        return 'bg-red-100 text-red-800'
+      case 'high':
+        return 'bg-orange-100 text-orange-800'
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'low':
+        return 'bg-green-100 text-green-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getPriorityLabel = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'Khẩn cấp'
-      case 'high': return 'Cao'
-      case 'medium': return 'Trung bình'
-      case 'low': return 'Thấp'
-      default: return priority
+      case 'urgent':
+        return 'Khẩn cấp'
+      case 'high':
+        return 'Cao'
+      case 'medium':
+        return 'Trung bình'
+      case 'low':
+        return 'Thấp'
+      default:
+        return priority
     }
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-red-100 text-red-800'
-      case 'in_progress': return 'bg-blue-100 text-blue-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'resolved': return 'bg-green-100 text-green-800'
-      case 'closed': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'open':
+        return 'bg-red-100 text-red-800'
+      case 'in_progress':
+        return 'bg-blue-100 text-blue-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'resolved':
+        return 'bg-green-100 text-green-800'
+      case 'closed':
+        return 'bg-gray-100 text-gray-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'open': return 'Mở'
-      case 'in_progress': return 'Đang xử lý'
-      case 'pending': return 'Chờ phản hồi'
-      case 'resolved': return 'Đã giải quyết'
-      case 'closed': return 'Đã đóng'
-      default: return status
+      case 'open':
+        return 'Mở'
+      case 'in_progress':
+        return 'Đang xử lý'
+      case 'pending':
+        return 'Chờ phản hồi'
+      case 'resolved':
+        return 'Đã giải quyết'
+      case 'closed':
+        return 'Đã đóng'
+      default:
+        return status
     }
   }
 
   const getCategoryLabel = (category: string) => {
     switch (category) {
-      case 'account': return 'Tài khoản'
-      case 'product': return 'Sản phẩm'
-      case 'payment': return 'Thanh toán'
-      case 'technical': return 'Kỹ thuật'
-      case 'report': return 'Báo cáo'
-      case 'question': return 'Câu hỏi'
-      default: return category
+      case 'account':
+        return 'Tài khoản'
+      case 'product':
+        return 'Sản phẩm'
+      case 'payment':
+        return 'Thanh toán'
+      case 'technical':
+        return 'Kỹ thuật'
+      case 'report':
+        return 'Báo cáo'
+      case 'question':
+        return 'Câu hỏi'
+      default:
+        return category
     }
   }
 
@@ -145,14 +181,16 @@ export default function SupportTicketsPage() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
   const getTimeAgo = (dateString: string) => {
     const now = new Date()
     const date = new Date(dateString)
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+    )
 
     if (diffInHours < 1) return 'Vừa xong'
     if (diffInHours < 24) return `${diffInHours} giờ trước`
@@ -209,8 +247,12 @@ export default function SupportTicketsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Hỗ trợ & Khiếu nại</h1>
-          <p className="text-gray-600 mt-1">Quản lý các ticket hỗ trợ và khiếu nại từ người dùng</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Hỗ trợ & Khiếu nại
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Quản lý các ticket hỗ trợ và khiếu nại từ người dùng
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline">
@@ -293,7 +335,7 @@ export default function SupportTicketsPage() {
                 <Input
                   placeholder="Tìm kiếm theo ID, tiêu đề, khách hàng..."
                   value={searchQuery}
-                  onChange={(e) => {
+                  onChange={e => {
                     setSearchQuery(e.target.value)
                     setPage(1)
                   }}
@@ -302,7 +344,13 @@ export default function SupportTicketsPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <Select value={statusFilter} onValueChange={(value) => { setStatusFilter(value); setPage(1) }}>
+              <Select
+                value={statusFilter}
+                onValueChange={value => {
+                  setStatusFilter(value)
+                  setPage(1)
+                }}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Trạng thái" />
                 </SelectTrigger>
@@ -315,7 +363,13 @@ export default function SupportTicketsPage() {
                   <SelectItem value="closed">Đã đóng</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={priorityFilter} onValueChange={(value) => { setPriorityFilter(value); setPage(1) }}>
+              <Select
+                value={priorityFilter}
+                onValueChange={value => {
+                  setPriorityFilter(value)
+                  setPage(1)
+                }}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Ưu tiên" />
                 </SelectTrigger>
@@ -327,7 +381,13 @@ export default function SupportTicketsPage() {
                   <SelectItem value="low">Thấp</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={categoryFilter} onValueChange={(value) => { setCategoryFilter(value); setPage(1) }}>
+              <Select
+                value={categoryFilter}
+                onValueChange={value => {
+                  setCategoryFilter(value)
+                  setPage(1)
+                }}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Danh mục" />
                 </SelectTrigger>
@@ -380,26 +440,38 @@ export default function SupportTicketsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {tickets.map((ticket) => (
+                  {tickets.map(ticket => (
                     <TableRow key={ticket.id} className="hover:bg-gray-50">
                       <TableCell>
                         <div className="flex items-start gap-3">
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900 line-clamp-1">{ticket.title}</p>
-                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">{ticket.description}</p>
+                            <p className="font-medium text-gray-900 line-clamp-1">
+                              {ticket.title}
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                              {ticket.description}
+                            </p>
                             <div className="flex items-center gap-2 mt-2">
                               <div className="flex items-center gap-1">
                                 <MessageSquare className="h-3 w-3 text-gray-400" />
-                                <span className="text-xs text-gray-500">{ticket.replies} phản hồi</span>
+                                <span className="text-xs text-gray-500">
+                                  {ticket.replies} phản hồi
+                                </span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3 text-gray-400" />
-                                <span className="text-xs text-gray-500">{getTimeAgo(ticket.createdAt)}</span>
+                                <span className="text-xs text-gray-500">
+                                  {getTimeAgo(ticket.createdAt)}
+                                </span>
                               </div>
                             </div>
                             <div className="flex items-center gap-1 mt-2">
                               {ticket.tags.map((tag, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
+                                <Badge
+                                  key={index}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
                                   {tag}
                                 </Badge>
                               ))}
@@ -409,10 +481,14 @@ export default function SupportTicketsPage() {
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="font-medium text-gray-900">{ticket.customer.name}</p>
+                          <p className="font-medium text-gray-900">
+                            {ticket.customer.name}
+                          </p>
                           <div className="flex items-center gap-1 text-sm text-gray-500">
                             <Mail className="h-3 w-3" />
-                            <span className="truncate max-w-32">{ticket.customer.email}</span>
+                            <span className="truncate max-w-32">
+                              {ticket.customer.email}
+                            </span>
                           </div>
                           <div className="flex items-center gap-1 text-sm text-gray-500">
                             <Phone className="h-3 w-3" />
@@ -433,7 +509,9 @@ export default function SupportTicketsPage() {
                       <TableCell>
                         <Select
                           value={ticket.status}
-                          onValueChange={(value) => handleUpdateStatus(ticket.id, value)}
+                          onValueChange={value =>
+                            handleUpdateStatus(ticket.id, value)
+                          }
                         >
                           <SelectTrigger className="w-32">
                             <Badge className={getStatusColor(ticket.status)}>
@@ -442,9 +520,15 @@ export default function SupportTicketsPage() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="open">Mở</SelectItem>
-                            <SelectItem value="in_progress">Đang xử lý</SelectItem>
-                            <SelectItem value="pending">Chờ phản hồi</SelectItem>
-                            <SelectItem value="resolved">Đã giải quyết</SelectItem>
+                            <SelectItem value="in_progress">
+                              Đang xử lý
+                            </SelectItem>
+                            <SelectItem value="pending">
+                              Chờ phản hồi
+                            </SelectItem>
+                            <SelectItem value="resolved">
+                              Đã giải quyết
+                            </SelectItem>
                             <SelectItem value="closed">Đã đóng</SelectItem>
                           </SelectContent>
                         </Select>
@@ -457,8 +541,12 @@ export default function SupportTicketsPage() {
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <p className="text-gray-900">{formatDate(ticket.updatedAt)}</p>
-                          <p className="text-gray-500">Tạo: {formatDate(ticket.createdAt)}</p>
+                          <p className="text-gray-900">
+                            {formatDate(ticket.updatedAt)}
+                          </p>
+                          <p className="text-gray-500">
+                            Tạo: {formatDate(ticket.createdAt)}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -530,7 +618,9 @@ export default function SupportTicketsPage() {
           {selectedTicket && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">{selectedTicket.title}</h3>
+                <h3 className="text-lg font-semibold">
+                  {selectedTicket.title}
+                </h3>
                 <div className="flex gap-2">
                   <Badge className={getPriorityColor(selectedTicket.priority)}>
                     {getPriorityLabel(selectedTicket.priority)}
@@ -549,8 +639,12 @@ export default function SupportTicketsPage() {
                 <div>
                   <p className="font-medium text-gray-600">Khách hàng:</p>
                   <p>{selectedTicket.customer.name}</p>
-                  <p className="text-gray-500">{selectedTicket.customer.email}</p>
-                  <p className="text-gray-500">{selectedTicket.customer.phone}</p>
+                  <p className="text-gray-500">
+                    {selectedTicket.customer.email}
+                  </p>
+                  <p className="text-gray-500">
+                    {selectedTicket.customer.phone}
+                  </p>
                 </div>
                 <div>
                   <p className="font-medium text-gray-600">Thông tin khác:</p>
@@ -562,7 +656,9 @@ export default function SupportTicketsPage() {
 
               <div className="flex gap-1 flex-wrap">
                 {selectedTicket.tags.map((tag, index) => (
-                  <Badge key={index} variant="outline">{tag}</Badge>
+                  <Badge key={index} variant="outline">
+                    {tag}
+                  </Badge>
                 ))}
               </div>
 
@@ -579,7 +675,9 @@ export default function SupportTicketsPage() {
                     >
                       <div className="flex justify-between text-sm mb-1">
                         <span className="font-medium">{msg.sender}</span>
-                        <span className="text-gray-500">{formatDate(msg.createdAt)}</span>
+                        <span className="text-gray-500">
+                          {formatDate(msg.createdAt)}
+                        </span>
                       </div>
                       <p className="text-gray-700">{msg.message}</p>
                     </div>
@@ -589,13 +687,18 @@ export default function SupportTicketsPage() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDetailDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsDetailDialogOpen(false)}
+            >
               Đóng
             </Button>
-            <Button onClick={() => {
-              setIsDetailDialogOpen(false)
-              if (selectedTicket) handleOpenReply(selectedTicket)
-            }}>
+            <Button
+              onClick={() => {
+                setIsDetailDialogOpen(false)
+                if (selectedTicket) handleOpenReply(selectedTicket)
+              }}
+            >
               <Reply className="h-4 w-4 mr-2" />
               Phản hồi
             </Button>
@@ -614,14 +717,15 @@ export default function SupportTicketsPage() {
               <div className="bg-gray-50 p-3 rounded-lg">
                 <p className="font-medium text-sm">{selectedTicket.title}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {selectedTicket.customer.name} - {selectedTicket.customer.email}
+                  {selectedTicket.customer.name} -{' '}
+                  {selectedTicket.customer.email}
                 </p>
               </div>
               <div>
                 <label className="text-sm font-medium">Nội dung phản hồi</label>
                 <Textarea
                   value={replyMessage}
-                  onChange={(e) => setReplyMessage(e.target.value)}
+                  onChange={e => setReplyMessage(e.target.value)}
                   placeholder="Nhập nội dung phản hồi..."
                   rows={5}
                   className="mt-1"
@@ -630,10 +734,16 @@ export default function SupportTicketsPage() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsReplyDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsReplyDialogOpen(false)}
+            >
               Hủy
             </Button>
-            <Button onClick={handleReply} disabled={replyMutation.isPending || !replyMessage.trim()}>
+            <Button
+              onClick={handleReply}
+              disabled={replyMutation.isPending || !replyMessage.trim()}
+            >
               {replyMutation.isPending ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : (

@@ -133,8 +133,8 @@ export function ImageUploadWithReorder({
     const { active, over } = event
 
     if (over && active.id !== over.id) {
-      const oldIndex = images.findIndex((img) => img.id === active.id)
-      const newIndex = images.findIndex((img) => img.id === over.id)
+      const oldIndex = images.findIndex(img => img.id === active.id)
+      const newIndex = images.findIndex(img => img.id === over.id)
       onImagesChange(arrayMove(images, oldIndex, newIndex))
     }
   }
@@ -184,11 +184,11 @@ export function ImageUploadWithReorder({
 
   const handleRemove = useCallback(
     (id: string) => {
-      const image = images.find((img) => img.id === id)
+      const image = images.find(img => img.id === id)
       if (image) {
         URL.revokeObjectURL(image.url)
       }
-      onImagesChange(images.filter((img) => img.id !== id))
+      onImagesChange(images.filter(img => img.id !== id))
     },
     [images, onImagesChange]
   )
@@ -255,7 +255,7 @@ export function ImageUploadWithReorder({
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={images.map((img) => img.id)}
+              items={images.map(img => img.id)}
               strategy={rectSortingStrategy}
             >
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">

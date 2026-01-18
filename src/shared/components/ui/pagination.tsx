@@ -1,7 +1,18 @@
 import React from 'react'
 import { Button } from './button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select'
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './select'
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface PaginationProps {
@@ -65,7 +76,12 @@ export function Pagination({
   }
 
   return (
-    <div className={cn('flex flex-col sm:flex-row items-center justify-between gap-4', className)}>
+    <div
+      className={cn(
+        'flex flex-col sm:flex-row items-center justify-between gap-4',
+        className
+      )}
+    >
       {/* Page Info */}
       <div className="text-sm text-muted-foreground">
         Hiển thị {startItem} - {endItem} trong tổng số {totalItems} mục
@@ -78,13 +94,13 @@ export function Pagination({
             <span className="text-sm text-muted-foreground">Hiển thị:</span>
             <Select
               value={pageSize.toString()}
-              onValueChange={(value) => onPageSizeChange(parseInt(value))}
+              onValueChange={value => onPageSizeChange(parseInt(value))}
             >
               <SelectTrigger className="w-20">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {pageSizeOptions.map((size) => (
+                {pageSizeOptions.map(size => (
                   <SelectItem key={size} value={size.toString()}>
                     {size}
                   </SelectItem>
@@ -120,7 +136,9 @@ export function Pagination({
           {getVisiblePages().map((page, index) => (
             <React.Fragment key={index}>
               {page === '...' ? (
-                <span className="px-2 py-1 text-sm text-muted-foreground">...</span>
+                <span className="px-2 py-1 text-sm text-muted-foreground">
+                  ...
+                </span>
               ) : (
                 <Button
                   variant={currentPage === page ? 'default' : 'outline'}
@@ -187,11 +205,11 @@ export function SimplePagination({
         <ChevronLeft className="h-4 w-4" />
         Trước
       </Button>
-      
+
       <span className="text-sm text-muted-foreground px-4">
         Trang {currentPage} / {totalPages}
       </span>
-      
+
       <Button
         variant="outline"
         size="sm"

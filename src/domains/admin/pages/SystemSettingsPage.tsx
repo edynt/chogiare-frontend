@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Textarea } from '@shared/components/ui/textarea'
@@ -12,9 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@shared/components/ui/select'
-import {
-  Switch
-} from '@shared/components/ui/switch'
+import { Switch } from '@shared/components/ui/switch'
 import {
   Settings,
   Save,
@@ -49,287 +52,297 @@ import {
   CreditCard,
   Percent,
   RotateCcw,
-  Loader2
+  Loader2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   useSystemSettings,
   useUpdateSettingsByCategory,
-  useSystemHealth
+  useSystemHealth,
 } from '@/hooks/useAdmin'
 import type { SystemSettings } from '@admin/api/admin'
 
 // Default settings for fallback
 const DEFAULT_SETTINGS: SystemSettings = {
-    general: {
-      siteName: 'Chogiare Marketplace',
-      siteDescription: 'Nền tảng thương mại điện tử hàng đầu Việt Nam',
-      siteUrl: 'https://chogiare.vn',
-      adminEmail: 'admin@chogiare.vn',
-      supportEmail: 'support@chogiare.vn',
-      supportPhone: '1900 1234',
-      timezone: 'Asia/Ho_Chi_Minh',
-      language: 'vi',
-      dateFormat: 'DD/MM/YYYY',
-      currency: 'VND',
-      maintenanceMode: false,
-      maintenanceMessage: 'Hệ thống đang bảo trì, vui lòng quay lại sau.',
-      registrationEnabled: true,
-      emailVerification: true,
-      phoneVerification: false
+  general: {
+    siteName: 'Chogiare Marketplace',
+    siteDescription: 'Nền tảng thương mại điện tử hàng đầu Việt Nam',
+    siteUrl: 'https://chogiare.vn',
+    adminEmail: 'admin@chogiare.vn',
+    supportEmail: 'support@chogiare.vn',
+    supportPhone: '1900 1234',
+    timezone: 'Asia/Ho_Chi_Minh',
+    language: 'vi',
+    dateFormat: 'DD/MM/YYYY',
+    currency: 'VND',
+    maintenanceMode: false,
+    maintenanceMessage: 'Hệ thống đang bảo trì, vui lòng quay lại sau.',
+    registrationEnabled: true,
+    emailVerification: true,
+    phoneVerification: false,
+  },
+  payment: {
+    defaultCurrency: 'VND',
+    supportedCurrencies: ['VND', 'USD'],
+    paymentMethods: {
+      creditCard: true,
+      momo: true,
+      zalopay: true,
+      vnpay: true,
+      bankTransfer: true,
+      cod: false,
     },
-    payment: {
-      defaultCurrency: 'VND',
-      supportedCurrencies: ['VND', 'USD'],
-      paymentMethods: {
-        creditCard: true,
-        momo: true,
-        zalopay: true,
-        vnpay: true,
-        bankTransfer: true,
-        cod: false
-      },
-      commissionRate: 5.0,
-      commissionType: 'percentage',
-      minimumWithdraw: 100000,
-      maximumWithdraw: 50000000,
-      withdrawFee: 0,
-      paymentTimeout: 15,
-      refundPeriod: 7,
-      autoPayoutEnabled: false,
-      payoutSchedule: 'weekly',
-      holdPeriod: 7
+    commissionRate: 5.0,
+    commissionType: 'percentage',
+    minimumWithdraw: 100000,
+    maximumWithdraw: 50000000,
+    withdrawFee: 0,
+    paymentTimeout: 15,
+    refundPeriod: 7,
+    autoPayoutEnabled: false,
+    payoutSchedule: 'weekly',
+    holdPeriod: 7,
+  },
+  product: {
+    maxProductsPerUser: 100,
+    maxProductsPerFreePlan: 10,
+    maxImagesPerProduct: 10,
+    maxVideoPerProduct: 1,
+    maxFileSize: 5,
+    allowedImageFormats: ['jpg', 'jpeg', 'png', 'webp'],
+    autoApprove: false,
+    moderationRequired: true,
+    aiModeration: true,
+    featuredPrice: 199000,
+    promotedPrice: 299000,
+    boostPrice: 99000,
+    productExpiryDays: 30,
+    autoRenew: false,
+    lowStockThreshold: 5,
+    outOfStockBehavior: 'hide',
+    allowPreorder: true,
+    allowDigitalProducts: true,
+    requireSKU: false,
+    requireBarcode: false,
+  },
+  user: {
+    maxLoginAttempts: 5,
+    lockoutDuration: 30,
+    passwordMinLength: 8,
+    requireUppercase: true,
+    requireNumber: true,
+    requireSpecialChar: false,
+    passwordExpiry: 0,
+    sessionTimeout: 24,
+    rememberMeDuration: 30,
+    emailNotifications: true,
+    smsNotifications: false,
+    pushNotifications: true,
+    twoFactorAuth: false,
+    twoFactorMethods: ['email', 'sms', 'authenticator'],
+    profileCompletion: true,
+    avatarRequired: false,
+    phoneRequired: true,
+    addressRequired: false,
+    identityVerification: false,
+    sellerVerification: true,
+  },
+  notification: {
+    emailEnabled: true,
+    smsEnabled: false,
+    pushEnabled: true,
+    inAppEnabled: true,
+    emailFrom: 'noreply@chogiare.vn',
+    emailFromName: 'Chogiare Marketplace',
+    smsProvider: 'twilio',
+    pushProvider: 'firebase',
+    notificationQueue: true,
+    batchSize: 100,
+    retryAttempts: 3,
+    retryDelay: 300,
+    digestEnabled: true,
+    digestFrequency: 'daily',
+    templates: {
+      welcome: true,
+      orderConfirmation: true,
+      orderShipped: true,
+      orderDelivered: true,
+      passwordReset: true,
+      priceAlert: true,
+      newMessage: true,
     },
-    product: {
-      maxProductsPerUser: 100,
-      maxProductsPerFreePlan: 10,
-      maxImagesPerProduct: 10,
-      maxVideoPerProduct: 1,
-      maxFileSize: 5,
-      allowedImageFormats: ['jpg', 'jpeg', 'png', 'webp'],
-      autoApprove: false,
-      moderationRequired: true,
-      aiModeration: true,
-      featuredPrice: 199000,
-      promotedPrice: 299000,
-      boostPrice: 99000,
-      productExpiryDays: 30,
-      autoRenew: false,
-      lowStockThreshold: 5,
-      outOfStockBehavior: 'hide',
-      allowPreorder: true,
-      allowDigitalProducts: true,
-      requireSKU: false,
-      requireBarcode: false
+  },
+  security: {
+    sslEnabled: true,
+    forceHttps: true,
+    corsEnabled: true,
+    corsOrigins: ['https://chogiare.vn', 'https://api.chogiare.vn'],
+    rateLimiting: true,
+    rateLimit: 100,
+    rateLimitWindow: 60,
+    apiKeyRequired: true,
+    ipWhitelist: false,
+    whitelistedIPs: [],
+    blacklistedIPs: [],
+    auditLogging: true,
+    auditRetention: 90,
+    dataEncryption: true,
+    encryptionAlgorithm: 'AES-256',
+    sessionEncryption: true,
+    cookieSecure: true,
+    cookieSameSite: 'strict',
+    csrfProtection: true,
+    xssProtection: true,
+    contentSecurityPolicy: true,
+    captchaEnabled: true,
+    captchaProvider: 'recaptcha',
+    captchaOnLogin: true,
+    captchaOnRegister: true,
+    captchaOnContact: true,
+  },
+  seo: {
+    metaTitle: 'Chogiare - Mua bán trực tuyến giá rẻ',
+    metaDescription:
+      'Nền tảng thương mại điện tử hàng đầu Việt Nam với hàng triệu sản phẩm chất lượng, giá cả cạnh tranh.',
+    metaKeywords: 'mua bán online, thương mại điện tử, giá rẻ, chợ giá rẻ',
+    ogImage: '/og-image.jpg',
+    twitterCard: 'summary_large_image',
+    canonicalUrl: 'https://chogiare.vn',
+    robotsTxt: true,
+    sitemapEnabled: true,
+    sitemapFrequency: 'daily',
+    googleAnalytics: '',
+    googleTagManager: '',
+    facebookPixel: '',
+    structuredData: true,
+    breadcrumbs: true,
+  },
+  email: {
+    provider: 'smtp',
+    smtpHost: 'smtp.gmail.com',
+    smtpPort: 587,
+    smtpSecure: true,
+    smtpUser: '',
+    smtpPassword: '',
+    sendgridApiKey: '',
+    mailgunApiKey: '',
+    mailgunDomain: '',
+    sesRegion: 'ap-southeast-1',
+    sesAccessKey: '',
+    sesSecretKey: '',
+    testEmail: '',
+    emailFooter: 'Chogiare Marketplace - Mua sắm thông minh, giá cả hợp lý',
+    unsubscribeLink: true,
+  },
+  storage: {
+    provider: 'local',
+    localPath: '/uploads',
+    s3Bucket: '',
+    s3Region: 'ap-southeast-1',
+    s3AccessKey: '',
+    s3SecretKey: '',
+    s3Endpoint: '',
+    cloudinaryCloudName: '',
+    cloudinaryApiKey: '',
+    cloudinaryApiSecret: '',
+    cdnEnabled: false,
+    cdnUrl: '',
+    imageOptimization: true,
+    imageQuality: 85,
+    thumbnailSizes: [150, 300, 600],
+    maxUploadSize: 10,
+    allowedFileTypes: [
+      'jpg',
+      'jpeg',
+      'png',
+      'gif',
+      'webp',
+      'pdf',
+      'doc',
+      'docx',
+    ],
+  },
+  backup: {
+    enabled: true,
+    frequency: 'daily',
+    time: '03:00',
+    retention: 30,
+    includeDatabase: true,
+    includeUploads: true,
+    includeLogs: false,
+    storageProvider: 'local',
+    s3Bucket: '',
+    googleDriveFolder: '',
+    encryptBackup: true,
+    notifyOnSuccess: false,
+    notifyOnFailure: true,
+    lastBackup: '2024-01-26T03:00:00Z',
+    lastBackupSize: '2.5 GB',
+    lastBackupStatus: 'success',
+  },
+  cache: {
+    enabled: true,
+    driver: 'redis',
+    redisHost: 'localhost',
+    redisPort: 6379,
+    redisPassword: '',
+    memcachedHost: 'localhost',
+    memcachedPort: 11211,
+    ttl: 3600,
+    prefix: 'chogiare_',
+    pageCache: true,
+    pageCacheTtl: 600,
+    apiCache: true,
+    apiCacheTtl: 300,
+    queryCache: true,
+    queryCacheTtl: 600,
+    staticCache: true,
+    staticCacheTtl: 86400,
+  },
+  social: {
+    facebookUrl: 'https://facebook.com/chogiare',
+    instagramUrl: 'https://instagram.com/chogiare',
+    twitterUrl: '',
+    youtubeUrl: '',
+    tiktokUrl: '',
+    zaloOA: '',
+    facebookAppId: '',
+    facebookAppSecret: '',
+    googleClientId: '',
+    googleClientSecret: '',
+    appleClientId: '',
+    appleTeamId: '',
+    socialLogin: {
+      facebook: true,
+      google: true,
+      apple: false,
+      zalo: false,
     },
-    user: {
-      maxLoginAttempts: 5,
-      lockoutDuration: 30,
-      passwordMinLength: 8,
-      requireUppercase: true,
-      requireNumber: true,
-      requireSpecialChar: false,
-      passwordExpiry: 0,
-      sessionTimeout: 24,
-      rememberMeDuration: 30,
-      emailNotifications: true,
-      smsNotifications: false,
-      pushNotifications: true,
-      twoFactorAuth: false,
-      twoFactorMethods: ['email', 'sms', 'authenticator'],
-      profileCompletion: true,
-      avatarRequired: false,
-      phoneRequired: true,
-      addressRequired: false,
-      identityVerification: false,
-      sellerVerification: true
+    socialShare: {
+      facebook: true,
+      twitter: true,
+      pinterest: true,
+      whatsapp: true,
+      zalo: true,
+      copyLink: true,
     },
-    notification: {
-      emailEnabled: true,
-      smsEnabled: false,
-      pushEnabled: true,
-      inAppEnabled: true,
-      emailFrom: 'noreply@chogiare.vn',
-      emailFromName: 'Chogiare Marketplace',
-      smsProvider: 'twilio',
-      pushProvider: 'firebase',
-      notificationQueue: true,
-      batchSize: 100,
-      retryAttempts: 3,
-      retryDelay: 300,
-      digestEnabled: true,
-      digestFrequency: 'daily',
-      templates: {
-        welcome: true,
-        orderConfirmation: true,
-        orderShipped: true,
-        orderDelivered: true,
-        passwordReset: true,
-        priceAlert: true,
-        newMessage: true
-      }
-    },
-    security: {
-      sslEnabled: true,
-      forceHttps: true,
-      corsEnabled: true,
-      corsOrigins: ['https://chogiare.vn', 'https://api.chogiare.vn'],
-      rateLimiting: true,
-      rateLimit: 100,
-      rateLimitWindow: 60,
-      apiKeyRequired: true,
-      ipWhitelist: false,
-      whitelistedIPs: [],
-      blacklistedIPs: [],
-      auditLogging: true,
-      auditRetention: 90,
-      dataEncryption: true,
-      encryptionAlgorithm: 'AES-256',
-      sessionEncryption: true,
-      cookieSecure: true,
-      cookieSameSite: 'strict',
-      csrfProtection: true,
-      xssProtection: true,
-      contentSecurityPolicy: true,
-      captchaEnabled: true,
-      captchaProvider: 'recaptcha',
-      captchaOnLogin: true,
-      captchaOnRegister: true,
-      captchaOnContact: true
-    },
-    seo: {
-      metaTitle: 'Chogiare - Mua bán trực tuyến giá rẻ',
-      metaDescription: 'Nền tảng thương mại điện tử hàng đầu Việt Nam với hàng triệu sản phẩm chất lượng, giá cả cạnh tranh.',
-      metaKeywords: 'mua bán online, thương mại điện tử, giá rẻ, chợ giá rẻ',
-      ogImage: '/og-image.jpg',
-      twitterCard: 'summary_large_image',
-      canonicalUrl: 'https://chogiare.vn',
-      robotsTxt: true,
-      sitemapEnabled: true,
-      sitemapFrequency: 'daily',
-      googleAnalytics: '',
-      googleTagManager: '',
-      facebookPixel: '',
-      structuredData: true,
-      breadcrumbs: true
-    },
-    email: {
-      provider: 'smtp',
-      smtpHost: 'smtp.gmail.com',
-      smtpPort: 587,
-      smtpSecure: true,
-      smtpUser: '',
-      smtpPassword: '',
-      sendgridApiKey: '',
-      mailgunApiKey: '',
-      mailgunDomain: '',
-      sesRegion: 'ap-southeast-1',
-      sesAccessKey: '',
-      sesSecretKey: '',
-      testEmail: '',
-      emailFooter: 'Chogiare Marketplace - Mua sắm thông minh, giá cả hợp lý',
-      unsubscribeLink: true
-    },
-    storage: {
-      provider: 'local',
-      localPath: '/uploads',
-      s3Bucket: '',
-      s3Region: 'ap-southeast-1',
-      s3AccessKey: '',
-      s3SecretKey: '',
-      s3Endpoint: '',
-      cloudinaryCloudName: '',
-      cloudinaryApiKey: '',
-      cloudinaryApiSecret: '',
-      cdnEnabled: false,
-      cdnUrl: '',
-      imageOptimization: true,
-      imageQuality: 85,
-      thumbnailSizes: [150, 300, 600],
-      maxUploadSize: 10,
-      allowedFileTypes: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'doc', 'docx']
-    },
-    backup: {
-      enabled: true,
-      frequency: 'daily',
-      time: '03:00',
-      retention: 30,
-      includeDatabase: true,
-      includeUploads: true,
-      includeLogs: false,
-      storageProvider: 'local',
-      s3Bucket: '',
-      googleDriveFolder: '',
-      encryptBackup: true,
-      notifyOnSuccess: false,
-      notifyOnFailure: true,
-      lastBackup: '2024-01-26T03:00:00Z',
-      lastBackupSize: '2.5 GB',
-      lastBackupStatus: 'success'
-    },
-    cache: {
-      enabled: true,
-      driver: 'redis',
-      redisHost: 'localhost',
-      redisPort: 6379,
-      redisPassword: '',
-      memcachedHost: 'localhost',
-      memcachedPort: 11211,
-      ttl: 3600,
-      prefix: 'chogiare_',
-      pageCache: true,
-      pageCacheTtl: 600,
-      apiCache: true,
-      apiCacheTtl: 300,
-      queryCache: true,
-      queryCacheTtl: 600,
-      staticCache: true,
-      staticCacheTtl: 86400
-    },
-    social: {
-      facebookUrl: 'https://facebook.com/chogiare',
-      instagramUrl: 'https://instagram.com/chogiare',
-      twitterUrl: '',
-      youtubeUrl: '',
-      tiktokUrl: '',
-      zaloOA: '',
-      facebookAppId: '',
-      facebookAppSecret: '',
-      googleClientId: '',
-      googleClientSecret: '',
-      appleClientId: '',
-      appleTeamId: '',
-      socialLogin: {
-        facebook: true,
-        google: true,
-        apple: false,
-        zalo: false
-      },
-      socialShare: {
-        facebook: true,
-        twitter: true,
-        pinterest: true,
-        whatsapp: true,
-        zalo: true,
-        copyLink: true
-      }
-    },
-    legal: {
-      termsOfService: '/terms',
-      privacyPolicy: '/privacy',
-      refundPolicy: '/refund-policy',
-      cookiePolicy: '/cookies',
-      gdprCompliance: true,
-      cookieConsent: true,
-      ageVerification: false,
-      minimumAge: 18,
-      taxEnabled: true,
-      taxRate: 10,
-      taxIncluded: true,
-      invoiceEnabled: true,
-      invoicePrefix: 'INV-'
-    }
-  }
+  },
+  legal: {
+    termsOfService: '/terms',
+    privacyPolicy: '/privacy',
+    refundPolicy: '/refund-policy',
+    cookiePolicy: '/cookies',
+    gdprCompliance: true,
+    cookieConsent: true,
+    ageVerification: false,
+    minimumAge: 18,
+    taxEnabled: true,
+    taxRate: 10,
+    taxIncluded: true,
+    invoiceEnabled: true,
+    invoicePrefix: 'INV-',
+  },
+}
 
 export default function SystemSettingsPage() {
   const [activeTab, setActiveTab] = useState('general')
@@ -338,7 +351,11 @@ export default function SystemSettingsPage() {
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
   // Fetch settings from API
-  const { data: apiSettings, isLoading: isLoadingSettings, refetch: refetchSettings } = useSystemSettings()
+  const {
+    data: apiSettings,
+    isLoading: isLoadingSettings,
+    refetch: refetchSettings,
+  } = useSystemSettings()
   const { data: healthData, isLoading: isLoadingHealth } = useSystemHealth()
   const updateSettingsMutation = useUpdateSettingsByCategory()
 
@@ -364,7 +381,7 @@ export default function SystemSettingsPage() {
       createdAt: '2024-01-15T10:30:00Z',
       lastUsed: '2024-01-26T14:20:00Z',
       permissions: ['payment', 'refund'],
-      rateLimit: 1000
+      rateLimit: 1000,
     },
     {
       id: '2',
@@ -375,7 +392,7 @@ export default function SystemSettingsPage() {
       createdAt: '2024-01-10T14:20:00Z',
       lastUsed: '2024-01-25T09:15:00Z',
       permissions: ['sms', 'notification'],
-      rateLimit: 500
+      rateLimit: 500,
     },
     {
       id: '3',
@@ -386,7 +403,7 @@ export default function SystemSettingsPage() {
       createdAt: '2024-01-05T09:15:00Z',
       lastUsed: '2024-01-20T16:45:00Z',
       permissions: ['email', 'notification'],
-      rateLimit: 1000
+      rateLimit: 1000,
     },
     {
       id: '4',
@@ -397,8 +414,8 @@ export default function SystemSettingsPage() {
       createdAt: '2024-01-20T11:00:00Z',
       lastUsed: '2024-01-26T16:30:00Z',
       permissions: ['read', 'write', 'delete'],
-      rateLimit: 2000
-    }
+      rateLimit: 2000,
+    },
   ]
 
   const systemLogs = [
@@ -408,7 +425,7 @@ export default function SystemSettingsPage() {
       message: 'System backup completed successfully',
       timestamp: '2024-01-26T15:30:00Z',
       source: 'backup-service',
-      details: 'Backup size: 2.5GB, Duration: 15 minutes'
+      details: 'Backup size: 2.5GB, Duration: 15 minutes',
     },
     {
       id: '2',
@@ -416,7 +433,7 @@ export default function SystemSettingsPage() {
       message: 'High memory usage detected',
       timestamp: '2024-01-26T14:45:00Z',
       source: 'monitoring',
-      details: 'Memory usage: 85%, Threshold: 80%'
+      details: 'Memory usage: 85%, Threshold: 80%',
     },
     {
       id: '3',
@@ -424,7 +441,7 @@ export default function SystemSettingsPage() {
       message: 'Payment gateway connection failed',
       timestamp: '2024-01-26T13:20:00Z',
       source: 'payment-service',
-      details: 'Connection timeout after 30 seconds'
+      details: 'Connection timeout after 30 seconds',
     },
     {
       id: '4',
@@ -432,7 +449,7 @@ export default function SystemSettingsPage() {
       message: 'Cache cleared successfully',
       timestamp: '2024-01-26T12:15:00Z',
       source: 'cache-service',
-      details: 'Cleared 1,234 cache entries'
+      details: 'Cleared 1,234 cache entries',
     },
     {
       id: '5',
@@ -440,8 +457,8 @@ export default function SystemSettingsPage() {
       message: 'SSL certificate renewed',
       timestamp: '2024-01-26T10:00:00Z',
       source: 'security-service',
-      details: 'New expiry: 2025-01-26'
-    }
+      details: 'New expiry: 2025-01-26',
+    },
   ]
 
   // Use real health data from API or fallback
@@ -456,26 +473,41 @@ export default function SystemSettingsPage() {
     nodeVersion: healthData?.nodeVersion ?? 'N/A',
     databaseSize: 'N/A',
     cacheHitRate: 0,
-    services: healthData?.services ?? { database: 'unknown', cache: 'unknown', storage: 'unknown', email: 'unknown' }
+    services: healthData?.services ?? {
+      database: 'unknown',
+      cache: 'unknown',
+      storage: 'unknown',
+      email: 'unknown',
+    },
   }
 
   const getLogLevelColor = (level: string) => {
     switch (level) {
-      case 'error': return 'bg-red-100 text-red-800'
-      case 'warning': return 'bg-yellow-100 text-yellow-800'
-      case 'info': return 'bg-blue-100 text-blue-800'
-      case 'debug': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'error':
+        return 'bg-red-100 text-red-800'
+      case 'warning':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'info':
+        return 'bg-blue-100 text-blue-800'
+      case 'debug':
+        return 'bg-gray-100 text-gray-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getLogLevelIcon = (level: string) => {
     switch (level) {
-      case 'error': return AlertTriangle
-      case 'warning': return AlertTriangle
-      case 'info': return Info
-      case 'debug': return Info
-      default: return Info
+      case 'error':
+        return AlertTriangle
+      case 'warning':
+        return AlertTriangle
+      case 'info':
+        return Info
+      case 'debug':
+        return Info
+      default:
+        return Info
     }
   }
 
@@ -485,7 +517,7 @@ export default function SystemSettingsPage() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -495,7 +527,7 @@ export default function SystemSettingsPage() {
       const categorySettings = settings[activeTab as keyof SystemSettings]
       await updateSettingsMutation.mutateAsync({
         category: activeTab,
-        settings: categorySettings
+        settings: categorySettings,
       })
       setIsEditing(false)
       toast.success('Cài đặt đã được lưu thành công!')
@@ -543,18 +575,20 @@ export default function SystemSettingsPage() {
     { id: 'legal', label: 'Pháp lý', icon: FileText },
     { id: 'api', label: 'API Keys', icon: Key },
     { id: 'logs', label: 'Logs', icon: Database },
-    { id: 'health', label: 'Sức khỏe', icon: Activity }
+    { id: 'health', label: 'Sức khỏe', icon: Activity },
   ]
 
-  const renderSettingField = (label: string, description: string, children: React.ReactNode) => (
+  const renderSettingField = (
+    label: string,
+    description: string,
+    children: React.ReactNode
+  ) => (
     <div className="flex items-start justify-between py-4 border-b last:border-b-0">
       <div className="flex-1 pr-4">
         <Label className="text-sm font-medium text-gray-900">{label}</Label>
         <p className="text-xs text-gray-500 mt-0.5">{description}</p>
       </div>
-      <div className="flex-shrink-0">
-        {children}
-      </div>
+      <div className="flex-shrink-0">{children}</div>
     </div>
   )
 
@@ -574,19 +608,30 @@ export default function SystemSettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Cài đặt hệ thống</h1>
-          <p className="text-gray-600 mt-1">Quản lý cấu hình và thiết lập hệ thống</p>
+          <p className="text-gray-600 mt-1">
+            Quản lý cấu hình và thiết lập hệ thống
+          </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={handleRefresh} disabled={isLoadingSettings}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingSettings ? 'animate-spin' : ''}`} />
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            disabled={isLoadingSettings}
+          >
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${isLoadingSettings ? 'animate-spin' : ''}`}
+            />
             Làm mới
           </Button>
           {isEditing && (
-            <Button variant="outline" onClick={() => {
-              setIsEditing(false)
-              // Reset to API data
-              if (apiSettings) setSettings(apiSettings)
-            }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsEditing(false)
+                // Reset to API data
+                if (apiSettings) setSettings(apiSettings)
+              }}
+            >
               Hủy
             </Button>
           )}
@@ -617,7 +662,7 @@ export default function SystemSettingsPage() {
       {/* Tabs */}
       <div className="overflow-x-auto">
         <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg min-w-max">
-          {tabs.map((tab) => {
+          {tabs.map(tab => {
             const Icon = tab.icon
             return (
               <button
@@ -745,20 +790,30 @@ export default function SystemSettingsPage() {
               <div className="pt-4 space-y-4">
                 <div>
                   <Label>Múi giờ</Label>
-                  <Select disabled={!isEditing} value={settings.general.timezone}>
+                  <Select
+                    disabled={!isEditing}
+                    value={settings.general.timezone}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh (GMT+7)</SelectItem>
-                      <SelectItem value="Asia/Bangkok">Asia/Bangkok (GMT+7)</SelectItem>
+                      <SelectItem value="Asia/Ho_Chi_Minh">
+                        Asia/Ho_Chi_Minh (GMT+7)
+                      </SelectItem>
+                      <SelectItem value="Asia/Bangkok">
+                        Asia/Bangkok (GMT+7)
+                      </SelectItem>
                       <SelectItem value="UTC">UTC (GMT+0)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label>Ngôn ngữ mặc định</Label>
-                  <Select disabled={!isEditing} value={settings.general.language}>
+                  <Select
+                    disabled={!isEditing}
+                    value={settings.general.language}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -778,7 +833,9 @@ export default function SystemSettingsPage() {
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
                   <div className="flex-1">
-                    <h4 className="font-medium text-yellow-800">Thông báo bảo trì</h4>
+                    <h4 className="font-medium text-yellow-800">
+                      Thông báo bảo trì
+                    </h4>
                     <Textarea
                       value={settings.general.maintenanceMessage}
                       disabled={!isEditing}
@@ -806,7 +863,10 @@ export default function SystemSettingsPage() {
             <CardContent className="space-y-4">
               <div>
                 <Label>Tiền tệ mặc định</Label>
-                <Select disabled={!isEditing} value={settings.payment.defaultCurrency}>
+                <Select
+                  disabled={!isEditing}
+                  value={settings.payment.defaultCurrency}
+                >
                   <SelectTrigger className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
@@ -828,7 +888,10 @@ export default function SystemSettingsPage() {
                 </div>
                 <div>
                   <Label>Loại hoa hồng</Label>
-                  <Select disabled={!isEditing} value={settings.payment.commissionType}>
+                  <Select
+                    disabled={!isEditing}
+                    value={settings.payment.commissionType}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -887,7 +950,9 @@ export default function SystemSettingsPage() {
                   disabled={!isEditing}
                   className="mt-1"
                 />
-                <p className="text-xs text-gray-500 mt-1">Số ngày giữ tiền trước khi thanh toán cho seller</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Số ngày giữ tiền trước khi thanh toán cho seller
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -900,20 +965,28 @@ export default function SystemSettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {Object.entries(settings.payment.paymentMethods).map(([method, enabled]) => (
-                <div key={method} className="flex items-center justify-between py-3 border-b last:border-b-0">
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="h-5 w-5 text-gray-400" />
-                    <span className="text-sm font-medium capitalize">
-                      {method === 'creditCard' ? 'Thẻ tín dụng' :
-                       method === 'bankTransfer' ? 'Chuyển khoản' :
-                       method === 'cod' ? 'COD' :
-                       method.toUpperCase()}
-                    </span>
+              {Object.entries(settings.payment.paymentMethods).map(
+                ([method, enabled]) => (
+                  <div
+                    key={method}
+                    className="flex items-center justify-between py-3 border-b last:border-b-0"
+                  >
+                    <div className="flex items-center gap-3">
+                      <CreditCard className="h-5 w-5 text-gray-400" />
+                      <span className="text-sm font-medium capitalize">
+                        {method === 'creditCard'
+                          ? 'Thẻ tín dụng'
+                          : method === 'bankTransfer'
+                            ? 'Chuyển khoản'
+                            : method === 'cod'
+                              ? 'COD'
+                              : method.toUpperCase()}
+                      </span>
+                    </div>
+                    <Switch checked={enabled} disabled={!isEditing} />
                   </div>
-                  <Switch checked={enabled} disabled={!isEditing} />
-                </div>
-              ))}
+                )
+              )}
               <div className="pt-4 space-y-4 border-t mt-4">
                 {renderSettingField(
                   'Tự động thanh toán',
@@ -926,7 +999,10 @@ export default function SystemSettingsPage() {
                 {settings.payment.autoPayoutEnabled && (
                   <div>
                     <Label>Lịch thanh toán</Label>
-                    <Select disabled={!isEditing} value={settings.payment.payoutSchedule}>
+                    <Select
+                      disabled={!isEditing}
+                      value={settings.payment.payoutSchedule}
+                    >
                       <SelectTrigger className="mt-1">
                         <SelectValue />
                       </SelectTrigger>
@@ -1221,7 +1297,10 @@ export default function SystemSettingsPage() {
                 </div>
                 <div>
                   <Label>SMS Provider</Label>
-                  <Select disabled={!isEditing} value={settings.notification.smsProvider}>
+                  <Select
+                    disabled={!isEditing}
+                    value={settings.notification.smsProvider}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -1235,7 +1314,10 @@ export default function SystemSettingsPage() {
                 </div>
                 <div>
                   <Label>Push Provider</Label>
-                  <Select disabled={!isEditing} value={settings.notification.pushProvider}>
+                  <Select
+                    disabled={!isEditing}
+                    value={settings.notification.pushProvider}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -1391,14 +1473,21 @@ export default function SystemSettingsPage() {
                 <div className="pt-2 space-y-4">
                   <div>
                     <Label>CAPTCHA Provider</Label>
-                    <Select disabled={!isEditing} value={settings.security.captchaProvider}>
+                    <Select
+                      disabled={!isEditing}
+                      value={settings.security.captchaProvider}
+                    >
                       <SelectTrigger className="mt-1">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="recaptcha">Google reCAPTCHA</SelectItem>
+                        <SelectItem value="recaptcha">
+                          Google reCAPTCHA
+                        </SelectItem>
                         <SelectItem value="hcaptcha">hCaptcha</SelectItem>
-                        <SelectItem value="turnstile">Cloudflare Turnstile</SelectItem>
+                        <SelectItem value="turnstile">
+                          Cloudflare Turnstile
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1454,7 +1543,9 @@ export default function SystemSettingsPage() {
                   disabled={!isEditing}
                   className="mt-1"
                 />
-                <p className="text-xs text-gray-500 mt-1">{settings.seo.metaTitle.length}/60 ký tự</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {settings.seo.metaTitle.length}/60 ký tự
+                </p>
               </div>
               <div>
                 <Label>Meta Description</Label>
@@ -1464,7 +1555,9 @@ export default function SystemSettingsPage() {
                   className="mt-1"
                   rows={3}
                 />
-                <p className="text-xs text-gray-500 mt-1">{settings.seo.metaDescription.length}/160 ký tự</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {settings.seo.metaDescription.length}/160 ký tự
+                </p>
               </div>
               <div>
                 <Label>Meta Keywords</Label>
@@ -1703,7 +1796,11 @@ export default function SystemSettingsPage() {
                     value={settings.email.testEmail}
                     disabled={!isEditing}
                   />
-                  <Button variant="outline" onClick={testEmail} disabled={!isEditing}>
+                  <Button
+                    variant="outline"
+                    onClick={testEmail}
+                    disabled={!isEditing}
+                  >
                     Gửi test
                   </Button>
                 </div>
@@ -1877,7 +1974,10 @@ export default function SystemSettingsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Tần suất</Label>
-                    <Select disabled={!isEditing} value={settings.backup.frequency}>
+                    <Select
+                      disabled={!isEditing}
+                      value={settings.backup.frequency}
+                    >
                       <SelectTrigger className="mt-1">
                         <SelectValue />
                       </SelectTrigger>
@@ -1950,7 +2050,9 @@ export default function SystemSettingsPage() {
                 <div className="flex items-center gap-3">
                   <Check className="h-5 w-5 text-green-600" />
                   <div>
-                    <p className="font-medium text-green-800">Backup thành công</p>
+                    <p className="font-medium text-green-800">
+                      Backup thành công
+                    </p>
                     <p className="text-sm text-green-600">
                       Lần cuối: {formatDate(settings.backup.lastBackup)}
                     </p>
@@ -2135,8 +2237,11 @@ export default function SystemSettingsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {apiKeys.map((apiKey) => (
-                <div key={apiKey.id} className="flex items-center justify-between p-4 border rounded-lg">
+              {apiKeys.map(apiKey => (
+                <div
+                  key={apiKey.id}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                       <Key className="h-5 w-5 text-blue-600" />
@@ -2145,13 +2250,19 @@ export default function SystemSettingsPage() {
                       <p className="font-medium text-gray-900">{apiKey.name}</p>
                       <div className="flex items-center gap-2 mt-1">
                         <code className="text-sm text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
-                          {showApiKey === apiKey.id ? apiKey.key : apiKey.key.substring(0, 12) + '...'}
+                          {showApiKey === apiKey.id
+                            ? apiKey.key
+                            : apiKey.key.substring(0, 12) + '...'}
                         </code>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6"
-                          onClick={() => setShowApiKey(showApiKey === apiKey.id ? null : apiKey.id)}
+                          onClick={() =>
+                            setShowApiKey(
+                              showApiKey === apiKey.id ? null : apiKey.id
+                            )
+                          }
                         >
                           {showApiKey === apiKey.id ? (
                             <EyeOff className="h-3 w-3" />
@@ -2177,7 +2288,11 @@ export default function SystemSettingsPage() {
                           {apiKey.type}
                         </Badge>
                         <Badge
-                          className={apiKey.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}
+                          className={
+                            apiKey.status === 'active'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }
                         >
                           {apiKey.status}
                         </Badge>
@@ -2236,11 +2351,16 @@ export default function SystemSettingsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {systemLogs.map((log) => {
+              {systemLogs.map(log => {
                 const Icon = getLogLevelIcon(log.level)
                 return (
-                  <div key={log.id} className="flex items-start gap-4 p-4 border rounded-lg">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getLogLevelColor(log.level)}`}>
+                  <div
+                    key={log.id}
+                    className="flex items-start gap-4 p-4 border rounded-lg"
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center ${getLogLevelColor(log.level)}`}
+                    >
                       <Icon className="h-4 w-4" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -2248,11 +2368,17 @@ export default function SystemSettingsPage() {
                         <Badge className={getLogLevelColor(log.level)}>
                           {log.level.toUpperCase()}
                         </Badge>
-                        <span className="text-sm text-gray-500">{log.source}</span>
-                        <span className="text-sm text-gray-500">{formatDate(log.timestamp)}</span>
+                        <span className="text-sm text-gray-500">
+                          {log.source}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {formatDate(log.timestamp)}
+                        </span>
                       </div>
                       <p className="font-medium text-gray-900">{log.message}</p>
-                      <p className="text-sm text-gray-500 mt-1">{log.details}</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {log.details}
+                      </p>
                     </div>
                   </div>
                 )
@@ -2276,7 +2402,9 @@ export default function SystemSettingsPage() {
               <div>
                 <div className="flex justify-between mb-2">
                   <span className="text-sm text-gray-600">CPU</span>
-                  <span className="text-sm font-medium">{systemHealth.cpu}%</span>
+                  <span className="text-sm font-medium">
+                    {systemHealth.cpu}%
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -2288,7 +2416,9 @@ export default function SystemSettingsPage() {
               <div>
                 <div className="flex justify-between mb-2">
                   <span className="text-sm text-gray-600">Memory</span>
-                  <span className="text-sm font-medium">{systemHealth.memory}%</span>
+                  <span className="text-sm font-medium">
+                    {systemHealth.memory}%
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -2300,7 +2430,9 @@ export default function SystemSettingsPage() {
               <div>
                 <div className="flex justify-between mb-2">
                   <span className="text-sm text-gray-600">Disk</span>
-                  <span className="text-sm font-medium">{systemHealth.disk}%</span>
+                  <span className="text-sm font-medium">
+                    {systemHealth.disk}%
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -2322,11 +2454,15 @@ export default function SystemSettingsPage() {
             <CardContent className="space-y-4">
               <div className="flex justify-between">
                 <span className="text-gray-600">Uptime</span>
-                <span className="font-medium text-green-600">{systemHealth.uptime}</span>
+                <span className="font-medium text-green-600">
+                  {systemHealth.uptime}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Last Restart</span>
-                <span className="font-medium">{formatDate(systemHealth.lastRestart)}</span>
+                <span className="font-medium">
+                  {formatDate(systemHealth.lastRestart)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">App Version</span>
@@ -2357,10 +2493,16 @@ export default function SystemSettingsPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Cache Hit Rate</span>
-                <span className="font-medium text-green-600">{systemHealth.cacheHitRate}%</span>
+                <span className="font-medium text-green-600">
+                  {systemHealth.cacheHitRate}%
+                </span>
               </div>
               <div className="pt-4 border-t space-y-2">
-                <Button variant="outline" className="w-full" onClick={clearCache}>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={clearCache}
+                >
                   <RotateCcw className="h-4 w-4 mr-2" />
                   Clear Cache
                 </Button>

@@ -3,13 +3,34 @@ import { useNavigate } from 'react-router-dom'
 import { useDropzone } from 'react-dropzone'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
 import { Progress } from '@shared/components/ui/progress'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@shared/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@shared/components/ui/table'
 import { Alert, AlertDescription } from '@shared/components/ui/alert'
-import { Upload, FileSpreadsheet, FileText, CheckCircle, AlertCircle, Download, ArrowLeft } from 'lucide-react'
+import {
+  Upload,
+  FileSpreadsheet,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  Download,
+  ArrowLeft,
+} from 'lucide-react'
 import { useNotification } from '@shared/components/notification-provider'
 import * as XLSX from 'xlsx'
 import { useCreateProduct } from '@/hooks/useProducts'
@@ -32,31 +53,36 @@ export default function ImportProductsPage() {
   const navigate = useNavigate()
   const { notify } = useNotification()
   const createProduct = useCreateProduct()
-  
+
   const [parsedProducts, setParsedProducts] = useState<ParsedProduct[]>([])
   const [previewData, setPreviewData] = useState<ParsedProduct[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [importProgress, setImportProgress] = useState(0)
-  const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [importStatus, setImportStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle')
   const [errors, setErrors] = useState<string[]>([])
   const [successCount, setSuccessCount] = useState(0)
 
   const parseExcel = useCallback((file: File): Promise<ParsedProduct[]> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
-      
-      reader.onload = (e) => {
+
+      reader.onload = e => {
         try {
           const data = e.target?.result
           const workbook = XLSX.read(data, { type: 'binary' })
-          
+
           // Get first sheet
           const firstSheetName = workbook.SheetNames[0]
           const worksheet = workbook.Sheets[firstSheetName]
-          
+
           // Convert to JSON
-          const jsonData = XLSX.utils.sheet_to_json(worksheet) as Record<string, unknown>[]
-          
+          const jsonData = XLSX.utils.sheet_to_json(worksheet) as Record<
+            string,
+            unknown
+          >[]
+
           const products: ParsedProduct[] = []
           const parseErrors: string[] = []
 
@@ -65,25 +91,54 @@ export default function ImportProductsPage() {
               const product: ParsedProduct = {
                 title: (row.title as string) || (row.name as string) || '',
                 description: (row.description as string) || '',
-                price: typeof row.price === 'number' ? row.price : parseFloat(String(row.price || '0')) || 0,
-                originalPrice: row.originalPrice ? (typeof row.originalPrice === 'number' ? row.originalPrice : parseFloat(String(row.originalPrice)) || undefined) : undefined,
-                stock: typeof row.stock === 'number' ? row.stock : parseInt(String(row.stock || '1')) || 1,
+                price:
+                  typeof row.price === 'number'
+                    ? row.price
+                    : parseFloat(String(row.price || '0')) || 0,
+                originalPrice: row.originalPrice
+                  ? typeof row.originalPrice === 'number'
+                    ? row.originalPrice
+                    : parseFloat(String(row.originalPrice)) || undefined
+                  : undefined,
+                stock:
+                  typeof row.stock === 'number'
+                    ? row.stock
+                    : parseInt(String(row.stock || '1')) || 1,
                 categoryId: String(row.categoryId || '1'),
-                images: row.images ? String(row.images).split(',').map((img: string) => img.trim()).filter(Boolean) : [],
-                condition: ((row.condition as string) || 'new') as 'new' | 'like_new' | 'good' | 'fair' | 'poor',
-                tags: row.tags ? String(row.tags).split(',').map((tag: string) => tag.trim()).filter(Boolean) : [],
+                images: row.images
+                  ? String(row.images)
+                      .split(',')
+                      .map((img: string) => img.trim())
+                      .filter(Boolean)
+                  : [],
+                condition: ((row.condition as string) || 'new') as
+                  | 'new'
+                  | 'like_new'
+                  | 'good'
+                  | 'fair'
+                  | 'poor',
+                tags: row.tags
+                  ? String(row.tags)
+                      .split(',')
+                      .map((tag: string) => tag.trim())
+                      .filter(Boolean)
+                  : [],
                 location: (row.location as string) || 'Hà Nội',
               }
 
               // Validate required fields
               if (!product.title || product.price <= 0) {
-                parseErrors.push(`Dòng ${index + 2}: Thiếu tên sản phẩm hoặc giá không hợp lệ`)
+                parseErrors.push(
+                  `Dòng ${index + 2}: Thiếu tên sản phẩm hoặc giá không hợp lệ`
+                )
                 return
               }
 
               products.push(product)
             } catch (error) {
-              parseErrors.push(`Dòng ${index + 2}: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`)
+              parseErrors.push(
+                `Dòng ${index + 2}: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`
+              )
             }
           })
 
@@ -92,13 +147,21 @@ export default function ImportProductsPage() {
           }
 
           if (products.length === 0) {
-            reject(new Error('Không tìm thấy sản phẩm nào trong file. Vui lòng kiểm tra lại file Excel.'))
+            reject(
+              new Error(
+                'Không tìm thấy sản phẩm nào trong file. Vui lòng kiểm tra lại file Excel.'
+              )
+            )
             return
           }
 
           resolve(products)
         } catch (error) {
-          reject(new Error(`Lỗi đọc file Excel: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`))
+          reject(
+            new Error(
+              `Lỗi đọc file Excel: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`
+            )
+          )
         }
       }
 
@@ -110,48 +173,56 @@ export default function ImportProductsPage() {
     })
   }, [])
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0]
-    if (!file) return
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0]
+      if (!file) return
 
-    setIsProcessing(true)
-    setErrors([])
-    setImportStatus('idle')
-    setParsedProducts([])
-    setPreviewData([])
+      setIsProcessing(true)
+      setErrors([])
+      setImportStatus('idle')
+      setParsedProducts([])
+      setPreviewData([])
 
-    try {
-      if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
-        throw new Error('Chỉ hỗ trợ file Excel (.xlsx, .xls). Vui lòng chọn file Excel.')
+      try {
+        if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+          throw new Error(
+            'Chỉ hỗ trợ file Excel (.xlsx, .xls). Vui lòng chọn file Excel.'
+          )
+        }
+
+        const products = await parseExcel(file)
+
+        setParsedProducts(products)
+        setPreviewData(products.slice(0, 10))
+
+        notify({
+          type: 'success',
+          title: 'Phân tích file thành công',
+          message: `Đã tìm thấy ${products.length} sản phẩm. Vui lòng kiểm tra và xác nhận import.`,
+        })
+      } catch (error) {
+        notify({
+          type: 'error',
+          title: 'Lỗi phân tích file',
+          message:
+            error instanceof Error ? error.message : 'Không thể đọc file.',
+        })
+        setImportStatus('error')
+      } finally {
+        setIsProcessing(false)
       }
-
-      const products = await parseExcel(file)
-
-      setParsedProducts(products)
-      setPreviewData(products.slice(0, 10))
-      
-      notify({
-        type: 'success',
-        title: 'Phân tích file thành công',
-        message: `Đã tìm thấy ${products.length} sản phẩm. Vui lòng kiểm tra và xác nhận import.`,
-      })
-    } catch (error) {
-      notify({
-        type: 'error',
-        title: 'Lỗi phân tích file',
-        message: error instanceof Error ? error.message : 'Không thể đọc file.',
-      })
-      setImportStatus('error')
-    } finally {
-      setIsProcessing(false)
-    }
-  }, [parseExcel, notify])
+    },
+    [parseExcel, notify]
+  )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
       'application/vnd.ms-excel': ['.xls'],
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [
+        '.xlsx',
+      ],
     },
     multiple: false,
   })
@@ -172,7 +243,7 @@ export default function ImportProductsPage() {
     try {
       for (let i = 0; i < parsedProducts.length; i++) {
         const product = parsedProducts[i]
-        
+
         try {
           // Convert to Product type
           const productData = {
@@ -181,8 +252,12 @@ export default function ImportProductsPage() {
             price: product.price,
             originalPrice: product.originalPrice,
             stock: product.stock,
-            categoryId: typeof product.categoryId === 'string' ? parseInt(product.categoryId, 10) : product.categoryId,
-            images: product.images.length > 0 ? product.images : [PLACEHOLDER_IMAGE],
+            categoryId:
+              typeof product.categoryId === 'string'
+                ? parseInt(product.categoryId, 10)
+                : product.categoryId,
+            images:
+              product.images.length > 0 ? product.images : [PLACEHOLDER_IMAGE],
             condition: product.condition,
             tags: product.tags,
             location: product.location,
@@ -200,7 +275,9 @@ export default function ImportProductsPage() {
           success++
           setSuccessCount(success)
         } catch (error) {
-          failed.push(`${product.title}: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`)
+          failed.push(
+            `${product.title}: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`
+          )
         }
 
         setImportProgress(((i + 1) / total) * 100)
@@ -213,7 +290,7 @@ export default function ImportProductsPage() {
           title: 'Import thành công',
           message: `Đã import ${success}/${total} sản phẩm thành công.`,
         })
-        
+
         // Reset after 3 seconds
         setTimeout(() => {
           setParsedProducts([])
@@ -233,7 +310,10 @@ export default function ImportProductsPage() {
       notify({
         type: 'error',
         title: 'Import thất bại',
-        message: error instanceof Error ? error.message : 'Có lỗi xảy ra khi import sản phẩm.',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Có lỗi xảy ra khi import sản phẩm.',
       })
     } finally {
       setIsProcessing(false)
@@ -253,7 +333,7 @@ export default function ImportProductsPage() {
         condition: 'new',
         location: 'Hà Nội',
         tags: 'smartphone,iphone',
-        images: 'https://example.com/image1.jpg'
+        images: 'https://example.com/image1.jpg',
       },
       {
         title: 'Samsung Galaxy S23 Ultra',
@@ -265,8 +345,8 @@ export default function ImportProductsPage() {
         condition: 'new',
         location: 'TP.HCM',
         tags: 'smartphone,samsung',
-        images: 'https://example.com/image2.jpg'
-      }
+        images: 'https://example.com/image2.jpg',
+      },
     ]
 
     // Create workbook
@@ -283,13 +363,20 @@ export default function ImportProductsPage() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-6">
-          <Button variant="ghost" onClick={() => navigate('/seller/products')} className="mb-4">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/seller/products')}
+            className="mb-4"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Quay lại
           </Button>
-          <h1 className="text-3xl font-bold mb-2">Import sản phẩm từ file Excel</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            Import sản phẩm từ file Excel
+          </h1>
           <p className="text-muted-foreground">
-            Upload file Excel (.xlsx, .xls) để import hàng loạt sản phẩm vào hệ thống
+            Upload file Excel (.xlsx, .xls) để import hàng loạt sản phẩm vào hệ
+            thống
           </p>
         </div>
 
@@ -300,7 +387,8 @@ export default function ImportProductsPage() {
               <CardHeader>
                 <CardTitle>Upload file Excel</CardTitle>
                 <CardDescription>
-                  Hỗ trợ định dạng: XLS, XLSX. File phải có header row (dòng đầu tiên chứa tên cột).
+                  Hỗ trợ định dạng: XLS, XLSX. File phải có header row (dòng đầu
+                  tiên chứa tên cột).
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -316,7 +404,9 @@ export default function ImportProductsPage() {
                   {isProcessing ? (
                     <div className="space-y-4">
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                      <p className="text-muted-foreground">Đang xử lý file...</p>
+                      <p className="text-muted-foreground">
+                        Đang xử lý file...
+                      </p>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -327,13 +417,18 @@ export default function ImportProductsPage() {
                       </div>
                       <div>
                         <p className="font-medium mb-1">
-                          {isDragActive ? 'Thả file vào đây' : 'Kéo thả file vào đây hoặc click để chọn'}
+                          {isDragActive
+                            ? 'Thả file vào đây'
+                            : 'Kéo thả file vào đây hoặc click để chọn'}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Chỉ hỗ trợ file Excel (.xlsx, .xls) - tối đa 10MB
                         </p>
                       </div>
-                      <Button variant="outline" onClick={(e) => e.stopPropagation()}>
+                      <Button
+                        variant="outline"
+                        onClick={e => e.stopPropagation()}
+                      >
                         Chọn file
                       </Button>
                     </div>
@@ -341,7 +436,11 @@ export default function ImportProductsPage() {
                 </div>
 
                 <div className="mt-4 flex items-center justify-between">
-                  <Button variant="outline" onClick={downloadTemplate} className="text-sm">
+                  <Button
+                    variant="outline"
+                    onClick={downloadTemplate}
+                    className="text-sm"
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Tải mẫu file Excel
                   </Button>
@@ -358,9 +457,12 @@ export default function ImportProductsPage() {
             {previewData.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Xem trước ({previewData.length}/{parsedProducts.length})</CardTitle>
+                  <CardTitle>
+                    Xem trước ({previewData.length}/{parsedProducts.length})
+                  </CardTitle>
                   <CardDescription>
-                    Kiểm tra dữ liệu trước khi import. Chỉ hiển thị 10 sản phẩm đầu tiên.
+                    Kiểm tra dữ liệu trước khi import. Chỉ hiển thị 10 sản phẩm
+                    đầu tiên.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -378,11 +480,17 @@ export default function ImportProductsPage() {
                       <TableBody>
                         {previewData.map((product, index) => (
                           <TableRow key={index}>
-                            <TableCell className="font-medium">{product.title}</TableCell>
-                            <TableCell>{product.price.toLocaleString('vi-VN')} VNĐ</TableCell>
+                            <TableCell className="font-medium">
+                              {product.title}
+                            </TableCell>
+                            <TableCell>
+                              {product.price.toLocaleString('vi-VN')} VNĐ
+                            </TableCell>
                             <TableCell>{product.stock}</TableCell>
                             <TableCell>
-                              <Badge variant="outline">{product.condition}</Badge>
+                              <Badge variant="outline">
+                                {product.condition}
+                              </Badge>
                             </TableCell>
                             <TableCell>{product.location}</TableCell>
                           </TableRow>
@@ -404,7 +512,9 @@ export default function ImportProductsPage() {
                     {errors.slice(0, 10).map((error, index) => (
                       <li key={index}>{error}</li>
                     ))}
-                    {errors.length > 10 && <li>... và {errors.length - 10} lỗi khác</li>}
+                    {errors.length > 10 && (
+                      <li>... và {errors.length - 10} lỗi khác</li>
+                    )}
                   </ul>
                 </AlertDescription>
               </Alert>
@@ -417,7 +527,9 @@ export default function ImportProductsPage() {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Đang import...</span>
-                      <span>{successCount}/{parsedProducts.length}</span>
+                      <span>
+                        {successCount}/{parsedProducts.length}
+                      </span>
                     </div>
                     <Progress value={importProgress} />
                   </div>
@@ -426,12 +538,14 @@ export default function ImportProductsPage() {
             )}
 
             {/* Import Button */}
-            {parsedProducts.length > 0 && !isProcessing && importStatus !== 'success' && (
-              <Button onClick={handleImport} className="w-full" size="lg">
-                <FileSpreadsheet className="h-5 w-5 mr-2" />
-                Import {parsedProducts.length} sản phẩm
-              </Button>
-            )}
+            {parsedProducts.length > 0 &&
+              !isProcessing &&
+              importStatus !== 'success' && (
+                <Button onClick={handleImport} className="w-full" size="lg">
+                  <FileSpreadsheet className="h-5 w-5 mr-2" />
+                  Import {parsedProducts.length} sản phẩm
+                </Button>
+              )}
 
             {importStatus === 'success' && (
               <Alert>
@@ -496,4 +610,3 @@ export default function ImportProductsPage() {
     </div>
   )
 }
-

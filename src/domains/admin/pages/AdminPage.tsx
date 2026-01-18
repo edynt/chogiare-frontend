@@ -25,11 +25,17 @@ export default function AdminPage() {
         <Route path="/users" element={<UserManagementPage />} />
         <Route path="/users/:id" element={<UserDetailPage />} />
         <Route path="/products" element={<ProductModerationPage />} />
-        <Route path="/products/category/:categoryId" element={<CategoryProductsPage />} />
+        <Route
+          path="/products/category/:categoryId"
+          element={<CategoryProductsPage />}
+        />
         <Route path="/orders" element={<OrderManagementPage />} />
         <Route path="/categories" element={<CategoryManagementPage />} />
         <Route path="/subscriptions" element={<PackagesManagementPage />} />
-        <Route path="/deposit-packages" element={<DepositPackagesManagementPage />} />
+        <Route
+          path="/deposit-packages"
+          element={<DepositPackagesManagementPage />}
+        />
         <Route path="/reports" element={<ReportsAnalyticsPage />} />
         <Route path="/cms" element={<ContentManagementPage />} />
         <Route path="/support" element={<CustomerSupportPage />} />

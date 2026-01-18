@@ -22,9 +22,14 @@ const REFRESH_FAILURE_KEY = 'auth_refresh_failed'
 export function UserAuthProvider({ children }: UserAuthProviderProps) {
   const { setUser, setLoading, setError, isAuthenticated } = useAuthStore()
 
-  const refreshJustFailed = sessionStorage.getItem(REFRESH_FAILURE_KEY) === '/auth/login'
+  const refreshJustFailed =
+    sessionStorage.getItem(REFRESH_FAILURE_KEY) === '/auth/login'
 
-  const { data: profile, error, isLoading } = useUserProfile({
+  const {
+    data: profile,
+    error,
+    isLoading,
+  } = useUserProfile({
     enabled: !refreshJustFailed, // Disable profile fetch if refresh just failed
   })
   const errorHandled = useRef(false)

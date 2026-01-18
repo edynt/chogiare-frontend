@@ -106,7 +106,8 @@ export function FileUpload({
                 : 'Kéo thả file vào đây hoặc click để chọn'}
             </p>
             <p className="text-sm text-muted-foreground">
-              Tối đa {maxFiles} file, mỗi file không quá {formatFileSize(maxSize)}
+              Tối đa {maxFiles} file, mỗi file không quá{' '}
+              {formatFileSize(maxSize)}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               Hỗ trợ: {Object.keys(accept).join(', ')}
@@ -119,7 +120,7 @@ export function FileUpload({
       {uploadedFiles.length > 0 && (
         <div className="space-y-2">
           <h4 className="text-sm font-medium">Files đã upload:</h4>
-          {uploadedFiles.map((uploadedFile) => (
+          {uploadedFiles.map(uploadedFile => (
             <Card key={uploadedFile.id} className="p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -131,14 +132,18 @@ export function FileUpload({
                     <p className="text-xs text-muted-foreground">
                       {formatFileSize(uploadedFile.file.size)}
                     </p>
-                    {uploadedFile.status === 'uploading' && uploadedFile.progress !== undefined && (
-                      <div className="mt-2">
-                        <Progress value={uploadedFile.progress} className="h-1" />
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {uploadedFile.progress}%
-                        </p>
-                      </div>
-                    )}
+                    {uploadedFile.status === 'uploading' &&
+                      uploadedFile.progress !== undefined && (
+                        <div className="mt-2">
+                          <Progress
+                            value={uploadedFile.progress}
+                            className="h-1"
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {uploadedFile.progress}%
+                          </p>
+                        </div>
+                      )}
                     {uploadedFile.status === 'error' && uploadedFile.error && (
                       <p className="text-xs text-destructive mt-1">
                         {uploadedFile.error}

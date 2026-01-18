@@ -10,10 +10,10 @@ interface ProtectedRouteProps {
   redirectTo?: string
 }
 
-export function ProtectedRoute({ 
-  children, 
-  requiredRole, 
-  redirectTo 
+export function ProtectedRoute({
+  children,
+  requiredRole,
+  redirectTo,
 }: ProtectedRouteProps) {
   const { isAuthenticated, user, isLoading } = useAuthStore()
   const location = useLocation()

@@ -19,7 +19,8 @@ export function Footer() {
               </span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Nền tảng mua sỉ hàng đầu, kết nối người mua và người bán một cách an toàn và tiện lợi.
+              Nền tảng mua sỉ hàng đầu, kết nối người mua và người bán một cách
+              an toàn và tiện lợi.
             </p>
           </div>
 
@@ -28,12 +29,18 @@ export function Footer() {
             <h3 className="font-semibold">Liên kết nhanh</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   Trang chủ
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  to="/dashboard"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   Dashboard Seller
                 </Link>
               </li>
@@ -45,22 +52,34 @@ export function Footer() {
             <h3 className="font-semibold">Dịch vụ</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/seller/products" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  to="/seller/products"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   Quản lý sản phẩm
                 </Link>
               </li>
               <li>
-                <Link to="/inventory" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  to="/inventory"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   Quản lý kho
                 </Link>
               </li>
               <li>
-                <Link to="/chat" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  to="/chat"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   Tin nhắn
                 </Link>
               </li>
               <li>
-                <Link to="/seller/notifications" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  to="/seller/notifications"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   Thông báo
                 </Link>
               </li>
@@ -84,10 +103,16 @@ export function Footer() {
               © 2024 {APP_NAME}. Tất cả quyền được bảo lưu.
             </p>
             <div className="flex space-x-4 mt-4 md:mt-0">
-              <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link
+                to="/privacy"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
                 Chính sách bảo mật
               </Link>
-              <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link
+                to="/terms"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
                 Điều khoản sử dụng
               </Link>
             </div>

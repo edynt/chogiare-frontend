@@ -1,4 +1,9 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, type AxiosError } from 'axios'
+import axios, {
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+  type AxiosError,
+} from 'axios'
 import type { AuthTokens } from '@/types'
 
 // Error messages mapping for user-friendly display
@@ -6,7 +11,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   'invalid credentials': 'Email hoặc mật khẩu không chính xác',
   'invalid email or password': 'Email hoặc mật khẩu không chính xác',
   'user not found': 'Tài khoản không tồn tại',
-  'email not verified': 'Email chưa được xác minh. Vui lòng kiểm tra hộp thư của bạn',
+  'email not verified':
+    'Email chưa được xác minh. Vui lòng kiểm tra hộp thư của bạn',
   'account disabled': 'Tài khoản đã bị vô hiệu hóa',
   'account locked': 'Tài khoản đã bị khóa. Vui lòng liên hệ hỗ trợ',
   'too many attempts': 'Quá nhiều lần thử. Vui lòng thử lại sau',
@@ -115,7 +121,7 @@ export function parseApiError(error: unknown): string {
 // Session storage keys for tracking refresh failures
 const REFRESH_FAILURE_KEY = 'auth_refresh_failed'
 const REFRESH_FAILURE_TIMESTAMP_KEY = 'auth_refresh_failed_timestamp'
-const REFRESH_COOLDOWN_MS = 5000 
+const REFRESH_COOLDOWN_MS = 5000
 
 class ApiClient {
   private client: AxiosInstance
@@ -126,7 +132,7 @@ class ApiClient {
   constructor() {
     this.client = axios.create({
       baseURL: import.meta.env['VITE_API_URL'] || '/api',
-      timeout: 30000, 
+      timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -141,7 +147,9 @@ class ApiClient {
    * Returns true if in cooldown, false if can attempt refresh
    */
   private isInRefreshCooldown(): boolean {
-    const failedTimestamp = sessionStorage.getItem(REFRESH_FAILURE_TIMESTAMP_KEY)
+    const failedTimestamp = sessionStorage.getItem(
+      REFRESH_FAILURE_TIMESTAMP_KEY
+    )
     if (!failedTimestamp) return false
 
     const elapsed = Date.now() - parseInt(failedTimestamp, 10)
@@ -168,18 +176,18 @@ class ApiClient {
   private setupInterceptors(): void {
     // Request interceptor - cookies handle auth automatically via withCredentials
     this.client.interceptors.request.use(
-      (config) => {
+      config => {
         // Cookies (accessToken, refreshToken) are sent automatically with withCredentials: true
         // No need to manually set Authorization header
         return config
       },
-      (error) => Promise.reject(error)
+      error => Promise.reject(error)
     )
 
     // Response interceptor to handle 401 errors
     this.client.interceptors.response.use(
-      (response) => response,
-      async (error) => {
+      response => response,
+      async error => {
         const originalRequest = error.config
         const requestUrl = originalRequest?.url || ''
 
@@ -197,9 +205,15 @@ class ApiClient {
           '/auth/refresh',
           '/admin/login',
         ]
-        const isAuthEndpoint = authEndpoints.some(endpoint => requestUrl.includes(endpoint))
+        const isAuthEndpoint = authEndpoints.some(endpoint =>
+          requestUrl.includes(endpoint)
+        )
 
-        if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+        if (
+          error.response?.status === 401 &&
+          !originalRequest._retry &&
+          !isAuthEndpoint
+        ) {
           const isAuthPage =
             window.location.pathname.startsWith('/auth/') ||
             window.location.pathname === '/admin/login'
@@ -213,7 +227,9 @@ class ApiClient {
             if (!isAuthPage) {
               window.location.href = loginUrl
             }
-            return Promise.reject(new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại'))
+            return Promise.reject(
+              new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại')
+            )
           }
 
           // Try token refresh with cookies
@@ -233,7 +249,7 @@ class ApiClient {
             await this.refreshAccessToken()
             // Refresh succeeded - clear failure flags
             this.clearRefreshFailureFlags()
-            this.refreshSubscribers.forEach((callback) => callback())
+            this.refreshSubscribers.forEach(callback => callback())
             this.refreshSubscribers = []
             return this.client(originalRequest)
           } catch (refreshError) {
@@ -275,11 +291,7 @@ class ApiClient {
     try {
       const baseURL = import.meta.env['VITE_API_URL'] || '/api'
       // The refresh token is sent automatically via cookies (withCredentials: true)
-      await axios.post(
-        `${baseURL}/auth/refresh`,
-        {},
-        { withCredentials: true }
-      )
+      await axios.post(`${baseURL}/auth/refresh`, {}, { withCredentials: true })
       // New tokens are set as cookies by the server
     } catch (error) {
       throw new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại')
@@ -287,23 +299,41 @@ class ApiClient {
   }
 
   // Public methods
-  async get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  async get<T = unknown>(
+    url: string,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.client.get<T>(url, config)
   }
 
-  async post<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  async post<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.client.post<T>(url, data, config)
   }
 
-  async put<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  async put<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.client.put<T>(url, data, config)
   }
 
-  async patch<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  async patch<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.client.patch<T>(url, data, config)
   }
 
-  async delete<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  async delete<T = unknown>(
+    url: string,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.client.delete<T>(url, config)
   }
 

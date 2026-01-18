@@ -81,10 +81,13 @@ interface ErrorMessageProps {
 }
 
 export function ErrorMessage({ error, onRetry, className }: ErrorMessageProps) {
-  const errorMessage = typeof error === 'string' ? error : error?.message || 'Đã xảy ra lỗi'
+  const errorMessage =
+    typeof error === 'string' ? error : error?.message || 'Đã xảy ra lỗi'
 
   return (
-    <div className={`flex flex-col items-center justify-center p-8 text-center ${className}`}>
+    <div
+      className={`flex flex-col items-center justify-center p-8 text-center ${className}`}
+    >
       <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
       <h3 className="text-lg font-semibold mb-2">Đã xảy ra lỗi</h3>
       <p className="text-muted-foreground mb-4">{errorMessage}</p>

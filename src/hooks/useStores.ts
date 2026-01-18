@@ -27,7 +27,10 @@ export const useUserStore = () => {
   })
 }
 
-export const useSearchStores = (query: string, filters?: { page?: number; pageSize?: number }) => {
+export const useSearchStores = (
+  query: string,
+  filters?: { page?: number; pageSize?: number }
+) => {
   return useQuery({
     queryKey: ['stores', 'search', query, filters],
     queryFn: () => storesApi.searchStores(query, filters),

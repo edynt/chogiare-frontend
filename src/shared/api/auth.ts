@@ -1,5 +1,12 @@
 import { apiClient, parseApiError } from './axios'
-import type { LoginCredentials, RegisterData, AuthTokens, User, UserRole, ApiResponse } from '@/types'
+import type {
+  LoginCredentials,
+  RegisterData,
+  AuthTokens,
+  User,
+  UserRole,
+  ApiResponse,
+} from '@/types'
 
 // Helper to wrap API calls with proper error handling
 async function withErrorHandling<T>(apiCall: () => Promise<T>): Promise<T> {
@@ -9,68 +16,86 @@ async function withErrorHandling<T>(apiCall: () => Promise<T>): Promise<T> {
     const message = parseApiError(error)
     const customError = new Error(message) as any
     // Preserve error code if available
-    if (error?.response?.data?.error?.code || error?.response?.data?.errorCode) {
-      customError.code = error.response.data.error?.code || error.response.data.errorCode
+    if (
+      error?.response?.data?.error?.code ||
+      error?.response?.data?.errorCode
+    ) {
+      customError.code =
+        error.response.data.error?.code || error.response.data.errorCode
     }
     throw customError
   }
 }
 
 export const authApi = {
-  login: async (credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> => {
+  login: async (
+    credentials: LoginCredentials
+  ): Promise<{ user: User; tokens: AuthTokens }> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens; roles?: string[]; roleIds?: number[] }>>(
-        '/auth/login',
-        credentials
-      )
+      const response = await apiClient.post<
+        ApiResponse<{
+          user: User
+          tokens: AuthTokens
+          roles?: string[]
+          roleIds?: number[]
+        }>
+      >('/auth/login', credentials)
       const data = response.data.data
       const userWithRoles = {
         ...data.user,
         roles: (data.roles || []) as UserRole[],
-        roleIds: data.roleIds || []
+        roleIds: data.roleIds || [],
       }
       return {
         user: userWithRoles,
-        tokens: data.tokens
+        tokens: data.tokens,
       }
     })
   },
 
-  adminLogin: async (credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> => {
+  adminLogin: async (
+    credentials: LoginCredentials
+  ): Promise<{ user: User; tokens: AuthTokens }> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens; roles?: string[]; roleIds?: number[] }>>(
-        '/auth/admin/login',
-        credentials
-      )
+      const response = await apiClient.post<
+        ApiResponse<{
+          user: User
+          tokens: AuthTokens
+          roles?: string[]
+          roleIds?: number[]
+        }>
+      >('/auth/admin/login', credentials)
       const data = response.data.data
       const userWithRoles = {
         ...data.user,
         roles: (data.roles || []) as UserRole[],
-        roleIds: data.roleIds || []
+        roleIds: data.roleIds || [],
       }
       return {
         user: userWithRoles,
-        tokens: data.tokens
+        tokens: data.tokens,
       }
     })
   },
 
-  register: async (data: RegisterData): Promise<{ message: string; email: string }> => {
+  register: async (
+    data: RegisterData
+  ): Promise<{ message: string; email: string }> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.post<ApiResponse<{ message: string; email: string }>>(
-        '/auth/register',
-        data
-      )
+      const response = await apiClient.post<
+        ApiResponse<{ message: string; email: string }>
+      >('/auth/register', data)
       return response.data.data
     })
   },
 
-  verifyEmail: async (code: string): Promise<{ user: User; tokens: AuthTokens }> => {
+  verifyEmail: async (
+    code: string
+  ): Promise<{ user: User; tokens: AuthTokens }> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
-        '/auth/verify-email',
-        { code }
-      )
+      const response = await apiClient.post<
+        ApiResponse<{ user: User; tokens: AuthTokens }>
+      >('/auth/verify-email', { code })
       return response.data.data
     })
   },
@@ -122,31 +147,36 @@ export const authApi = {
 
   resetPassword: async (token: string, password: string): Promise<void> => {
     return withErrorHandling(async () => {
-      await apiClient.post('/auth/reset-password', { resetToken: token, newPassword: password })
+      await apiClient.post('/auth/reset-password', {
+        resetToken: token,
+        newPassword: password,
+      })
     })
   },
 
   getProfile: async (): Promise<User> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.get<ApiResponse<{
-        id: number
-        email: string
-        isVerified: boolean
-        status: boolean
-        language: string
-        userInfo: {
-          fullName: string | null
-          avatarUrl: string | null
-          gender: string | null
-          dateOfBirth: string | null
-          phoneNumber: string | null
-          address: string | null
-          country: string | null
-          showEmail: boolean
-          showPhone: boolean
-        } | null
-        roles: string[]
-      }>>('/auth/profile')
+      const response = await apiClient.get<
+        ApiResponse<{
+          id: number
+          email: string
+          isVerified: boolean
+          status: boolean
+          language: string
+          userInfo: {
+            fullName: string | null
+            avatarUrl: string | null
+            gender: string | null
+            dateOfBirth: string | null
+            phoneNumber: string | null
+            address: string | null
+            country: string | null
+            showEmail: boolean
+            showPhone: boolean
+          } | null
+          roles: string[]
+        }>
+      >('/auth/profile')
       const data = response.data.data
       return {
         id: data.id.toString(),
@@ -172,25 +202,27 @@ export const authApi = {
 
   getAdminProfile: async (): Promise<User> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.get<ApiResponse<{
-        id: number
-        email: string
-        isVerified: boolean
-        status: boolean
-        language: string
-        userInfo: {
-          fullName: string | null
-          avatarUrl: string | null
-          gender: string | null
-          dateOfBirth: string | null
-          phoneNumber: string | null
-          address: string | null
-          country: string | null
-          showEmail: boolean
-          showPhone: boolean
-        } | null
-        roles: string[]
-      }>>('/auth/admin/profile')
+      const response = await apiClient.get<
+        ApiResponse<{
+          id: number
+          email: string
+          isVerified: boolean
+          status: boolean
+          language: string
+          userInfo: {
+            fullName: string | null
+            avatarUrl: string | null
+            gender: string | null
+            dateOfBirth: string | null
+            phoneNumber: string | null
+            address: string | null
+            country: string | null
+            showEmail: boolean
+            showPhone: boolean
+          } | null
+          roles: string[]
+        }>
+      >('/auth/admin/profile')
       const data = response.data.data
       return {
         id: data.id.toString(),
@@ -227,12 +259,18 @@ export const authApi = {
     showPhone?: boolean
   }): Promise<User> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.put<ApiResponse<User>>('/auth/profile', data)
+      const response = await apiClient.put<ApiResponse<User>>(
+        '/auth/profile',
+        data
+      )
       return response.data.data
     })
   },
 
-  changePassword: async (currentPassword: string, newPassword: string): Promise<void> => {
+  changePassword: async (
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> => {
     return withErrorHandling(async () => {
       await apiClient.post('/auth/change-password', {
         currentPassword,
@@ -242,22 +280,26 @@ export const authApi = {
   },
 
   // OAuth methods
-  googleAuth: async (accessToken: string, providerId?: string): Promise<{ user: User; tokens: AuthTokens }> => {
+  googleAuth: async (
+    accessToken: string,
+    providerId?: string
+  ): Promise<{ user: User; tokens: AuthTokens }> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
-        '/auth/google',
-        { accessToken, providerId }
-      )
+      const response = await apiClient.post<
+        ApiResponse<{ user: User; tokens: AuthTokens }>
+      >('/auth/google', { accessToken, providerId })
       return response.data.data
     })
   },
 
-  facebookAuth: async (accessToken: string, providerId?: string): Promise<{ user: User; tokens: AuthTokens }> => {
+  facebookAuth: async (
+    accessToken: string,
+    providerId?: string
+  ): Promise<{ user: User; tokens: AuthTokens }> => {
     return withErrorHandling(async () => {
-      const response = await apiClient.post<ApiResponse<{ user: User; tokens: AuthTokens }>>(
-        '/auth/facebook',
-        { accessToken, providerId }
-      )
+      const response = await apiClient.post<
+        ApiResponse<{ user: User; tokens: AuthTokens }>
+      >('/auth/facebook', { accessToken, providerId })
       return response.data.data
     })
   },

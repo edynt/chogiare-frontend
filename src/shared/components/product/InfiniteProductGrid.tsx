@@ -34,7 +34,7 @@ export function InfiniteProductGrid({
   // Intersection Observer để detect khi scroll đến cuối
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const firstEntry = entries[0]
         if (firstEntry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
           fetchNextPage()
@@ -73,7 +73,7 @@ export function InfiniteProductGrid({
   }
 
   // Flatten all pages into a single array
-  const products: Product[] = data?.pages.flatMap((page) => page.items) || []
+  const products: Product[] = data?.pages.flatMap(page => page.items) || []
 
   if (isLoading && products.length === 0) {
     return <ProductGridSkeleton count={8} />
@@ -114,4 +114,3 @@ export function InfiniteProductGrid({
     </div>
   )
 }
-

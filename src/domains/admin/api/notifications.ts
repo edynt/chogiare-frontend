@@ -21,8 +21,12 @@ export interface CreateNotificationResponse {
 }
 
 export const adminNotificationsApi = {
-  createNotification: async (data: CreateNotificationRequest): Promise<CreateNotificationResponse> => {
-    const response = await apiClient.post<ApiResponse<CreateNotificationResponse>>('/admin/notifications', data)
+  createNotification: async (
+    data: CreateNotificationRequest
+  ): Promise<CreateNotificationResponse> => {
+    const response = await apiClient.post<
+      ApiResponse<CreateNotificationResponse>
+    >('/admin/notifications', data)
     return response.data.data
   },
 }

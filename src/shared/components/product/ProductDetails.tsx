@@ -1,10 +1,24 @@
 import React, { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Badge } from '@shared/components/ui/badge'
 import { Button } from '@shared/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/components/ui/avatar'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/components/ui/tabs'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@shared/components/ui/avatar'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@shared/components/ui/tabs'
 import { Separator } from '@shared/components/ui/separator'
 import {
   Dialog,
@@ -17,24 +31,31 @@ import {
 import { Input } from '@shared/components/ui/input'
 import { Label } from '@shared/components/ui/label'
 import { Textarea } from '@shared/components/ui/textarea'
-import { Alert, AlertDescription, AlertTitle } from '@shared/components/ui/alert'
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@shared/components/ui/alert'
 import { useProduct, useProductReviews, useProducts } from '@/hooks'
 import { SimpleProductGrid } from '@shared/components/product/ProductGridWithPagination'
 import type { Review } from '@user/api/reviews'
 import { ErrorMessage } from '@shared/components/ui/error-boundary'
-import { ProductDetailSkeleton, ProductDetailSectionSkeleton } from '@shared/components/skeleton/ProductDetailSkeleton'
+import {
+  ProductDetailSkeleton,
+  ProductDetailSectionSkeleton,
+} from '@shared/components/skeleton/ProductDetailSkeleton'
 import { LazySection } from './LazySection'
 import { formatCurrency, formatDate, PLACEHOLDER_IMAGE } from '@/lib/utils'
 import { SecurityWarning } from '@shared/components/ui/security-warning'
 import { useCartStore } from '@/stores/cartStore'
 import { toast } from 'sonner'
-import { 
-  Star, 
-  Share2, 
-  MapPin, 
-  Clock, 
-  Shield, 
-  Truck, 
+import {
+  Star,
+  Share2,
+  MapPin,
+  Clock,
+  Shield,
+  Truck,
   MessageCircle,
   Mail,
   Eye,
@@ -59,7 +80,7 @@ import {
   AlertCircle,
   Wallet,
   Calendar,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react'
 
 interface ProductDetailsProps {
@@ -71,7 +92,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const { id } = useParams<{ id: string }>()
   const productIdToUse = productId || id
   const { addItem } = useCartStore()
-  
+
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [quantity, setQuantity] = useState<number>(1)
   const [sellingPrice, setSellingPrice] = useState<number>(0)
@@ -82,8 +103,16 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const [reviewRating, setReviewRating] = useState<number>(5)
   const [reviewComment, setReviewComment] = useState<string>('')
 
-  const { data: product, isLoading, error, refetch } = useProduct(productIdToUse || '')
-  const { data: reviewsData } = useProductReviews(productIdToUse || '', { page: 1, pageSize: 5 })
+  const {
+    data: product,
+    isLoading,
+    error,
+    refetch,
+  } = useProduct(productIdToUse || '')
+  const { data: reviewsData } = useProductReviews(productIdToUse || '', {
+    page: 1,
+    pageSize: 5,
+  })
 
   // Initialize selling price (1.5x wholesale price as suggestion)
   React.useEffect(() => {
@@ -91,7 +120,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
       setSellingPrice(Math.round(product.price * 1.5))
     }
   }, [product, sellingPrice])
-  
+
   if (!productIdToUse) {
     return (
       <div className="text-center py-12">
@@ -136,9 +165,10 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   }
 
   const reviews: Review[] = reviewsData?.reviews || []
-  const averageRating = reviews.length > 0 
-    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
-    : 0
+  const averageRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+      : 0
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -162,14 +192,28 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   // Mock price tiers
   const priceTiers = [
     { minQuantity: 10, maxQuantity: 49, price: product.price },
-    { minQuantity: 50, maxQuantity: 99, price: Math.round(product.price * 0.95) },
-    { minQuantity: 100, maxQuantity: 499, price: Math.round(product.price * 0.90) },
-    { minQuantity: 500, maxQuantity: null, price: Math.round(product.price * 0.85) },
+    {
+      minQuantity: 50,
+      maxQuantity: 99,
+      price: Math.round(product.price * 0.95),
+    },
+    {
+      minQuantity: 100,
+      maxQuantity: 499,
+      price: Math.round(product.price * 0.9),
+    },
+    {
+      minQuantity: 500,
+      maxQuantity: null,
+      price: Math.round(product.price * 0.85),
+    },
   ]
 
   // Get current tier price based on quantity
   const getCurrentTierPrice = () => {
-    const sortedTiers = [...priceTiers].sort((a, b) => b.minQuantity - a.minQuantity)
+    const sortedTiers = [...priceTiers].sort(
+      (a, b) => b.minQuantity - a.minQuantity
+    )
     for (const tier of sortedTiers) {
       if (quantity >= tier.minQuantity) {
         return tier.price
@@ -202,7 +246,8 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const lowestPrice = Math.min(...priceHistory.map(h => h.price))
   const highestPrice = Math.max(...priceHistory.map(h => h.price))
   const todayPrice = priceHistory[priceHistory.length - 1].price
-  const yesterdayPrice = priceHistory[priceHistory.length - 2]?.price || todayPrice
+  const yesterdayPrice =
+    priceHistory[priceHistory.length - 2]?.price || todayPrice
   const priceChange = todayPrice - yesterdayPrice
   const priceChangePercent = (priceChange / yesterdayPrice) * 100
 
@@ -214,20 +259,26 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         <div className="space-y-4">
           <div className="aspect-square overflow-hidden rounded-lg bg-muted border-2 border-border">
             <img
-              src={product.images && product.images.length > 0 ? (product.images[selectedImageIndex] || product.images[0]) : PLACEHOLDER_IMAGE}
+              src={
+                product.images && product.images.length > 0
+                  ? product.images[selectedImageIndex] || product.images[0]
+                  : PLACEHOLDER_IMAGE
+              }
               alt={product.title}
               className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
-              onError={(e) => {
+              onError={e => {
                 e.currentTarget.src = PLACEHOLDER_IMAGE
               }}
               onClick={() => {
                 if (product.images && product.images.length > 1) {
-                  setSelectedImageIndex((selectedImageIndex + 1) % product.images.length)
+                  setSelectedImageIndex(
+                    (selectedImageIndex + 1) % product.images.length
+                  )
                 }
               }}
             />
           </div>
-          
+
           {product.images && product.images.length > 0 ? (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -253,7 +304,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                       src={image}
                       alt={`${product.title} ${index + 1}`}
                       className="w-full h-full object-cover"
-                      onError={(e) => {
+                      onError={e => {
                         e.currentTarget.src = PLACEHOLDER_IMAGE
                       }}
                     />
@@ -274,7 +325,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           <div>
             {product.badges && product.badges.length > 0 && (
               <div className="flex items-center gap-2 mb-2">
-                {product.badges.map((badge) => (
+                {product.badges.map(badge => (
                   <Badge key={badge} variant="secondary">
                     {badge}
                   </Badge>
@@ -299,22 +350,33 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               <span className="text-3xl font-bold text-primary">
                 {formatCurrency(product.price)}
               </span>
-              {product.originalPrice && product.originalPrice > product.price && (
-                <>
-                  <span className="text-xl text-muted-foreground line-through">
-                    {formatCurrency(product.originalPrice)}
-                  </span>
-                  <Badge variant="destructive">
-                    -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                  </Badge>
-                </>
-              )}
+              {product.originalPrice &&
+                product.originalPrice > product.price && (
+                  <>
+                    <span className="text-xl text-muted-foreground line-through">
+                      {formatCurrency(product.originalPrice)}
+                    </span>
+                    <Badge variant="destructive">
+                      -
+                      {Math.round(
+                        ((product.originalPrice - product.price) /
+                          product.originalPrice) *
+                          100
+                      )}
+                      %
+                    </Badge>
+                  </>
+                )}
             </div>
             <p className="text-sm text-muted-foreground">
-              Tình trạng: <span className="font-medium">{product.condition}</span>
+              Tình trạng:{' '}
+              <span className="font-medium">{product.condition}</span>
             </p>
             <p className="text-sm text-muted-foreground">
-              Còn lại: <span className="font-medium text-green-600">{product.stock} sản phẩm</span>
+              Còn lại:{' '}
+              <span className="font-medium text-green-600">
+                {product.stock} sản phẩm
+              </span>
             </p>
           </div>
 
@@ -324,21 +386,32 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4 flex-1 cursor-pointer" onClick={() => {
-                  const sellerId = product.sellerId || product.store?.id
-                  if (sellerId) {
-                    window.location.href = `/shop/${sellerId}`
-                  }
-                }}>
+                <div
+                  className="flex items-start gap-4 flex-1 cursor-pointer"
+                  onClick={() => {
+                    const sellerId = product.sellerId || product.store?.id
+                    if (sellerId) {
+                      window.location.href = `/shop/${sellerId}`
+                    }
+                  }}
+                >
                   <Avatar className="h-16 w-16">
-                    <AvatarImage src={product.seller?.avatar || product.store?.logo} />
+                    <AvatarImage
+                      src={product.seller?.avatar || product.store?.logo}
+                    />
                     <AvatarFallback>
-                      {product.seller?.name?.charAt(0) || product.store?.name?.charAt(0) || 'S'}
+                      {product.seller?.name?.charAt(0) ||
+                        product.store?.name?.charAt(0) ||
+                        'S'}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <p className="font-bold text-lg">{product.store?.name || product.seller?.name || 'Người bán'}</p>
+                      <p className="font-bold text-lg">
+                        {product.store?.name ||
+                          product.seller?.name ||
+                          'Người bán'}
+                      </p>
                       {product.store?.isVerified && (
                         <Badge className="bg-green-500 text-white">
                           <Verified className="h-3 w-3 mr-1" />
@@ -347,12 +420,16 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground mb-2">
-                      {product.seller?.name && product.store?.name ? `Người bán: ${product.seller.name}` : 'Nhà cung cấp uy tín'}
+                      {product.seller?.name && product.store?.name
+                        ? `Người bán: ${product.seller.name}`
+                        : 'Nhà cung cấp uy tín'}
                     </p>
                     <div className="flex items-center gap-4 text-sm">
                       <div className="flex items-center gap-1">
                         {renderStars(product.store?.rating || 4.8)}
-                        <span className="font-semibold ml-1">{product.store?.rating?.toFixed(1) || '4.8'}</span>
+                        <span className="font-semibold ml-1">
+                          {product.store?.rating?.toFixed(1) || '4.8'}
+                        </span>
                       </div>
                       <span className="text-muted-foreground">
                         ({product.store?.reviewCount || 1245} đánh giá)
@@ -367,19 +444,23 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                     asChild
                     className="whitespace-nowrap"
                   >
-                    <Link to={`/shop/${product.sellerId || product.store?.id || ''}`}>
+                    <Link
+                      to={`/shop/${product.sellerId || product.store?.id || ''}`}
+                    >
                       <Package className="h-4 w-4 mr-2" />
                       Xem shop
                     </Link>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
-                    <Link to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}>
+                    <Link
+                      to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
+                    >
                       <MessageCircle className="h-4 w-4 mr-2" />
                       Chat
                     </Link>
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     className="border-orange-500 text-orange-600 hover:bg-orange-50"
                     onClick={() => setShowPromoteDialog(true)}
@@ -405,12 +486,15 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
             </AlertTitle>
             <AlertDescription className="text-amber-800 text-sm space-y-1">
               <p className="font-medium">
-                Vui lòng chỉ đặt hàng hoặc liên hệ khi bạn thực sự có nhu cầu mua sản phẩm.
+                Vui lòng chỉ đặt hàng hoặc liên hệ khi bạn thực sự có nhu cầu
+                mua sản phẩm.
               </p>
               <ul className="list-disc list-inside space-y-1 ml-2">
                 <li>Không spam tin nhắn hoặc đặt hàng giả để tội người bán</li>
                 <li>Hãy tôn trọng thời gian và công sức của người bán</li>
-                <li>Đặt hàng nghiêm túc giúp tạo môi trường mua bán lành mạnh</li>
+                <li>
+                  Đặt hàng nghiêm túc giúp tạo môi trường mua bán lành mạnh
+                </li>
               </ul>
             </AlertDescription>
           </Alert>
@@ -422,12 +506,14 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-6 shadow-lg hover:shadow-xl transition-all"
               asChild
             >
-              <Link to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}>
+              <Link
+                to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
+              >
                 <MessageCircle className="h-5 w-5 mr-2" />
                 Chat với người bán
               </Link>
             </Button>
-            
+
             {/* Secondary Actions - Add to Cart & Order */}
             <div className="grid grid-cols-2 gap-2">
               <Button
@@ -440,17 +526,19 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 <ShoppingCart className="h-4 w-4 mr-2" />
                 Thêm giỏ
               </Button>
-              <Button 
+              <Button
                 className="bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all"
                 asChild
               >
-                <Link to={`/checkout?productId=${product.id}&quantity=${quantity}`}>
+                <Link
+                  to={`/checkout?productId=${product.id}&quantity=${quantity}`}
+                >
                   <ShoppingBag className="h-4 w-4 mr-2" />
                   Đặt hàng
                 </Link>
               </Button>
             </div>
-            
+
             {/* Tertiary Actions - Outline style */}
             <div className="grid grid-cols-2 gap-2">
               <Button
@@ -461,10 +549,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 <FileText className="h-4 w-4 mr-2" />
                 Xin báo giá
               </Button>
-              <Button 
-                variant="outline"
-                className="border-2 hover:bg-muted/50"
-              >
+              <Button variant="outline" className="border-2 hover:bg-muted/50">
                 <Share2 className="h-4 w-4 mr-2" />
                 Chia sẻ
               </Button>
@@ -503,7 +588,9 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Tồn kho</p>
-                    <p className="text-lg font-bold">{product.stock} sản phẩm</p>
+                    <p className="text-lg font-bold">
+                      {product.stock} sản phẩm
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -533,12 +620,16 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setQuantity(Math.max(minOrderQty, quantity - 1))}
+                  onClick={() =>
+                    setQuantity(Math.max(minOrderQty, quantity - 1))
+                  }
                   disabled={quantity <= minOrderQty}
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
-                <span className="w-16 text-center font-semibold">{quantity}</span>
+                <span className="w-16 text-center font-semibold">
+                  {quantity}
+                </span>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -568,941 +659,1110 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
       {/* Wholesale Info Section - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Card className="mt-6">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
-              <Package className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <CardTitle>💰 Giá và thông tin mua sỉ</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Phần cực kỳ quan trọng trong app B2B – giúp bạn chốt đơn nhanh.
-              </p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold">Giá sỉ</span>
-              <span className="text-lg font-bold text-primary">
-                {formatCurrency(currentTierPrice)}/sản phẩm
-              </span>
-            </div>
-          </div>
-          <div className="p-4 bg-muted rounded-lg">
+          <CardHeader>
             <div className="flex items-center gap-3">
-              <Package className="h-5 w-5 text-orange-500" />
-              <p className="text-sm font-semibold">
-                Số lượng tối thiểu (Mua tối thiểu): Tối thiểu {minOrderQty} sản phẩm / mã
-              </p>
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
+                <Package className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <CardTitle>💰 Giá và thông tin mua sỉ</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Phần cực kỳ quan trọng trong app B2B – giúp bạn chốt đơn
+                  nhanh.
+                </p>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold">Giá sỉ</span>
+                <span className="text-lg font-bold text-primary">
+                  {formatCurrency(currentTierPrice)}/sản phẩm
+                </span>
+              </div>
+            </div>
+            <div className="p-4 bg-muted rounded-lg">
+              <div className="flex items-center gap-3">
+                <Package className="h-5 w-5 text-orange-500" />
+                <p className="text-sm font-semibold">
+                  Số lượng tối thiểu (Mua tối thiểu): Tối thiểu {minOrderQty}{' '}
+                  sản phẩm / mã
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </LazySection>
 
       {/* Tier Pricing Matrix - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Card className="mt-6 border-2">
-        <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
-                <Table2 className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-xl">Bảng giá theo số lượng</CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Càng mua nhiều, giá càng rẻ - Ưu đãi tốt nhất cho đơn hàng lớn
-                </p>
-              </div>
-            </div>
-            <Badge variant="outline" className="bg-white">
-              <TrendingDown className="h-3 w-3 mr-1" />
-              Giảm giá theo số lượng
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {priceTiers.map((tier, index) => {
-              const isActive = quantity >= tier.minQuantity && (tier.maxQuantity === null || quantity <= tier.maxQuantity)
-              const isBest = index === priceTiers.length - 1
-              const savings = product.price - tier.price
-              const savingsPercent = (savings / product.price) * 100
-              const totalAtTier = tier.price * (tier.minQuantity || 1)
-              
-              return (
-                <div
-                  key={index}
-                  className={`relative p-5 rounded-xl border-2 transition-all duration-300 ${
-                    isActive
-                      ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-400 shadow-lg scale-105'
-                      : isBest
-                      ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-300 hover:shadow-md'
-                      : 'bg-card border-border hover:border-primary/30 hover:shadow-sm'
-                  }`}
-                >
-                  {isActive && (
-                    <div className="absolute -top-3 -right-3">
-                      <Badge className="bg-green-500 text-white shadow-lg animate-pulse">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        Đang chọn
-                      </Badge>
-                    </div>
-                  )}
-                  
-                  {isBest && !isActive && (
-                    <div className="absolute -top-3 -right-3">
-                      <Badge className="bg-blue-500 text-white shadow-lg">
-                        <Star className="h-3 w-3 mr-1 fill-white" />
-                        Tốt nhất
-                      </Badge>
-                    </div>
-                  )}
-
-                  <div className="space-y-3">
-                    {/* Quantity Range */}
-                    <div className="text-center">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
-                        <Package className="h-4 w-4 text-primary" />
-                        <span className="font-bold text-lg text-primary">
-                          {tier.minQuantity}
-                          {tier.maxQuantity ? ` - ${tier.maxQuantity}` : '+'} sản phẩm
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Price */}
-                    <div className="text-center space-y-1">
-                      <p className="text-xs text-muted-foreground">Đơn giá</p>
-                      <p className={`text-2xl font-bold ${
-                        isActive ? 'text-green-600' : isBest ? 'text-blue-600' : 'text-primary'
-                      }`}>
-                        {formatCurrency(tier.price)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">/ sản phẩm</p>
-                    </div>
-
-                    {/* Savings */}
-                    <div className="pt-2 border-t space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Tiết kiệm:</span>
-                        <span className="text-sm font-semibold text-green-600">
-                          {formatCurrency(savings)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Tỷ lệ:</span>
-                        <Badge variant="outline" className="text-green-600 border-green-300">
-                          -{savingsPercent.toFixed(1)}%
-                        </Badge>
-                      </div>
-                    </div>
-
-                    {/* Example Total */}
-                    <div className="pt-2 border-t">
-                      <p className="text-xs text-muted-foreground text-center mb-1">
-                        Tổng tiền ({tier.minQuantity} sản phẩm):
-                      </p>
-                      <p className="text-center font-semibold text-primary">
-                        {formatCurrency(totalAtTier)}
-                      </p>
-                    </div>
-                  </div>
+          <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 pb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
+                  <Table2 className="h-6 w-6 text-white" />
                 </div>
-              )
-            })}
-          </div>
-
-          {/* Current Selection Info */}
-          {quantity > 0 && (
-            <div className="mt-6 p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                    <CheckCircle2 className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold">Bạn đang chọn: {quantity} sản phẩm</p>
-                    <p className="text-sm text-muted-foreground">
-                      Áp dụng mức giá: {formatCurrency(currentTierPrice)}/sản phẩm
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Tổng tiền</p>
-                  <p className="text-2xl font-bold text-primary">
-                    {formatCurrency(totalCost)}
+                <div>
+                  <CardTitle className="text-xl">
+                    Bảng giá theo số lượng
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Càng mua nhiều, giá càng rẻ - Ưu đãi tốt nhất cho đơn hàng
+                    lớn
                   </p>
                 </div>
               </div>
+              <Badge variant="outline" className="bg-white">
+                <TrendingDown className="h-3 w-3 mr-1" />
+                Giảm giá theo số lượng
+              </Badge>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {priceTiers.map((tier, index) => {
+                const isActive =
+                  quantity >= tier.minQuantity &&
+                  (tier.maxQuantity === null || quantity <= tier.maxQuantity)
+                const isBest = index === priceTiers.length - 1
+                const savings = product.price - tier.price
+                const savingsPercent = (savings / product.price) * 100
+                const totalAtTier = tier.price * (tier.minQuantity || 1)
+
+                return (
+                  <div
+                    key={index}
+                    className={`relative p-5 rounded-xl border-2 transition-all duration-300 ${
+                      isActive
+                        ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-400 shadow-lg scale-105'
+                        : isBest
+                          ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-300 hover:shadow-md'
+                          : 'bg-card border-border hover:border-primary/30 hover:shadow-sm'
+                    }`}
+                  >
+                    {isActive && (
+                      <div className="absolute -top-3 -right-3">
+                        <Badge className="bg-green-500 text-white shadow-lg animate-pulse">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          Đang chọn
+                        </Badge>
+                      </div>
+                    )}
+
+                    {isBest && !isActive && (
+                      <div className="absolute -top-3 -right-3">
+                        <Badge className="bg-blue-500 text-white shadow-lg">
+                          <Star className="h-3 w-3 mr-1 fill-white" />
+                          Tốt nhất
+                        </Badge>
+                      </div>
+                    )}
+
+                    <div className="space-y-3">
+                      {/* Quantity Range */}
+                      <div className="text-center">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+                          <Package className="h-4 w-4 text-primary" />
+                          <span className="font-bold text-lg text-primary">
+                            {tier.minQuantity}
+                            {tier.maxQuantity
+                              ? ` - ${tier.maxQuantity}`
+                              : '+'}{' '}
+                            sản phẩm
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Price */}
+                      <div className="text-center space-y-1">
+                        <p className="text-xs text-muted-foreground">Đơn giá</p>
+                        <p
+                          className={`text-2xl font-bold ${
+                            isActive
+                              ? 'text-green-600'
+                              : isBest
+                                ? 'text-blue-600'
+                                : 'text-primary'
+                          }`}
+                        >
+                          {formatCurrency(tier.price)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          / sản phẩm
+                        </p>
+                      </div>
+
+                      {/* Savings */}
+                      <div className="pt-2 border-t space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">
+                            Tiết kiệm:
+                          </span>
+                          <span className="text-sm font-semibold text-green-600">
+                            {formatCurrency(savings)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">
+                            Tỷ lệ:
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className="text-green-600 border-green-300"
+                          >
+                            -{savingsPercent.toFixed(1)}%
+                          </Badge>
+                        </div>
+                      </div>
+
+                      {/* Example Total */}
+                      <div className="pt-2 border-t">
+                        <p className="text-xs text-muted-foreground text-center mb-1">
+                          Tổng tiền ({tier.minQuantity} sản phẩm):
+                        </p>
+                        <p className="text-center font-semibold text-primary">
+                          {formatCurrency(totalAtTier)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Current Selection Info */}
+            {quantity > 0 && (
+              <div className="mt-6 p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                      <CheckCircle2 className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold">
+                        Bạn đang chọn: {quantity} sản phẩm
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Áp dụng mức giá: {formatCurrency(currentTierPrice)}/sản
+                        phẩm
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">Tổng tiền</p>
+                    <p className="text-2xl font-bold text-primary">
+                      {formatCurrency(totalCost)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </LazySection>
 
       {/* Profit Calculator - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Card className="mt-6 border-2">
-        <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Calculator className="h-6 w-6 text-white" />
+          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 pb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Calculator className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl">Dự tính lợi nhuận</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Tính toán lợi nhuận dự kiến khi bán lại sản phẩm
+                  </p>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-xl">Dự tính lợi nhuận</CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Tính toán lợi nhuận dự kiến khi bán lại sản phẩm
-                </p>
-              </div>
+              <Badge variant="outline" className="bg-white">
+                <Lightbulb className="h-3 w-3 mr-1" />
+                Công cụ hỗ trợ
+              </Badge>
             </div>
-            <Badge variant="outline" className="bg-white">
-              <Lightbulb className="h-3 w-3 mr-1" />
-              Công cụ hỗ trợ
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Input Section */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="selling-price" className="text-sm font-semibold flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-primary" />
-                  Giá bán dự kiến (đơn vị)
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="selling-price"
-                    type="text"
-                    inputMode="decimal"
-                    pattern="[0-9]*\.?[0-9]*"
-                    value={sellingPrice || ''}
-                    onChange={(e) => {
-                      const value = e.target.value
-                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                        setSellingPrice(parseFloat(value) || 0)
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Input Section */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="selling-price"
+                    className="text-sm font-semibold flex items-center gap-2"
+                  >
+                    <DollarSign className="h-4 w-4 text-primary" />
+                    Giá bán dự kiến (đơn vị)
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="selling-price"
+                      type="text"
+                      inputMode="decimal"
+                      pattern="[0-9]*\.?[0-9]*"
+                      value={sellingPrice || ''}
+                      onChange={e => {
+                        const value = e.target.value
+                        if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                          setSellingPrice(parseFloat(value) || 0)
+                        }
+                      }}
+                      placeholder="Nhập giá bán dự kiến"
+                      className="pl-10 text-lg"
+                    />
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Gợi ý: {formatCurrency(Math.round(currentTierPrice * 1.5))}{' '}
+                    (1.5x giá sỉ)
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="profit-quantity"
+                    className="text-sm font-semibold flex items-center gap-2"
+                  >
+                    <Package className="h-4 w-4 text-primary" />
+                    Số lượng bán
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="profit-quantity"
+                      type="number"
+                      value={quantity}
+                      onChange={e =>
+                        setQuantity(
+                          Math.max(
+                            minOrderQty,
+                            Number(e.target.value) || minOrderQty
+                          )
+                        )
                       }
-                    }}
-                    placeholder="Nhập giá bán dự kiến"
-                    className="pl-10 text-lg"
-                  />
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      placeholder="Số lượng"
+                      className="pl-10 text-lg"
+                      min={minOrderQty}
+                    />
+                    <Package className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tối thiểu: {minOrderQty} sản phẩm
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Gợi ý: {formatCurrency(Math.round(currentTierPrice * 1.5))} (1.5x giá sỉ)
-                </p>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="profit-quantity" className="text-sm font-semibold flex items-center gap-2">
-                  <Package className="h-4 w-4 text-primary" />
-                  Số lượng bán
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="profit-quantity"
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(Math.max(minOrderQty, Number(e.target.value) || minOrderQty))}
-                    placeholder="Số lượng"
-                    className="pl-10 text-lg"
-                    min={minOrderQty}
-                  />
-                  <Package className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Tối thiểu: {minOrderQty} sản phẩm
-                </p>
-              </div>
-
-              {/* Quick Price Suggestions */}
-              <div className="p-4 bg-muted/50 rounded-lg border">
-                <p className="text-xs font-semibold mb-2 text-muted-foreground">Gợi ý giá bán nhanh:</p>
-                <div className="flex flex-wrap gap-2">
-                  {[1.2, 1.5, 1.8, 2.0].map((multiplier) => {
-                    const suggestedPrice = Math.round(currentTierPrice * multiplier)
-                    return (
-                      <Button
-                        key={multiplier}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSellingPrice(suggestedPrice)}
-                        className="text-xs"
-                      >
-                        {multiplier}x = {formatCurrency(suggestedPrice)}
-                      </Button>
-                    )
-                  })}
+                {/* Quick Price Suggestions */}
+                <div className="p-4 bg-muted/50 rounded-lg border">
+                  <p className="text-xs font-semibold mb-2 text-muted-foreground">
+                    Gợi ý giá bán nhanh:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {[1.2, 1.5, 1.8, 2.0].map(multiplier => {
+                      const suggestedPrice = Math.round(
+                        currentTierPrice * multiplier
+                      )
+                      return (
+                        <Button
+                          key={multiplier}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSellingPrice(suggestedPrice)}
+                          className="text-xs"
+                        >
+                          {multiplier}x = {formatCurrency(suggestedPrice)}
+                        </Button>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Results Section */}
-            <div className="space-y-4">
-              {/* Summary Cards */}
-              <div className="grid grid-cols-2 gap-3">
-                <Card className="border-blue-200 bg-blue-50/50">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <ShoppingBag className="h-4 w-4 text-blue-600" />
-                      <p className="text-xs text-muted-foreground">Tổng vốn</p>
-                    </div>
-                    <p className="text-xl font-bold text-blue-600">
-                      {formatCurrency(totalCost)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatCurrency(currentTierPrice)} × {quantity}
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-purple-200 bg-purple-50/50">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-4 w-4 text-purple-600" />
-                      <p className="text-xs text-muted-foreground">Tổng doanh thu</p>
-                    </div>
-                    <p className="text-xl font-bold text-purple-600">
-                      {formatCurrency(totalRevenue)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatCurrency(sellingPrice)} × {quantity}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Profit Highlight */}
-              <Card className={`border-2 ${
-                totalProfit > 0 
-                  ? 'border-green-400 bg-gradient-to-br from-green-50 to-emerald-50' 
-                  : totalProfit < 0
-                  ? 'border-red-400 bg-gradient-to-br from-red-50 to-rose-50'
-                  : 'border-gray-300 bg-muted'
-              }`}>
-                <CardContent className="p-6">
-                  <div className="text-center space-y-3">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Lợi nhuận dự kiến</p>
-                      <p className={`text-4xl font-bold ${
-                        totalProfit > 0 ? 'text-green-600' : totalProfit < 0 ? 'text-red-600' : 'text-gray-600'
-                      }`}>
-                        {formatCurrency(totalProfit)}
+              {/* Results Section */}
+              <div className="space-y-4">
+                {/* Summary Cards */}
+                <div className="grid grid-cols-2 gap-3">
+                  <Card className="border-blue-200 bg-blue-50/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <ShoppingBag className="h-4 w-4 text-blue-600" />
+                        <p className="text-xs text-muted-foreground">
+                          Tổng vốn
+                        </p>
+                      </div>
+                      <p className="text-xl font-bold text-blue-600">
+                        {formatCurrency(totalCost)}
                       </p>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div className="flex items-center justify-center gap-2">
-                      {totalProfit > 0 ? (
-                        <TrendingUp className="h-5 w-5 text-green-600" />
-                      ) : totalProfit < 0 ? (
-                        <TrendingDown className="h-5 w-5 text-red-600" />
-                      ) : null}
-                      <div className="text-center">
-                        <p className="text-xs text-muted-foreground">Tỷ suất lợi nhuận</p>
-                        <p className={`text-2xl font-bold ${
-                          profitMargin > 0 ? 'text-green-600' : profitMargin < 0 ? 'text-red-600' : 'text-gray-600'
-                        }`}>
-                          {profitMargin > 0 ? '+' : ''}{profitMargin.toFixed(1)}%
-                        </p>
-                      </div>
-                    </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formatCurrency(currentTierPrice)} × {quantity}
+                      </p>
+                    </CardContent>
+                  </Card>
 
-                    {totalProfit > 0 && (
-                      <div className="mt-3 p-3 bg-green-100 rounded-lg">
-                        <p className="text-xs font-semibold text-green-800">
-                          ✓ Lợi nhuận tích cực - Đây là mức giá hợp lý để bán lại
+                  <Card className="border-purple-200 bg-purple-50/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <TrendingUp className="h-4 w-4 text-purple-600" />
+                        <p className="text-xs text-muted-foreground">
+                          Tổng doanh thu
                         </p>
                       </div>
-                    )}
-                    {totalProfit <= 0 && sellingPrice > 0 && (
-                      <div className="mt-3 p-3 bg-yellow-100 rounded-lg">
-                        <p className="text-xs font-semibold text-yellow-800">
-                          ⚠ Cần điều chỉnh giá bán để có lợi nhuận
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                      <p className="text-xl font-bold text-purple-600">
+                        {formatCurrency(totalRevenue)}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formatCurrency(sellingPrice)} × {quantity}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
 
-              {/* Breakdown */}
-              <Card className="border">
-                <CardContent className="p-4">
-                  <p className="text-xs font-semibold mb-3 text-muted-foreground">Chi tiết tính toán:</p>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Đơn giá sỉ:</span>
-                      <span className="font-medium">{formatCurrency(currentTierPrice)}</span>
+                {/* Profit Highlight */}
+                <Card
+                  className={`border-2 ${
+                    totalProfit > 0
+                      ? 'border-green-400 bg-gradient-to-br from-green-50 to-emerald-50'
+                      : totalProfit < 0
+                        ? 'border-red-400 bg-gradient-to-br from-red-50 to-rose-50'
+                        : 'border-gray-300 bg-muted'
+                  }`}
+                >
+                  <CardContent className="p-6">
+                    <div className="text-center space-y-3">
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          Lợi nhuận dự kiến
+                        </p>
+                        <p
+                          className={`text-4xl font-bold ${
+                            totalProfit > 0
+                              ? 'text-green-600'
+                              : totalProfit < 0
+                                ? 'text-red-600'
+                                : 'text-gray-600'
+                          }`}
+                        >
+                          {formatCurrency(totalProfit)}
+                        </p>
+                      </div>
+
+                      <Separator />
+
+                      <div className="flex items-center justify-center gap-2">
+                        {totalProfit > 0 ? (
+                          <TrendingUp className="h-5 w-5 text-green-600" />
+                        ) : totalProfit < 0 ? (
+                          <TrendingDown className="h-5 w-5 text-red-600" />
+                        ) : null}
+                        <div className="text-center">
+                          <p className="text-xs text-muted-foreground">
+                            Tỷ suất lợi nhuận
+                          </p>
+                          <p
+                            className={`text-2xl font-bold ${
+                              profitMargin > 0
+                                ? 'text-green-600'
+                                : profitMargin < 0
+                                  ? 'text-red-600'
+                                  : 'text-gray-600'
+                            }`}
+                          >
+                            {profitMargin > 0 ? '+' : ''}
+                            {profitMargin.toFixed(1)}%
+                          </p>
+                        </div>
+                      </div>
+
+                      {totalProfit > 0 && (
+                        <div className="mt-3 p-3 bg-green-100 rounded-lg">
+                          <p className="text-xs font-semibold text-green-800">
+                            ✓ Lợi nhuận tích cực - Đây là mức giá hợp lý để bán
+                            lại
+                          </p>
+                        </div>
+                      )}
+                      {totalProfit <= 0 && sellingPrice > 0 && (
+                        <div className="mt-3 p-3 bg-yellow-100 rounded-lg">
+                          <p className="text-xs font-semibold text-yellow-800">
+                            ⚠ Cần điều chỉnh giá bán để có lợi nhuận
+                          </p>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Giá bán dự kiến:</span>
-                      <span className="font-medium">{formatCurrency(sellingPrice)}</span>
+                  </CardContent>
+                </Card>
+
+                {/* Breakdown */}
+                <Card className="border">
+                  <CardContent className="p-4">
+                    <p className="text-xs font-semibold mb-3 text-muted-foreground">
+                      Chi tiết tính toán:
+                    </p>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          Đơn giá sỉ:
+                        </span>
+                        <span className="font-medium">
+                          {formatCurrency(currentTierPrice)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          Giá bán dự kiến:
+                        </span>
+                        <span className="font-medium">
+                          {formatCurrency(sellingPrice)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          Lợi nhuận/đơn vị:
+                        </span>
+                        <span
+                          className={`font-medium ${
+                            sellingPrice > currentTierPrice
+                              ? 'text-green-600'
+                              : 'text-red-600'
+                          }`}
+                        >
+                          {formatCurrency(sellingPrice - currentTierPrice)}
+                        </span>
+                      </div>
+                      <Separator className="my-2" />
+                      <div className="flex justify-between font-semibold">
+                        <span>Lợi nhuận tổng:</span>
+                        <span
+                          className={
+                            totalProfit > 0 ? 'text-green-600' : 'text-red-600'
+                          }
+                        >
+                          {formatCurrency(totalProfit)}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Lợi nhuận/đơn vị:</span>
-                      <span className={`font-medium ${
-                        sellingPrice > currentTierPrice ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {formatCurrency(sellingPrice - currentTierPrice)}
-                      </span>
-                    </div>
-                    <Separator className="my-2" />
-                    <div className="flex justify-between font-semibold">
-                      <span>Lợi nhuận tổng:</span>
-                      <span className={totalProfit > 0 ? 'text-green-600' : 'text-red-600'}>
-                        {formatCurrency(totalProfit)}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
       </LazySection>
 
       {/* Supplier Quality Dashboard - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Card className="mt-6">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-              <Verified className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <CardTitle>Phân tích chất lượng nhà cung cấp</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Thông tin uy tín và đáng tin cậy
-              </p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <MessageCircle className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-blue-600">98%</p>
-                    <p className="text-xs font-semibold">Tỉ lệ phản hồi chat</p>
-                    <p className="text-xs text-green-600 flex items-center gap-1">
-                      <TrendingUp className="h-3 w-3" />
-                      Phản hồi nhanh
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
-                    <Truck className="h-5 w-5 text-cyan-600" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-cyan-600">1.2 ngày</p>
-                    <p className="text-xs font-semibold">Thời gian giao hàng</p>
-                    <p className="text-xs text-green-600 flex items-center gap-1">
-                      <TrendingUp className="h-3 w-3" />
-                      Trung bình
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <Star className="h-5 w-5 text-yellow-600" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-yellow-600">4.8/5</p>
-                    <p className="text-xs font-semibold">Điểm uy tín</p>
-                    <p className="text-xs text-green-600 flex items-center gap-1">
-                      <TrendingUp className="h-3 w-3" />
-                      Rất tốt
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-green-600">2.5%</p>
-                    <p className="text-xs font-semibold">Tỉ lệ hủy đơn</p>
-                    <p className="text-xs text-green-600 flex items-center gap-1">
-                      <TrendingUp className="h-3 w-3" />
-                      Rất thấp
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="p-4 bg-green-50 rounded-lg border-2 border-green-200">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                <CheckCircle2 className="h-6 w-6 text-white" />
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                <Verified className="h-5 w-5 text-white" />
               </div>
               <div>
-                <p className="font-bold text-lg">Nhà cung cấp uy tín</p>
-                <p className="text-sm text-muted-foreground">Đạt tiêu chuẩn chất lượng cao</p>
+                <CardTitle>Phân tích chất lượng nhà cung cấp</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Thông tin uy tín và đáng tin cậy
+                </p>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <MessageCircle className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-blue-600">98%</p>
+                      <p className="text-xs font-semibold">
+                        Tỉ lệ phản hồi chat
+                      </p>
+                      <p className="text-xs text-green-600 flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" />
+                        Phản hồi nhanh
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
+                      <Truck className="h-5 w-5 text-cyan-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-cyan-600">
+                        1.2 ngày
+                      </p>
+                      <p className="text-xs font-semibold">
+                        Thời gian giao hàng
+                      </p>
+                      <p className="text-xs text-green-600 flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" />
+                        Trung bình
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <Star className="h-5 w-5 text-yellow-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-yellow-600">
+                        4.8/5
+                      </p>
+                      <p className="text-xs font-semibold">Điểm uy tín</p>
+                      <p className="text-xs text-green-600 flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" />
+                        Rất tốt
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-green-600">2.5%</p>
+                      <p className="text-xs font-semibold">Tỉ lệ hủy đơn</p>
+                      <p className="text-xs text-green-600 flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" />
+                        Rất thấp
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="p-4 bg-green-50 rounded-lg border-2 border-green-200">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                  <CheckCircle2 className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="font-bold text-lg">Nhà cung cấp uy tín</p>
+                  <p className="text-sm text-muted-foreground">
+                    Đạt tiêu chuẩn chất lượng cao
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </LazySection>
 
       {/* Price History - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Card className="mt-6">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
-                <History className="h-5 w-5 text-white" />
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
+                  <History className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle>Lịch sử giá</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Biến động giá 30 ngày qua
+                  </p>
+                </div>
               </div>
-              <div>
-                <CardTitle>Lịch sử giá</CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Biến động giá 30 ngày qua
-                </p>
-              </div>
+              <Badge
+                variant={priceChange < 0 ? 'default' : 'destructive'}
+                className={priceChange < 0 ? 'bg-green-500' : ''}
+              >
+                {priceChange < 0 ? (
+                  <TrendingDown className="h-3 w-3 mr-1" />
+                ) : (
+                  <TrendingUp className="h-3 w-3 mr-1" />
+                )}
+                {Math.abs(priceChangePercent).toFixed(1)}%
+              </Badge>
             </div>
-            <Badge
-              variant={priceChange < 0 ? 'default' : 'destructive'}
-              className={priceChange < 0 ? 'bg-green-500' : ''}
-            >
-              {priceChange < 0 ? <TrendingDown className="h-3 w-3 mr-1" /> : <TrendingUp className="h-3 w-3 mr-1" />}
-              {Math.abs(priceChangePercent).toFixed(1)}%
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="h-32 flex items-end gap-1">
-              {priceHistory.map((item, index) => {
-                const height = ((item.price - lowestPrice) / (highestPrice - lowestPrice)) * 100
-                const isToday = index === priceHistory.length - 1
-                return (
-                  <div
-                    key={index}
-                    className="flex-1 flex flex-col items-center"
-                    style={{ height: '100%' }}
-                  >
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="h-32 flex items-end gap-1">
+                {priceHistory.map((item, index) => {
+                  const height =
+                    ((item.price - lowestPrice) /
+                      (highestPrice - lowestPrice)) *
+                    100
+                  const isToday = index === priceHistory.length - 1
+                  return (
                     <div
-                      className={`w-full rounded-t ${
-                        isToday ? 'bg-primary' : 'bg-primary/60'
-                      }`}
-                      style={{ height: `${Math.max(5, height)}%` }}
-                    />
-                    {index % 7 === 0 && (
-                      <span className="text-xs text-muted-foreground mt-1">
-                        {isToday ? 'Hôm nay' : index + 1}
-                      </span>
-                    )}
-                  </div>
-                )
-              })}
+                      key={index}
+                      className="flex-1 flex flex-col items-center"
+                      style={{ height: '100%' }}
+                    >
+                      <div
+                        className={`w-full rounded-t ${
+                          isToday ? 'bg-primary' : 'bg-primary/60'
+                        }`}
+                        style={{ height: `${Math.max(5, height)}%` }}
+                      />
+                      {index % 7 === 0 && (
+                        <span className="text-xs text-muted-foreground mt-1">
+                          {isToday ? 'Hôm nay' : index + 1}
+                        </span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="grid grid-cols-3 gap-4 pt-4 border-t">
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Giá thấp nhất
+                  </p>
+                  <p className="font-bold text-green-600">
+                    {formatCurrency(lowestPrice)}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Giá hiện tại
+                  </p>
+                  <p className="font-bold text-primary">
+                    {formatCurrency(product.price)}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Giá cao nhất
+                  </p>
+                  <p className="font-bold text-orange-600">
+                    {formatCurrency(highestPrice)}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground mb-1">Giá thấp nhất</p>
-                <p className="font-bold text-green-600">{formatCurrency(lowestPrice)}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground mb-1">Giá hiện tại</p>
-                <p className="font-bold text-primary">{formatCurrency(product.price)}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground mb-1">Giá cao nhất</p>
-                <p className="font-bold text-orange-600">{formatCurrency(highestPrice)}</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
       </LazySection>
 
       {/* Product Details Tabs - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Tabs defaultValue="description" className="w-full mt-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="description">Mô tả</TabsTrigger>
-          <TabsTrigger value="reviews">Đánh giá ({product.reviewCount})</TabsTrigger>
-          <TabsTrigger value="write-review">Viết đánh giá</TabsTrigger>
-          <TabsTrigger value="seller">Thông tin người bán</TabsTrigger>
-          <TabsTrigger value="faq">FAQ</TabsTrigger>
-          <TabsTrigger value="certificates">Đảm bảo</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="description" className="mt-4 space-y-6">
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">Mô tả sản phẩm</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <p className="whitespace-pre-wrap">{product.description}</p>
-              {product.tags && product.tags.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-sm font-medium mb-2">Tags:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {product.tags.map((tag) => (
-                      <Badge key={tag} variant="outline">
-                        {tag}
-                      </Badge>
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="description">Mô tả</TabsTrigger>
+            <TabsTrigger value="reviews">
+              Đánh giá ({product.reviewCount})
+            </TabsTrigger>
+            <TabsTrigger value="write-review">Viết đánh giá</TabsTrigger>
+            <TabsTrigger value="seller">Thông tin người bán</TabsTrigger>
+            <TabsTrigger value="faq">FAQ</TabsTrigger>
+            <TabsTrigger value="certificates">Đảm bảo</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="description" className="mt-4 space-y-6">
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">Mô tả sản phẩm</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <p className="whitespace-pre-wrap">{product.description}</p>
+                {product.tags && product.tags.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-sm font-medium mb-2">Tags:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {product.tags.map(tag => (
+                        <Badge key={tag} variant="outline">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Selling Guide Section */}
+            <Card>
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <Lightbulb className="h-5 w-5 text-yellow-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">
+                      Cách nhập bán hàng hiệu quả
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Hướng dẫn và mẹo bán lại hiệu quả
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0 space-y-6">
+                <div>
+                  <h4 className="font-semibold mb-3">Hướng dẫn nhập hàng:</h4>
+                  <ul className="space-y-2 list-disc list-inside text-sm text-muted-foreground">
+                    <li>
+                      Đặt hàng tối thiểu theo mua tối thiểu để được giá tốt nhất
+                    </li>
+                    <li>Kiểm tra số lượng tồn kho trước khi đặt hàng</li>
+                    <li>Chọn phương thức vận chuyển phù hợp với nhu cầu</li>
+                    <li>Thanh toán đúng hạn để được ưu đãi</li>
+                  </ul>
+                </div>
+                <Separator />
+                <div>
+                  <h4 className="font-semibold mb-3">Mẹo bán lại hiệu quả:</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <TrendingUp className="h-5 w-5 text-blue-600" />
+                        <h5 className="font-semibold">Định giá hợp lý</h5>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Nghiên cứu thị trường và đặt giá cạnh tranh nhưng vẫn
+                        đảm bảo lợi nhuận.
+                      </p>
+                    </div>
+                    <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <ImageIcon className="h-5 w-5 text-green-600" />
+                        <h5 className="font-semibold">Chụp ảnh đẹp</h5>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Chụp ảnh sản phẩm thật, nhiều góc độ để khách hàng tin
+                        tưởng hơn.
+                      </p>
+                    </div>
+                    <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <FileText className="h-5 w-5 text-purple-600" />
+                        <h5 className="font-semibold">Mô tả chi tiết</h5>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Viết mô tả rõ ràng, nêu bật ưu điểm và đặc điểm nổi bật
+                        của sản phẩm.
+                      </p>
+                    </div>
+                    <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Truck className="h-5 w-5 text-orange-600" />
+                        <h5 className="font-semibold">Giao hàng nhanh</h5>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Đảm bảo giao hàng đúng hẹn để tăng uy tín và nhận được
+                        đánh giá tốt.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="reviews" className="mt-4">
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">Đánh giá sản phẩm</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                {reviews.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">
+                    Chưa có đánh giá nào cho sản phẩm này.
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {reviews.map(review => (
+                      <div
+                        key={review.id}
+                        className="border-b pb-4 last:border-b-0"
+                      >
+                        <div className="flex items-center gap-4 mb-2">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={review.userAvatar} />
+                            <AvatarFallback>
+                              {(review.userName || 'U').charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium text-sm">
+                              {review.userName || 'Người dùng'}
+                            </p>
+                            <div className="flex items-center gap-1">
+                              {renderStars(review.rating)}
+                            </div>
+                          </div>
+                          <div className="ml-auto text-sm text-muted-foreground">
+                            {formatDate(review.createdAt)}
+                          </div>
+                        </div>
+                        {review.comment && (
+                          <p className="text-sm text-muted-foreground ml-12">
+                            {review.comment}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="write-review" className="mt-4">
+            <Card>
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Edit className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Viết đánh giá</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Chia sẻ trải nghiệm của bạn về sản phẩm
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0 space-y-6">
+                <div>
+                  <Label className="mb-3 block">Đánh giá của bạn</Label>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map(rating => (
+                      <button
+                        key={rating}
+                        onClick={() => setReviewRating(rating)}
+                        className="focus:outline-none"
+                      >
+                        <Star
+                          className={`h-10 w-10 ${
+                            rating <= reviewRating
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      </button>
                     ))}
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Selling Guide Section */}
-          <Card>
-            <CardHeader className="pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <Lightbulb className="h-5 w-5 text-yellow-600" />
-                </div>
                 <div>
-                  <CardTitle className="text-lg">Cách nhập bán hàng hiệu quả</CardTitle>
-                  <p className="text-sm text-muted-foreground">Hướng dẫn và mẹo bán lại hiệu quả</p>
+                  <Label htmlFor="review-comment" className="mb-3 block">
+                    Nhận xét của bạn
+                  </Label>
+                  <Textarea
+                    id="review-comment"
+                    placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
+                    value={reviewComment}
+                    onChange={e => setReviewComment(e.target.value)}
+                    rows={5}
+                  />
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0 space-y-6">
-              <div>
-                <h4 className="font-semibold mb-3">Hướng dẫn nhập hàng:</h4>
-                <ul className="space-y-2 list-disc list-inside text-sm text-muted-foreground">
-                  <li>Đặt hàng tối thiểu theo mua tối thiểu để được giá tốt nhất</li>
-                  <li>Kiểm tra số lượng tồn kho trước khi đặt hàng</li>
-                  <li>Chọn phương thức vận chuyển phù hợp với nhu cầu</li>
-                  <li>Thanh toán đúng hạn để được ưu đãi</li>
-                </ul>
-              </div>
-              <Separator />
-              <div>
-                <h4 className="font-semibold mb-3">Mẹo bán lại hiệu quả:</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-5 w-5 text-blue-600" />
-                      <h5 className="font-semibold">Định giá hợp lý</h5>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Nghiên cứu thị trường và đặt giá cạnh tranh nhưng vẫn đảm bảo lợi nhuận.
-                    </p>
-                  </div>
-                  <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <ImageIcon className="h-5 w-5 text-green-600" />
-                      <h5 className="font-semibold">Chụp ảnh đẹp</h5>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Chụp ảnh sản phẩm thật, nhiều góc độ để khách hàng tin tưởng hơn.
-                    </p>
-                  </div>
-                  <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <FileText className="h-5 w-5 text-purple-600" />
-                      <h5 className="font-semibold">Mô tả chi tiết</h5>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Viết mô tả rõ ràng, nêu bật ưu điểm và đặc điểm nổi bật của sản phẩm.
-                    </p>
-                  </div>
-                  <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Truck className="h-5 w-5 text-orange-600" />
-                      <h5 className="font-semibold">Giao hàng nhanh</h5>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Đảm bảo giao hàng đúng hẹn để tăng uy tín và nhận được đánh giá tốt.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="reviews" className="mt-4">
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">Đánh giá sản phẩm</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              {reviews.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
-                  Chưa có đánh giá nào cho sản phẩm này.
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {reviews.map((review) => (
-                    <div key={review.id} className="border-b pb-4 last:border-b-0">
-                      <div className="flex items-center gap-4 mb-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={review.userAvatar} />
-                          <AvatarFallback>
-                            {(review.userName || 'U').charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium text-sm">{review.userName || 'Người dùng'}</p>
-                          <div className="flex items-center gap-1">
-                            {renderStars(review.rating)}
-                          </div>
-                        </div>
-                        <div className="ml-auto text-sm text-muted-foreground">
-                          {formatDate(review.createdAt)}
-                        </div>
-                      </div>
-                      {review.comment && (
-                        <p className="text-sm text-muted-foreground ml-12">
-                          {review.comment}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                <Button
+                  className="w-full"
+                  onClick={() => {
+                    if (!reviewComment.trim()) {
+                      alert('Vui lòng nhập đánh giá')
+                      return
+                    }
+                    // Handle submit review
+                    alert('Đã gửi đánh giá thành công!')
+                    setReviewComment('')
+                    setReviewRating(5)
+                  }}
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  Gửi đánh giá
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="write-review" className="mt-4">
-          <Card>
-            <CardHeader className="pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Edit className="h-5 w-5 text-primary" />
+          <TabsContent value="seller" className="mt-4">
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">Thông tin người bán</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="flex items-center gap-4 mb-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={product.seller?.avatar} />
+                    <AvatarFallback>
+                      {product.seller?.name?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="text-lg font-semibold">
+                      {product.seller?.name}
+                    </h3>
+                    <p className="text-muted-foreground">
+                      {product.store?.name || 'Người bán cá nhân'}
+                    </p>
+                    <div className="flex items-center gap-1 mt-1">
+                      {renderStars(4.5)}
+                      <span className="text-sm text-muted-foreground">
+                        (4.5/5)
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <CardTitle className="text-lg">Viết đánh giá</CardTitle>
-                  <p className="text-sm text-muted-foreground">Chia sẻ trải nghiệm của bạn về sản phẩm</p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0 space-y-6">
-              <div>
-                <Label className="mb-3 block">Đánh giá của bạn</Label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((rating) => (
-                    <button
-                      key={rating}
-                      onClick={() => setReviewRating(rating)}
-                      className="focus:outline-none"
+
+                {product.store && (
+                  <div className="space-y-2">
+                    <p>
+                      <strong>Địa chỉ:</strong> {product.store.address}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {product.store.email}
+                    </p>
+                    <p>
+                      <strong>Điện thoại:</strong> {product.store.phone}
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex gap-2 mt-4">
+                  <Button variant="outline" className="flex-1" asChild>
+                    <Link
+                      to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
                     >
-                      <Star
-                        className={`h-10 w-10 ${
-                          rating <= reviewRating
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    </button>
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Nhắn tin
+                    </Link>
+                  </Button>
+                  <Button variant="outline" className="flex-1" asChild>
+                    <Link
+                      to={`/shop/${product.sellerId || product.store?.id || ''}`}
+                    >
+                      <Package className="h-4 w-4 mr-2" />
+                      Xem shop
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="faq" className="mt-4">
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">💬 Câu hỏi thường gặp</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Chọn câu hỏi để chat với người bán
+                </p>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="space-y-3">
+                  {[
+                    'Sản phẩm có đảm bảo chất lượng không?',
+                    'Thời gian giao hàng là bao lâu?',
+                    'Có hỗ trợ đổi trả không?',
+                    'Giá có thể thương lượng không?',
+                    'Có chính sách bảo hành không?',
+                  ].map((question, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      className="w-full justify-start text-left h-auto py-3"
+                      onClick={() => {
+                        // Navigate to chat with question
+                        window.location.href = '/chat'
+                      }}
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      {question}
+                    </Button>
                   ))}
                 </div>
-              </div>
-              <div>
-                <Label htmlFor="review-comment" className="mb-3 block">Nhận xét của bạn</Label>
-                <Textarea
-                  id="review-comment"
-                  placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
-                  value={reviewComment}
-                  onChange={(e) => setReviewComment(e.target.value)}
-                  rows={5}
-                />
-              </div>
-              <Button
-                className="w-full"
-                onClick={() => {
-                  if (!reviewComment.trim()) {
-                    alert('Vui lòng nhập đánh giá')
-                    return
-                  }
-                  // Handle submit review
-                  alert('Đã gửi đánh giá thành công!')
-                  setReviewComment('')
-                  setReviewRating(5)
-                }}
-              >
-                <Send className="h-4 w-4 mr-2" />
-                Gửi đánh giá
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="seller" className="mt-4">
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">Thông tin người bán</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex items-center gap-4 mb-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={product.seller?.avatar} />
-                  <AvatarFallback>
-                    {product.seller?.name?.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="text-lg font-semibold">{product.seller?.name}</h3>
-                  <p className="text-muted-foreground">
-                    {product.store?.name || 'Người bán cá nhân'}
-                  </p>
-                  <div className="flex items-center gap-1 mt-1">
-                    {renderStars(4.5)}
-                    <span className="text-sm text-muted-foreground">(4.5/5)</span>
-                  </div>
-                </div>
-              </div>
-              
-              {product.store && (
-                <div className="space-y-2">
-                  <p><strong>Địa chỉ:</strong> {product.store.address}</p>
-                  <p><strong>Email:</strong> {product.store.email}</p>
-                  <p><strong>Điện thoại:</strong> {product.store.phone}</p>
-                </div>
-              )}
-              
-              <div className="flex gap-2 mt-4">
-                <Button variant="outline" className="flex-1" asChild>
-                  <Link to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}>
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Nhắn tin
-                  </Link>
-                </Button>
-                <Button variant="outline" className="flex-1" asChild>
-                  <Link to={`/shop/${product.sellerId || product.store?.id || ''}`}>
-                    <Package className="h-4 w-4 mr-2" />
-                    Xem shop
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="faq" className="mt-4">
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">💬 Câu hỏi thường gặp</CardTitle>
-              <p className="text-sm text-muted-foreground">Chọn câu hỏi để chat với người bán</p>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-3">
-                {[
-                  'Sản phẩm có đảm bảo chất lượng không?',
-                  'Thời gian giao hàng là bao lâu?',
-                  'Có hỗ trợ đổi trả không?',
-                  'Giá có thể thương lượng không?',
-                  'Có chính sách bảo hành không?',
-                ].map((question, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    className="w-full justify-start text-left h-auto py-3"
-                    onClick={() => {
-                      // Navigate to chat with question
-                      window.location.href = '/chat'
-                    }}
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    {question}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="certificates" className="mt-4">
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">✅ Thông tin đảm bảo</CardTitle>
-              <p className="text-sm text-muted-foreground">Nguồn gốc và chứng nhận</p>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-                  <div>
-                    <p className="font-semibold">Nguồn gốc xuất xứ</p>
-                    <p className="text-sm text-muted-foreground">Sản phẩm có nguồn gốc rõ ràng, đảm bảo chất lượng</p>
+          <TabsContent value="certificates" className="mt-4">
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">✅ Thông tin đảm bảo</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Nguồn gốc và chứng nhận
+                </p>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                    <div>
+                      <p className="font-semibold">Nguồn gốc xuất xứ</p>
+                      <p className="text-sm text-muted-foreground">
+                        Sản phẩm có nguồn gốc rõ ràng, đảm bảo chất lượng
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
+                    <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <div>
+                      <p className="font-semibold">Chứng nhận chất lượng</p>
+                      <p className="text-sm text-muted-foreground">
+                        Đã được kiểm định và chứng nhận bởi cơ quan có thẩm
+                        quyền
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
+                    <Verified className="h-5 w-5 text-purple-600 mt-0.5" />
+                    <div>
+                      <p className="font-semibold">Nhà cung cấp uy tín</p>
+                      <p className="text-sm text-muted-foreground">
+                        Đã được xác thực và đánh giá cao bởi khách hàng
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-4 bg-orange-50 rounded-lg">
+                    <Truck className="h-5 w-5 text-orange-600 mt-0.5" />
+                    <div>
+                      <p className="font-semibold">Chính sách vận chuyển</p>
+                      <p className="text-sm text-muted-foreground">
+                        Giao hàng nhanh, đóng gói cẩn thận, đảm bảo an toàn
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
-                  <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <p className="font-semibold">Chứng nhận chất lượng</p>
-                    <p className="text-sm text-muted-foreground">Đã được kiểm định và chứng nhận bởi cơ quan có thẩm quyền</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
-                  <Verified className="h-5 w-5 text-purple-600 mt-0.5" />
-                  <div>
-                    <p className="font-semibold">Nhà cung cấp uy tín</p>
-                    <p className="text-sm text-muted-foreground">Đã được xác thực và đánh giá cao bởi khách hàng</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-4 bg-orange-50 rounded-lg">
-                  <Truck className="h-5 w-5 text-orange-600 mt-0.5" />
-                  <div>
-                    <p className="font-semibold">Chính sách vận chuyển</p>
-                    <p className="text-sm text-muted-foreground">Giao hàng nhanh, đóng gói cẩn thận, đảm bảo an toàn</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </LazySection>
 
       {/* Best Selling Products Section - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Card className="mt-6">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-white" />
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
+                <TrendingUp className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <CardTitle>🔥 Sản phẩm bán chạy dành cho shop</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Gợi ý theo ngành hàng, vốn nhập, mùa vụ
+                </p>
+              </div>
             </div>
-            <div>
-              <CardTitle>🔥 Sản phẩm bán chạy dành cho shop</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Gợi ý theo ngành hàng, vốn nhập, mùa vụ
-              </p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <BestSellingProducts 
-            productId={product.id} 
-            categoryId={String(product.categoryId || product.category?.id || '')} 
-          />
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent>
+            <BestSellingProducts
+              productId={product.id}
+              categoryId={String(
+                product.categoryId || product.category?.id || ''
+              )}
+            />
+          </CardContent>
+        </Card>
       </LazySection>
 
       {/* Request Quote Dialog */}
@@ -1532,17 +1792,27 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      quoteMethod === 'chat' ? 'bg-blue-500' : 'bg-gray-200'
-                    }`}>
-                      <MessageCircle className={`h-5 w-5 ${
-                        quoteMethod === 'chat' ? 'text-white' : 'text-gray-600'
-                      }`} />
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        quoteMethod === 'chat' ? 'bg-blue-500' : 'bg-gray-200'
+                      }`}
+                    >
+                      <MessageCircle
+                        className={`h-5 w-5 ${
+                          quoteMethod === 'chat'
+                            ? 'text-white'
+                            : 'text-gray-600'
+                        }`}
+                      />
                     </div>
                     <div className="text-left">
-                      <p className={`font-semibold ${
-                        quoteMethod === 'chat' ? 'text-blue-600' : 'text-gray-700'
-                      }`}>
+                      <p
+                        className={`font-semibold ${
+                          quoteMethod === 'chat'
+                            ? 'text-blue-600'
+                            : 'text-gray-700'
+                        }`}
+                      >
                         Qua Chat
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -1561,17 +1831,27 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      quoteMethod === 'email' ? 'bg-blue-500' : 'bg-gray-200'
-                    }`}>
-                      <Mail className={`h-5 w-5 ${
-                        quoteMethod === 'email' ? 'text-white' : 'text-gray-600'
-                      }`} />
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        quoteMethod === 'email' ? 'bg-blue-500' : 'bg-gray-200'
+                      }`}
+                    >
+                      <Mail
+                        className={`h-5 w-5 ${
+                          quoteMethod === 'email'
+                            ? 'text-white'
+                            : 'text-gray-600'
+                        }`}
+                      />
                     </div>
                     <div className="text-left">
-                      <p className={`font-semibold ${
-                        quoteMethod === 'email' ? 'text-blue-600' : 'text-gray-700'
-                      }`}>
+                      <p
+                        className={`font-semibold ${
+                          quoteMethod === 'email'
+                            ? 'text-blue-600'
+                            : 'text-gray-700'
+                        }`}
+                      >
                         Qua Email
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -1590,7 +1870,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 type="number"
                 placeholder="Nhập số lượng"
                 value={quoteQuantity}
-                onChange={(e) => setQuoteQuantity(e.target.value)}
+                onChange={e => setQuoteQuantity(e.target.value)}
                 min={minOrderQty}
               />
               <p className="text-xs text-muted-foreground">
@@ -1603,13 +1883,15 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 id="quote-message"
                 placeholder="Nhập yêu cầu chi tiết về sản phẩm, giá cả, thời gian giao hàng..."
                 value={quoteMessage}
-                onChange={(e) => setQuoteMessage(e.target.value)}
+                onChange={e => setQuoteMessage(e.target.value)}
                 rows={4}
               />
             </div>
             <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-800">
-                <strong>Lưu ý:</strong> Yêu cầu báo giá của bạn sẽ được gửi đến người bán {quoteMethod === 'chat' ? 'qua hệ thống chat' : 'qua email'}. 
+                <strong>Lưu ý:</strong> Yêu cầu báo giá của bạn sẽ được gửi đến
+                người bán{' '}
+                {quoteMethod === 'chat' ? 'qua hệ thống chat' : 'qua email'}.
                 Người bán sẽ phản hồi trong thời gian sớm nhất.
               </p>
             </div>
@@ -1629,20 +1911,25 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
             <Button
               onClick={() => {
                 if (!quoteQuantity || parseInt(quoteQuantity) < minOrderQty) {
-                  alert(`Vui lòng nhập số lượng tối thiểu ${minOrderQty} sản phẩm`)
+                  alert(
+                    `Vui lòng nhập số lượng tối thiểu ${minOrderQty} sản phẩm`
+                  )
                   return
                 }
-                
+
                 const message = `Xin chào, tôi muốn xin báo giá cho sản phẩm "${product.title}" với số lượng ${quoteQuantity}${quoteMessage ? `\n\nYêu cầu: ${quoteMessage}` : ''}`
-                
+
                 if (quoteMethod === 'chat') {
                   // Navigate to chat with quote request
                   window.location.href = `/chat?sellerId=${product.sellerId}&productId=${product.id}&message=${encodeURIComponent(message)}`
                 } else {
                   // Send via email
-                  const emailSubject = encodeURIComponent(`Yêu cầu báo giá sản phẩm: ${product.title}`)
+                  const emailSubject = encodeURIComponent(
+                    `Yêu cầu báo giá sản phẩm: ${product.title}`
+                  )
                   const emailBody = encodeURIComponent(message)
-                  const sellerEmail = product.seller?.email || product.store?.email || ''
+                  const sellerEmail =
+                    product.seller?.email || product.store?.email || ''
                   if (sellerEmail) {
                     window.location.href = `mailto:${sellerEmail}?subject=${emailSubject}&body=${emailBody}`
                   } else {
@@ -1650,7 +1937,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                     return
                   }
                 }
-                
+
                 setShowQuoteDialog(false)
                 setQuoteQuantity('')
                 setQuoteMessage('')
@@ -1673,20 +1960,25 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
     </div>
   )
 }
 
 // Best Selling Products Component
-function BestSellingProducts({ productId, categoryId }: { productId: string; categoryId: string }) {
-  const { data: productsData } = useProducts({ 
-    limit: 20, 
+function BestSellingProducts({
+  productId,
+  categoryId,
+}: {
+  productId: string
+  categoryId: string
+}) {
+  const { data: productsData } = useProducts({
+    limit: 20,
     ...(categoryId ? { categoryId } : {}),
     sortBy: 'reviewCount',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
   })
-  
+
   const bestSelling = (productsData?.items || [])
     .filter(p => p.id !== productId && p.rating >= 4.5 && p.reviewCount >= 10)
     .sort((a, b) => {
@@ -1700,7 +1992,9 @@ function BestSellingProducts({ productId, categoryId }: { productId: string; cat
     return (
       <div className="text-center py-8">
         <Package className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-        <p className="text-muted-foreground">Chưa có sản phẩm bán chạy trong danh mục này</p>
+        <p className="text-muted-foreground">
+          Chưa có sản phẩm bán chạy trong danh mục này
+        </p>
       </div>
     )
   }

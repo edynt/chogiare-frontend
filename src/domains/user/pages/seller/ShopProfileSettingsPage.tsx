@@ -1,24 +1,32 @@
 import React, { useState } from 'react'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Label } from '@shared/components/ui/label'
 import { Textarea } from '@shared/components/ui/textarea'
 import { Badge } from '@shared/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/components/ui/select'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@shared/components/ui/tabs'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@shared/components/ui/select'
 import { Switch } from '@shared/components/ui/switch'
-import { 
-  Store,
-  Upload,
-  Star,
-  Edit,
-  Save,
-  X,
-  CheckCircle
-} from 'lucide-react'
+import { Store, Upload, Star, Edit, Save, X, CheckCircle } from 'lucide-react'
 
 interface ShopProfile {
   id: string
@@ -107,14 +115,16 @@ export default function ShopProfileSettingsPage() {
     id: '1',
     name: 'TechStore Pro',
     slug: 'techstore-pro',
-    description: 'Chuyên cung cấp các sản phẩm công nghệ cao cấp, điện thoại, laptop, phụ kiện chính hãng với giá cả cạnh tranh và dịch vụ chuyên nghiệp.',
+    description:
+      'Chuyên cung cấp các sản phẩm công nghệ cao cấp, điện thoại, laptop, phụ kiện chính hãng với giá cả cạnh tranh và dịch vụ chuyên nghiệp.',
     shortDescription: 'Cửa hàng công nghệ uy tín - Giá tốt, chất lượng cao',
     logo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop',
-    banner: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=300&fit=crop',
+    banner:
+      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=300&fit=crop',
     coverImages: [
       'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=200&fit=crop',
       'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=200&fit=crop',
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop'
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop',
     ],
     category: 'Công nghệ',
     subcategory: 'Điện tử',
@@ -128,7 +138,7 @@ export default function ShopProfileSettingsPage() {
       district: 'Quận 1',
       city: 'TP. Hồ Chí Minh',
       postalCode: '700000',
-      coordinates: { lat: 10.7769, lng: 106.7009 }
+      coordinates: { lat: 10.7769, lng: 106.7009 },
     },
     contact: {
       phone: '0901234567',
@@ -136,7 +146,7 @@ export default function ShopProfileSettingsPage() {
       website: 'https://techstorepro.com',
       facebook: 'https://facebook.com/techstorepro',
       instagram: 'https://instagram.com/techstorepro',
-      tiktok: 'https://tiktok.com/@techstorepro'
+      tiktok: 'https://tiktok.com/@techstorepro',
     },
     businessHours: {
       monday: { open: '08:00', close: '22:00', isOpen: true },
@@ -145,12 +155,13 @@ export default function ShopProfileSettingsPage() {
       thursday: { open: '08:00', close: '22:00', isOpen: true },
       friday: { open: '08:00', close: '22:00', isOpen: true },
       saturday: { open: '09:00', close: '21:00', isOpen: true },
-      sunday: { open: '10:00', close: '20:00', isOpen: false }
+      sunday: { open: '10:00', close: '20:00', isOpen: false },
     },
     policies: {
-      returnPolicy: 'Chấp nhận đổi trả trong 30 ngày với điều kiện sản phẩm còn nguyên vẹn.',
+      returnPolicy:
+        'Chấp nhận đổi trả trong 30 ngày với điều kiện sản phẩm còn nguyên vẹn.',
       warrantyPolicy: 'Bảo hành chính hãng theo quy định của nhà sản xuất.',
-      privacyPolicy: 'Cam kết bảo mật thông tin khách hàng tuyệt đối.'
+      privacyPolicy: 'Cam kết bảo mật thông tin khách hàng tuyệt đối.',
     },
     settings: {
       isActive: true,
@@ -161,7 +172,7 @@ export default function ShopProfileSettingsPage() {
       autoAcceptOrders: false,
       requireApproval: true,
       notificationEmail: true,
-      notificationSMS: true
+      notificationSMS: true,
     },
     stats: {
       totalProducts: 156,
@@ -170,33 +181,40 @@ export default function ShopProfileSettingsPage() {
       rating: 4.8,
       reviewCount: 324,
       followerCount: 1250,
-      viewCount: 15600
+      viewCount: 15600,
     },
     verification: {
       isVerified: true,
       verifiedAt: '2023-06-15T10:30:00Z',
-      verificationDocuments: ['business_license.pdf', 'tax_certificate.pdf']
+      verificationDocuments: ['business_license.pdf', 'tax_certificate.pdf'],
     },
     createdAt: '2020-01-15T08:30:00Z',
-    updatedAt: '2024-01-15T14:20:00Z'
+    updatedAt: '2024-01-15T14:20:00Z',
   })
 
   const [formData, setFormData] = useState(shopProfile)
 
-  const handleInputChange = (field: string, value: string | number | boolean) => {
+  const handleInputChange = (
+    field: string,
+    value: string | number | boolean
+  ) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }))
   }
 
-  const handleNestedInputChange = (parent: string, field: string, value: string | number | boolean | Record<string, unknown>) => {
+  const handleNestedInputChange = (
+    parent: string,
+    field: string,
+    value: string | number | boolean | Record<string, unknown>
+  ) => {
     setFormData(prev => ({
       ...prev,
       [parent]: {
         ...(prev[parent as keyof typeof prev] as Record<string, unknown>),
-        [field]: value
-      }
+        [field]: value,
+      },
     }))
   }
 
@@ -215,7 +233,7 @@ export default function ShopProfileSettingsPage() {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -223,46 +241,71 @@ export default function ShopProfileSettingsPage() {
     return new Date(dateString).toLocaleDateString('vi-VN', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
     })
   }
 
   const BusinessHoursForm = () => (
     <div className="space-y-4">
       {Object.entries(formData.businessHours).map(([day, hours]) => (
-        <div key={day} className="flex items-center gap-4 p-4 border rounded-lg">
+        <div
+          key={day}
+          className="flex items-center gap-4 p-4 border rounded-lg"
+        >
           <div className="w-20">
-            <Label className="capitalize">{day === 'monday' ? 'Thứ 2' : 
-              day === 'tuesday' ? 'Thứ 3' :
-              day === 'wednesday' ? 'Thứ 4' :
-              day === 'thursday' ? 'Thứ 5' :
-              day === 'friday' ? 'Thứ 6' :
-              day === 'saturday' ? 'Thứ 7' : 'Chủ nhật'}</Label>
+            <Label className="capitalize">
+              {day === 'monday'
+                ? 'Thứ 2'
+                : day === 'tuesday'
+                  ? 'Thứ 3'
+                  : day === 'wednesday'
+                    ? 'Thứ 4'
+                    : day === 'thursday'
+                      ? 'Thứ 5'
+                      : day === 'friday'
+                        ? 'Thứ 6'
+                        : day === 'saturday'
+                          ? 'Thứ 7'
+                          : 'Chủ nhật'}
+            </Label>
           </div>
           <Switch
             checked={hours.isOpen}
-            onCheckedChange={(checked) => handleNestedInputChange('businessHours', day, { ...hours, isOpen: checked })}
+            onCheckedChange={checked =>
+              handleNestedInputChange('businessHours', day, {
+                ...hours,
+                isOpen: checked,
+              })
+            }
           />
           {hours.isOpen && (
             <div className="flex items-center gap-2">
               <Input
                 type="time"
                 value={hours.open}
-                onChange={(e) => handleNestedInputChange('businessHours', day, { ...hours, open: e.target.value })}
+                onChange={e =>
+                  handleNestedInputChange('businessHours', day, {
+                    ...hours,
+                    open: e.target.value,
+                  })
+                }
                 className="w-32"
               />
               <span>đến</span>
               <Input
                 type="time"
                 value={hours.close}
-                onChange={(e) => handleNestedInputChange('businessHours', day, { ...hours, close: e.target.value })}
+                onChange={e =>
+                  handleNestedInputChange('businessHours', day, {
+                    ...hours,
+                    close: e.target.value,
+                  })
+                }
                 className="w-32"
               />
             </div>
           )}
-          {!hours.isOpen && (
-            <span className="text-muted-foreground">Nghỉ</span>
-          )}
+          {!hours.isOpen && <span className="text-muted-foreground">Nghỉ</span>}
         </div>
       ))}
     </div>
@@ -316,7 +359,9 @@ export default function ShopProfileSettingsPage() {
                     className="w-20 h-20 rounded-full mx-auto mb-3 object-cover"
                   />
                   <h3 className="font-semibold text-lg">{shopProfile.name}</h3>
-                  <p className="text-sm text-muted-foreground">{shopProfile.shortDescription}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {shopProfile.shortDescription}
+                  </p>
                   {shopProfile.verification.isVerified && (
                     <Badge className="mt-2 bg-green-500 text-white">
                       <CheckCircle className="h-3 w-3 mr-1" />
@@ -328,22 +373,32 @@ export default function ShopProfileSettingsPage() {
                 <div className="space-y-4 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Sản phẩm:</span>
-                    <span className="font-medium">{shopProfile.stats.totalProducts}</span>
+                    <span className="font-medium">
+                      {shopProfile.stats.totalProducts}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Đơn hàng:</span>
-                    <span className="font-medium">{shopProfile.stats.totalOrders}</span>
+                    <span className="font-medium">
+                      {shopProfile.stats.totalOrders}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Doanh thu:</span>
-                    <span className="font-medium">{formatPrice(shopProfile.stats.totalRevenue)}</span>
+                    <span className="font-medium">
+                      {formatPrice(shopProfile.stats.totalRevenue)}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Đánh giá:</span>
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                      <span className="font-medium">{shopProfile.stats.rating}</span>
-                      <span className="text-muted-foreground">({shopProfile.stats.reviewCount})</span>
+                      <span className="font-medium">
+                        {shopProfile.stats.rating}
+                      </span>
+                      <span className="text-muted-foreground">
+                        ({shopProfile.stats.reviewCount})
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -411,7 +466,9 @@ export default function ShopProfileSettingsPage() {
                         <Input
                           id="name"
                           value={formData.name}
-                          onChange={(e) => handleInputChange('name', e.target.value)}
+                          onChange={e =>
+                            handleInputChange('name', e.target.value)
+                          }
                           disabled={!isEditing}
                         />
                       </div>
@@ -420,7 +477,9 @@ export default function ShopProfileSettingsPage() {
                         <Input
                           id="slug"
                           value={formData.slug}
-                          onChange={(e) => handleInputChange('slug', e.target.value)}
+                          onChange={e =>
+                            handleInputChange('slug', e.target.value)
+                          }
                           disabled={!isEditing}
                         />
                       </div>
@@ -431,7 +490,9 @@ export default function ShopProfileSettingsPage() {
                       <Input
                         id="shortDescription"
                         value={formData.shortDescription}
-                        onChange={(e) => handleInputChange('shortDescription', e.target.value)}
+                        onChange={e =>
+                          handleInputChange('shortDescription', e.target.value)
+                        }
                         disabled={!isEditing}
                         placeholder="Mô tả ngắn về cửa hàng"
                       />
@@ -442,7 +503,9 @@ export default function ShopProfileSettingsPage() {
                       <Textarea
                         id="description"
                         value={formData.description}
-                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        onChange={e =>
+                          handleInputChange('description', e.target.value)
+                        }
                         disabled={!isEditing}
                         rows={4}
                         placeholder="Mô tả chi tiết về cửa hàng, sản phẩm và dịch vụ"
@@ -452,13 +515,21 @@ export default function ShopProfileSettingsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <Label htmlFor="category">Danh mục</Label>
-                        <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)} disabled={!isEditing}>
+                        <Select
+                          value={formData.category}
+                          onValueChange={value =>
+                            handleInputChange('category', value)
+                          }
+                          disabled={!isEditing}
+                        >
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="Công nghệ">Công nghệ</SelectItem>
-                            <SelectItem value="Thời trang">Thời trang</SelectItem>
+                            <SelectItem value="Thời trang">
+                              Thời trang
+                            </SelectItem>
                             <SelectItem value="Gia dụng">Gia dụng</SelectItem>
                             <SelectItem value="Thể thao">Thể thao</SelectItem>
                           </SelectContent>
@@ -466,7 +537,13 @@ export default function ShopProfileSettingsPage() {
                       </div>
                       <div>
                         <Label htmlFor="subcategory">Danh mục con</Label>
-                        <Select value={formData.subcategory} onValueChange={(value) => handleInputChange('subcategory', value)} disabled={!isEditing}>
+                        <Select
+                          value={formData.subcategory}
+                          onValueChange={value =>
+                            handleInputChange('subcategory', value)
+                          }
+                          disabled={!isEditing}
+                        >
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -474,7 +551,9 @@ export default function ShopProfileSettingsPage() {
                             <SelectItem value="Điện tử">Điện tử</SelectItem>
                             <SelectItem value="Phụ kiện">Phụ kiện</SelectItem>
                             <SelectItem value="Laptop">Laptop</SelectItem>
-                            <SelectItem value="Điện thoại">Điện thoại</SelectItem>
+                            <SelectItem value="Điện thoại">
+                              Điện thoại
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -484,7 +563,12 @@ export default function ShopProfileSettingsPage() {
                           id="establishedYear"
                           type="number"
                           value={formData.establishedYear}
-                          onChange={(e) => handleInputChange('establishedYear', parseInt(e.target.value))}
+                          onChange={e =>
+                            handleInputChange(
+                              'establishedYear',
+                              parseInt(e.target.value)
+                            )
+                          }
                           disabled={!isEditing}
                         />
                       </div>
@@ -508,7 +592,13 @@ export default function ShopProfileSettingsPage() {
                           <Input
                             id="street"
                             value={formData.address.street}
-                            onChange={(e) => handleNestedInputChange('address', 'street', e.target.value)}
+                            onChange={e =>
+                              handleNestedInputChange(
+                                'address',
+                                'street',
+                                e.target.value
+                              )
+                            }
                             disabled={!isEditing}
                           />
                         </div>
@@ -517,7 +607,13 @@ export default function ShopProfileSettingsPage() {
                           <Input
                             id="ward"
                             value={formData.address.ward}
-                            onChange={(e) => handleNestedInputChange('address', 'ward', e.target.value)}
+                            onChange={e =>
+                              handleNestedInputChange(
+                                'address',
+                                'ward',
+                                e.target.value
+                              )
+                            }
                             disabled={!isEditing}
                           />
                         </div>
@@ -526,7 +622,13 @@ export default function ShopProfileSettingsPage() {
                           <Input
                             id="district"
                             value={formData.address.district}
-                            onChange={(e) => handleNestedInputChange('address', 'district', e.target.value)}
+                            onChange={e =>
+                              handleNestedInputChange(
+                                'address',
+                                'district',
+                                e.target.value
+                              )
+                            }
                             disabled={!isEditing}
                           />
                         </div>
@@ -535,7 +637,13 @@ export default function ShopProfileSettingsPage() {
                           <Input
                             id="city"
                             value={formData.address.city}
-                            onChange={(e) => handleNestedInputChange('address', 'city', e.target.value)}
+                            onChange={e =>
+                              handleNestedInputChange(
+                                'address',
+                                'city',
+                                e.target.value
+                              )
+                            }
                             disabled={!isEditing}
                           />
                         </div>
@@ -544,14 +652,22 @@ export default function ShopProfileSettingsPage() {
 
                     {/* Contact Info */}
                     <div>
-                      <Label className="text-base font-medium">Thông tin liên hệ</Label>
+                      <Label className="text-base font-medium">
+                        Thông tin liên hệ
+                      </Label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                         <div>
                           <Label htmlFor="phone">Số điện thoại</Label>
                           <Input
                             id="phone"
                             value={formData.contact.phone}
-                            onChange={(e) => handleNestedInputChange('contact', 'phone', e.target.value)}
+                            onChange={e =>
+                              handleNestedInputChange(
+                                'contact',
+                                'phone',
+                                e.target.value
+                              )
+                            }
                             disabled={!isEditing}
                           />
                         </div>
@@ -561,7 +677,13 @@ export default function ShopProfileSettingsPage() {
                             id="email"
                             type="email"
                             value={formData.contact.email}
-                            onChange={(e) => handleNestedInputChange('contact', 'email', e.target.value)}
+                            onChange={e =>
+                              handleNestedInputChange(
+                                'contact',
+                                'email',
+                                e.target.value
+                              )
+                            }
                             disabled={!isEditing}
                           />
                         </div>
@@ -570,7 +692,13 @@ export default function ShopProfileSettingsPage() {
                           <Input
                             id="website"
                             value={formData.contact.website || ''}
-                            onChange={(e) => handleNestedInputChange('contact', 'website', e.target.value)}
+                            onChange={e =>
+                              handleNestedInputChange(
+                                'contact',
+                                'website',
+                                e.target.value
+                              )
+                            }
                             disabled={!isEditing}
                             placeholder="https://example.com"
                           />
@@ -580,7 +708,13 @@ export default function ShopProfileSettingsPage() {
                           <Input
                             id="facebook"
                             value={formData.contact.facebook || ''}
-                            onChange={(e) => handleNestedInputChange('contact', 'facebook', e.target.value)}
+                            onChange={e =>
+                              handleNestedInputChange(
+                                'contact',
+                                'facebook',
+                                e.target.value
+                              )
+                            }
                             disabled={!isEditing}
                             placeholder="https://facebook.com/yourpage"
                           />
@@ -590,7 +724,9 @@ export default function ShopProfileSettingsPage() {
 
                     {/* Business Hours */}
                     <div>
-                      <Label className="text-base font-medium">Giờ làm việc</Label>
+                      <Label className="text-base font-medium">
+                        Giờ làm việc
+                      </Label>
                       <BusinessHoursForm />
                     </div>
                   </CardContent>
@@ -608,17 +744,31 @@ export default function ShopProfileSettingsPage() {
                       <Textarea
                         id="returnPolicy"
                         value={formData.policies.returnPolicy}
-                        onChange={(e) => handleNestedInputChange('policies', 'returnPolicy', e.target.value)}
+                        onChange={e =>
+                          handleNestedInputChange(
+                            'policies',
+                            'returnPolicy',
+                            e.target.value
+                          )
+                        }
                         disabled={!isEditing}
                         rows={3}
                       />
                     </div>
                     <div>
-                      <Label htmlFor="warrantyPolicy">Chính sách bảo hành</Label>
+                      <Label htmlFor="warrantyPolicy">
+                        Chính sách bảo hành
+                      </Label>
                       <Textarea
                         id="warrantyPolicy"
                         value={formData.policies.warrantyPolicy}
-                        onChange={(e) => handleNestedInputChange('policies', 'warrantyPolicy', e.target.value)}
+                        onChange={e =>
+                          handleNestedInputChange(
+                            'policies',
+                            'warrantyPolicy',
+                            e.target.value
+                          )
+                        }
                         disabled={!isEditing}
                         rows={3}
                       />
@@ -628,7 +778,13 @@ export default function ShopProfileSettingsPage() {
                       <Textarea
                         id="privacyPolicy"
                         value={formData.policies.privacyPolicy}
-                        onChange={(e) => handleNestedInputChange('policies', 'privacyPolicy', e.target.value)}
+                        onChange={e =>
+                          handleNestedInputChange(
+                            'policies',
+                            'privacyPolicy',
+                            e.target.value
+                          )
+                        }
                         disabled={!isEditing}
                         rows={3}
                       />
@@ -647,66 +803,114 @@ export default function ShopProfileSettingsPage() {
                       <div className="flex items-center justify-between">
                         <div>
                           <Label>Hiển thị cửa hàng</Label>
-                          <p className="text-sm text-muted-foreground">Cửa hàng có hiển thị công khai</p>
+                          <p className="text-sm text-muted-foreground">
+                            Cửa hàng có hiển thị công khai
+                          </p>
                         </div>
                         <Switch
                           checked={formData.settings.isActive}
-                          onCheckedChange={(checked) => handleNestedInputChange('settings', 'isActive', checked)}
+                          onCheckedChange={checked =>
+                            handleNestedInputChange(
+                              'settings',
+                              'isActive',
+                              checked
+                            )
+                          }
                           disabled={!isEditing}
                         />
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
                           <Label>Cho phép nhắn tin</Label>
-                          <p className="text-sm text-muted-foreground">Khách hàng có thể nhắn tin trực tiếp</p>
+                          <p className="text-sm text-muted-foreground">
+                            Khách hàng có thể nhắn tin trực tiếp
+                          </p>
                         </div>
                         <Switch
                           checked={formData.settings.allowMessages}
-                          onCheckedChange={(checked) => handleNestedInputChange('settings', 'allowMessages', checked)}
+                          onCheckedChange={checked =>
+                            handleNestedInputChange(
+                              'settings',
+                              'allowMessages',
+                              checked
+                            )
+                          }
                           disabled={!isEditing}
                         />
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
                           <Label>Hiển thị số điện thoại</Label>
-                          <p className="text-sm text-muted-foreground">Hiển thị số điện thoại công khai</p>
+                          <p className="text-sm text-muted-foreground">
+                            Hiển thị số điện thoại công khai
+                          </p>
                         </div>
                         <Switch
                           checked={formData.settings.showPhone}
-                          onCheckedChange={(checked) => handleNestedInputChange('settings', 'showPhone', checked)}
+                          onCheckedChange={checked =>
+                            handleNestedInputChange(
+                              'settings',
+                              'showPhone',
+                              checked
+                            )
+                          }
                           disabled={!isEditing}
                         />
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
                           <Label>Hiển thị email</Label>
-                          <p className="text-sm text-muted-foreground">Hiển thị email công khai</p>
+                          <p className="text-sm text-muted-foreground">
+                            Hiển thị email công khai
+                          </p>
                         </div>
                         <Switch
                           checked={formData.settings.showEmail}
-                          onCheckedChange={(checked) => handleNestedInputChange('settings', 'showEmail', checked)}
+                          onCheckedChange={checked =>
+                            handleNestedInputChange(
+                              'settings',
+                              'showEmail',
+                              checked
+                            )
+                          }
                           disabled={!isEditing}
                         />
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
                           <Label>Hiển thị địa chỉ</Label>
-                          <p className="text-sm text-muted-foreground">Hiển thị địa chỉ công khai</p>
+                          <p className="text-sm text-muted-foreground">
+                            Hiển thị địa chỉ công khai
+                          </p>
                         </div>
                         <Switch
                           checked={formData.settings.showAddress}
-                          onCheckedChange={(checked) => handleNestedInputChange('settings', 'showAddress', checked)}
+                          onCheckedChange={checked =>
+                            handleNestedInputChange(
+                              'settings',
+                              'showAddress',
+                              checked
+                            )
+                          }
                           disabled={!isEditing}
                         />
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
                           <Label>Tự động chấp nhận đơn hàng</Label>
-                          <p className="text-sm text-muted-foreground">Tự động chấp nhận đơn hàng mới</p>
+                          <p className="text-sm text-muted-foreground">
+                            Tự động chấp nhận đơn hàng mới
+                          </p>
                         </div>
                         <Switch
                           checked={formData.settings.autoAcceptOrders}
-                          onCheckedChange={(checked) => handleNestedInputChange('settings', 'autoAcceptOrders', checked)}
+                          onCheckedChange={checked =>
+                            handleNestedInputChange(
+                              'settings',
+                              'autoAcceptOrders',
+                              checked
+                            )
+                          }
                           disabled={!isEditing}
                         />
                       </div>

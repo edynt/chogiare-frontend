@@ -1,5 +1,9 @@
 import { Link } from 'react-router-dom'
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/components/ui/avatar'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@shared/components/ui/avatar'
 import { Badge } from '@shared/components/ui/badge'
 import { cn, formatPrice } from '@/lib/utils'
 import { MessageCircle, Check, CheckCheck } from 'lucide-react'
@@ -37,16 +41,24 @@ interface ChatListProps {
 
 export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
   const { user } = useAuthStore()
-  const { data: conversationsData, isLoading } = useConversations({ page: 1, pageSize: 100 })
+  const { data: conversationsData, isLoading } = useConversations({
+    page: 1,
+    pageSize: 100,
+  })
 
   const mapConversationToChat = (conversation: Conversation): Chat | null => {
-    const otherParticipant = conversation.participants.find(p => String(p.userId) !== String(user?.id))
+    const otherParticipant = conversation.participants.find(
+      p => String(p.userId) !== String(user?.id)
+    )
     if (!otherParticipant) return null
 
     const lastMessage = conversation.lastMessage
     const formatTime = (dateString: string) => {
       const date = new Date(dateString)
-      return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+      return date.toLocaleTimeString('vi-VN', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
     }
 
     return {
@@ -80,10 +92,11 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
         .filter((chat): chat is Chat => chat !== null)
     : []
 
-  const filteredChats = chats.filter(chat =>
-    chat.participant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    chat.product?.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    chat.lastMessage.content.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredChats = chats.filter(
+    chat =>
+      chat.participant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      chat.product?.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      chat.lastMessage.content.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const formatTime = (timestamp: string) => {
@@ -122,7 +135,9 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
       <div className="text-center py-8">
         <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
         <p className="text-muted-foreground">
-          {searchQuery ? 'Không tìm thấy cuộc trò chuyện nào' : 'Chưa có cuộc trò chuyện nào'}
+          {searchQuery
+            ? 'Không tìm thấy cuộc trò chuyện nào'
+            : 'Chưa có cuộc trò chuyện nào'}
         </p>
       </div>
     )
@@ -130,26 +145,28 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
 
   return (
     <div className="space-y-1">
-      {filteredChats.map((chat) => (
+      {filteredChats.map(chat => (
         <Link
           key={chat.id}
           to={`/chat/${chat.id}`}
           className={cn(
-            "block p-3 rounded-lg transition-colors hover:bg-muted/50",
-            selectedChatId === chat.id && "bg-muted"
+            'block p-3 rounded-lg transition-colors hover:bg-muted/50',
+            selectedChatId === chat.id && 'bg-muted'
           )}
         >
           <div className="flex items-start space-x-3">
             <div className="relative">
               <Avatar className="w-12 h-12">
                 <AvatarImage src={chat.participant.avatar} />
-                <AvatarFallback>{chat.participant.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback>
+                  {chat.participant.name.charAt(0)}
+                </AvatarFallback>
               </Avatar>
               {chat.participant.isOnline && (
                 <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-success rounded-full border-2 border-background" />
               )}
             </div>
-            
+
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-1">
                 <h4 className="font-semibold text-sm truncate">
@@ -159,10 +176,13 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
                   <span className="text-xs text-muted-foreground">
                     {formatTime(chat.lastMessage.timestamp)}
                   </span>
-                  {getMessageStatus(chat.lastMessage.isRead, chat.lastMessage.senderId)}
+                  {getMessageStatus(
+                    chat.lastMessage.isRead,
+                    chat.lastMessage.senderId
+                  )}
                 </div>
               </div>
-              
+
               {chat.product && (
                 <div className="flex items-center space-x-2 mb-1">
                   <img
@@ -178,18 +198,24 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
                   </span>
                 </div>
               )}
-              
+
               <div className="flex items-center justify-between">
-                <p className={cn(
-                  "text-sm truncate",
-                  !chat.lastMessage.isRead && chat.lastMessage.senderId !== user?.id?.toString() 
-                    ? "font-semibold text-foreground" 
-                    : "text-muted-foreground"
-                )}>
+                <p
+                  className={cn(
+                    'text-sm truncate',
+                    !chat.lastMessage.isRead &&
+                      chat.lastMessage.senderId !== user?.id?.toString()
+                      ? 'font-semibold text-foreground'
+                      : 'text-muted-foreground'
+                  )}
+                >
                   {chat.lastMessage.content}
                 </p>
                 {chat.unreadCount > 0 && (
-                  <Badge variant="destructive" className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  <Badge
+                    variant="destructive"
+                    className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
+                  >
                     {chat.unreadCount}
                   </Badge>
                 )}

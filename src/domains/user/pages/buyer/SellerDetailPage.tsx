@@ -14,7 +14,7 @@ import {
   Timer,
   Truck,
   Package,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react'
 
 interface Seller {
@@ -46,20 +46,22 @@ export default function SellerDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [selectedFilter, setSelectedFilter] = useState('Tất cả')
-  
+
   // Fetch seller products for count
   const { data: productsData } = useProducts({
     sellerId: id,
     page: 1,
-    limit: 1
+    limit: 1,
   })
-  
+
   // Mock seller data - in production, this would come from an API
   const seller: Seller = {
     id: id || '1',
     name: 'Cửa hàng Chogiare',
-    logoUrl: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop',
-    description: 'Cửa hàng chuyên cung cấp sản phẩm chất lượng cao với giá cả hợp lý',
+    logoUrl:
+      'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop',
+    description:
+      'Cửa hàng chuyên cung cấp sản phẩm chất lượng cao với giá cả hợp lý',
     address: '123 Đường ABC, Quận 1, TP. Hồ Chí Minh',
     phone: '0901234567',
     email: 'contact@chogiare.com',
@@ -77,7 +79,7 @@ export default function SellerDetailPage() {
     averageResponseTime: '< 5 phút',
     onTimeDeliveryRate: 96,
     cancellationRate: 2.5, // 2.5% tỉ lệ hủy đơn
-    trustScore: 95 // Độ tin cậy 95/100
+    trustScore: 95, // Độ tin cậy 95/100
   }
 
   // Build filters for InfiniteProductGrid
@@ -85,7 +87,7 @@ export default function SellerDetailPage() {
     const baseFilters: any = {
       sellerId: id,
     }
-    
+
     // Apply sorting based on selected filter
     switch (selectedFilter) {
       case 'Bán chạy':
@@ -108,7 +110,7 @@ export default function SellerDetailPage() {
         baseFilters.sortBy = 'createdAt'
         baseFilters.sortOrder = 'desc'
     }
-    
+
     return baseFilters
   }, [id, selectedFilter])
 
@@ -117,7 +119,7 @@ export default function SellerDetailPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       {/* Seller Header - Compact */}
       <div className="bg-gradient-to-br from-primary to-primary/80 text-white">
         <div className="container mx-auto px-4 py-6">
@@ -129,7 +131,7 @@ export default function SellerDetailPage() {
                   src={seller.logoUrl}
                   alt={seller.name}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
+                  onError={e => {
                     const target = e.target as HTMLImageElement
                     target.style.display = 'none'
                     if (target.parentElement) {
@@ -150,7 +152,9 @@ export default function SellerDetailPage() {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <h1 className="text-xl md:text-2xl font-bold truncate">{seller.name}</h1>
+                    <h1 className="text-xl md:text-2xl font-bold truncate">
+                      {seller.name}
+                    </h1>
                     {seller.isTopSeller && (
                       <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white text-xs">
                         <Star className="h-3 w-3 mr-1" />
@@ -167,8 +171,12 @@ export default function SellerDetailPage() {
                   <div className="flex items-center gap-4 text-white/90 text-sm flex-wrap">
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-semibold">{seller.rating.toFixed(1)}</span>
-                      <span className="text-white/80">({seller.reviewCount})</span>
+                      <span className="font-semibold">
+                        {seller.rating.toFixed(1)}
+                      </span>
+                      <span className="text-white/80">
+                        ({seller.reviewCount})
+                      </span>
                     </div>
                     <span className="text-white/80">•</span>
                     <span>{seller.totalProducts} sản phẩm</span>
@@ -182,7 +190,7 @@ export default function SellerDetailPage() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Quick Actions - Compact */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <Button
@@ -201,7 +209,9 @@ export default function SellerDetailPage() {
                       variant="secondary"
                       size="sm"
                       className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                      onClick={() => window.location.href = `tel:${seller.phone}`}
+                      onClick={() =>
+                        (window.location.href = `tel:${seller.phone}`)
+                      }
                     >
                       <Phone className="h-4 w-4 mr-1" />
                       Gọi
@@ -220,7 +230,9 @@ export default function SellerDetailPage() {
                   <MessageCircle className="h-4 w-4 text-white/80" />
                   <div>
                     <p className="text-xs text-white/70">Tỷ lệ phản hồi</p>
-                    <p className="text-sm font-semibold">{seller.responseRate}%</p>
+                    <p className="text-sm font-semibold">
+                      {seller.responseRate}%
+                    </p>
                   </div>
                 </div>
               )}
@@ -229,22 +241,34 @@ export default function SellerDetailPage() {
                   <Timer className="h-4 w-4 text-white/80" />
                   <div>
                     <p className="text-xs text-white/70">Thời gian phản hồi</p>
-                    <p className="text-sm font-semibold">{seller.averageResponseTime}</p>
+                    <p className="text-sm font-semibold">
+                      {seller.averageResponseTime}
+                    </p>
                   </div>
                 </div>
               )}
               {seller.cancellationRate !== undefined && (
                 <div className="flex items-center gap-2">
-                  <TrendingUp className={`h-4 w-4 ${
-                    seller.cancellationRate <= 3 ? 'text-green-300' : 
-                    seller.cancellationRate <= 5 ? 'text-yellow-300' : 'text-red-300'
-                  }`} />
+                  <TrendingUp
+                    className={`h-4 w-4 ${
+                      seller.cancellationRate <= 3
+                        ? 'text-green-300'
+                        : seller.cancellationRate <= 5
+                          ? 'text-yellow-300'
+                          : 'text-red-300'
+                    }`}
+                  />
                   <div>
                     <p className="text-xs text-white/70">Tỉ lệ hủy đơn</p>
-                    <p className={`text-sm font-semibold ${
-                      seller.cancellationRate <= 3 ? 'text-green-300' : 
-                      seller.cancellationRate <= 5 ? 'text-yellow-300' : 'text-red-300'
-                    }`}>
+                    <p
+                      className={`text-sm font-semibold ${
+                        seller.cancellationRate <= 3
+                          ? 'text-green-300'
+                          : seller.cancellationRate <= 5
+                            ? 'text-yellow-300'
+                            : 'text-red-300'
+                      }`}
+                    >
                       {seller.cancellationRate}%
                     </p>
                   </div>
@@ -255,7 +279,9 @@ export default function SellerDetailPage() {
                   <Truck className="h-4 w-4 text-white/80" />
                   <div>
                     <p className="text-xs text-white/70">Giao hàng đúng hẹn</p>
-                    <p className="text-sm font-semibold">{seller.onTimeDeliveryRate}%</p>
+                    <p className="text-sm font-semibold">
+                      {seller.onTimeDeliveryRate}%
+                    </p>
                   </div>
                 </div>
               )}
@@ -273,7 +299,9 @@ export default function SellerDetailPage() {
                 <Package className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-bold">Sản phẩm của {seller.name}</h2>
+                <h2 className="text-xl font-bold">
+                  Sản phẩm của {seller.name}
+                </h2>
               </div>
             </div>
             <Badge variant="outline" className="bg-primary/5">
@@ -283,7 +311,7 @@ export default function SellerDetailPage() {
 
           {/* Filter Chips */}
           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-            {filters.map((filter) => (
+            {filters.map(filter => (
               <Button
                 key={filter}
                 variant={selectedFilter === filter ? 'default' : 'outline'}
@@ -305,4 +333,3 @@ export default function SellerDetailPage() {
     </div>
   )
 }
-

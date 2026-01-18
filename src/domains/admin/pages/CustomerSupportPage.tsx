@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Textarea } from '@shared/components/ui/textarea'
@@ -32,7 +37,7 @@ import {
   FileText,
   Paperclip,
   BarChart3,
-  Loader2
+  Loader2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -47,7 +52,9 @@ export default function CustomerSupportPage() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
-  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null)
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(
+    null
+  )
   const [replyText, setReplyText] = useState('')
   const [activeTab, setActiveTab] = useState('tickets')
   const [page, setPage] = useState(1)
@@ -71,55 +78,84 @@ export default function CustomerSupportPage() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800'
-      case 'high': return 'bg-orange-100 text-orange-800'
-      case 'medium': return 'bg-yellow-100 text-yellow-800'
-      case 'low': return 'bg-green-100 text-green-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'urgent':
+        return 'bg-red-100 text-red-800'
+      case 'high':
+        return 'bg-orange-100 text-orange-800'
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'low':
+        return 'bg-green-100 text-green-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getPriorityLabel = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'Khẩn cấp'
-      case 'high': return 'Cao'
-      case 'medium': return 'Trung bình'
-      case 'low': return 'Thấp'
-      default: return priority
+      case 'urgent':
+        return 'Khẩn cấp'
+      case 'high':
+        return 'Cao'
+      case 'medium':
+        return 'Trung bình'
+      case 'low':
+        return 'Thấp'
+      default:
+        return priority
     }
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-red-100 text-red-800'
-      case 'in_progress': return 'bg-blue-100 text-blue-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'resolved': return 'bg-green-100 text-green-800'
-      case 'closed': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'open':
+        return 'bg-red-100 text-red-800'
+      case 'in_progress':
+        return 'bg-blue-100 text-blue-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'resolved':
+        return 'bg-green-100 text-green-800'
+      case 'closed':
+        return 'bg-gray-100 text-gray-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'open': return 'Mở'
-      case 'in_progress': return 'Đang xử lý'
-      case 'pending': return 'Chờ phản hồi'
-      case 'resolved': return 'Đã giải quyết'
-      case 'closed': return 'Đã đóng'
-      default: return status
+      case 'open':
+        return 'Mở'
+      case 'in_progress':
+        return 'Đang xử lý'
+      case 'pending':
+        return 'Chờ phản hồi'
+      case 'resolved':
+        return 'Đã giải quyết'
+      case 'closed':
+        return 'Đã đóng'
+      default:
+        return status
     }
   }
 
   const getCategoryLabel = (category: string) => {
     switch (category) {
-      case 'account': return 'Tài khoản'
-      case 'product': return 'Sản phẩm'
-      case 'payment': return 'Thanh toán'
-      case 'technical': return 'Kỹ thuật'
-      case 'report': return 'Báo cáo'
-      case 'question': return 'Câu hỏi'
-      default: return category
+      case 'account':
+        return 'Tài khoản'
+      case 'product':
+        return 'Sản phẩm'
+      case 'payment':
+        return 'Thanh toán'
+      case 'technical':
+        return 'Kỹ thuật'
+      case 'report':
+        return 'Báo cáo'
+      case 'question':
+        return 'Câu hỏi'
+      default:
+        return category
     }
   }
 
@@ -129,14 +165,16 @@ export default function CustomerSupportPage() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
   const getTimeAgo = (dateString: string) => {
     const now = new Date()
     const date = new Date(dateString)
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+    )
 
     if (diffInHours < 1) return 'Vừa xong'
     if (diffInHours < 24) return `${diffInHours} giờ trước`
@@ -164,7 +202,7 @@ export default function CustomerSupportPage() {
   const tabs = [
     { id: 'tickets', label: 'Tickets', icon: MessageSquare },
     { id: 'analytics', label: 'Thống kê', icon: BarChart3 },
-    { id: 'faq', label: 'FAQ', icon: FileText }
+    { id: 'faq', label: 'FAQ', icon: FileText },
   ]
 
   return (
@@ -172,8 +210,12 @@ export default function CustomerSupportPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Hỗ trợ khách hàng</h1>
-          <p className="text-gray-600 mt-1">Quản lý các ticket hỗ trợ và khiếu nại từ khách hàng</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Hỗ trợ khách hàng
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Quản lý các ticket hỗ trợ và khiếu nại từ khách hàng
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline">
@@ -189,7 +231,7 @@ export default function CustomerSupportPage() {
 
       {/* Tabs */}
       <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-        {tabs.map((tab) => {
+        {tabs.map(tab => {
           const Icon = tab.icon
           return (
             <button
@@ -280,7 +322,7 @@ export default function CustomerSupportPage() {
                     <Input
                       placeholder="Tìm kiếm theo ID, tiêu đề, khách hàng..."
                       value={searchQuery}
-                      onChange={(e) => {
+                      onChange={e => {
                         setSearchQuery(e.target.value)
                         setPage(1)
                       }}
@@ -289,7 +331,13 @@ export default function CustomerSupportPage() {
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <Select value={statusFilter} onValueChange={(value) => { setStatusFilter(value); setPage(1) }}>
+                  <Select
+                    value={statusFilter}
+                    onValueChange={value => {
+                      setStatusFilter(value)
+                      setPage(1)
+                    }}
+                  >
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="Trạng thái" />
                     </SelectTrigger>
@@ -302,7 +350,13 @@ export default function CustomerSupportPage() {
                       <SelectItem value="closed">Đã đóng</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={priorityFilter} onValueChange={(value) => { setPriorityFilter(value); setPage(1) }}>
+                  <Select
+                    value={priorityFilter}
+                    onValueChange={value => {
+                      setPriorityFilter(value)
+                      setPage(1)
+                    }}
+                  >
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="Ưu tiên" />
                     </SelectTrigger>
@@ -314,7 +368,13 @@ export default function CustomerSupportPage() {
                       <SelectItem value="low">Thấp</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={categoryFilter} onValueChange={(value) => { setCategoryFilter(value); setPage(1) }}>
+                  <Select
+                    value={categoryFilter}
+                    onValueChange={value => {
+                      setCategoryFilter(value)
+                      setPage(1)
+                    }}
+                  >
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="Danh mục" />
                     </SelectTrigger>
@@ -356,27 +416,39 @@ export default function CustomerSupportPage() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {tickets.map((ticket) => (
+                      {tickets.map(ticket => (
                         <div
                           key={ticket.id}
                           className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                            selectedTicket?.id === ticket.id ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'
+                            selectedTicket?.id === ticket.id
+                              ? 'border-primary bg-primary/5'
+                              : 'border-gray-200 hover:border-gray-300'
                           }`}
                           onClick={() => setSelectedTicket(ticket)}
                         >
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-medium text-gray-900">{ticket.title}</h3>
-                                <Badge className={getPriorityColor(ticket.priority)}>
+                                <h3 className="font-medium text-gray-900">
+                                  {ticket.title}
+                                </h3>
+                                <Badge
+                                  className={getPriorityColor(ticket.priority)}
+                                >
                                   {getPriorityLabel(ticket.priority)}
                                 </Badge>
-                                <Badge className={getStatusColor(ticket.status)}>
+                                <Badge
+                                  className={getStatusColor(ticket.status)}
+                                >
                                   {getStatusLabel(ticket.status)}
                                 </Badge>
                               </div>
-                              <p className="text-sm text-gray-500 mb-2">{ticket.id}</p>
-                              <p className="text-sm text-gray-600 line-clamp-2">{ticket.description}</p>
+                              <p className="text-sm text-gray-500 mb-2">
+                                {ticket.id}
+                              </p>
+                              <p className="text-sm text-gray-600 line-clamp-2">
+                                {ticket.description}
+                              </p>
                             </div>
                           </div>
 
@@ -423,7 +495,9 @@ export default function CustomerSupportPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                          onClick={() =>
+                            setPage(p => Math.min(totalPages, p + 1))
+                          }
                           disabled={page === totalPages}
                         >
                           Sau
@@ -446,13 +520,17 @@ export default function CustomerSupportPage() {
                     <div className="space-y-6">
                       {/* Customer Info */}
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-3">Thông tin khách hàng</h4>
+                        <h4 className="font-medium text-gray-900 mb-3">
+                          Thông tin khách hàng
+                        </h4>
                         <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                           <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                             <User className="h-5 w-5 text-primary" />
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">{selectedTicket.customer.name}</p>
+                            <p className="font-medium text-gray-900">
+                              {selectedTicket.customer.name}
+                            </p>
                             <div className="flex items-center gap-1 text-sm text-gray-500">
                               <Mail className="h-3 w-3" />
                               <span>{selectedTicket.customer.email}</span>
@@ -467,46 +545,66 @@ export default function CustomerSupportPage() {
 
                       {/* Ticket Info */}
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-3">Thông tin ticket</h4>
+                        <h4 className="font-medium text-gray-900 mb-3">
+                          Thông tin ticket
+                        </h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-500">ID:</span>
-                            <span className="font-medium">{selectedTicket.id}</span>
+                            <span className="font-medium">
+                              {selectedTicket.id}
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-500">Danh mục:</span>
-                            <span className="font-medium">{getCategoryLabel(selectedTicket.category)}</span>
+                            <span className="font-medium">
+                              {getCategoryLabel(selectedTicket.category)}
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-500">Ưu tiên:</span>
-                            <Badge className={getPriorityColor(selectedTicket.priority)}>
+                            <Badge
+                              className={getPriorityColor(
+                                selectedTicket.priority
+                              )}
+                            >
                               {getPriorityLabel(selectedTicket.priority)}
                             </Badge>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-500">Trạng thái:</span>
-                            <Badge className={getStatusColor(selectedTicket.status)}>
+                            <Badge
+                              className={getStatusColor(selectedTicket.status)}
+                            >
                               {getStatusLabel(selectedTicket.status)}
                             </Badge>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-500">Phụ trách:</span>
-                            <span className="font-medium">{selectedTicket.assignedTo}</span>
+                            <span className="font-medium">
+                              {selectedTicket.assignedTo}
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-500">Tạo lúc:</span>
-                            <span className="font-medium">{formatDate(selectedTicket.createdAt)}</span>
+                            <span className="font-medium">
+                              {formatDate(selectedTicket.createdAt)}
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-500">Cập nhật:</span>
-                            <span className="font-medium">{formatDate(selectedTicket.updatedAt)}</span>
+                            <span className="font-medium">
+                              {formatDate(selectedTicket.updatedAt)}
+                            </span>
                           </div>
                         </div>
                       </div>
 
                       {/* Description */}
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-3">Mô tả</h4>
+                        <h4 className="font-medium text-gray-900 mb-3">
+                          Mô tả
+                        </h4>
                         <p className="text-sm text-gray-600 p-3 bg-gray-50 rounded-lg">
                           {selectedTicket.description}
                         </p>
@@ -514,11 +612,13 @@ export default function CustomerSupportPage() {
 
                       {/* Reply Section */}
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-3">Phản hồi</h4>
+                        <h4 className="font-medium text-gray-900 mb-3">
+                          Phản hồi
+                        </h4>
                         <div className="space-y-3">
                           <Textarea
                             value={replyText}
-                            onChange={(e) => setReplyText(e.target.value)}
+                            onChange={e => setReplyText(e.target.value)}
                             placeholder="Nhập phản hồi..."
                             rows={4}
                           />
@@ -526,7 +626,9 @@ export default function CustomerSupportPage() {
                             <Button
                               size="sm"
                               onClick={handleReply}
-                              disabled={!replyText.trim() || replyMutation.isPending}
+                              disabled={
+                                !replyText.trim() || replyMutation.isPending
+                              }
                             >
                               {replyMutation.isPending ? (
                                 <Loader2 className="h-4 w-4 mr-1 animate-spin" />
@@ -564,7 +666,9 @@ export default function CustomerSupportPage() {
                 <Card>
                   <CardContent className="p-6 text-center">
                     <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500">Chọn một ticket để xem chi tiết</p>
+                    <p className="text-gray-500">
+                      Chọn một ticket để xem chi tiết
+                    </p>
                   </CardContent>
                 </Card>
               )}
@@ -584,7 +688,9 @@ export default function CustomerSupportPage() {
               <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
                 <div className="text-center">
                   <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500">Biểu đồ thống kê sẽ được hiển thị ở đây</p>
+                  <p className="text-gray-500">
+                    Biểu đồ thống kê sẽ được hiển thị ở đây
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -598,7 +704,9 @@ export default function CustomerSupportPage() {
               <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
                 <div className="text-center">
                   <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500">Biểu đồ thống kê sẽ được hiển thị ở đây</p>
+                  <p className="text-gray-500">
+                    Biểu đồ thống kê sẽ được hiển thị ở đây
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -615,16 +723,30 @@ export default function CustomerSupportPage() {
           <CardContent>
             <div className="space-y-4">
               <div className="border rounded-lg p-4">
-                <h3 className="font-medium text-gray-900 mb-2">Làm thế nào để đăng ký tài khoản?</h3>
-                <p className="text-sm text-gray-600">Bạn có thể đăng ký tài khoản bằng cách nhấn nút "Đăng ký" ở góc trên bên phải và điền đầy đủ thông tin.</p>
+                <h3 className="font-medium text-gray-900 mb-2">
+                  Làm thế nào để đăng ký tài khoản?
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Bạn có thể đăng ký tài khoản bằng cách nhấn nút "Đăng ký" ở
+                  góc trên bên phải và điền đầy đủ thông tin.
+                </p>
               </div>
               <div className="border rounded-lg p-4">
-                <h3 className="font-medium text-gray-900 mb-2">Làm sao để đăng sản phẩm?</h3>
-                <p className="text-sm text-gray-600">Sau khi đăng nhập, bạn có thể vào "Quản lý sản phẩm" và nhấn "Thêm sản phẩm mới".</p>
+                <h3 className="font-medium text-gray-900 mb-2">
+                  Làm sao để đăng sản phẩm?
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Sau khi đăng nhập, bạn có thể vào "Quản lý sản phẩm" và nhấn
+                  "Thêm sản phẩm mới".
+                </p>
               </div>
               <div className="border rounded-lg p-4">
-                <h3 className="font-medium text-gray-900 mb-2">Phí giao dịch là bao nhiêu?</h3>
-                <p className="text-sm text-gray-600">Chúng tôi thu phí hoa hồng 5% trên mỗi giao dịch thành công.</p>
+                <h3 className="font-medium text-gray-900 mb-2">
+                  Phí giao dịch là bao nhiêu?
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Chúng tôi thu phí hoa hồng 5% trên mỗi giao dịch thành công.
+                </p>
               </div>
             </div>
           </CardContent>

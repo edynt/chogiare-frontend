@@ -1,21 +1,24 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Label } from '@shared/components/ui/label'
 import { Textarea } from '@shared/components/ui/textarea'
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@shared/components/ui/select'
-import { 
-  RadioGroup,
-  RadioGroupItem,
-} from '@shared/components/ui/radio-group'
+import { RadioGroup, RadioGroupItem } from '@shared/components/ui/radio-group'
 import { toast } from 'sonner'
 import { ArrowLeft, Send, Save } from 'lucide-react'
 import { useCreateNotification } from '@/hooks/useNotifications'
@@ -35,7 +38,7 @@ export default function CreateNotificationPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!formData.title.trim()) {
       toast.error('Vui lòng nhập tiêu đề thông báo')
       return
@@ -58,13 +61,19 @@ export default function CreateNotificationPage() {
         payload.actionUrl = formData.actionUrl.trim()
       }
 
-      if (!formData.targetAllUsers && formData.targetUserIds && formData.targetUserIds.length > 0) {
+      if (
+        !formData.targetAllUsers &&
+        formData.targetUserIds &&
+        formData.targetUserIds.length > 0
+      ) {
         payload.targetUserIds = formData.targetUserIds
       }
 
       const result = await createNotificationMutation.mutateAsync(payload)
-      
-      toast.success(`Đã tạo thông báo thành công! Đã gửi cho ${result.sentCount} người dùng.`)
+
+      toast.success(
+        `Đã tạo thông báo thành công! Đã gửi cho ${result.sentCount} người dùng.`
+      )
       navigate('/admin/notifications')
     } catch {
       toast.error('Có lỗi xảy ra khi tạo thông báo. Vui lòng thử lại.')
@@ -84,7 +93,7 @@ export default function CreateNotificationPage() {
       .split(',')
       .map(id => parseInt(id.trim(), 10))
       .filter(id => !isNaN(id))
-    
+
     setFormData(prev => ({
       ...prev,
       targetUserIds: userIds,
@@ -122,7 +131,12 @@ export default function CreateNotificationPage() {
                 <Label htmlFor="type">Loại thông báo *</Label>
                 <Select
                   value={formData.type}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, type: value as CreateNotificationRequest['type'] }))}
+                  onValueChange={value =>
+                    setFormData(prev => ({
+                      ...prev,
+                      type: value as CreateNotificationRequest['type'],
+                    }))
+                  }
                 >
                   <SelectTrigger id="type">
                     <SelectValue placeholder="Chọn loại thông báo" />
@@ -144,7 +158,9 @@ export default function CreateNotificationPage() {
                   id="title"
                   placeholder="Nhập tiêu đề thông báo"
                   value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={e =>
+                    setFormData(prev => ({ ...prev, title: e.target.value }))
+                  }
                   maxLength={200}
                   required
                 />
@@ -159,7 +175,9 @@ export default function CreateNotificationPage() {
                   id="message"
                   placeholder="Nhập nội dung thông báo"
                   value={formData.message}
-                  onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                  onChange={e =>
+                    setFormData(prev => ({ ...prev, message: e.target.value }))
+                  }
                   rows={6}
                   maxLength={1000}
                   required
@@ -176,7 +194,12 @@ export default function CreateNotificationPage() {
                   type="url"
                   placeholder="https://example.com/action"
                   value={formData.actionUrl || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, actionUrl: e.target.value }))}
+                  onChange={e =>
+                    setFormData(prev => ({
+                      ...prev,
+                      actionUrl: e.target.value,
+                    }))
+                  }
                 />
                 <p className="text-xs text-muted-foreground">
                   URL sẽ được mở khi người dùng click vào thông báo
@@ -205,7 +228,10 @@ export default function CreateNotificationPage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="specific" id="specific" />
-                  <Label htmlFor="specific" className="font-normal cursor-pointer">
+                  <Label
+                    htmlFor="specific"
+                    className="font-normal cursor-pointer"
+                  >
                     Người dùng cụ thể
                   </Label>
                 </div>
@@ -218,16 +244,18 @@ export default function CreateNotificationPage() {
                     id="userIds"
                     placeholder="1, 2, 3, 4, 5"
                     value={formData.targetUserIds?.join(', ') || ''}
-                    onChange={(e) => handleUserIdsChange(e.target.value)}
+                    onChange={e => handleUserIdsChange(e.target.value)}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Nhập danh sách ID người dùng, cách nhau bởi dấu phẩy (ví dụ: 1, 2, 3)
+                    Nhập danh sách ID người dùng, cách nhau bởi dấu phẩy (ví dụ:
+                    1, 2, 3)
                   </p>
-                  {formData.targetUserIds && formData.targetUserIds.length > 0 && (
-                    <p className="text-xs text-green-600">
-                      Sẽ gửi cho {formData.targetUserIds.length} người dùng
-                    </p>
-                  )}
+                  {formData.targetUserIds &&
+                    formData.targetUserIds.length > 0 && (
+                      <p className="text-xs text-green-600">
+                        Sẽ gửi cho {formData.targetUserIds.length} người dùng
+                      </p>
+                    )}
                 </div>
               )}
             </CardContent>
@@ -244,7 +272,11 @@ export default function CreateNotificationPage() {
             </Button>
             <Button
               type="submit"
-              disabled={createNotificationMutation.isPending || !formData.title.trim() || !formData.message.trim()}
+              disabled={
+                createNotificationMutation.isPending ||
+                !formData.title.trim() ||
+                !formData.message.trim()
+              }
             >
               {createNotificationMutation.isPending ? (
                 <>
@@ -264,5 +296,3 @@ export default function CreateNotificationPage() {
     </div>
   )
 }
-
-

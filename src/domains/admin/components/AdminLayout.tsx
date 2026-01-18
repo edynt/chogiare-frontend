@@ -22,26 +22,26 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <AdminSidebar 
+      <AdminSidebar
         isCollapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
-      
+
       {/* Main Content */}
-      <div className={cn(
-        "transition-all duration-300 ease-in-out",
-        sidebarCollapsed ? "ml-20" : "ml-80"
-      )}>
+      <div
+        className={cn(
+          'transition-all duration-300 ease-in-out',
+          sidebarCollapsed ? 'ml-20' : 'ml-80'
+        )}
+      >
         {/* Header */}
         <AdminHeader />
-        
+
         {/* Breadcrumb */}
         <AdminBreadcrumb />
-        
+
         {/* Page Content */}
-        <main className="p-8">
-          {children || <Outlet />}
-        </main>
+        <main className="p-8">{children || <Outlet />}</main>
       </div>
     </div>
   )

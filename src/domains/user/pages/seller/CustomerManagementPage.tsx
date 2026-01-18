@@ -2,24 +2,40 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/components/ui/avatar'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@shared/components/ui/table'
-import { 
-  Users, 
-  Search, 
-  Filter, 
-  Mail, 
-  Phone, 
-  MessageCircle, 
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@shared/components/ui/avatar'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@shared/components/ui/table'
+import {
+  Users,
+  Search,
+  Filter,
+  Mail,
+  Phone,
+  MessageCircle,
   ShoppingCart,
   DollarSign,
   Star,
   ArrowLeft,
-  Calendar
+  Calendar,
 } from 'lucide-react'
 import { formatPrice, formatDate } from '@/lib/utils'
 
@@ -51,7 +67,7 @@ export default function CustomerManagementPage() {
       totalSpent: 12500000,
       lastOrderDate: '2024-01-15T10:30:00Z',
       rating: 4.5,
-      status: 'active'
+      status: 'active',
     },
     {
       id: '2',
@@ -62,7 +78,7 @@ export default function CustomerManagementPage() {
       totalSpent: 8500000,
       lastOrderDate: '2024-01-14T14:20:00Z',
       rating: 5.0,
-      status: 'active'
+      status: 'active',
     },
     {
       id: '3',
@@ -72,21 +88,22 @@ export default function CustomerManagementPage() {
       totalSpent: 3200000,
       lastOrderDate: '2024-01-10T09:15:00Z',
       rating: 4.0,
-      status: 'inactive'
-    }
+      status: 'inactive',
+    },
   ]
 
-  const filteredCustomers = customers.filter(customer =>
-    customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    customer.phone?.includes(searchQuery)
+  const filteredCustomers = customers.filter(
+    customer =>
+      customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.phone?.includes(searchQuery)
   )
 
   const stats = {
     total: customers.length,
     active: customers.filter(c => c.status === 'active').length,
     totalSpent: customers.reduce((sum, c) => sum + c.totalSpent, 0),
-    totalOrders: customers.reduce((sum, c) => sum + c.totalOrders, 0)
+    totalOrders: customers.reduce((sum, c) => sum + c.totalOrders, 0),
   }
 
   return (
@@ -94,7 +111,11 @@ export default function CustomerManagementPage() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-6">
-          <Button variant="ghost" onClick={() => navigate('/dashboard')} className="mb-4">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/dashboard')}
+            className="mb-4"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Quay lại
           </Button>
@@ -110,7 +131,9 @@ export default function CustomerManagementPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Tổng khách hàng</p>
+                  <p className="text-sm text-muted-foreground">
+                    Tổng khách hàng
+                  </p>
                   <p className="text-2xl font-bold">{stats.total}</p>
                 </div>
                 <Users className="h-8 w-8 text-primary" />
@@ -121,7 +144,9 @@ export default function CustomerManagementPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Khách hàng hoạt động</p>
+                  <p className="text-sm text-muted-foreground">
+                    Khách hàng hoạt động
+                  </p>
                   <p className="text-2xl font-bold">{stats.active}</p>
                 </div>
                 <Users className="h-8 w-8 text-green-600" />
@@ -143,8 +168,12 @@ export default function CustomerManagementPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Tổng doanh thu</p>
-                  <p className="text-2xl font-bold">{formatPrice(stats.totalSpent)}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Tổng doanh thu
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {formatPrice(stats.totalSpent)}
+                  </p>
                 </div>
                 <DollarSign className="h-8 w-8 text-purple-600" />
               </div>
@@ -161,7 +190,7 @@ export default function CustomerManagementPage() {
                 <Input
                   placeholder="Tìm kiếm theo tên, email, số điện thoại..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -197,21 +226,27 @@ export default function CustomerManagementPage() {
                   {filteredCustomers.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-8">
-                        <p className="text-muted-foreground">Không tìm thấy khách hàng nào</p>
+                        <p className="text-muted-foreground">
+                          Không tìm thấy khách hàng nào
+                        </p>
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredCustomers.map((customer) => (
+                    filteredCustomers.map(customer => (
                       <TableRow key={customer.id}>
                         <TableCell>
                           <div className="flex items-center gap-3">
                             <Avatar>
                               <AvatarImage src={customer.avatar} />
-                              <AvatarFallback>{customer.name.charAt(0)}</AvatarFallback>
+                              <AvatarFallback>
+                                {customer.name.charAt(0)}
+                              </AvatarFallback>
                             </Avatar>
                             <div>
                               <p className="font-medium">{customer.name}</p>
-                              <p className="text-sm text-muted-foreground">ID: {customer.id}</p>
+                              <p className="text-sm text-muted-foreground">
+                                ID: {customer.id}
+                              </p>
                             </div>
                           </div>
                         </TableCell>
@@ -232,7 +267,9 @@ export default function CustomerManagementPage() {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-medium">{customer.totalOrders}</span>
+                            <span className="font-medium">
+                              {customer.totalOrders}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -243,7 +280,9 @@ export default function CustomerManagementPage() {
                         <TableCell>
                           <div className="flex items-center gap-1">
                             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-medium">{customer.rating.toFixed(1)}</span>
+                            <span className="font-medium">
+                              {customer.rating.toFixed(1)}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -253,12 +292,22 @@ export default function CustomerManagementPage() {
                               <span>{formatDate(customer.lastOrderDate)}</span>
                             </div>
                           ) : (
-                            <span className="text-sm text-muted-foreground">Chưa có</span>
+                            <span className="text-sm text-muted-foreground">
+                              Chưa có
+                            </span>
                           )}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={customer.status === 'active' ? 'default' : 'secondary'}>
-                            {customer.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
+                          <Badge
+                            variant={
+                              customer.status === 'active'
+                                ? 'default'
+                                : 'secondary'
+                            }
+                          >
+                            {customer.status === 'active'
+                              ? 'Hoạt động'
+                              : 'Không hoạt động'}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -266,14 +315,18 @@ export default function CustomerManagementPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => navigate(`/chat?userId=${customer.id}`)}
+                              onClick={() =>
+                                navigate(`/chat?userId=${customer.id}`)
+                              }
                             >
                               <MessageCircle className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => navigate(`/orders?customerId=${customer.id}`)}
+                              onClick={() =>
+                                navigate(`/orders?customerId=${customer.id}`)
+                              }
                             >
                               <ShoppingCart className="h-4 w-4" />
                             </Button>
@@ -292,4 +345,3 @@ export default function CustomerManagementPage() {
     </div>
   )
 }
-

@@ -24,7 +24,7 @@ export default function ProductDetailPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Quay lại
           </Button>
-          
+
           {/* Product Details Component */}
           <ProductDetails />
         </div>
@@ -33,4 +33,3 @@ export default function ProductDetailPage() {
     </div>
   )
 }
-

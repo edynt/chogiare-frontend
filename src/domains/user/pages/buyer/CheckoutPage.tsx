@@ -2,7 +2,12 @@ import React, { useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
 import { RadioGroup, RadioGroupItem } from '@shared/components/ui/radio-group'
@@ -14,12 +19,12 @@ import { useCreateOrder } from '@/hooks/useOrders'
 import { useCartStore } from '@/stores/cartStore'
 import { LoadingSpinner } from '@shared/components/ui/loading'
 import { toast } from 'sonner'
-import { 
-  ArrowLeft, 
-  MapPin, 
-  Plus, 
-  CheckCircle2, 
-  Package, 
+import {
+  ArrowLeft,
+  MapPin,
+  Plus,
+  CheckCircle2,
+  Package,
   ShoppingBag,
   Star,
   Verified,
@@ -31,9 +36,13 @@ import {
   Store,
   Shield,
   Sparkles,
-  Lock
+  Lock,
 } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@shared/components/ui/alert'
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@shared/components/ui/alert'
 import { formatCurrency, PLACEHOLDER_IMAGE } from '@/lib/utils'
 
 export default function CheckoutPage() {
@@ -41,11 +50,18 @@ export default function CheckoutPage() {
   const navigate = useNavigate()
   const productId = searchParams.get('productId')
   const quantity = parseInt(searchParams.get('quantity') || '1')
-  const { items: cartItems, totalValue: cartTotalValue, clearCart } = useCartStore()
+  const {
+    items: cartItems,
+    totalValue: cartTotalValue,
+    clearCart,
+  } = useCartStore()
 
-  const { data: product, isLoading: isLoadingProduct } = useProduct(productId || '')
+  const { data: product, isLoading: isLoadingProduct } = useProduct(
+    productId || ''
+  )
   // Fetch first product from cart to get storeId
-  const firstCartProductId = !productId && cartItems.length > 0 ? cartItems[0].productId : null
+  const firstCartProductId =
+    !productId && cartItems.length > 0 ? cartItems[0].productId : null
   const { data: firstCartProduct } = useProduct(firstCartProductId || '')
   const { data: addresses, isLoading: isLoadingAddresses } = useAddresses()
   const { data: defaultAddress } = useDefaultAddress()
@@ -53,13 +69,24 @@ export default function CheckoutPage() {
 
   // Determine if we're checking out from cart or single product
   const isFromCart = !productId && cartItems.length > 0
-  const orderItems = isFromCart 
-    ? cartItems.map(item => ({ 
-        productId: typeof item.productId === 'string' ? parseInt(item.productId, 10) : item.productId, 
-        quantity: item.quantity 
+  const orderItems = isFromCart
+    ? cartItems.map(item => ({
+        productId:
+          typeof item.productId === 'string'
+            ? parseInt(item.productId, 10)
+            : item.productId,
+        quantity: item.quantity,
       }))
-    : product 
-      ? [{ productId: typeof product.id === 'string' ? parseInt(product.id, 10) : product.id, quantity }]
+    : product
+      ? [
+          {
+            productId:
+              typeof product.id === 'string'
+                ? parseInt(product.id, 10)
+                : product.id,
+            quantity,
+          },
+        ]
       : []
 
   // Group cart items by seller/store
@@ -80,7 +107,8 @@ export default function CheckoutPage() {
     defaultAddress?.id || null
   )
 
-  const selectedAddress = addresses?.find(addr => addr.id === selectedAddressId) || defaultAddress
+  const selectedAddress =
+    addresses?.find(addr => addr.id === selectedAddressId) || defaultAddress
 
   const handlePlaceOrder = async () => {
     if (orderItems.length === 0) {
@@ -96,7 +124,8 @@ export default function CheckoutPage() {
     // Get storeId from first product (assuming all items are from same store)
     let storeId: number | null = null
     if (isFromCart && firstCartProduct) {
-      const storeIdStr = firstCartProduct.store?.id || firstCartProduct.sellerId || ''
+      const storeIdStr =
+        firstCartProduct.store?.id || firstCartProduct.sellerId || ''
       storeId = storeIdStr ? parseInt(storeIdStr, 10) : null
     } else if (product) {
       const storeIdStr = product.store?.id || product.sellerId || ''
@@ -121,18 +150,21 @@ export default function CheckoutPage() {
         deliveryAddressId: addressId,
         billingAddressId: addressId,
         items: orderItems.map(item => ({
-          productId: typeof item.productId === 'string' ? parseInt(item.productId, 10) : item.productId,
+          productId:
+            typeof item.productId === 'string'
+              ? parseInt(item.productId, 10)
+              : item.productId,
           quantity: item.quantity,
         })),
       }
 
       const order = await createOrder.mutateAsync(orderData)
-      
+
       // Clear cart if order was from cart
       if (isFromCart) {
         clearCart()
       }
-      
+
       // Navigate to order confirmation page
       if (order?.id) {
         toast.success('Đặt hàng thành công!')
@@ -146,7 +178,11 @@ export default function CheckoutPage() {
     }
   }
 
-  if ((productId && isLoadingProduct) || (isFromCart && !firstCartProduct && firstCartProductId) || isLoadingAddresses) {
+  if (
+    (productId && isLoadingProduct) ||
+    (isFromCart && !firstCartProduct && firstCartProductId) ||
+    isLoadingAddresses
+  ) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -182,7 +218,9 @@ export default function CheckoutPage() {
         <main className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold mb-4">Giỏ hàng trống</h2>
-            <p className="text-muted-foreground mb-4">Vui lòng thêm sản phẩm vào giỏ hàng trước khi đặt hàng</p>
+            <p className="text-muted-foreground mb-4">
+              Vui lòng thêm sản phẩm vào giỏ hàng trước khi đặt hàng
+            </p>
             <Button onClick={() => navigate('/cart')}>Xem giỏ hàng</Button>
           </div>
         </main>
@@ -191,7 +229,11 @@ export default function CheckoutPage() {
     )
   }
 
-  const totalAmount = isFromCart ? cartTotalValue : (product ? product.price * quantity : 0)
+  const totalAmount = isFromCart
+    ? cartTotalValue
+    : product
+      ? product.price * quantity
+      : 0
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -202,9 +244,9 @@ export default function CheckoutPage() {
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 border border-primary/20">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32" />
             <div className="relative flex items-center gap-4">
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => navigate(-1)}
                 className="hover:bg-primary/10 transition-colors"
               >
@@ -219,7 +261,9 @@ export default function CheckoutPage() {
                     Xác nhận đặt hàng
                   </h1>
                 </div>
-                <p className="text-muted-foreground ml-14">Kiểm tra và xác nhận thông tin đơn hàng của bạn</p>
+                <p className="text-muted-foreground ml-14">
+                  Kiểm tra và xác nhận thông tin đơn hàng của bạn
+                </p>
               </div>
             </div>
           </div>
@@ -234,8 +278,12 @@ export default function CheckoutPage() {
                     <Truck className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                   </div>
                   <AlertDescription className="text-amber-900 dark:text-amber-100 font-medium">
-                    <strong className="text-amber-700 dark:text-amber-300">Lưu ý quan trọng:</strong> Chúng tôi không cung cấp dịch vụ vận chuyển. 
-                    Bạn cần <strong>tự đến lấy hàng</strong> hoặc <strong>tự đặt dịch vụ vận chuyển</strong>.
+                    <strong className="text-amber-700 dark:text-amber-300">
+                      Lưu ý quan trọng:
+                    </strong>{' '}
+                    Chúng tôi không cung cấp dịch vụ vận chuyển. Bạn cần{' '}
+                    <strong>tự đến lấy hàng</strong> hoặc{' '}
+                    <strong>tự đặt dịch vụ vận chuyển</strong>.
                   </AlertDescription>
                 </div>
               </Alert>
@@ -248,12 +296,17 @@ export default function CheckoutPage() {
                 </AlertTitle>
                 <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm space-y-1">
                   <p className="font-medium">
-                    Vui lòng chỉ đặt hàng khi bạn thực sự có nhu cầu mua sản phẩm.
+                    Vui lòng chỉ đặt hàng khi bạn thực sự có nhu cầu mua sản
+                    phẩm.
                   </p>
                   <ul className="list-disc list-inside space-y-1 ml-2">
-                    <li>Không spam tin nhắn hoặc đặt hàng giả để tội người bán</li>
+                    <li>
+                      Không spam tin nhắn hoặc đặt hàng giả để tội người bán
+                    </li>
                     <li>Hãy tôn trọng thời gian và công sức của người bán</li>
-                    <li>Đặt hàng nghiêm túc giúp tạo môi trường mua bán lành mạnh</li>
+                    <li>
+                      Đặt hàng nghiêm túc giúp tạo môi trường mua bán lành mạnh
+                    </li>
                   </ul>
                 </AlertDescription>
               </Alert>
@@ -286,7 +339,7 @@ export default function CheckoutPage() {
                       onValueChange={setSelectedAddressId}
                     >
                       <div className="space-y-4">
-                        {addresses.map((address) => (
+                        {addresses.map(address => (
                           <div key={address.id}>
                             <Label
                               htmlFor={address.id}
@@ -310,27 +363,38 @@ export default function CheckoutPage() {
                                     </Badge>
                                   )}
                                   <span className="font-bold text-base">
-                                    {address.isDefault ? 'Địa chỉ mặc định' : 'Địa chỉ nhận hàng'}
+                                    {address.isDefault
+                                      ? 'Địa chỉ mặc định'
+                                      : 'Địa chỉ nhận hàng'}
                                   </span>
                                 </div>
                                 <div className="space-y-2.5 text-sm">
                                   <div className="flex items-center gap-2.5 p-2 bg-muted/50 rounded-lg">
                                     <User className="h-4 w-4 text-primary" />
-                                    <span className="font-semibold">{address.recipientName}</span>
+                                    <span className="font-semibold">
+                                      {address.recipientName}
+                                    </span>
                                   </div>
                                   <div className="flex items-center gap-2.5 p-2 bg-muted/50 rounded-lg">
                                     <Phone className="h-4 w-4 text-primary" />
-                                    <span className="font-medium">{address.recipientPhone}</span>
+                                    <span className="font-medium">
+                                      {address.recipientPhone}
+                                    </span>
                                   </div>
                                   <div className="p-2 bg-muted/50 rounded-lg">
-                                    <p className="font-semibold mb-1">{address.street}</p>
+                                    <p className="font-semibold mb-1">
+                                      {address.street}
+                                    </p>
                                     <p className="text-muted-foreground">
-                                      {address.ward && `Phường/Xã ${address.ward}, `}
-                                      {address.district && `Quận/Huyện ${address.district}, `}
+                                      {address.ward &&
+                                        `Phường/Xã ${address.ward}, `}
+                                      {address.district &&
+                                        `Quận/Huyện ${address.district}, `}
                                       {address.city}, {address.state}
                                     </p>
                                     <p className="text-muted-foreground text-xs mt-1">
-                                      {address.zipCode && `Mã bưu điện: ${address.zipCode} - `}
+                                      {address.zipCode &&
+                                        `Mã bưu điện: ${address.zipCode} - `}
                                       {address.country}
                                     </p>
                                   </div>
@@ -356,7 +420,7 @@ export default function CheckoutPage() {
                       <p className="text-muted-foreground mb-6 font-medium">
                         Bạn chưa có địa chỉ nhận hàng
                       </p>
-                      <Button 
+                      <Button
                         onClick={() => navigate('/addresses')}
                         className="bg-primary hover:bg-primary/90"
                       >
@@ -375,78 +439,119 @@ export default function CheckoutPage() {
                     <div className="p-2 bg-primary/10 rounded-lg">
                       <Package className="h-5 w-5 text-primary" />
                     </div>
-                    {isFromCart ? `Thông tin sản phẩm (${cartItems.length})` : 'Thông tin sản phẩm'}
+                    {isFromCart
+                      ? `Thông tin sản phẩm (${cartItems.length})`
+                      : 'Thông tin sản phẩm'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                   {isFromCart ? (
                     <div className="space-y-6">
-                      {Object.entries(groupedCartItems).map(([sellerKey, sellerItems]) => {
-                        const firstItem = sellerItems[0]
-                        const sellerName = firstItem.sellerName || firstItem.storeName || 'Nhà cung cấp'
-                        const groupTotal = sellerItems.reduce((sum, item) => sum + (item.productPrice * item.quantity), 0)
-                        const groupQuantity = sellerItems.reduce((sum, item) => sum + item.quantity, 0)
+                      {Object.entries(groupedCartItems).map(
+                        ([sellerKey, sellerItems]) => {
+                          const firstItem = sellerItems[0]
+                          const sellerName =
+                            firstItem.sellerName ||
+                            firstItem.storeName ||
+                            'Nhà cung cấp'
+                          const groupTotal = sellerItems.reduce(
+                            (sum, item) =>
+                              sum + item.productPrice * item.quantity,
+                            0
+                          )
+                          const groupQuantity = sellerItems.reduce(
+                            (sum, item) => sum + item.quantity,
+                            0
+                          )
 
-                        return (
-                          <div key={sellerKey} className="space-y-3">
-                            {/* Seller Header */}
-                            <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-primary/5 to-transparent rounded-lg border border-primary/20">
-                              <div className="p-1.5 bg-primary/10 rounded-lg">
-                                <Store className="h-4 w-4 text-primary" />
+                          return (
+                            <div key={sellerKey} className="space-y-3">
+                              {/* Seller Header */}
+                              <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-primary/5 to-transparent rounded-lg border border-primary/20">
+                                <div className="p-1.5 bg-primary/10 rounded-lg">
+                                  <Store className="h-4 w-4 text-primary" />
+                                </div>
+                                <span className="font-bold text-base">
+                                  {sellerName}
+                                </span>
+                                <Verified className="h-4 w-4 text-primary" />
+                                <Badge
+                                  variant="outline"
+                                  className="bg-primary/5 border-primary/20"
+                                >
+                                  {groupQuantity} sản phẩm
+                                </Badge>
+                                <span className="text-sm text-primary ml-auto font-bold">
+                                  {formatCurrency(groupTotal)}
+                                </span>
                               </div>
-                              <span className="font-bold text-base">{sellerName}</span>
-                              <Verified className="h-4 w-4 text-primary" />
-                              <Badge variant="outline" className="bg-primary/5 border-primary/20">
-                                {groupQuantity} sản phẩm
-                              </Badge>
-                              <span className="text-sm text-primary ml-auto font-bold">
-                                {formatCurrency(groupTotal)}
-                              </span>
-                            </div>
-                            {/* Products in this group */}
-                            <div className="space-y-3 pl-4">
-                              {sellerItems.map((item) => (
-                                <div key={item.id} className="flex gap-4 p-4 border-2 rounded-xl hover:border-primary/50 hover:shadow-md transition-all bg-muted/30">
-                                  <img
-                                    src={item.productImage}
-                                    alt={item.productName}
-                                    className="w-20 h-20 object-cover rounded-lg border-2 border-border shadow-sm"
-                                  />
-                                  <div className="flex-1">
-                                    <h3 className="font-bold text-base mb-2">{item.productName}</h3>
-                                    <div className="flex items-center justify-between">
-                                      <p className="text-sm text-muted-foreground">
-                                        Số lượng: <span className="font-semibold text-foreground">{item.quantity}</span>
-                                      </p>
-                                      <p className="text-base font-bold text-primary">
-                                        {formatCurrency(item.productPrice)} × {item.quantity} = {formatCurrency(item.productPrice * item.quantity)}
-                                      </p>
+                              {/* Products in this group */}
+                              <div className="space-y-3 pl-4">
+                                {sellerItems.map(item => (
+                                  <div
+                                    key={item.id}
+                                    className="flex gap-4 p-4 border-2 rounded-xl hover:border-primary/50 hover:shadow-md transition-all bg-muted/30"
+                                  >
+                                    <img
+                                      src={item.productImage}
+                                      alt={item.productName}
+                                      className="w-20 h-20 object-cover rounded-lg border-2 border-border shadow-sm"
+                                    />
+                                    <div className="flex-1">
+                                      <h3 className="font-bold text-base mb-2">
+                                        {item.productName}
+                                      </h3>
+                                      <div className="flex items-center justify-between">
+                                        <p className="text-sm text-muted-foreground">
+                                          Số lượng:{' '}
+                                          <span className="font-semibold text-foreground">
+                                            {item.quantity}
+                                          </span>
+                                        </p>
+                                        <p className="text-base font-bold text-primary">
+                                          {formatCurrency(item.productPrice)} ×{' '}
+                                          {item.quantity} ={' '}
+                                          {formatCurrency(
+                                            item.productPrice * item.quantity
+                                          )}
+                                        </p>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              ))}
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )
-                      })}
+                          )
+                        }
+                      )}
                     </div>
                   ) : product ? (
                     <div className="flex gap-6 p-4 border-2 rounded-xl bg-muted/30 hover:border-primary/50 hover:shadow-md transition-all">
                       <img
-                        src={product.images && product.images.length > 0 ? product.images[0] : PLACEHOLDER_IMAGE}
+                        src={
+                          product.images && product.images.length > 0
+                            ? product.images[0]
+                            : PLACEHOLDER_IMAGE
+                        }
                         alt={product.title}
                         className="w-28 h-28 object-cover rounded-xl border-2 border-border shadow-lg"
-                        onError={(e) => {
+                        onError={e => {
                           e.currentTarget.src = PLACEHOLDER_IMAGE
                         }}
                       />
                       <div className="flex-1 flex flex-col justify-center">
-                        <h3 className="font-bold text-lg mb-2">{product.title}</h3>
+                        <h3 className="font-bold text-lg mb-2">
+                          {product.title}
+                        </h3>
                         <p className="text-sm text-muted-foreground mb-3">
-                          Số lượng: <span className="font-semibold text-foreground">{quantity}</span>
+                          Số lượng:{' '}
+                          <span className="font-semibold text-foreground">
+                            {quantity}
+                          </span>
                         </p>
                         <p className="text-2xl font-bold text-primary">
-                          {formatCurrency(product.price)} × {quantity} = {formatCurrency(product.price * quantity)}
+                          {formatCurrency(product.price)} × {quantity} ={' '}
+                          {formatCurrency(product.price * quantity)}
                         </p>
                       </div>
                     </div>
@@ -470,16 +575,23 @@ export default function CheckoutPage() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                       <span className="text-sm text-muted-foreground">
-                        Tạm tính {isFromCart ? `(${cartItems.reduce((sum, item) => sum + item.quantity, 0)} sản phẩm)` : ''}
+                        Tạm tính{' '}
+                        {isFromCart
+                          ? `(${cartItems.reduce((sum, item) => sum + item.quantity, 0)} sản phẩm)`
+                          : ''}
                       </span>
-                      <span className="font-bold text-base">{formatCurrency(totalAmount)}</span>
+                      <span className="font-bold text-base">
+                        {formatCurrency(totalAmount)}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                       <span className="text-sm text-muted-foreground flex items-center gap-2">
                         <Truck className="h-4 w-4" />
                         Phí vận chuyển
                       </span>
-                      <span className="text-sm font-medium text-muted-foreground">Tự vận chuyển</span>
+                      <span className="text-sm font-medium text-muted-foreground">
+                        Tự vận chuyển
+                      </span>
                     </div>
                     <Separator className="my-4" />
                     <div className="flex justify-between items-center p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl border-2 border-primary/20">
@@ -497,16 +609,21 @@ export default function CheckoutPage() {
                     <Alert className="border-amber-500 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800">
                       <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                       <AlertDescription className="text-amber-800 dark:text-amber-200 text-xs space-y-1">
-                        <p className="font-semibold mb-1">⚠️ Chỉ đặt hàng khi thực sự cần</p>
-                        <p className="text-xs">Không spam hoặc đặt hàng giả. Hãy tôn trọng người bán.</p>
+                        <p className="font-semibold mb-1">
+                          ⚠️ Chỉ đặt hàng khi thực sự cần
+                        </p>
+                        <p className="text-xs">
+                          Không spam hoặc đặt hàng giả. Hãy tôn trọng người bán.
+                        </p>
                       </AlertDescription>
                     </Alert>
-                    
+
                     <Alert className="bg-gradient-to-r from-blue-50 to-blue-100/50 border-2 border-blue-300 dark:from-blue-950/30 dark:to-blue-900/20 dark:border-blue-800">
                       <div className="flex items-start gap-2">
                         <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5" />
                         <AlertDescription className="text-blue-900 dark:text-blue-100 text-xs font-medium">
-                          <strong>Lưu ý:</strong> Bạn cần tự đến lấy hàng hoặc tự đặt dịch vụ vận chuyển.
+                          <strong>Lưu ý:</strong> Bạn cần tự đến lấy hàng hoặc
+                          tự đặt dịch vụ vận chuyển.
                         </AlertDescription>
                       </div>
                     </Alert>
@@ -532,7 +649,11 @@ export default function CheckoutPage() {
                     className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-200 text-base font-bold py-6"
                     size="lg"
                     onClick={handlePlaceOrder}
-                    disabled={!selectedAddress || createOrder.isPending || orderItems.length === 0}
+                    disabled={
+                      !selectedAddress ||
+                      createOrder.isPending ||
+                      orderItems.length === 0
+                    }
                   >
                     {createOrder.isPending ? (
                       <div className="flex items-center gap-2">
@@ -542,7 +663,8 @@ export default function CheckoutPage() {
                     ) : (
                       <>
                         <Lock className="h-5 w-5 mr-2" />
-                        Xác nhận đặt hàng {isFromCart ? `(${cartItems.length} sản phẩm)` : ''}
+                        Xác nhận đặt hàng{' '}
+                        {isFromCart ? `(${cartItems.length} sản phẩm)` : ''}
                       </>
                     )}
                   </Button>
@@ -565,4 +687,3 @@ export default function CheckoutPage() {
     </div>
   )
 }
-

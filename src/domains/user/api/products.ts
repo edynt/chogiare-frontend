@@ -1,22 +1,24 @@
 import { apiClient } from '@shared/api/axios'
-import type { 
-  Product, 
-  Category, 
-  SearchFilters, 
-  PaginatedResponse, 
+import type {
+  Product,
+  Category,
+  SearchFilters,
+  PaginatedResponse,
   ApiResponse,
-  ProductStatus 
+  ProductStatus,
 } from '@/types'
 
 export const productsApi = {
   // Product CRUD operations
-  getProducts: async (filters: SearchFilters = {}): Promise<PaginatedResponse<Product>> => {
+  getProducts: async (
+    filters: SearchFilters = {}
+  ): Promise<PaginatedResponse<Product>> => {
     const params: Record<string, unknown> = {}
-    
+
     if (filters.page !== undefined) params.page = filters.page
     if (filters.pageSize !== undefined) params.pageSize = filters.pageSize
     else if (filters.limit !== undefined) params.pageSize = filters.limit
-    
+
     if (filters.categoryId !== undefined) params.categoryId = filters.categoryId
     if (filters.sellerId !== undefined) params.sellerId = filters.sellerId
     if (filters.status !== undefined) params.status = filters.status
@@ -24,16 +26,17 @@ export const productsApi = {
     if (filters.query !== undefined) params.search = filters.query
     if (filters.featured !== undefined) params.isFeatured = filters.featured
     if (filters.promoted !== undefined) params.isPromoted = filters.promoted
-    
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Product>>>(
-      '/products',
-      { params }
-    )
+
+    const response = await apiClient.get<
+      ApiResponse<PaginatedResponse<Product>>
+    >('/products', { params })
     return response.data.data
   },
 
   getProduct: async (id: string): Promise<Product> => {
-    const response = await apiClient.get<ApiResponse<Product>>(`/products/${id}`)
+    const response = await apiClient.get<ApiResponse<Product>>(
+      `/products/${id}`
+    )
     return response.data.data
   },
 
@@ -55,12 +58,21 @@ export const productsApi = {
     sku?: string
     storeId?: number
   }): Promise<Product> => {
-    const response = await apiClient.post<ApiResponse<Product>>('/products', data)
+    const response = await apiClient.post<ApiResponse<Product>>(
+      '/products',
+      data
+    )
     return response.data.data
   },
 
-  updateProduct: async (id: string, data: Partial<Product>): Promise<Product> => {
-    const response = await apiClient.patch<ApiResponse<Product>>(`/products/${id}`, data)
+  updateProduct: async (
+    id: string,
+    data: Partial<Product>
+  ): Promise<Product> => {
+    const response = await apiClient.patch<ApiResponse<Product>>(
+      `/products/${id}`,
+      data
+    )
     return response.data.data
   },
 
@@ -69,55 +81,73 @@ export const productsApi = {
   },
 
   // Product search and filtering
-  searchProducts: async (query: string, filters: Omit<SearchFilters, 'query'> = {}): Promise<PaginatedResponse<Product>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Product>>>(
-      '/products/search',
-      { params: { query, ...filters } }
-    )
+  searchProducts: async (
+    query: string,
+    filters: Omit<SearchFilters, 'query'> = {}
+  ): Promise<PaginatedResponse<Product>> => {
+    const response = await apiClient.get<
+      ApiResponse<PaginatedResponse<Product>>
+    >('/products/search', { params: { query, ...filters } })
     return response.data.data
   },
 
-  getProductsByCategory: async (categoryId: string, filters: Omit<SearchFilters, 'categoryId'> = {}): Promise<PaginatedResponse<Product>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Product>>>(
-      `/categories/${categoryId}/products`,
-      { params: filters }
-    )
+  getProductsByCategory: async (
+    categoryId: string,
+    filters: Omit<SearchFilters, 'categoryId'> = {}
+  ): Promise<PaginatedResponse<Product>> => {
+    const response = await apiClient.get<
+      ApiResponse<PaginatedResponse<Product>>
+    >(`/categories/${categoryId}/products`, { params: filters })
     return response.data.data
   },
 
-  getProductsByStore: async (storeId: string, filters: Omit<SearchFilters, 'storeId'> = {}): Promise<PaginatedResponse<Product>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Product>>>(
-      `/stores/${storeId}/products`,
-      { params: filters }
-    )
+  getProductsByStore: async (
+    storeId: string,
+    filters: Omit<SearchFilters, 'storeId'> = {}
+  ): Promise<PaginatedResponse<Product>> => {
+    const response = await apiClient.get<
+      ApiResponse<PaginatedResponse<Product>>
+    >(`/stores/${storeId}/products`, { params: filters })
     return response.data.data
   },
 
   // Featured products
   getFeaturedProducts: async (limit = 10): Promise<Product[]> => {
-    const response = await apiClient.get<ApiResponse<Product[]>>('/products/featured', {
-      params: { limit }
-    })
-    return response.data.data
-  },
-
-  // My products (seller's products)
-  getMyProducts: async (filters: Omit<SearchFilters, 'sellerId'> = {}): Promise<PaginatedResponse<Product>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Product>>>(
-      '/seller/products',
-      { params: filters }
+    const response = await apiClient.get<ApiResponse<Product[]>>(
+      '/products/featured',
+      {
+        params: { limit },
+      }
     )
     return response.data.data
   },
 
+  // My products (seller's products)
+  getMyProducts: async (
+    filters: Omit<SearchFilters, 'sellerId'> = {}
+  ): Promise<PaginatedResponse<Product>> => {
+    const response = await apiClient.get<
+      ApiResponse<PaginatedResponse<Product>>
+    >('/seller/products', { params: filters })
+    return response.data.data
+  },
+
   // Bulk operations
-  bulkUpdateProducts: async (updates: Array<{ id: string; data: Partial<Product> }>): Promise<Product[]> => {
-    const response = await apiClient.patch<ApiResponse<Product[]>>('/products/bulk', { updates })
+  bulkUpdateProducts: async (
+    updates: Array<{ id: string; data: Partial<Product> }>
+  ): Promise<Product[]> => {
+    const response = await apiClient.patch<ApiResponse<Product[]>>(
+      '/products/bulk',
+      { updates }
+    )
     return response.data.data
   },
 
   // Product management
-  updateProductStatus: async (id: string, status: ProductStatus): Promise<Product> => {
+  updateProductStatus: async (
+    id: string,
+    status: ProductStatus
+  ): Promise<Product> => {
     const response = await apiClient.patch<ApiResponse<Product>>(
       `/products/${id}/status`,
       {},
@@ -136,8 +166,12 @@ export const productsApi = {
   },
 
   // Analytics
-  getProductStats: async (id: string): Promise<{ views: number; sales: number; rating: number }> => {
-    const response = await apiClient.get<ApiResponse<{ views: number; sales: number; rating: number }>>(`/products/${id}/stats`)
+  getProductStats: async (
+    id: string
+  ): Promise<{ views: number; sales: number; rating: number }> => {
+    const response = await apiClient.get<
+      ApiResponse<{ views: number; sales: number; rating: number }>
+    >(`/products/${id}/stats`)
     return response.data.data
   },
 
@@ -149,7 +183,10 @@ export const productsApi = {
 export const categoriesApi = {
   // Category CRUD operations
   getCategories: async (): Promise<Category[]> => {
-    const response = await apiClient.get<ApiResponse<Category[] | { items: Category[]; total: number }>>('/categories')
+    const response =
+      await apiClient.get<
+        ApiResponse<Category[] | { items: Category[]; total: number }>
+      >('/categories')
     const data = response.data.data
     if (Array.isArray(data)) {
       return data
@@ -161,17 +198,30 @@ export const categoriesApi = {
   },
 
   getCategory: async (id: string): Promise<Category> => {
-    const response = await apiClient.get<ApiResponse<Category>>(`/categories/${id}`)
+    const response = await apiClient.get<ApiResponse<Category>>(
+      `/categories/${id}`
+    )
     return response.data.data
   },
 
-  createCategory: async (data: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>): Promise<Category> => {
-    const response = await apiClient.post<ApiResponse<Category>>('/categories', data)
+  createCategory: async (
+    data: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<Category> => {
+    const response = await apiClient.post<ApiResponse<Category>>(
+      '/categories',
+      data
+    )
     return response.data.data
   },
 
-  updateCategory: async (id: string, data: Partial<Category>): Promise<Category> => {
-    const response = await apiClient.put<ApiResponse<Category>>(`/categories/${id}`, data)
+  updateCategory: async (
+    id: string,
+    data: Partial<Category>
+  ): Promise<Category> => {
+    const response = await apiClient.put<ApiResponse<Category>>(
+      `/categories/${id}`,
+      data
+    )
     return response.data.data
   },
 
@@ -181,12 +231,18 @@ export const categoriesApi = {
 
   // Category hierarchy
   getSubCategories: async (parentId: string): Promise<Category[]> => {
-    const response = await apiClient.get<ApiResponse<Category[]>>(`/categories/${parentId}/subcategories`)
+    const response = await apiClient.get<ApiResponse<Category[]>>(
+      `/categories/${parentId}/subcategories`
+    )
     return response.data.data
   },
 
-  getCategoryStats: async (id: string): Promise<{ productCount: number; subcategoryCount: number }> => {
-    const response = await apiClient.get<ApiResponse<{ productCount: number; subcategoryCount: number }>>(`/categories/${id}/stats`)
+  getCategoryStats: async (
+    id: string
+  ): Promise<{ productCount: number; subcategoryCount: number }> => {
+    const response = await apiClient.get<
+      ApiResponse<{ productCount: number; subcategoryCount: number }>
+    >(`/categories/${id}/stats`)
     return response.data.data
   },
 }

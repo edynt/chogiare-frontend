@@ -8,12 +8,17 @@ interface PasswordStrengthIndicatorProps {
   className?: string
 }
 
-export function PasswordStrengthIndicator({ password, className }: PasswordStrengthIndicatorProps) {
+export function PasswordStrengthIndicator({
+  password,
+  className,
+}: PasswordStrengthIndicatorProps) {
   if (!password) {
     return null
   }
 
-  const metRequirements = PASSWORD_REQUIREMENTS.filter((req) => req.test(password))
+  const metRequirements = PASSWORD_REQUIREMENTS.filter(req =>
+    req.test(password)
+  )
   const allMet = metRequirements.length === PASSWORD_REQUIREMENTS.length
 
   return (
@@ -31,7 +36,9 @@ export function PasswordStrengthIndicator({ password, className }: PasswordStren
               <span
                 className={cn(
                   'transition-colors',
-                  isMet ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'
+                  isMet
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-muted-foreground'
                 )}
               >
                 {requirement.label}
@@ -48,4 +55,3 @@ export function PasswordStrengthIndicator({ password, className }: PasswordStren
     </div>
   )
 }
-

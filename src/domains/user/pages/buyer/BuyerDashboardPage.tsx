@@ -2,33 +2,40 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
 import { useUserOrders } from '@/hooks/useOrders'
 import { APP_NAME } from '@/constants/app.constants'
-import { 
-  ShoppingBag, 
-  Package, 
-  Store, 
+import {
+  ShoppingBag,
+  Package,
+  Store,
   MessageSquare,
   TrendingUp,
   ArrowRight,
-  Search
+  Search,
 } from 'lucide-react'
 
 export default function BuyerDashboardPage() {
   const navigate = useNavigate()
   const { data: ordersData } = useUserOrders({ page: 1, pageSize: 5 })
-  
+
   const orders = ordersData?.items || []
   const pendingOrders = orders.filter(o => o.status === 'pending')
-  const activeOrders = orders.filter(o => ['confirmed', 'preparing', 'ready'].includes(o.status))
+  const activeOrders = orders.filter(o =>
+    ['confirmed', 'preparing', 'ready'].includes(o.status)
+  )
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -39,23 +46,35 @@ export default function BuyerDashboardPage() {
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Welcome Section */}
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
-            <h1 className="text-3xl font-bold mb-2">Chào mừng đến với {APP_NAME}</h1>
-            <p className="text-blue-100">Nền tảng mua sỉ hàng đầu - Tìm kiếm sản phẩm tốt nhất cho bạn</p>
+            <h1 className="text-3xl font-bold mb-2">
+              Chào mừng đến với {APP_NAME}
+            </h1>
+            <p className="text-blue-100">
+              Nền tảng mua sỉ hàng đầu - Tìm kiếm sản phẩm tốt nhất cho bạn
+            </p>
           </div>
 
           {/* Quick Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/products')}>
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => navigate('/products')}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Search className="h-6 w-6 text-blue-600" />
                 </div>
                 <h3 className="font-semibold mb-1">Tìm kiếm sản phẩm</h3>
-                <p className="text-sm text-muted-foreground">Khám phá hàng ngàn sản phẩm</p>
+                <p className="text-sm text-muted-foreground">
+                  Khám phá hàng ngàn sản phẩm
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/customer-orders')}>
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => navigate('/customer-orders')}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <ShoppingBag className="h-6 w-6 text-green-600" />
@@ -71,13 +90,18 @@ export default function BuyerDashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/chat')}>
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => navigate('/chat')}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <MessageSquare className="h-6 w-6 text-orange-600" />
                 </div>
                 <h3 className="font-semibold mb-1">Tin nhắn</h3>
-                <p className="text-sm text-muted-foreground">Chat với người bán</p>
+                <p className="text-sm text-muted-foreground">
+                  Chat với người bán
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -100,7 +124,7 @@ export default function BuyerDashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {orders.slice(0, 3).map((order) => (
+                  {orders.slice(0, 3).map(order => (
                     <div
                       key={order.id}
                       className="border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
@@ -109,14 +133,16 @@ export default function BuyerDashboardPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold">Đơn hàng #{order.id.slice(0, 8)}</h3>
+                            <h3 className="font-semibold">
+                              Đơn hàng #{order.id.slice(0, 8)}
+                            </h3>
                             <Badge
                               className={
                                 order.status === 'completed'
                                   ? 'bg-green-100 text-green-800'
                                   : order.status === 'pending'
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : 'bg-blue-100 text-blue-800'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-blue-100 text-blue-800'
                               }
                             >
                               {order.status === 'pending' && 'Chờ xác nhận'}
@@ -128,7 +154,9 @@ export default function BuyerDashboardPage() {
                           </div>
                           <p className="text-sm text-muted-foreground">
                             {order.items.length} sản phẩm •{' '}
-                            {new Date(order.createdAt).toLocaleDateString('vi-VN')}
+                            {new Date(order.createdAt).toLocaleDateString(
+                              'vi-VN'
+                            )}
                           </p>
                         </div>
                         <div className="text-right">
@@ -153,13 +181,20 @@ export default function BuyerDashboardPage() {
                     <Store className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Bạn cũng là người bán?</h3>
+                    <h3 className="font-semibold text-lg">
+                      Bạn cũng là người bán?
+                    </h3>
                     <p className="text-sm text-muted-foreground">
-                      Truy cập dashboard dành cho người bán để quản lý sản phẩm và đơn hàng
+                      Truy cập dashboard dành cho người bán để quản lý sản phẩm
+                      và đơn hàng
                     </p>
                   </div>
                 </div>
-                <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90"
+                >
                   <Link to="/dashboard">
                     <Store className="h-4 w-4 mr-2" />
                     Vào Dashboard Người Bán
@@ -175,7 +210,9 @@ export default function BuyerDashboardPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">Tổng đơn hàng</p>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Tổng đơn hàng
+                    </p>
                     <p className="text-2xl font-bold">{orders.length}</p>
                   </div>
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -189,7 +226,9 @@ export default function BuyerDashboardPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">Đơn đang xử lý</p>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Đơn đang xử lý
+                    </p>
                     <p className="text-2xl font-bold">{activeOrders.length}</p>
                   </div>
                   <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -203,7 +242,9 @@ export default function BuyerDashboardPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">Đơn chờ xác nhận</p>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Đơn chờ xác nhận
+                    </p>
                     <p className="text-2xl font-bold">{pendingOrders.length}</p>
                   </div>
                   <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
@@ -219,4 +260,3 @@ export default function BuyerDashboardPage() {
     </div>
   )
 }
-

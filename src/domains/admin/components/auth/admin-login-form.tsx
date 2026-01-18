@@ -2,7 +2,12 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { PasswordInput } from '@shared/components/ui/password-input'
@@ -80,7 +85,10 @@ export function AdminLoginForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Email Field */}
           <div>
-            <label htmlFor="admin-email" className="text-sm font-medium text-slate-300 flex items-center gap-2 mb-2">
+            <label
+              htmlFor="admin-email"
+              className="text-sm font-medium text-slate-300 flex items-center gap-2 mb-2"
+            >
               <Mail className="h-4 w-4" />
               Email Address
             </label>
@@ -92,13 +100,18 @@ export function AdminLoginForm() {
               placeholder="admin@example.com"
             />
             {errors.email && (
-              <p className="text-sm text-red-400 mt-1.5">{errors.email.message}</p>
+              <p className="text-sm text-red-400 mt-1.5">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
           {/* Password Field */}
           <div>
-            <label htmlFor="admin-password" className="text-sm font-medium text-slate-300 flex items-center gap-2 mb-2">
+            <label
+              htmlFor="admin-password"
+              className="text-sm font-medium text-slate-300 flex items-center gap-2 mb-2"
+            >
               <Lock className="h-4 w-4" />
               Password
             </label>
@@ -109,7 +122,9 @@ export function AdminLoginForm() {
               placeholder="Enter your password"
             />
             {errors.password && (
-              <p className="text-sm text-red-400 mt-1.5">{errors.password.message}</p>
+              <p className="text-sm text-red-400 mt-1.5">
+                {errors.password.message}
+              </p>
             )}
           </div>
 

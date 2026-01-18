@@ -9,7 +9,7 @@ export const USER_STATUS = {
   INACTIVE: 'inactive',
 } as const
 
-export type UserStatus = typeof USER_STATUS[keyof typeof USER_STATUS]
+export type UserStatus = (typeof USER_STATUS)[keyof typeof USER_STATUS]
 
 // Product Status
 export const PRODUCT_STATUS = {
@@ -20,7 +20,7 @@ export const PRODUCT_STATUS = {
   SUSPENDED: 'suspended',
 } as const
 
-export type ProductStatus = typeof PRODUCT_STATUS[keyof typeof PRODUCT_STATUS]
+export type ProductStatus = (typeof PRODUCT_STATUS)[keyof typeof PRODUCT_STATUS]
 
 // Order Status
 export const ORDER_STATUS = {
@@ -32,7 +32,7 @@ export const ORDER_STATUS = {
   REFUNDED: 'refunded',
 } as const
 
-export type OrderStatus = typeof ORDER_STATUS[keyof typeof ORDER_STATUS]
+export type OrderStatus = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS]
 
 // Payment Status
 export const PAYMENT_STATUS = {
@@ -42,7 +42,7 @@ export const PAYMENT_STATUS = {
   REFUNDED: 'refunded',
 } as const
 
-export type PaymentStatus = typeof PAYMENT_STATUS[keyof typeof PAYMENT_STATUS]
+export type PaymentStatus = (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS]
 
 // Promotion Status
 export const PROMOTION_STATUS = {
@@ -51,7 +51,8 @@ export const PROMOTION_STATUS = {
   EXPIRED: 'expired',
 } as const
 
-export type PromotionStatus = typeof PROMOTION_STATUS[keyof typeof PROMOTION_STATUS]
+export type PromotionStatus =
+  (typeof PROMOTION_STATUS)[keyof typeof PROMOTION_STATUS]
 
 // Store Status
 export const STORE_STATUS = {
@@ -61,7 +62,7 @@ export const STORE_STATUS = {
   CLOSED: 'closed',
 } as const
 
-export type StoreStatus = typeof STORE_STATUS[keyof typeof STORE_STATUS]
+export type StoreStatus = (typeof STORE_STATUS)[keyof typeof STORE_STATUS]
 
 // Export all status constants as a single object for convenience
 export const STATUS_CONSTANTS = {

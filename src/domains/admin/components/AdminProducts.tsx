@@ -1,15 +1,20 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
-import { 
-  Search, 
-  Filter, 
-  MoreVertical, 
+import {
+  Search,
+  Filter,
+  MoreVertical,
   Eye,
   CheckCircle,
   XCircle,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react'
 
 export function AdminProducts() {
@@ -23,7 +28,7 @@ export function AdminProducts() {
       status: 'approved',
       createdAt: '2024-01-15',
       views: 1234,
-      sales: 12
+      sales: 12,
     },
     {
       id: '2',
@@ -34,7 +39,7 @@ export function AdminProducts() {
       status: 'pending',
       createdAt: '2024-01-14',
       views: 856,
-      sales: 0
+      sales: 0,
     },
     {
       id: '3',
@@ -45,8 +50,8 @@ export function AdminProducts() {
       status: 'rejected',
       createdAt: '2024-01-13',
       views: 567,
-      sales: 0
-    }
+      sales: 0,
+    },
   ]
 
   const getStatusBadge = (status: string) => {
@@ -81,7 +86,9 @@ export function AdminProducts() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold">Quản lý sản phẩm</h2>
-          <p className="text-muted-foreground">Kiểm duyệt và quản lý sản phẩm</p>
+          <p className="text-muted-foreground">
+            Kiểm duyệt và quản lý sản phẩm
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
@@ -96,10 +103,7 @@ export function AdminProducts() {
         <CardContent className="p-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Tìm kiếm sản phẩm..."
-              className="pl-10"
-            />
+            <Input placeholder="Tìm kiếm sản phẩm..." className="pl-10" />
           </div>
         </CardContent>
       </Card>
@@ -111,26 +115,29 @@ export function AdminProducts() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {products.map((product) => (
-              <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
+            {products.map(product => (
+              <div
+                key={product.id}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
                 <div className="flex items-center space-x-4">
                   <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
                     <span className="text-2xl">📱</span>
                   </div>
-                  
+
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
                       <h3 className="font-semibold">{product.title}</h3>
                       {getStatusIcon(product.status)}
                       {getStatusBadge(product.status)}
                     </div>
-                    
+
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <span>Người bán: {product.seller}</span>
                       <span>Danh mục: {product.category}</span>
                       <span>Giá: {product.price.toLocaleString()} VNĐ</span>
                     </div>
-                    
+
                     <div className="flex items-center space-x-4 text-xs text-muted-foreground mt-1">
                       <span>Lượt xem: {product.views}</span>
                       <span>Đã bán: {product.sales}</span>
@@ -138,7 +145,7 @@ export function AdminProducts() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   <Button variant="outline" size="sm">
                     <Eye className="h-4 w-4 mr-1" />
@@ -146,11 +153,19 @@ export function AdminProducts() {
                   </Button>
                   {product.status === 'pending' && (
                     <>
-                      <Button variant="outline" size="sm" className="text-success">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-success"
+                      >
                         <CheckCircle className="h-4 w-4 mr-1" />
                         Duyệt
                       </Button>
-                      <Button variant="outline" size="sm" className="text-destructive">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-destructive"
+                      >
                         <XCircle className="h-4 w-4 mr-1" />
                         Từ chối
                       </Button>

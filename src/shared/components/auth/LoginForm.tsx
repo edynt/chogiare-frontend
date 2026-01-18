@@ -2,7 +2,12 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { PasswordInput } from '@shared/components/ui/password-input'
@@ -45,7 +50,7 @@ export function LoginForm({ isAdmin = false }: { isAdmin?: boolean }) {
     execute(async () => {
       await new Promise((resolve, reject) => {
         loginMutation.mutate(data, {
-          onSuccess: (response) => {
+          onSuccess: response => {
             // Tokens are stored as HttpOnly cookies by the backend
 
             // Check for admin role
@@ -58,7 +63,7 @@ export function LoginForm({ isAdmin = false }: { isAdmin?: boolean }) {
             resolve(undefined)
           },
           onError: (error: unknown) => {
-              reject(error)
+            reject(error)
           },
         })
       })
@@ -84,7 +89,9 @@ export function LoginForm({ isAdmin = false }: { isAdmin?: boolean }) {
               placeholder="Nhập email của bạn"
             />
             {errors.email && (
-              <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -99,7 +106,9 @@ export function LoginForm({ isAdmin = false }: { isAdmin?: boolean }) {
               placeholder="Nhập mật khẩu"
             />
             {errors.password && (
-              <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -137,7 +146,10 @@ export function LoginForm({ isAdmin = false }: { isAdmin?: boolean }) {
           {!isAdmin && (
             <div className="text-center text-sm">
               Chưa có tài khoản?{' '}
-              <Link to="/auth/register" className="text-primary hover:underline">
+              <Link
+                to="/auth/register"
+                className="text-primary hover:underline"
+              >
                 Đăng ký ngay
               </Link>
             </div>

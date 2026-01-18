@@ -10,25 +10,37 @@ export const addressesApi = {
 
   // Get address by ID
   getAddress: async (id: string): Promise<Address> => {
-    const response = await apiClient.get<ApiResponse<Address>>(`/addresses/${id}`)
+    const response = await apiClient.get<ApiResponse<Address>>(
+      `/addresses/${id}`
+    )
     return response.data.data
   },
 
   // Get default address
   getDefaultAddress: async (): Promise<Address | null> => {
-    const response = await apiClient.get<ApiResponse<Address | null>>('/addresses/default')
+    const response =
+      await apiClient.get<ApiResponse<Address | null>>('/addresses/default')
     return response.data.data
   },
 
   // Create new address
   createAddress: async (data: Omit<Address, 'id'>): Promise<Address> => {
-    const response = await apiClient.post<ApiResponse<Address>>('/addresses', data)
+    const response = await apiClient.post<ApiResponse<Address>>(
+      '/addresses',
+      data
+    )
     return response.data.data
   },
 
   // Update address
-  updateAddress: async (id: string, data: Partial<Address>): Promise<Address> => {
-    const response = await apiClient.put<ApiResponse<Address>>(`/addresses/${id}`, data)
+  updateAddress: async (
+    id: string,
+    data: Partial<Address>
+  ): Promise<Address> => {
+    const response = await apiClient.put<ApiResponse<Address>>(
+      `/addresses/${id}`,
+      data
+    )
     return response.data.data
   },
 
@@ -39,8 +51,9 @@ export const addressesApi = {
 
   // Set default address
   setDefaultAddress: async (id: string): Promise<Address> => {
-    const response = await apiClient.patch<ApiResponse<Address>>(`/addresses/${id}/set-default`)
+    const response = await apiClient.patch<ApiResponse<Address>>(
+      `/addresses/${id}/set-default`
+    )
     return response.data.data
   },
 }
-

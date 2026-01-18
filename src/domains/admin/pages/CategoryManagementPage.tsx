@@ -1,6 +1,11 @@
 import React, { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
@@ -315,9 +320,11 @@ export default function CategoryManagementPage() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={(e) => {
+                              onClick={e => {
                                 e.stopPropagation()
-                                navigate(`/admin/products/category/${category.id}`)
+                                navigate(
+                                  `/admin/products/category/${category.id}`
+                                )
                               }}
                               className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
                               title="Xem sản phẩm trong danh mục"
@@ -369,7 +376,9 @@ export default function CategoryManagementPage() {
             </DialogDescription>
           </DialogHeader>
           <form
-            onSubmit={handleSubmit(onSubmit as SubmitHandler<CategoryFormValues>)}
+            onSubmit={handleSubmit(
+              onSubmit as SubmitHandler<CategoryFormValues>
+            )}
             className="space-y-4 py-4"
           >
             <div className="space-y-2">

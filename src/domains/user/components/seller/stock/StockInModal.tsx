@@ -2,32 +2,50 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@shared/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@shared/components/ui/dialog'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Label } from '@shared/components/ui/label'
 import { Textarea } from '@shared/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@shared/components/ui/select'
 import { Alert, AlertDescription } from '@shared/components/ui/alert'
 import { useNotification } from '@shared/components/notification-provider'
-import { 
+import {
   Plus,
   Minus,
   Package,
   CheckCircle,
   AlertTriangle,
   Save,
-  X
+  X,
 } from 'lucide-react'
 
 // Stock In Modal Schema
 const stockInModalSchema = z.object({
   quantity: z.number().min(1, 'Số lượng phải lớn hơn 0'),
-  costPrice: z.union([
-    z.string().regex(/^\d+(\.\d+)?$/, 'Giá nhập phải là số hợp lệ').transform((val) => parseFloat(val)),
-    z.literal('').transform(() => 0),
-    z.number()
-  ]).refine((val) => val >= 0, 'Giá nhập không được âm').optional(),
+  costPrice: z
+    .union([
+      z
+        .string()
+        .regex(/^\d+(\.\d+)?$/, 'Giá nhập phải là số hợp lệ')
+        .transform(val => parseFloat(val)),
+      z.literal('').transform(() => 0),
+      z.number(),
+    ])
+    .refine(val => val >= 0, 'Giá nhập không được âm')
+    .optional(),
   supplier: z.string().min(1, 'Vui lòng nhập nhà cung cấp'),
   batchNumber: z.string().optional(),
   expiryDate: z.string().optional(),
@@ -51,10 +69,17 @@ interface StockInModalProps {
   isOpen: boolean
   onClose: () => void
   product: Product | null
-  onStockIn: (data: StockInModalFormData & { productId: string }) => Promise<void>
+  onStockIn: (
+    data: StockInModalFormData & { productId: string }
+  ) => Promise<void>
 }
 
-export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInModalProps) {
+export function StockInModal({
+  isOpen,
+  onClose,
+  product,
+  onStockIn,
+}: StockInModalProps) {
   const { notify } = useNotification()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -72,7 +97,7 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
       costPrice: 0,
       supplier: '',
       location: 'Kho A',
-    }
+    },
   })
 
   const watchedValues = watch()
@@ -99,20 +124,21 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
         ...data,
         productId: product.id,
       })
-      
+
       notify({
         type: 'success',
         title: 'Nhập kho thành công',
         message: `Đã nhập ${data.quantity} sản phẩm "${product.name}" vào kho`,
       })
-      
+
       reset()
       onClose()
     } catch (error) {
       notify({
         type: 'error',
         title: 'Lỗi nhập kho',
-        message: error instanceof Error ? error.message : 'Có lỗi xảy ra khi nhập kho',
+        message:
+          error instanceof Error ? error.message : 'Có lỗi xảy ra khi nhập kho',
       })
     } finally {
       setIsLoading(false)
@@ -127,13 +153,14 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
   const getStockStatus = (stock: number, minStock: number) => {
     if (stock === 0) return { label: 'Hết hàng', color: 'text-red-600' }
-    if (stock <= minStock) return { label: 'Sắp hết hàng', color: 'text-yellow-600' }
+    if (stock <= minStock)
+      return { label: 'Sắp hết hàng', color: 'text-yellow-600' }
     return { label: 'Còn hàng', color: 'text-green-600' }
   }
 
@@ -156,15 +183,21 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
           <div className="p-4 bg-muted/50 rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold">{product.name}</h3>
-              <span className="text-sm text-muted-foreground">SKU: {product.sku}</span>
+              <span className="text-sm text-muted-foreground">
+                SKU: {product.sku}
+              </span>
             </div>
             <div className="flex items-center gap-4 text-sm">
               <div>
-                <span className="text-muted-foreground">Tồn kho hiện tại: </span>
+                <span className="text-muted-foreground">
+                  Tồn kho hiện tại:{' '}
+                </span>
                 <span className="font-medium">{product.currentStock}</span>
               </div>
               <div>
-                <span className="text-muted-foreground">Tồn kho tối thiểu: </span>
+                <span className="text-muted-foreground">
+                  Tồn kho tối thiểu:{' '}
+                </span>
                 <span className="font-medium">{product.minStock}</span>
               </div>
               <div>
@@ -181,7 +214,8 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Cảnh báo:</strong> Sản phẩm sắp hết hàng! Cần nhập thêm kho.
+                <strong>Cảnh báo:</strong> Sản phẩm sắp hết hàng! Cần nhập thêm
+                kho.
               </AlertDescription>
             </Alert>
           )}
@@ -195,7 +229,12 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setValue('quantity', Math.max(1, watchedValues.quantity - 1))}
+                  onClick={() =>
+                    setValue(
+                      'quantity',
+                      Math.max(1, watchedValues.quantity - 1)
+                    )
+                  }
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -210,13 +249,17 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setValue('quantity', watchedValues.quantity + 1)}
+                  onClick={() =>
+                    setValue('quantity', watchedValues.quantity + 1)
+                  }
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
               {errors.quantity && (
-                <p className="text-sm text-red-500">{errors.quantity.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.quantity.message}
+                </p>
               )}
             </div>
 
@@ -231,7 +274,9 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
                 placeholder="0"
               />
               {errors.costPrice && (
-                <p className="text-sm text-red-500">{errors.costPrice.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.costPrice.message}
+                </p>
               )}
             </div>
           </div>
@@ -256,13 +301,15 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
                 placeholder="Tên nhà cung cấp"
               />
               {errors.supplier && (
-                <p className="text-sm text-red-500">{errors.supplier.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.supplier.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="location">Vị trí kho *</Label>
-              <Select onValueChange={(value) => setValue('location', value)}>
+              <Select onValueChange={value => setValue('location', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn vị trí..." />
                 </SelectTrigger>
@@ -274,7 +321,9 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
                 </SelectContent>
               </Select>
               {errors.location && (
-                <p className="text-sm text-red-500">{errors.location.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.location.message}
+                </p>
               )}
             </div>
           </div>
@@ -292,11 +341,7 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
 
             <div className="space-y-2">
               <Label htmlFor="expiryDate">Hạn sử dụng (tùy chọn)</Label>
-              <Input
-                id="expiryDate"
-                type="date"
-                {...register('expiryDate')}
-              />
+              <Input id="expiryDate" type="date" {...register('expiryDate')} />
             </div>
           </div>
 
@@ -315,7 +360,9 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              <span className="font-medium text-green-800">Tóm tắt nhập kho</span>
+              <span className="font-medium text-green-800">
+                Tóm tắt nhập kho
+              </span>
             </div>
             <div className="text-sm text-green-700 space-y-1">
               <div>Sản phẩm: {product.name}</div>
@@ -332,9 +379,13 @@ export function StockInModal({ isOpen, onClose, product, onStockIn }: StockInMod
               <X className="h-4 w-4 mr-2" />
               Hủy
             </Button>
-            <Button 
-              type="submit" 
-              disabled={isLoading || !watchedValues.supplier || watchedValues.costPrice <= 0}
+            <Button
+              type="submit"
+              disabled={
+                isLoading ||
+                !watchedValues.supplier ||
+                watchedValues.costPrice <= 0
+              }
             >
               {isLoading ? (
                 <>

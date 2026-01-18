@@ -17,51 +17,59 @@ import {
   CreditCard,
   CheckCircle,
   RefreshCw,
-  MessageCircle
+  MessageCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from '@/hooks/useNotifications'
+import {
+  useNotifications,
+  useMarkNotificationAsRead,
+  useMarkAllNotificationsAsRead,
+} from '@/hooks/useNotifications'
 import type { Notification } from '@user/api/notifications'
 
 const TYPE_INFO = {
   order: {
     icon: ShoppingBag,
     label: 'Đơn hàng',
-    color: '#C81E1E'
+    color: '#C81E1E',
   },
   promotion: {
     icon: Tag,
     label: 'Khuyến mãi',
-    color: '#F59E0B'
+    color: '#F59E0B',
   },
   product: {
     icon: Package,
     label: 'Sản phẩm',
-    color: '#10B981'
+    color: '#10B981',
   },
   system: {
     icon: Info,
     label: 'Hệ thống',
-    color: '#3B82F6'
+    color: '#3B82F6',
   },
   payment: {
     icon: CreditCard,
     label: 'Thanh toán',
-    color: '#8B5CF6'
+    color: '#8B5CF6',
   },
   message: {
     icon: MessageCircle,
     label: 'Tin nhắn',
-    color: '#3B82F6'
-  }
+    color: '#3B82F6',
+  },
 }
 
 export default function NotificationsPage() {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedFilter, setSelectedFilter] = useState('Tất cả')
-  
-  const { data: notificationsData, isLoading, refetch } = useNotifications({
+
+  const {
+    data: notificationsData,
+    isLoading,
+    refetch,
+  } = useNotifications({
     page: 1,
     pageSize: 100,
   })
@@ -88,8 +96,10 @@ export default function NotificationsPage() {
   const filteredNotifications = notifications.filter(notification => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      if (!notification.title.toLowerCase().includes(query) && 
-          !notification.message.toLowerCase().includes(query)) {
+      if (
+        !notification.title.toLowerCase().includes(query) &&
+        !notification.message.toLowerCase().includes(query)
+      ) {
         return false
       }
     }
@@ -101,7 +111,7 @@ export default function NotificationsPage() {
         'Sản phẩm': 'product',
         'Thanh toán': 'payment',
         'Hệ thống': 'system',
-        'Tin nhắn': 'message'
+        'Tin nhắn': 'message',
       }
       return notification.type === filterMap[selectedFilter]
     }
@@ -160,14 +170,16 @@ export default function NotificationsPage() {
               )}
             </div>
             {unreadCount > 0 && (
-              <Button 
-                onClick={markAllAsRead} 
-                variant="outline" 
+              <Button
+                onClick={markAllAsRead}
+                variant="outline"
                 size="sm"
                 disabled={markAllAsReadMutation.isPending}
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
-                {markAllAsReadMutation.isPending ? 'Đang xử lý...' : 'Đọc tất cả'}
+                {markAllAsReadMutation.isPending
+                  ? 'Đang xử lý...'
+                  : 'Đọc tất cả'}
               </Button>
             )}
           </div>
@@ -178,7 +190,7 @@ export default function NotificationsPage() {
             <Input
               placeholder="Tìm kiếm thông báo..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="pl-10 pr-10"
             />
             {searchQuery && (
@@ -195,7 +207,15 @@ export default function NotificationsPage() {
 
           {/* Filter Chips */}
           <div className="flex gap-2 overflow-x-auto pb-2">
-            {['Tất cả', 'Đơn hàng', 'Khuyến mãi', 'Sản phẩm', 'Thanh toán', 'Hệ thống', 'Tin nhắn'].map((filter) => {
+            {[
+              'Tất cả',
+              'Đơn hàng',
+              'Khuyến mãi',
+              'Sản phẩm',
+              'Thanh toán',
+              'Hệ thống',
+              'Tin nhắn',
+            ].map(filter => {
               const isSelected = selectedFilter === filter
               return (
                 <Button
@@ -232,37 +252,38 @@ export default function NotificationsPage() {
               ))}
             </div>
           ) : filteredNotifications.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-16">
-                  <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
-                    {searchQuery ? (
-                      <Search className="h-12 w-12 text-muted-foreground" />
-                    ) : (
-                      <Bell className="h-12 w-12 text-muted-foreground" />
-                    )}
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">
-                    {searchQuery ? 'Không tìm thấy thông báo' : 'Chưa có thông báo'}
-                  </h3>
-                  <p className="text-muted-foreground text-center">
-                    {searchQuery 
-                      ? 'Thử tìm kiếm với từ khóa khác'
-                      : 'Các thông báo mới sẽ hiển thị ở đây'
-                    }
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-3">
-                {filteredNotifications.map(notification => {
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-16">
+                <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
+                  {searchQuery ? (
+                    <Search className="h-12 w-12 text-muted-foreground" />
+                  ) : (
+                    <Bell className="h-12 w-12 text-muted-foreground" />
+                  )}
+                </div>
+                <h3 className="text-lg font-semibold mb-2">
+                  {searchQuery
+                    ? 'Không tìm thấy thông báo'
+                    : 'Chưa có thông báo'}
+                </h3>
+                <p className="text-muted-foreground text-center">
+                  {searchQuery
+                    ? 'Thử tìm kiếm với từ khóa khác'
+                    : 'Các thông báo mới sẽ hiển thị ở đây'}
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {filteredNotifications.map(notification => {
                 const typeInfo = TYPE_INFO[notification.type]
                 const Icon = typeInfo.icon
                 return (
                   <Card
                     key={notification.id}
                     className={`cursor-pointer transition-all hover:shadow-md ${
-                      !notification.isRead 
-                        ? 'border-2 border-primary/30 bg-primary/5' 
+                      !notification.isRead
+                        ? 'border-2 border-primary/30 bg-primary/5'
                         : ''
                     }`}
                     onClick={() => handleNotificationClick(notification)}
@@ -274,7 +295,7 @@ export default function NotificationsPage() {
                           className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
                           style={{
                             backgroundColor: `${typeInfo.color}15`,
-                            color: typeInfo.color
+                            color: typeInfo.color,
                           }}
                         >
                           <Icon className="h-6 w-6" />
@@ -283,9 +304,11 @@ export default function NotificationsPage() {
                         {/* Content */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2 mb-2">
-                            <h3 className={`font-semibold text-base ${
-                              !notification.isRead ? 'text-primary' : ''
-                            }`}>
+                            <h3
+                              className={`font-semibold text-base ${
+                                !notification.isRead ? 'text-primary' : ''
+                              }`}
+                            >
                               {notification.title}
                             </h3>
                             {!notification.isRead && (
@@ -305,7 +328,7 @@ export default function NotificationsPage() {
                               style={{
                                 backgroundColor: `${typeInfo.color}15`,
                                 color: typeInfo.color,
-                                borderColor: `${typeInfo.color}30`
+                                borderColor: `${typeInfo.color}30`,
                               }}
                             >
                               {typeInfo.label}
@@ -319,9 +342,9 @@ export default function NotificationsPage() {
                     </CardContent>
                   </Card>
                 )
-                })}
-              </div>
-            )}
+              })}
+            </div>
+          )}
 
           {/* Refresh Button */}
           <div className="flex justify-center pt-4">
@@ -330,7 +353,9 @@ export default function NotificationsPage() {
               onClick={handleRefresh}
               disabled={isLoading}
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
+              />
               Làm mới
             </Button>
           </div>

@@ -39,7 +39,7 @@ export const useAdminProfile = (options?: { enabled?: boolean }) => {
     location.pathname.startsWith('/admin') && !isAdminLoginPage
 
   const hasAdminRole = user?.roles?.includes('admin') || false
-  
+
   const shouldFetch = isAdminRoute && hasAdminRole
 
   const enabled = options?.enabled !== undefined ? options.enabled : shouldFetch

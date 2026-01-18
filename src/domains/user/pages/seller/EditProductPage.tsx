@@ -5,12 +5,23 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { productUpdateSchema, type ProductUpdateFormData } from '@/lib/schemas'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Label } from '@shared/components/ui/label'
 import { Textarea } from '@shared/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@shared/components/ui/select'
 import { Checkbox } from '@shared/components/ui/checkbox'
 import { Badge } from '@shared/components/ui/badge'
 import { useProduct, useUpdateProduct } from '@/hooks/useProducts'
@@ -18,11 +29,11 @@ import { useCategories } from '@/hooks/useProducts'
 import { useNotification } from '@shared/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
 import { useUploadProductImages } from '@/hooks/useUpload'
-import { 
-  Edit, 
-  X, 
-  Package, 
-  DollarSign, 
+import {
+  Edit,
+  X,
+  Package,
+  DollarSign,
   Tag,
   Image as ImageIcon,
   Save,
@@ -31,9 +42,14 @@ import {
   Plus,
   Minus,
   BarChart3,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react'
-import type { Product, ProductCondition, ProductStatus, ProductBadge } from '@/types'
+import type {
+  Product,
+  ProductCondition,
+  ProductStatus,
+  ProductBadge,
+} from '@/types'
 
 // Using Zod schema from lib/schemas.ts
 
@@ -78,6 +94,10 @@ export default function EditProductPage() {
   const [warehouseLocation, setWarehouseLocation] = useState('')
   const [supplier, setSupplier] = useState('')
   const [costPrice, setCostPrice] = useState(0)
+  const [isWarranty, setIsWarranty] = useState(false)
+  const [warrantyInfo, setWarrantyInfo] = useState('')
+  const [isReturnable, setIsReturnable] = useState(false)
+  const [returnPolicy, setReturnPolicy] = useState('')
 
   const {
     register,
@@ -115,7 +135,10 @@ export default function EditProductPage() {
         description: product.description,
         price: product.price,
         originalPrice: product.originalPrice,
-        categoryId: typeof product.categoryId === 'string' ? parseInt(product.categoryId, 10) : product.categoryId,
+        categoryId:
+          typeof product.categoryId === 'string'
+            ? parseInt(product.categoryId, 10)
+            : product.categoryId,
         condition: product.condition,
         location: product.location,
         stock: product.stock,
@@ -124,7 +147,9 @@ export default function EditProductPage() {
       })
       // Load existing images from product
       const imageUrls = Array.isArray(product.images)
-        ? product.images.map((img: any) => typeof img === 'string' ? img : img.imageUrl || img.url)
+        ? product.images.map((img: any) =>
+            typeof img === 'string' ? img : img.imageUrl || img.url
+          )
         : []
       setExistingImageUrls(imageUrls)
       setSelectedBadges(product.badges)
@@ -138,7 +163,7 @@ export default function EditProductPage() {
       setNewImageFiles(prev => [...prev, ...filesArray])
       setNewImagePreviews(prev => [
         ...prev,
-        ...filesArray.map(file => URL.createObjectURL(file))
+        ...filesArray.map(file => URL.createObjectURL(file)),
       ])
     }
   }
@@ -154,12 +179,9 @@ export default function EditProductPage() {
     setNewImagePreviews(prev => prev.filter((_, i) => i !== index))
   }
 
-
   const handleBadgeToggle = (badge: string) => {
-    setSelectedBadges(prev => 
-      prev.includes(badge) 
-        ? prev.filter(b => b !== badge)
-        : [...prev, badge]
+    setSelectedBadges(prev =>
+      prev.includes(badge) ? prev.filter(b => b !== badge) : [...prev, badge]
     )
   }
 
@@ -182,15 +204,24 @@ export default function EditProductPage() {
       const productData: Partial<Product> = {
         title: data.title,
         description: data.description,
-        categoryId: data.categoryId ? (typeof data.categoryId === 'string' ? parseInt(data.categoryId, 10) : data.categoryId) : undefined,
+        categoryId: data.categoryId
+          ? typeof data.categoryId === 'string'
+            ? parseInt(data.categoryId, 10)
+            : data.categoryId
+          : undefined,
         price: data.price,
         originalPrice: data.originalPrice,
         condition: data.condition,
         location: data.location,
         stock: data.stock,
         status: data.status,
-        tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : undefined,
-        badges: selectedBadges.length > 0 ? (selectedBadges as ProductBadge[]) : undefined,
+        tags: data.tags
+          ? data.tags.split(',').map(tag => tag.trim())
+          : undefined,
+        badges:
+          selectedBadges.length > 0
+            ? (selectedBadges as ProductBadge[])
+            : undefined,
         images: allImageUrls as any,
       }
 
@@ -248,8 +279,8 @@ export default function EditProductPage() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => navigate(-1)}
               className="mb-4"
             >
@@ -283,7 +314,11 @@ export default function EditProductPage() {
                     {...register('title')}
                     className={errors.title ? 'border-destructive' : ''}
                   />
-                  {errors.title && <p className="text-sm text-destructive mt-1">{errors.title.message}</p>}
+                  {errors.title && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.title.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -295,68 +330,106 @@ export default function EditProductPage() {
                     {...register('description')}
                     className={errors.description ? 'border-destructive' : ''}
                   />
-                  {errors.description && <p className="text-sm text-destructive mt-1">{errors.description.message}</p>}
+                  {errors.description && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.description.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <Label htmlFor="categoryId">Danh mục *</Label>
-                    <Select 
-                      value={watch('categoryId')?.toString()} 
-                      onValueChange={(value) => setValue('categoryId', typeof value === 'string' ? parseInt(value, 10) : value)}
+                    <Select
+                      value={watch('categoryId')?.toString()}
+                      onValueChange={value =>
+                        setValue(
+                          'categoryId',
+                          typeof value === 'string'
+                            ? parseInt(value, 10)
+                            : value
+                        )
+                      }
                     >
-                      <SelectTrigger className={errors.categoryId ? 'border-destructive' : ''}>
+                      <SelectTrigger
+                        className={
+                          errors.categoryId ? 'border-destructive' : ''
+                        }
+                      >
                         <SelectValue placeholder="Chọn danh mục" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories?.map((category) => (
+                        {categories?.map(category => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.categoryId && <p className="text-sm text-destructive mt-1">{errors.categoryId.message}</p>}
+                    {errors.categoryId && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.categoryId.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <Label htmlFor="condition">Tình trạng *</Label>
-                    <Select 
-                      value={watch('condition')} 
-                      onValueChange={(value) => setValue('condition', value as ProductCondition)}
+                    <Select
+                      value={watch('condition')}
+                      onValueChange={value =>
+                        setValue('condition', value as ProductCondition)
+                      }
                     >
-                      <SelectTrigger className={errors.condition ? 'border-destructive' : ''}>
+                      <SelectTrigger
+                        className={errors.condition ? 'border-destructive' : ''}
+                      >
                         <SelectValue placeholder="Chọn tình trạng" />
                       </SelectTrigger>
                       <SelectContent>
-                        {conditions.map((condition) => (
-                          <SelectItem key={condition.value} value={condition.value}>
+                        {conditions.map(condition => (
+                          <SelectItem
+                            key={condition.value}
+                            value={condition.value}
+                          >
                             {condition.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.condition && <p className="text-sm text-destructive mt-1">{errors.condition.message}</p>}
+                    {errors.condition && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.condition.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <Label htmlFor="status">Trạng thái *</Label>
-                    <Select 
-                      value={watch('status')} 
-                      onValueChange={(value) => setValue('status', value as ProductStatus)}
+                    <Select
+                      value={watch('status')}
+                      onValueChange={value =>
+                        setValue('status', value as ProductStatus)
+                      }
                     >
-                      <SelectTrigger className={errors.status ? 'border-destructive' : ''}>
+                      <SelectTrigger
+                        className={errors.status ? 'border-destructive' : ''}
+                      >
                         <SelectValue placeholder="Chọn trạng thái" />
                       </SelectTrigger>
                       <SelectContent>
-                        {statuses.map((status) => (
+                        {statuses.map(status => (
                           <SelectItem key={status.value} value={status.value}>
                             {status.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.status && <p className="text-sm text-destructive mt-1">{errors.status.message}</p>}
+                    {errors.status && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.status.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -383,7 +456,11 @@ export default function EditProductPage() {
                       {...register('price')}
                       className={errors.price ? 'border-destructive' : ''}
                     />
-                    {errors.price && <p className="text-sm text-destructive mt-1">{errors.price.message}</p>}
+                    {errors.price && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.price.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -396,7 +473,9 @@ export default function EditProductPage() {
                       placeholder="0"
                       {...register('originalPrice')}
                     />
-                    <p className="text-sm text-muted-foreground mt-1">Để trống nếu không có giá gốc</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Để trống nếu không có giá gốc
+                    </p>
                   </div>
                 </div>
 
@@ -409,7 +488,11 @@ export default function EditProductPage() {
                       {...register('location')}
                       className={errors.location ? 'border-destructive' : ''}
                     />
-                    {errors.location && <p className="text-sm text-destructive mt-1">{errors.location.message}</p>}
+                    {errors.location && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.location.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -434,7 +517,11 @@ export default function EditProductPage() {
                       {...register('stock', { valueAsNumber: true })}
                       className={errors.stock ? 'border-destructive' : ''}
                     />
-                    {errors.stock && <p className="text-sm text-destructive mt-1">{errors.stock.message}</p>}
+                    {errors.stock && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.stock.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -443,7 +530,7 @@ export default function EditProductPage() {
                       id="sku"
                       placeholder="Mã SKU sản phẩm"
                       value={sku}
-                      onChange={(e) => setSku(e.target.value)}
+                      onChange={e => setSku(e.target.value)}
                     />
                   </div>
                 </div>
@@ -456,7 +543,7 @@ export default function EditProductPage() {
                       type="number"
                       placeholder="0"
                       value={minStock}
-                      onChange={(e) => setMinStock(parseInt(e.target.value) || 0)}
+                      onChange={e => setMinStock(parseInt(e.target.value) || 0)}
                     />
                     <p className="text-sm text-muted-foreground mt-1">
                       Cảnh báo khi tồn kho dưới mức này
@@ -470,7 +557,7 @@ export default function EditProductPage() {
                       type="number"
                       placeholder="0"
                       value={maxStock}
-                      onChange={(e) => setMaxStock(parseInt(e.target.value) || 0)}
+                      onChange={e => setMaxStock(parseInt(e.target.value) || 0)}
                     />
                     <p className="text-sm text-muted-foreground mt-1">
                       Số lượng tối đa có thể lưu trữ
@@ -485,7 +572,7 @@ export default function EditProductPage() {
                       id="warehouseLocation"
                       placeholder="Ví dụ: Kho A - Kệ 1"
                       value={warehouseLocation}
-                      onChange={(e) => setWarehouseLocation(e.target.value)}
+                      onChange={e => setWarehouseLocation(e.target.value)}
                     />
                   </div>
 
@@ -495,7 +582,7 @@ export default function EditProductPage() {
                       id="supplier"
                       placeholder="Tên nhà cung cấp"
                       value={supplier}
-                      onChange={(e) => setSupplier(e.target.value)}
+                      onChange={e => setSupplier(e.target.value)}
                     />
                   </div>
                 </div>
@@ -509,7 +596,7 @@ export default function EditProductPage() {
                     pattern="[0-9]*\.?[0-9]*"
                     placeholder="0"
                     value={costPrice}
-                    onChange={(e) => {
+                    onChange={e => {
                       const value = e.target.value
                       if (value === '' || /^\d*\.?\d*$/.test(value)) {
                         setCostPrice(parseFloat(value) || 0)
@@ -545,7 +632,8 @@ export default function EditProductPage() {
                     />
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Tải lên tối đa 10 hình ảnh. Hình đầu tiên sẽ là ảnh đại diện.
+                    Tải lên tối đa 10 hình ảnh. Hình đầu tiên sẽ là ảnh đại
+                    diện.
                   </p>
                 </div>
 
@@ -555,7 +643,10 @@ export default function EditProductPage() {
                     <Label className="mb-2 block">Hình ảnh hiện tại</Label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {existingImageUrls.map((image, index) => (
-                        <div key={`existing-${index}`} className="relative group">
+                        <div
+                          key={`existing-${index}`}
+                          className="relative group"
+                        >
                           <img
                             src={image}
                             alt={`Existing ${index + 1}`}
@@ -587,27 +678,81 @@ export default function EditProductPage() {
                     <Label className="mb-2 block">Hình ảnh mới</Label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {newImagePreviews.map((image, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={image}
-                          alt={`Product ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg border"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => removeNewImage(index)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                        {index === 0 && (
-                          <Badge className="absolute bottom-2 left-2">Ảnh chính</Badge>
-                        )}
-                      </div>
-                    ))}
+                        <div key={index} className="relative group">
+                          <img
+                            src={image}
+                            alt={`Product ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-lg border"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => removeNewImage(index)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                          {index === 0 && (
+                            <Badge className="absolute bottom-2 left-2">
+                              Ảnh chính
+                            </Badge>
+                          )}
+                        </div>
+                      ))}
                     </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Guarantee Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Thông tin đảm bảo</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isWarranty"
+                    checked={isWarranty}
+                    onCheckedChange={checked =>
+                      setIsWarranty(checked as boolean)
+                    }
+                  />
+                  <Label htmlFor="isWarranty">Bảo hành</Label>
+                </div>
+                {isWarranty && (
+                  <div>
+                    <Label htmlFor="warrantyInfo">Thông tin bảo hành</Label>
+                    <Input
+                      id="warrantyInfo"
+                      placeholder="VD: Bảo hành 12 tháng, đổi mới trong 7 ngày..."
+                      value={warrantyInfo}
+                      onChange={e => setWarrantyInfo(e.target.value)}
+                    />
+                  </div>
+                )}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isReturnable"
+                    checked={isReturnable}
+                    onCheckedChange={checked =>
+                      setIsReturnable(checked as boolean)
+                    }
+                  />
+                  <Label htmlFor="isReturnable">Đổi trả</Label>
+                </div>
+                {isReturnable && (
+                  <div>
+                    <Label htmlFor="returnPolicy">Chính sách đổi trả</Label>
+                    <Textarea
+                      id="returnPolicy"
+                      placeholder="Chính sách đổi trả chi tiết"
+                      rows={3}
+                      value={returnPolicy}
+                      onChange={e => setReturnPolicy(e.target.value)}
+                    />
                   </div>
                 )}
               </CardContent>
@@ -637,7 +782,7 @@ export default function EditProductPage() {
                 <div>
                   <Label>Badges</Label>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {availableBadges.map((badge) => (
+                    {availableBadges.map(badge => (
                       <div key={badge} className="flex items-center space-x-2">
                         <Checkbox
                           id={badge}
@@ -666,30 +811,44 @@ export default function EditProductPage() {
                 {/* Current Stock Info */}
                 <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
                   <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Tồn kho hiện tại</p>
-                    <p className="text-2xl font-bold text-primary">{(product as any)?.stock || 0}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Tồn kho hiện tại
+                    </p>
+                    <p className="text-2xl font-bold text-primary">
+                      {(product as any)?.stock || 0}
+                    </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Tồn kho tối thiểu</p>
-                    <p className="text-xl font-semibold">{(product as any)?.minStock || 0}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Tồn kho tối thiểu
+                    </p>
+                    <p className="text-xl font-semibold">
+                      {(product as any)?.minStock || 0}
+                    </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Tồn kho tối đa</p>
-                    <p className="text-xl font-semibold">{(product as any)?.maxStock || 0}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Tồn kho tối đa
+                    </p>
+                    <p className="text-xl font-semibold">
+                      {(product as any)?.maxStock || 0}
+                    </p>
                   </div>
                 </div>
 
                 {/* Stock Alert */}
-                {product && (product as any).stock <= ((product as any).minStock || 0) && (
-                  <div className="p-4 bg-yellow-100 border border-yellow-200 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                      <p className="text-yellow-800 font-medium">
-                        Cảnh báo: Sản phẩm sắp hết hàng! Cần nhập thêm kho.
-                      </p>
+                {product &&
+                  (product as any).stock <=
+                    ((product as any).minStock || 0) && (
+                    <div className="p-4 bg-yellow-100 border border-yellow-200 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                        <p className="text-yellow-800 font-medium">
+                          Cảnh báo: Sản phẩm sắp hết hàng! Cần nhập thêm kho.
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Quick Stock In */}
                 <div className="space-y-4">
@@ -702,7 +861,9 @@ export default function EditProductPage() {
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => setStockInQuantity(Math.max(1, stockInQuantity - 1))}
+                          onClick={() =>
+                            setStockInQuantity(Math.max(1, stockInQuantity - 1))
+                          }
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
@@ -711,14 +872,18 @@ export default function EditProductPage() {
                           type="number"
                           min="1"
                           value={stockInQuantity}
-                          onChange={(e) => setStockInQuantity(parseInt(e.target.value) || 1)}
+                          onChange={e =>
+                            setStockInQuantity(parseInt(e.target.value) || 1)
+                          }
                           className="text-center"
                         />
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => setStockInQuantity(stockInQuantity + 1)}
+                          onClick={() =>
+                            setStockInQuantity(stockInQuantity + 1)
+                          }
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
@@ -732,7 +897,9 @@ export default function EditProductPage() {
                         type="number"
                         min="0"
                         value={stockInCostPrice}
-                        onChange={(e) => setStockInCostPrice(parseInt(e.target.value) || 0)}
+                        onChange={e =>
+                          setStockInCostPrice(parseInt(e.target.value) || 0)
+                        }
                         placeholder="0"
                       />
                     </div>
@@ -744,14 +911,17 @@ export default function EditProductPage() {
                       <Input
                         id="stockInSupplier"
                         value={stockInSupplier}
-                        onChange={(e) => setStockInSupplier(e.target.value)}
+                        onChange={e => setStockInSupplier(e.target.value)}
                         placeholder="Tên nhà cung cấp"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="stockInLocation">Vị trí kho</Label>
-                      <Select value={stockInLocation} onValueChange={setStockInLocation}>
+                      <Select
+                        value={stockInLocation}
+                        onValueChange={setStockInLocation}
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -768,11 +938,13 @@ export default function EditProductPage() {
                   {/* Total Cost Display */}
                   <div className="bg-primary/10 p-4 rounded-lg">
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">Tổng giá trị nhập kho:</span>
+                      <span className="font-medium">
+                        Tổng giá trị nhập kho:
+                      </span>
                       <span className="text-xl font-bold text-primary">
                         {new Intl.NumberFormat('vi-VN', {
                           style: 'currency',
-                          currency: 'VND'
+                          currency: 'VND',
                         }).format(stockInQuantity * stockInCostPrice)}
                       </span>
                     </div>

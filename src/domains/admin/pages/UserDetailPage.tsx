@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
 import {
@@ -59,11 +64,7 @@ export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useAdminUser(id!)
+  const { data: user, isLoading, error } = useAdminUser(id!)
   const approveUserMutation = useApproveUser()
   const suspendUserMutation = useSuspendUser()
   const activateUserMutation = useActivateUser()
@@ -176,7 +177,9 @@ export default function UserDetailPage() {
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <p className="text-red-600 mb-4">
-            {error ? 'Không thể tải thông tin người dùng' : 'Người dùng không tồn tại'}
+            {error
+              ? 'Không thể tải thông tin người dùng'
+              : 'Người dùng không tồn tại'}
           </p>
           <Button onClick={() => navigate('/admin/users')} variant="outline">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -262,10 +265,13 @@ export default function UserDetailPage() {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Xác nhận vô hiệu hóa người dùng</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    Xác nhận vô hiệu hóa người dùng
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
                     Bạn có chắc chắn muốn vô hiệu hóa người dùng "{user.name}"?
-                    Người dùng sẽ không thể đăng nhập cho đến khi được kích hoạt lại.
+                    Người dùng sẽ không thể đăng nhập cho đến khi được kích hoạt
+                    lại.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -275,7 +281,9 @@ export default function UserDetailPage() {
                     className="bg-red-600 hover:bg-red-700"
                     disabled={suspendUserMutation.isPending}
                   >
-                    {suspendUserMutation.isPending ? 'Đang xử lý...' : 'Vô hiệu hóa'}
+                    {suspendUserMutation.isPending
+                      ? 'Đang xử lý...'
+                      : 'Vô hiệu hóa'}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -291,9 +299,12 @@ export default function UserDetailPage() {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Xác nhận kích hoạt người dùng</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    Xác nhận kích hoạt người dùng
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Bạn có chắc chắn muốn kích hoạt lại người dùng "{user.name}"?
+                    Bạn có chắc chắn muốn kích hoạt lại người dùng "{user.name}
+                    "?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -303,7 +314,9 @@ export default function UserDetailPage() {
                     className="bg-green-600 hover:bg-green-700"
                     disabled={activateUserMutation.isPending}
                   >
-                    {activateUserMutation.isPending ? 'Đang xử lý...' : 'Kích hoạt'}
+                    {activateUserMutation.isPending
+                      ? 'Đang xử lý...'
+                      : 'Kích hoạt'}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -496,7 +509,9 @@ export default function UserDetailPage() {
                           : 'bg-gray-100 text-gray-800'
                       }
                     >
-                      {store.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
+                      {store.status === 'active'
+                        ? 'Hoạt động'
+                        : 'Không hoạt động'}
                     </Badge>
                     <Button variant="outline" size="sm">
                       Xem cửa hàng

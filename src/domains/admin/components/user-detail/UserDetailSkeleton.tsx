@@ -97,7 +97,10 @@ export function UserDetailSkeleton() {
         <CardContent>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="flex items-center justify-between py-3 border-b">
+              <div
+                key={i}
+                className="flex items-center justify-between py-3 border-b"
+              >
                 <div className="flex items-center gap-3 flex-1">
                   <Skeleton className="w-12 h-12 rounded" />
                   <div className="space-y-2">

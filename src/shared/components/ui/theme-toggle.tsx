@@ -1,5 +1,5 @@
 import { Button } from '@shared/components/ui/button'
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -28,19 +28,19 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {themes.map((themeOption) => {
+        {themes.map(themeOption => {
           const Icon = themeOption.icon
           return (
             <DropdownMenuItem
               key={themeOption.value}
-              onClick={() => setTheme(themeOption.value as 'light' | 'dark' | 'system')}
+              onClick={() =>
+                setTheme(themeOption.value as 'light' | 'dark' | 'system')
+              }
               className="flex items-center gap-2"
             >
               <Icon className="h-4 w-4" />
               <span className="flex-1">{themeOption.label}</span>
-              {theme === themeOption.value && (
-                <Check className="h-4 w-4" />
-              )}
+              {theme === themeOption.value && <Check className="h-4 w-4" />}
             </DropdownMenuItem>
           )
         })}

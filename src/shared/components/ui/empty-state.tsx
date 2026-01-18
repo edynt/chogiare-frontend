@@ -23,7 +23,12 @@ export function EmptyState({
   className,
 }: EmptyStateProps) {
   return (
-    <div className={cn('flex flex-col items-center justify-center p-8 text-center', className)}>
+    <div
+      className={cn(
+        'flex flex-col items-center justify-center p-8 text-center',
+        className
+      )}
+    >
       {Icon && (
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
           <Icon className="h-6 w-6 text-muted-foreground" />
@@ -33,11 +38,7 @@ export function EmptyState({
       {description && (
         <p className="text-muted-foreground mb-4 max-w-sm">{description}</p>
       )}
-      {action && (
-        <Button onClick={action.onClick}>
-          {action.label}
-        </Button>
-      )}
+      {action && <Button onClick={action.onClick}>{action.label}</Button>}
     </div>
   )
 }
@@ -52,10 +53,14 @@ export function EmptyCart({ onContinueShopping }: EmptyCartProps) {
       icon={ShoppingCart}
       title="Giỏ hàng trống"
       description="Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm"
-      action={onContinueShopping ? {
-        label: 'Tiếp tục mua sắm',
-        onClick: onContinueShopping,
-      } : undefined}
+      action={
+        onContinueShopping
+          ? {
+              label: 'Tiếp tục mua sắm',
+              onClick: onContinueShopping,
+            }
+          : undefined
+      }
     />
   )
 }
@@ -70,10 +75,14 @@ export function EmptyProducts({ onAddProduct }: EmptyProductsProps) {
       icon={Package}
       title="Chưa có sản phẩm"
       description="Bắt đầu bằng cách thêm sản phẩm đầu tiên của bạn"
-      action={onAddProduct ? {
-        label: 'Thêm sản phẩm',
-        onClick: onAddProduct,
-      } : undefined}
+      action={
+        onAddProduct
+          ? {
+              label: 'Thêm sản phẩm',
+              onClick: onAddProduct,
+            }
+          : undefined
+      }
     />
   )
 }
@@ -88,10 +97,14 @@ export function EmptyOrders({ onBrowseProducts }: EmptyOrdersProps) {
       icon={ShoppingBag}
       title="Chưa có đơn hàng"
       description="Bạn chưa có đơn hàng nào. Hãy khám phá các sản phẩm tuyệt vời"
-      action={onBrowseProducts ? {
-        label: 'Khám phá sản phẩm',
-        onClick: onBrowseProducts,
-      } : undefined}
+      action={
+        onBrowseProducts
+          ? {
+              label: 'Khám phá sản phẩm',
+              onClick: onBrowseProducts,
+            }
+          : undefined
+      }
     />
   )
 }
@@ -106,10 +119,14 @@ export function EmptyReviews({ onWriteReview }: EmptyReviewsProps) {
       icon={Star}
       title="Chưa có đánh giá"
       description="Hãy là người đầu tiên đánh giá sản phẩm này"
-      action={onWriteReview ? {
-        label: 'Viết đánh giá',
-        onClick: onWriteReview,
-      } : undefined}
+      action={
+        onWriteReview
+          ? {
+              label: 'Viết đánh giá',
+              onClick: onWriteReview,
+            }
+          : undefined
+      }
     />
   )
 }

@@ -6,7 +6,12 @@ import { productSchema, type ProductFormData } from '@/lib/schemas'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
 import { APP_NAME } from '@/constants/app.constants'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Label } from '@shared/components/ui/label'
@@ -33,7 +38,10 @@ import {
   Save,
   ArrowLeft,
 } from 'lucide-react'
-import { ImageUploadWithReorder, type ImageItem } from '@shared/components/ui/image-upload-with-reorder'
+import {
+  ImageUploadWithReorder,
+  type ImageItem,
+} from '@shared/components/ui/image-upload-with-reorder'
 import type { ProductCondition, ProductStatus } from '@/types'
 
 // Using Zod schema from lib/schemas.ts
@@ -84,6 +92,7 @@ export default function AddProductPage() {
   const [videoUrl, setVideoUrl] = useState('')
   const [isFactory, setIsFactory] = useState(false)
   const [isWarranty, setIsWarranty] = useState(false)
+  const [warrantyInfo, setWarrantyInfo] = useState('')
   const [isReturnable, setIsReturnable] = useState(false)
   const [returnPolicy, setReturnPolicy] = useState('')
 
@@ -123,14 +132,19 @@ export default function AddProductPage() {
       const productData = {
         title: data.title,
         description: data.description || undefined,
-        categoryId: typeof data.categoryId === 'string' ? parseInt(data.categoryId, 10) : data.categoryId,
+        categoryId:
+          typeof data.categoryId === 'string'
+            ? parseInt(data.categoryId, 10)
+            : data.categoryId,
         price: data.price,
         originalPrice: data.originalPrice || undefined,
         condition: data.condition,
         location: data.location || undefined,
         stock: data.stock,
         status, // Include status (default: 'active')
-        tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : undefined,
+        tags: data.tags
+          ? data.tags.split(',').map(tag => tag.trim())
+          : undefined,
         badges: selectedBadges.length > 0 ? selectedBadges : undefined,
         minStock: minStock > 0 ? minStock : undefined,
         maxStock: maxStock > 0 ? maxStock : undefined,
@@ -194,7 +208,7 @@ export default function AddProductPage() {
                     { value: 'active', label: 'Đang bán' },
                     { value: 'sold', label: 'Đã bán' },
                     { value: 'archived', label: 'Lưu trữ' },
-                  ].map((s) => (
+                  ].map(s => (
                     <Button
                       key={s.value}
                       type="button"
@@ -209,7 +223,7 @@ export default function AddProductPage() {
                   <Checkbox
                     id="inStock"
                     checked={inStock}
-                    onCheckedChange={(checked) => setInStock(checked as boolean)}
+                    onCheckedChange={checked => setInStock(checked as boolean)}
                   />
                   <Label htmlFor="inStock">Sản phẩm còn hàng</Label>
                 </div>
@@ -261,7 +275,9 @@ export default function AddProductPage() {
                     <Label htmlFor="categoryId">Danh mục *</Label>
                     <Select
                       value={watch('categoryId')?.toString()}
-                      onValueChange={value => setValue('categoryId', parseInt(value, 10))}
+                      onValueChange={value =>
+                        setValue('categoryId', parseInt(value, 10))
+                      }
                     >
                       <SelectTrigger
                         className={
@@ -272,7 +288,10 @@ export default function AddProductPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {categories?.map(category => (
-                          <SelectItem key={category.id} value={category.id.toString()}>
+                          <SelectItem
+                            key={category.id}
+                            value={category.id.toString()}
+                          >
                             {category.name}
                           </SelectItem>
                         ))}
@@ -371,7 +390,7 @@ export default function AddProductPage() {
                       type="number"
                       placeholder="1"
                       value={moq}
-                      onChange={(e) => setMoq(parseInt(e.target.value))}
+                      onChange={e => setMoq(parseInt(e.target.value))}
                     />
                     <p className="text-sm text-muted-foreground mt-1">
                       Số lượng tối thiểu khách hàng phải mua
@@ -384,7 +403,7 @@ export default function AddProductPage() {
                       id="sku"
                       placeholder="Mã SKU"
                       value={sku}
-                      onChange={(e) => setSku(e.target.value)}
+                      onChange={e => setSku(e.target.value)}
                     />
                   </div>
                 </div>
@@ -397,7 +416,7 @@ export default function AddProductPage() {
                       type="number"
                       placeholder="Số lượng"
                       value={warehouseStock}
-                      onChange={(e) => setWarehouseStock(e.target.value)}
+                      onChange={e => setWarehouseStock(e.target.value)}
                     />
                   </div>
 
@@ -407,7 +426,7 @@ export default function AddProductPage() {
                       id="warehouseLocation"
                       placeholder="Vị trí kho hàng"
                       value={warehouseLocation}
-                      onChange={(e) => setWarehouseLocation(e.target.value)}
+                      onChange={e => setWarehouseLocation(e.target.value)}
                     />
                   </div>
                 </div>
@@ -446,7 +465,9 @@ export default function AddProductPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="suggestedRetailPrice">Giá thực tế thị trường (VNĐ)</Label>
+                  <Label htmlFor="suggestedRetailPrice">
+                    Giá thực tế thị trường (VNĐ)
+                  </Label>
                   <Input
                     id="suggestedRetailPrice"
                     type="text"
@@ -454,7 +475,7 @@ export default function AddProductPage() {
                     pattern="[0-9]*\.?[0-9]*"
                     placeholder="Giá bán lẻ trung bình trên thị trường"
                     value={suggestedRetailPrice}
-                    onChange={(e) => {
+                    onChange={e => {
                       const value = e.target.value
                       if (value === '' || /^\d*\.?\d*$/.test(value)) {
                         setSuggestedRetailPrice(value)
@@ -497,7 +518,7 @@ export default function AddProductPage() {
                       id="sku"
                       placeholder="Mã SKU sản phẩm"
                       value={sku}
-                      onChange={(e) => setSku(e.target.value)}
+                      onChange={e => setSku(e.target.value)}
                     />
                   </div>
                 </div>
@@ -510,7 +531,7 @@ export default function AddProductPage() {
                       type="number"
                       placeholder="0"
                       value={minStock}
-                      onChange={(e) => setMinStock(parseInt(e.target.value) || 0)}
+                      onChange={e => setMinStock(parseInt(e.target.value) || 0)}
                     />
                     <p className="text-sm text-muted-foreground mt-1">
                       Cảnh báo khi tồn kho dưới mức này
@@ -524,7 +545,7 @@ export default function AddProductPage() {
                       type="number"
                       placeholder="0"
                       value={maxStock}
-                      onChange={(e) => setMaxStock(parseInt(e.target.value) || 0)}
+                      onChange={e => setMaxStock(parseInt(e.target.value) || 0)}
                     />
                     <p className="text-sm text-muted-foreground mt-1">
                       Số lượng tối đa có thể lưu trữ
@@ -539,7 +560,7 @@ export default function AddProductPage() {
                       id="warehouseLocation"
                       placeholder="Ví dụ: Kho A - Kệ 1"
                       value={warehouseLocation}
-                      onChange={(e) => setWarehouseLocation(e.target.value)}
+                      onChange={e => setWarehouseLocation(e.target.value)}
                     />
                   </div>
 
@@ -549,7 +570,7 @@ export default function AddProductPage() {
                       id="supplier"
                       placeholder="Tên nhà cung cấp"
                       value={supplier}
-                      onChange={(e) => setSupplier(e.target.value)}
+                      onChange={e => setSupplier(e.target.value)}
                     />
                   </div>
                 </div>
@@ -563,7 +584,7 @@ export default function AddProductPage() {
                     pattern="[0-9]*\.?[0-9]*"
                     placeholder="0"
                     value={costPrice}
-                    onChange={(e) => {
+                    onChange={e => {
                       const value = e.target.value
                       if (value === '' || /^\d*\.?\d*$/.test(value)) {
                         setCostPrice(parseFloat(value) || 0)
@@ -607,7 +628,7 @@ export default function AddProductPage() {
                       id="material"
                       placeholder="Chất liệu sản phẩm"
                       value={material}
-                      onChange={(e) => setMaterial(e.target.value)}
+                      onChange={e => setMaterial(e.target.value)}
                     />
                   </div>
                   <div>
@@ -616,7 +637,7 @@ export default function AddProductPage() {
                       id="dimensions"
                       placeholder="Kích thước"
                       value={dimensions}
-                      onChange={(e) => setDimensions(e.target.value)}
+                      onChange={e => setDimensions(e.target.value)}
                     />
                   </div>
                 </div>
@@ -627,7 +648,7 @@ export default function AddProductPage() {
                       id="color"
                       placeholder="Mô tả màu sắc"
                       value={color}
-                      onChange={(e) => setColor(e.target.value)}
+                      onChange={e => setColor(e.target.value)}
                     />
                   </div>
                   <div>
@@ -636,7 +657,7 @@ export default function AddProductPage() {
                       id="packaging"
                       placeholder="Cách đóng gói"
                       value={packaging}
-                      onChange={(e) => setPackaging(e.target.value)}
+                      onChange={e => setPackaging(e.target.value)}
                     />
                   </div>
                 </div>
@@ -655,7 +676,7 @@ export default function AddProductPage() {
                     id="origin"
                     placeholder="Ví dụ: Việt Nam, Trung Quốc, ..."
                     value={origin}
-                    onChange={(e) => setOrigin(e.target.value)}
+                    onChange={e => setOrigin(e.target.value)}
                   />
                 </div>
                 <div>
@@ -665,22 +686,37 @@ export default function AddProductPage() {
                     placeholder="Nhập các chứng nhận, phân cách bằng dấu phẩy (VD: ISO 9001, HACCP, ...)"
                     rows={3}
                     value={certificates}
-                    onChange={(e) => setCertificates(e.target.value)}
+                    onChange={e => setCertificates(e.target.value)}
                   />
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="isWarranty"
                     checked={isWarranty}
-                    onCheckedChange={(checked) => setIsWarranty(checked as boolean)}
+                    onCheckedChange={checked =>
+                      setIsWarranty(checked as boolean)
+                    }
                   />
                   <Label htmlFor="isWarranty">Bảo hành</Label>
                 </div>
+                {isWarranty && (
+                  <div>
+                    <Label htmlFor="warrantyInfo">Thông tin bảo hành</Label>
+                    <Input
+                      id="warrantyInfo"
+                      placeholder="VD: Bảo hành 12 tháng, đổi mới trong 7 ngày..."
+                      value={warrantyInfo}
+                      onChange={e => setWarrantyInfo(e.target.value)}
+                    />
+                  </div>
+                )}
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="isReturnable"
                     checked={isReturnable}
-                    onCheckedChange={(checked) => setIsReturnable(checked as boolean)}
+                    onCheckedChange={checked =>
+                      setIsReturnable(checked as boolean)
+                    }
                   />
                   <Label htmlFor="isReturnable">Đổi trả</Label>
                 </div>
@@ -692,7 +728,7 @@ export default function AddProductPage() {
                       placeholder="Chính sách đổi trả chi tiết"
                       rows={3}
                       value={returnPolicy}
-                      onChange={(e) => setReturnPolicy(e.target.value)}
+                      onChange={e => setReturnPolicy(e.target.value)}
                     />
                   </div>
                 )}

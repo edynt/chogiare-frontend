@@ -26,14 +26,14 @@ const getRouteLabel = (path: string, segment: string): string => {
 
 export function AdminBreadcrumb() {
   const location = useLocation()
-  
+
   const pathSegments = location.pathname.split('/').filter(Boolean)
   const breadcrumbs = pathSegments.map((segment, index) => {
     const path = '/' + pathSegments.slice(0, index + 1).join('/')
     return {
       label: getRouteLabel(path, segment),
       path: path,
-      isLast: index === pathSegments.length - 1
+      isLast: index === pathSegments.length - 1,
     }
   })
 
@@ -42,7 +42,7 @@ export function AdminBreadcrumb() {
     breadcrumbs.unshift({
       label: 'Tổng quan',
       path: '/admin',
-      isLast: breadcrumbs.length === 0
+      isLast: breadcrumbs.length === 0,
     })
   }
 
@@ -57,15 +57,15 @@ export function AdminBreadcrumb() {
             <Home className="h-5 w-5" />
           </a>
         </li>
-        
-        {breadcrumbs.map((breadcrumb) => (
+
+        {breadcrumbs.map(breadcrumb => (
           <li key={breadcrumb.path} className="flex items-center space-x-3">
             <ChevronRight className="h-5 w-5 text-gray-400" />
-            <span 
+            <span
               className={cn(
                 breadcrumb.isLast
-                  ? "text-gray-900 font-medium"
-                  : "text-gray-500 cursor-pointer px-2 py-1 rounded-md hover:bg-gray-100"
+                  ? 'text-gray-900 font-medium'
+                  : 'text-gray-500 cursor-pointer px-2 py-1 rounded-md hover:bg-gray-100'
               )}
             >
               {breadcrumb.label}

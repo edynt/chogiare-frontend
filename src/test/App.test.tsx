@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 
 // Mock all the complex parts of the app to test just the basic structure
-vi.mock('react-router-dom', async (importOriginal) => {
+vi.mock('react-router-dom', async importOriginal => {
   const actual = await importOriginal<typeof import('react-router-dom')>()
   return {
     ...actual,
@@ -13,11 +13,12 @@ vi.mock('react-router-dom', async (importOriginal) => {
   }
 })
 
-vi.mock('@tanstack/react-query', async (importOriginal) => {
+vi.mock('@tanstack/react-query', async importOriginal => {
   const actual = await importOriginal<typeof import('@tanstack/react-query')>()
   return {
     ...actual,
-    QueryClientProvider: ({ children }: { children: React.ReactNode }) => children,
+    QueryClientProvider: ({ children }: { children: React.ReactNode }) =>
+      children,
   }
 })
 

@@ -13,7 +13,7 @@ export interface User {
   showPhone?: boolean
   isVerified?: boolean
   roles: UserRole[]
-  roleIds?: number[]  // Numeric role IDs: 1=admin, 2=user
+  roleIds?: number[] // Numeric role IDs: 1=admin, 2=user
   postCount: number
   storeInfo?: StoreInfo
   createdAt: string
@@ -108,7 +108,12 @@ export interface Product {
 }
 
 export type ProductCondition = 'new' | 'like_new' | 'good' | 'fair' | 'poor'
-export type ProductStatus = 'draft' | 'active' | 'sold' | 'archived' | 'suspended'
+export type ProductStatus =
+  | 'draft'
+  | 'active'
+  | 'sold'
+  | 'archived'
+  | 'suspended'
 export type ProductBadge = 'NEW' | 'FEATURED' | 'PROMO' | 'HOT' | 'SALE'
 
 export interface CartItem {
@@ -149,8 +154,19 @@ export interface Order {
   updatedAt: string
 }
 
-export type OrderStatus = 'pending' | 'confirmed' | 'ready_for_pickup' | 'completed' | 'cancelled' | 'refunded'
-export type PaymentMethod = 'momo' | 'zalopay' | 'stripe' | 'paypal' | 'bank_transfer'
+export type OrderStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'ready_for_pickup'
+  | 'completed'
+  | 'cancelled'
+  | 'refunded'
+export type PaymentMethod =
+  | 'momo'
+  | 'zalopay'
+  | 'stripe'
+  | 'paypal'
+  | 'bank_transfer'
 export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded'
 
 export interface Address {

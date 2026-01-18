@@ -33,7 +33,10 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const notifications = notificationsData?.items || []
   const unreadCount = notificationsData?.unreadCount || 0
 
-  const handleNotificationClick = (notification: { id: string; link: string }) => {
+  const handleNotificationClick = (notification: {
+    id: string
+    link: string
+  }) => {
     markAsRead.mutate(notification.id)
     navigate(notification.link)
   }
@@ -47,25 +50,28 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       <div className="flex items-center justify-between">
         {/* Left side */}
         <div className="flex items-center gap-6">
-            {onMenuClick && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onMenuClick}
-                className="lg:hidden"
-              >
-                <Menu className="h-6 w-6" />
-              </Button>
-            )}
+          {onMenuClick && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onMenuClick}
+              className="lg:hidden"
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+          )}
         </div>
 
         {/* Right side */}
         <div className="flex items-center gap-6">
-
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative h-12 w-12">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative h-12 w-12"
+              >
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
@@ -101,7 +107,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                   Không có thông báo mới
                 </div>
               ) : (
-                notifications.map((notification) => (
+                notifications.map(notification => (
                   <DropdownMenuItem
                     key={notification.id}
                     className="p-3 cursor-pointer"
@@ -117,7 +123,9 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {notification.title}
                         </p>
-                        <p className="text-xs text-gray-500">{notification.time}</p>
+                        <p className="text-xs text-gray-500">
+                          {notification.time}
+                        </p>
                       </div>
                     </div>
                   </DropdownMenuItem>
@@ -136,7 +144,10 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-3 h-12 px-3">
+              <Button
+                variant="ghost"
+                className="flex items-center gap-3 h-12 px-3"
+              >
                 <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
                   <User className="h-5 w-5 text-white" />
                 </div>
@@ -158,14 +169,14 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                 Cài đặt
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="text-red-600 cursor-pointer"
-                onSelect={(e) => {
-                  e.preventDefault() // Optional: keep menu open or not? Usually better to let it handle. 
+                onSelect={e => {
+                  e.preventDefault() // Optional: keep menu open or not? Usually better to let it handle.
                   // But wait, if we redirect, components unmount.
                   // Let's just run logic.
                   // Removing preventDefault to allow menu to close (good UX)
-                  // But wait, user said "no api call". 
+                  // But wait, user said "no api call".
                   // Let's keep it simple.
                   console.log('Logout selected - triggering mutation')
                   logoutMutation.mutate()

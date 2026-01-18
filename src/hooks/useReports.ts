@@ -28,4 +28,3 @@ export function useCategoryRevenue(params?: QueryRevenueReportParams) {
     queryFn: () => reportsApi.getCategoryRevenue(params),
   })
 }
-

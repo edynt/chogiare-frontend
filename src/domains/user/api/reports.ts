@@ -56,32 +56,51 @@ export interface QueryRevenueReportParams {
 }
 
 export const reportsApi = {
-  getRevenueOverview: async (params?: QueryRevenueReportParams): Promise<RevenueOverviewStats> => {
-    const response = await apiClient.get<ApiResponse<RevenueOverviewStats>>('/reports/revenue/overview', {
-      params,
-    })
+  getRevenueOverview: async (
+    params?: QueryRevenueReportParams
+  ): Promise<RevenueOverviewStats> => {
+    const response = await apiClient.get<ApiResponse<RevenueOverviewStats>>(
+      '/reports/revenue/overview',
+      {
+        params,
+      }
+    )
     return response.data.data
   },
 
-  getRevenueData: async (params?: QueryRevenueReportParams): Promise<RevenueData[]> => {
-    const response = await apiClient.get<ApiResponse<RevenueData[]>>('/reports/revenue', {
-      params,
-    })
+  getRevenueData: async (
+    params?: QueryRevenueReportParams
+  ): Promise<RevenueData[]> => {
+    const response = await apiClient.get<ApiResponse<RevenueData[]>>(
+      '/reports/revenue',
+      {
+        params,
+      }
+    )
     return response.data.data
   },
 
-  getTopProducts: async (params?: QueryRevenueReportParams): Promise<TopProduct[]> => {
-    const response = await apiClient.get<ApiResponse<TopProduct[]>>('/reports/top-products', {
-      params,
-    })
+  getTopProducts: async (
+    params?: QueryRevenueReportParams
+  ): Promise<TopProduct[]> => {
+    const response = await apiClient.get<ApiResponse<TopProduct[]>>(
+      '/reports/top-products',
+      {
+        params,
+      }
+    )
     return response.data.data
   },
 
-  getCategoryRevenue: async (params?: QueryRevenueReportParams): Promise<CategoryRevenue[]> => {
-    const response = await apiClient.get<ApiResponse<CategoryRevenue[]>>('/reports/category-revenue', {
-      params,
-    })
+  getCategoryRevenue: async (
+    params?: QueryRevenueReportParams
+  ): Promise<CategoryRevenue[]> => {
+    const response = await apiClient.get<ApiResponse<CategoryRevenue[]>>(
+      '/reports/category-revenue',
+      {
+        params,
+      }
+    )
     return response.data.data
   },
 }
-

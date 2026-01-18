@@ -21,10 +21,15 @@ const REFRESH_FAILURE_KEY = 'auth_refresh_failed'
  */
 export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   const { setUser, setLoading, setError, isAuthenticated } = useAuthStore()
-  const refreshJustFailed = sessionStorage.getItem(REFRESH_FAILURE_KEY) === '/admin/login'
+  const refreshJustFailed =
+    sessionStorage.getItem(REFRESH_FAILURE_KEY) === '/admin/login'
 
-  const { data: profile, error, isLoading } = useAdminProfile({
-    enabled: !refreshJustFailed, 
+  const {
+    data: profile,
+    error,
+    isLoading,
+  } = useAdminProfile({
+    enabled: !refreshJustFailed,
   })
   const errorHandled = useRef(false)
 

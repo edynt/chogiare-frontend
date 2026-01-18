@@ -5,10 +5,10 @@ import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@shared/components/ui/tabs'
-import { 
-  Bell, 
-  Search, 
-  X, 
+import {
+  Bell,
+  Search,
+  X,
   ShoppingBag,
   Package,
   DollarSign,
@@ -16,39 +16,43 @@ import {
   Clock,
   AlertTriangle,
   RefreshCw,
-  Home
+  Home,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { getApiErrorMessage } from '@/lib/utils'
-import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from '@/hooks/useNotifications'
+import {
+  useNotifications,
+  useMarkNotificationAsRead,
+  useMarkAllNotificationsAsRead,
+} from '@/hooks/useNotifications'
 import type { Notification } from '@user/api/notifications'
 
 const TYPE_INFO = {
   order: {
     icon: ShoppingBag,
     label: 'Đơn hàng',
-    color: '#3B82F6'
+    color: '#3B82F6',
   },
   product: {
     icon: Package,
     label: 'Sản phẩm',
-    color: '#10B981'
+    color: '#10B981',
   },
   payment: {
     icon: DollarSign,
     label: 'Thanh toán',
-    color: '#8B5CF6'
+    color: '#8B5CF6',
   },
   system: {
     icon: AlertTriangle,
     label: 'Hệ thống',
-    color: '#F59E0B'
+    color: '#F59E0B',
   },
   promotion: {
     icon: Bell,
     label: 'Khuyến mãi',
-    color: '#EF4444'
-  }
+    color: '#EF4444',
+  },
 }
 
 export default function SellerNotificationsPage() {
@@ -57,10 +61,17 @@ export default function SellerNotificationsPage() {
   const [selectedTab, setSelectedTab] = useState('all')
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  const { data: notificationsData, isLoading, refetch } = useNotifications({
+  const {
+    data: notificationsData,
+    isLoading,
+    refetch,
+  } = useNotifications({
     page: 1,
     pageSize: 100,
-    type: selectedTab !== 'all' && selectedTab !== 'unread' ? (selectedTab as Notification['type']) : undefined,
+    type:
+      selectedTab !== 'all' && selectedTab !== 'unread'
+        ? (selectedTab as Notification['type'])
+        : undefined,
     isRead: selectedTab === 'unread' ? false : undefined,
   })
   const markAsReadMutation = useMarkNotificationAsRead()
@@ -86,8 +97,10 @@ export default function SellerNotificationsPage() {
   const filteredNotifications = notifications.filter(notification => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      if (!notification.title.toLowerCase().includes(query) && 
-          !notification.message.toLowerCase().includes(query)) {
+      if (
+        !notification.title.toLowerCase().includes(query) &&
+        !notification.message.toLowerCase().includes(query)
+      ) {
         return false
       }
     }
@@ -107,7 +120,9 @@ export default function SellerNotificationsPage() {
       await markAllAsReadMutation.mutateAsync()
       toast.success('Đã đánh dấu tất cả là đã đọc')
     } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Không thể đánh dấu tất cả là đã đọc'))
+      toast.error(
+        getApiErrorMessage(error, 'Không thể đánh dấu tất cả là đã đọc')
+      )
     }
   }
 
@@ -135,8 +150,10 @@ export default function SellerNotificationsPage() {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
-    }).format(price).replace('₫', 'đ')
+      currency: 'VND',
+    })
+      .format(price)
+      .replace('₫', 'đ')
   }
 
   return (
@@ -165,14 +182,16 @@ export default function SellerNotificationsPage() {
             </div>
             <div className="flex items-center gap-2">
               {unreadCount > 0 && (
-                <Button 
-                  onClick={markAllAsRead} 
-                  variant="outline" 
+                <Button
+                  onClick={markAllAsRead}
+                  variant="outline"
                   size="sm"
                   disabled={markAllAsReadMutation.isPending}
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
-                  {markAllAsReadMutation.isPending ? 'Đang xử lý...' : 'Đọc tất cả'}
+                  {markAllAsReadMutation.isPending
+                    ? 'Đang xử lý...'
+                    : 'Đọc tất cả'}
                 </Button>
               )}
               <Button
@@ -181,7 +200,9 @@ export default function SellerNotificationsPage() {
                 onClick={handleRefresh}
                 disabled={isRefreshing || isLoading}
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`}
+                />
                 Làm mới
               </Button>
             </div>
@@ -195,7 +216,7 @@ export default function SellerNotificationsPage() {
             <Input
               placeholder="Tìm kiếm thông báo..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="pl-10 pr-10"
             />
             {searchQuery && (
@@ -212,7 +233,11 @@ export default function SellerNotificationsPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-6">
+        <Tabs
+          value={selectedTab}
+          onValueChange={setSelectedTab}
+          className="mb-6"
+        >
           <TabsList>
             <TabsTrigger value="all">
               Tất cả
@@ -255,37 +280,36 @@ export default function SellerNotificationsPage() {
             ))}
           </div>
         ) : filteredNotifications.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-16">
-                <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
-                  {searchQuery ? (
-                    <Search className="h-12 w-12 text-muted-foreground" />
-                  ) : (
-                    <Bell className="h-12 w-12 text-muted-foreground" />
-                  )}
-                </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  {searchQuery ? 'Không tìm thấy thông báo' : 'Chưa có thông báo'}
-                </h3>
-                <p className="text-muted-foreground text-center">
-                  {searchQuery 
-                    ? 'Thử tìm kiếm với từ khóa khác'
-                    : 'Các thông báo mới sẽ hiển thị ở đây'
-                  }
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {filteredNotifications.map(notification => {
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
+                {searchQuery ? (
+                  <Search className="h-12 w-12 text-muted-foreground" />
+                ) : (
+                  <Bell className="h-12 w-12 text-muted-foreground" />
+                )}
+              </div>
+              <h3 className="text-lg font-semibold mb-2">
+                {searchQuery ? 'Không tìm thấy thông báo' : 'Chưa có thông báo'}
+              </h3>
+              <p className="text-muted-foreground text-center">
+                {searchQuery
+                  ? 'Thử tìm kiếm với từ khóa khác'
+                  : 'Các thông báo mới sẽ hiển thị ở đây'}
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {filteredNotifications.map(notification => {
               const typeInfo = TYPE_INFO[notification.type]
               const Icon = typeInfo.icon
               return (
                 <Card
                   key={notification.id}
                   className={`cursor-pointer transition-all hover:shadow-md ${
-                    !notification.isRead 
-                      ? 'border-2 border-primary/30 bg-primary/5' 
+                    !notification.isRead
+                      ? 'border-2 border-primary/30 bg-primary/5'
                       : ''
                   }`}
                   onClick={() => handleNotificationClick(notification)}
@@ -297,7 +321,7 @@ export default function SellerNotificationsPage() {
                         className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
                         style={{
                           backgroundColor: `${typeInfo.color}15`,
-                          color: typeInfo.color
+                          color: typeInfo.color,
                         }}
                       >
                         <Icon className="h-6 w-6" />
@@ -306,9 +330,11 @@ export default function SellerNotificationsPage() {
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-2">
-                          <h3 className={`font-semibold text-base ${
-                            !notification.isRead ? 'text-primary' : ''
-                          }`}>
+                          <h3
+                            className={`font-semibold text-base ${
+                              !notification.isRead ? 'text-primary' : ''
+                            }`}
+                          >
                             {notification.title}
                           </h3>
                           {!notification.isRead && (
@@ -328,16 +354,18 @@ export default function SellerNotificationsPage() {
                             style={{
                               backgroundColor: `${typeInfo.color}15`,
                               color: typeInfo.color,
-                              borderColor: `${typeInfo.color}30`
+                              borderColor: `${typeInfo.color}30`,
                             }}
                           >
                             {typeInfo.label}
                           </Badge>
-                          {notification.metadata?.amount && typeof notification.metadata.amount === 'number' && (
-                            <Badge variant="outline" className="text-xs">
-                              {formatPrice(notification.metadata.amount)}
-                            </Badge>
-                          )}
+                          {notification.metadata?.amount &&
+                            typeof notification.metadata.amount ===
+                              'number' && (
+                              <Badge variant="outline" className="text-xs">
+                                {formatPrice(notification.metadata.amount)}
+                              </Badge>
+                            )}
                           <span className="text-xs text-muted-foreground flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             {getTimeAgo(notification.createdAt)}
@@ -348,11 +376,10 @@ export default function SellerNotificationsPage() {
                   </CardContent>
                 </Card>
               )
-              })}
-            </div>
-          )}
+            })}
+          </div>
+        )}
       </div>
     </div>
   )
 }
-

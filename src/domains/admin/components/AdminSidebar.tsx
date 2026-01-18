@@ -161,9 +161,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
               className={cn(
                 'flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',
                 'hover:bg-gray-100 group relative',
-                isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-gray-700',
+                isActive ? 'bg-primary/10 text-primary' : 'text-gray-700',
                 isCollapsed && 'justify-center'
               )}
               title={isCollapsed ? item.title : undefined}
@@ -171,9 +169,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
               <Icon
                 className={cn(
                   'h-5 w-5 flex-shrink-0',
-                  isActive
-                    ? 'text-primary'
-                    : 'text-gray-500'
+                  isActive ? 'text-primary' : 'text-gray-500'
                 )}
               />
 

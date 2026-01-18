@@ -1,9 +1,13 @@
 import React, { useState, useMemo } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
-
 
 import {
   Table,
@@ -91,10 +95,13 @@ export default function UserManagementPage() {
   // Debug: Log user status distribution
   React.useEffect(() => {
     if (users.length) {
-      const statusCounts = users.reduce((acc, u) => {
-        acc[u.status] = (acc[u.status] || 0) + 1
-        return acc
-      }, {} as Record<string, number>)
+      const statusCounts = users.reduce(
+        (acc, u) => {
+          acc[u.status] = (acc[u.status] || 0) + 1
+          return acc
+        },
+        {} as Record<string, number>
+      )
     }
   }, [users])
 
@@ -455,10 +462,14 @@ export default function UserManagementPage() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Xác nhận vô hiệu hóa người dùng</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                      Xác nhận vô hiệu hóa người dùng
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Bạn có chắc chắn muốn vô hiệu hóa người dùng "{user.name}"?
-                                      Người dùng sẽ không thể đăng nhập cho đến khi được kích hoạt lại.
+                                      Bạn có chắc chắn muốn vô hiệu hóa người
+                                      dùng "{user.name}"? Người dùng sẽ không
+                                      thể đăng nhập cho đến khi được kích hoạt
+                                      lại.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
@@ -487,9 +498,12 @@ export default function UserManagementPage() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Xác nhận kích hoạt người dùng</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                      Xác nhận kích hoạt người dùng
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Bạn có chắc chắn muốn kích hoạt lại người dùng "{user.name}"?
+                                      Bạn có chắc chắn muốn kích hoạt lại người
+                                      dùng "{user.name}"?
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
@@ -525,9 +539,13 @@ export default function UserManagementPage() {
                               </AlertDialogTrigger>
                               <AlertDialogContent>
                                 <AlertDialogHeader>
-                                  <AlertDialogTitle>Xác nhận xóa người dùng</AlertDialogTitle>
+                                  <AlertDialogTitle>
+                                    Xác nhận xóa người dùng
+                                  </AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Bạn có chắc chắn muốn xóa người dùng "{user.name}"? Hành động này không thể hoàn tác.
+                                    Bạn có chắc chắn muốn xóa người dùng "
+                                    {user.name}"? Hành động này không thể hoàn
+                                    tác.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>

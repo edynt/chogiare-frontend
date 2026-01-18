@@ -1,15 +1,31 @@
 import React, { useState } from 'react'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/components/ui/tabs'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@shared/components/ui/select'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@shared/components/ui/tabs'
 import { Badge } from '@shared/components/ui/badge'
 import { StockInModal } from '@user/components/seller/stock/StockInModal'
 import { useNotification } from '@shared/components/notification-provider'
-import { 
+import {
   Package,
   Plus,
   Filter,
@@ -24,7 +40,7 @@ import {
   Download,
   Upload,
   MapPin,
-  Building2
+  Building2,
 } from 'lucide-react'
 
 interface StockInRecord {
@@ -82,7 +98,7 @@ export default function StockManagementPage() {
       notes: 'Nhập hàng định kỳ',
       createdAt: '2024-01-15T10:30:00Z',
       createdBy: 'Nguyễn Văn A',
-      status: 'completed'
+      status: 'completed',
     },
     {
       id: '2',
@@ -98,7 +114,7 @@ export default function StockManagementPage() {
       notes: 'Nhập hàng khuyến mãi',
       createdAt: '2024-01-14T14:20:00Z',
       createdBy: 'Trần Thị B',
-      status: 'completed'
+      status: 'completed',
     },
     {
       id: '3',
@@ -114,8 +130,8 @@ export default function StockManagementPage() {
       notes: 'Nhập hàng bổ sung',
       createdAt: '2024-01-13T09:15:00Z',
       createdBy: 'Lê Văn C',
-      status: 'pending'
-    }
+      status: 'pending',
+    },
   ]
 
   const mockProducts: Product[] = [
@@ -128,7 +144,7 @@ export default function StockManagementPage() {
       maxStock: 50,
       costPrice: 22000000,
       category: 'Điện thoại',
-      supplier: 'Apple Vietnam'
+      supplier: 'Apple Vietnam',
     },
     {
       id: '2',
@@ -139,7 +155,7 @@ export default function StockManagementPage() {
       maxStock: 30,
       costPrice: 4500000,
       category: 'Phụ kiện',
-      supplier: 'Apple Vietnam'
+      supplier: 'Apple Vietnam',
     },
     {
       id: '3',
@@ -150,14 +166,14 @@ export default function StockManagementPage() {
       maxStock: 20,
       costPrice: 35000000,
       category: 'Laptop',
-      supplier: 'Apple Vietnam'
-    }
+      supplier: 'Apple Vietnam',
+    },
   ]
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -167,38 +183,46 @@ export default function StockManagementPage() {
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'cancelled': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'completed':
+        return 'bg-green-100 text-green-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'cancelled':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'completed': return 'Hoàn thành'
-      case 'pending': return 'Chờ xử lý'
-      case 'cancelled': return 'Đã hủy'
-      default: return status
+      case 'completed':
+        return 'Hoàn thành'
+      case 'pending':
+        return 'Chờ xử lý'
+      case 'cancelled':
+        return 'Đã hủy'
+      default:
+        return status
     }
   }
 
   const handleStockIn = async (data: any) => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     notify({
       type: 'success',
       title: 'Nhập kho thành công',
       message: `Đã nhập ${data.quantity} sản phẩm "${data.productId}" vào kho`,
     })
-    
+
     // Close modal
     setIsStockInModalOpen(false)
     setSelectedProduct(null)
@@ -227,19 +251,29 @@ export default function StockManagementPage() {
 
   // Calculate statistics
   const totalStockIns = mockStockInRecords.length
-  const completedStockIns = mockStockInRecords.filter(record => record.status === 'completed').length
-  const pendingStockIns = mockStockInRecords.filter(record => record.status === 'pending').length
-  const totalValue = mockStockInRecords.reduce((sum, record) => sum + record.totalCost, 0)
+  const completedStockIns = mockStockInRecords.filter(
+    record => record.status === 'completed'
+  ).length
+  const pendingStockIns = mockStockInRecords.filter(
+    record => record.status === 'pending'
+  ).length
+  const totalValue = mockStockInRecords.reduce(
+    (sum, record) => sum + record.totalCost,
+    0
+  )
 
   // Filter records
   const filteredRecords = mockStockInRecords.filter(record => {
-    const matchesSearch = record.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         record.productSku.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         record.supplier.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const matchesStatus = statusFilter === 'all' || record.status === statusFilter
-    const matchesSupplier = supplierFilter === 'all' || record.supplier === supplierFilter
-    
+    const matchesSearch =
+      record.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      record.productSku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      record.supplier.toLowerCase().includes(searchQuery.toLowerCase())
+
+    const matchesStatus =
+      statusFilter === 'all' || record.status === statusFilter
+    const matchesSupplier =
+      supplierFilter === 'all' || record.supplier === supplierFilter
+
     return matchesSearch && matchesStatus && matchesSupplier
   })
 
@@ -257,7 +291,9 @@ export default function StockManagementPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold">Quản lý nhập hàng</h1>
-                <p className="text-muted-foreground">Theo dõi và quản lý các đợt nhập hàng</p>
+                <p className="text-muted-foreground">
+                  Theo dõi và quản lý các đợt nhập hàng
+                </p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -278,7 +314,9 @@ export default function StockManagementPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Tổng đợt nhập</p>
+                    <p className="text-sm text-muted-foreground">
+                      Tổng đợt nhập
+                    </p>
                     <p className="text-2xl font-bold">{totalStockIns}</p>
                   </div>
                   <Package className="h-8 w-8 text-primary" />
@@ -289,8 +327,12 @@ export default function StockManagementPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Đã hoàn thành</p>
-                    <p className="text-2xl font-bold text-green-600">{completedStockIns}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Đã hoàn thành
+                    </p>
+                    <p className="text-2xl font-bold text-green-600">
+                      {completedStockIns}
+                    </p>
                   </div>
                   <CheckCircle className="h-8 w-8 text-green-600" />
                 </div>
@@ -301,7 +343,9 @@ export default function StockManagementPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Chờ xử lý</p>
-                    <p className="text-2xl font-bold text-yellow-600">{pendingStockIns}</p>
+                    <p className="text-2xl font-bold text-yellow-600">
+                      {pendingStockIns}
+                    </p>
                   </div>
                   <Clock className="h-8 w-8 text-yellow-600" />
                 </div>
@@ -311,8 +355,12 @@ export default function StockManagementPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Tổng giá trị</p>
-                    <p className="text-lg font-bold text-blue-600">{formatPrice(totalValue)}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Tổng giá trị
+                    </p>
+                    <p className="text-lg font-bold text-blue-600">
+                      {formatPrice(totalValue)}
+                    </p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-blue-600" />
                 </div>
@@ -338,13 +386,19 @@ export default function StockManagementPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {mockStockInRecords.slice(0, 5).map((record) => (
-                      <div key={record.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    {mockStockInRecords.slice(0, 5).map(record => (
+                      <div
+                        key={record.id}
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
                         <div className="flex items-center gap-4">
                           <div>
-                            <h4 className="font-medium">{record.productName}</h4>
+                            <h4 className="font-medium">
+                              {record.productName}
+                            </h4>
                             <p className="text-sm text-muted-foreground">
-                              SKU: {record.productSku} • {record.supplier} • {formatDate(record.createdAt)}
+                              SKU: {record.productSku} • {record.supplier} •{' '}
+                              {formatDate(record.createdAt)}
                             </p>
                           </div>
                           <Badge className={getStatusColor(record.status)}>
@@ -352,7 +406,9 @@ export default function StockManagementPage() {
                           </Badge>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium">{record.quantity} sản phẩm</p>
+                          <p className="font-medium">
+                            {record.quantity} sản phẩm
+                          </p>
                           <p className="text-sm text-muted-foreground">
                             {formatPrice(record.totalCost)}
                           </p>
@@ -373,28 +429,37 @@ export default function StockManagementPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {mockProducts.filter(product => product.currentStock <= product.minStock).map((product) => (
-                      <div key={product.id} className="flex items-center justify-between p-4 border border-yellow-200 rounded-lg bg-yellow-50">
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <h4 className="font-medium">{product.name}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              SKU: {product.sku} • Tồn kho: {product.currentStock} / Tối thiểu: {product.minStock}
-                            </p>
-                          </div>
-                          <Badge className="bg-yellow-100 text-yellow-800">
-                            Sắp hết hàng
-                          </Badge>
-                        </div>
-                        <Button 
-                          size="sm"
-                          onClick={() => handleOpenStockInModal(product)}
+                    {mockProducts
+                      .filter(
+                        product => product.currentStock <= product.minStock
+                      )
+                      .map(product => (
+                        <div
+                          key={product.id}
+                          className="flex items-center justify-between p-4 border border-yellow-200 rounded-lg bg-yellow-50"
                         >
-                          <Plus className="h-4 w-4 mr-2" />
-                          Nhập hàng
-                        </Button>
-                      </div>
-                    ))}
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <h4 className="font-medium">{product.name}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                SKU: {product.sku} • Tồn kho:{' '}
+                                {product.currentStock} / Tối thiểu:{' '}
+                                {product.minStock}
+                              </p>
+                            </div>
+                            <Badge className="bg-yellow-100 text-yellow-800">
+                              Sắp hết hàng
+                            </Badge>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => handleOpenStockInModal(product)}
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Nhập hàng
+                          </Button>
+                        </div>
+                      ))}
                   </div>
                 </CardContent>
               </Card>
@@ -409,17 +474,24 @@ export default function StockManagementPage() {
                       <Input
                         placeholder="Tìm kiếm sản phẩm..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={e => setSearchQuery(e.target.value)}
                       />
                     </div>
-                    <Select value={supplierFilter} onValueChange={setSupplierFilter}>
+                    <Select
+                      value={supplierFilter}
+                      onValueChange={setSupplierFilter}
+                    >
                       <SelectTrigger className="w-48">
                         <SelectValue placeholder="Nhà cung cấp" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Tất cả</SelectItem>
-                        <SelectItem value="Apple Vietnam">Apple Vietnam</SelectItem>
-                        <SelectItem value="Samsung Vietnam">Samsung Vietnam</SelectItem>
+                        <SelectItem value="Apple Vietnam">
+                          Apple Vietnam
+                        </SelectItem>
+                        <SelectItem value="Samsung Vietnam">
+                          Samsung Vietnam
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <Button variant="outline">
@@ -432,41 +504,51 @@ export default function StockManagementPage() {
 
               {/* Products List */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {mockProducts.map((product) => (
+                {mockProducts.map(product => (
                   <Card key={product.id}>
                     <CardContent className="p-4">
                       <div className="space-y-3">
                         <div>
                           <h4 className="font-medium">{product.name}</h4>
-                          <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
+                          <p className="text-sm text-muted-foreground">
+                            SKU: {product.sku}
+                          </p>
                         </div>
-                        
+
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span>Tồn kho:</span>
-                            <span className="font-medium">{product.currentStock}</span>
+                            <span className="font-medium">
+                              {product.currentStock}
+                            </span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span>Tối thiểu:</span>
-                            <span className="font-medium">{product.minStock}</span>
+                            <span className="font-medium">
+                              {product.minStock}
+                            </span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span>Tối đa:</span>
-                            <span className="font-medium">{product.maxStock}</span>
+                            <span className="font-medium">
+                              {product.maxStock}
+                            </span>
                           </div>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <Badge 
+                          <Badge
                             className={
-                              product.currentStock <= product.minStock 
-                                ? 'bg-red-100 text-red-800' 
+                              product.currentStock <= product.minStock
+                                ? 'bg-red-100 text-red-800'
                                 : 'bg-green-100 text-green-800'
                             }
                           >
-                            {product.currentStock <= product.minStock ? 'Sắp hết hàng' : 'Còn hàng'}
+                            {product.currentStock <= product.minStock
+                              ? 'Sắp hết hàng'
+                              : 'Còn hàng'}
                           </Badge>
-                          <Button 
+                          <Button
                             size="sm"
                             onClick={() => handleOpenStockInModal(product)}
                           >
@@ -490,10 +572,13 @@ export default function StockManagementPage() {
                       <Input
                         placeholder="Tìm kiếm đợt nhập hàng..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={e => setSearchQuery(e.target.value)}
                       />
                     </div>
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <Select
+                      value={statusFilter}
+                      onValueChange={setStatusFilter}
+                    >
                       <SelectTrigger className="w-48">
                         <SelectValue placeholder="Trạng thái" />
                       </SelectTrigger>
@@ -514,15 +599,18 @@ export default function StockManagementPage() {
 
               {/* Records List */}
               <div className="space-y-4">
-                {filteredRecords.map((record) => (
+                {filteredRecords.map(record => (
                   <Card key={record.id}>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                           <div>
-                            <h4 className="font-medium">{record.productName}</h4>
+                            <h4 className="font-medium">
+                              {record.productName}
+                            </h4>
                             <p className="text-sm text-muted-foreground">
-                              SKU: {record.productSku} • {record.supplier} • {formatDate(record.createdAt)}
+                              SKU: {record.productSku} • {record.supplier} •{' '}
+                              {formatDate(record.createdAt)}
                             </p>
                             <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1">
@@ -543,7 +631,9 @@ export default function StockManagementPage() {
                           </Badge>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium">{record.quantity} sản phẩm</p>
+                          <p className="font-medium">
+                            {record.quantity} sản phẩm
+                          </p>
                           <p className="text-sm text-muted-foreground">
                             {formatPrice(record.totalCost)}
                           </p>

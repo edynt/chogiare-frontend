@@ -1,4 +1,9 @@
-import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { productsApi, getCategories } from '@user/api/products'
 import { sellerApi } from '@user/api/seller'
 import type { Product, SearchFilters } from '@/types'
@@ -11,7 +16,9 @@ export const useProducts = (filters: SearchFilters = {}) => {
   })
 }
 
-export const useInfiniteProducts = (filters: Omit<SearchFilters, 'page'> = {}) => {
+export const useInfiniteProducts = (
+  filters: Omit<SearchFilters, 'page'> = {}
+) => {
   return useInfiniteQuery({
     queryKey: ['products', 'infinite', filters],
     queryFn: ({ pageParam = 1 }) => {
@@ -55,7 +62,10 @@ export const useCategories = () => {
   })
 }
 
-export const useSearchProducts = (query: string, filters: Omit<SearchFilters, 'query'> = {}) => {
+export const useSearchProducts = (
+  query: string,
+  filters: Omit<SearchFilters, 'query'> = {}
+) => {
   return useQuery({
     queryKey: ['products', 'search', query, filters],
     queryFn: () => productsApi.searchProducts(query, filters),
@@ -80,8 +90,13 @@ export const useCreateProductWithImages = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ data, files }: { data: Parameters<typeof sellerApi.createProductWithImages>[0]; files: File[] }) =>
-      sellerApi.createProductWithImages(data, files),
+    mutationFn: ({
+      data,
+      files,
+    }: {
+      data: Parameters<typeof sellerApi.createProductWithImages>[0]
+      files: File[]
+    }) => sellerApi.createProductWithImages(data, files),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] })
       queryClient.invalidateQueries({ queryKey: ['seller', 'products'] })
@@ -115,7 +130,9 @@ export const useDeleteProduct = () => {
   })
 }
 
-export const useSellerProducts = (filters: Omit<SearchFilters, 'sellerId'> = {}) => {
+export const useSellerProducts = (
+  filters: Omit<SearchFilters, 'sellerId'> = {}
+) => {
   return useQuery({
     queryKey: ['seller', 'products', filters],
     queryFn: () => sellerApi.getMyProducts(filters),
@@ -135,7 +152,9 @@ export const useBulkUpdateProducts = () => {
   })
 }
 
-export const useMyProducts = (filters: Omit<SearchFilters, 'sellerId'> = {}) => {
+export const useMyProducts = (
+  filters: Omit<SearchFilters, 'sellerId'> = {}
+) => {
   return useQuery({
     queryKey: ['products', 'my', filters],
     queryFn: () => sellerApi.getMyProducts(filters),

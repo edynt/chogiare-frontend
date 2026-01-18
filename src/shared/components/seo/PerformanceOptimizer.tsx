@@ -18,7 +18,8 @@ export function PerformanceOptimizer({ children }: PerformanceOptimizerProps) {
       // Preload critical fonts
       const fontPreload = document.createElement('link')
       fontPreload.rel = 'preload'
-      fontPreload.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
+      fontPreload.href =
+        'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
       fontPreload.as = 'style'
       document.head.appendChild(fontPreload)
     }
@@ -31,7 +32,7 @@ export function PerformanceOptimizer({ children }: PerformanceOptimizerProps) {
         if (!img.closest('[data-critical]')) {
           img.loading = 'lazy'
         }
-        
+
         // Add decoding="async" for better performance
         img.decoding = 'async'
       })

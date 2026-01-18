@@ -1,16 +1,21 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
-import { 
-  Users, 
-  Package, 
-  ShoppingCart, 
-  DollarSign, 
-  TrendingUp, 
+import {
+  Users,
+  Package,
+  ShoppingCart,
+  DollarSign,
+  TrendingUp,
   TrendingDown,
   Eye,
   MessageCircle,
   Star,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react'
 
 export function AdminOverview() {
@@ -21,7 +26,7 @@ export function AdminOverview() {
       change: '+12.5%',
       trend: 'up' as const,
       icon: Users,
-      color: 'text-blue-600'
+      color: 'text-blue-600',
     },
     {
       title: 'Sản phẩm',
@@ -29,7 +34,7 @@ export function AdminOverview() {
       change: '+8.2%',
       trend: 'up' as const,
       icon: Package,
-      color: 'text-green-600'
+      color: 'text-green-600',
     },
     {
       title: 'Đơn hàng',
@@ -37,7 +42,7 @@ export function AdminOverview() {
       change: '-2.1%',
       trend: 'down' as const,
       icon: ShoppingCart,
-      color: 'text-orange-600'
+      color: 'text-orange-600',
     },
     {
       title: 'Doanh thu',
@@ -45,8 +50,8 @@ export function AdminOverview() {
       change: '+15.3%',
       trend: 'up' as const,
       icon: DollarSign,
-      color: 'text-purple-600'
-    }
+      color: 'text-purple-600',
+    },
   ]
 
   const recentActivities = [
@@ -55,36 +60,36 @@ export function AdminOverview() {
       type: 'user',
       message: 'Người dùng mới đăng ký: Nguyễn Văn A',
       time: '5 phút trước',
-      status: 'success'
+      status: 'success',
     },
     {
       id: 2,
       type: 'product',
       message: 'Sản phẩm mới được thêm: iPhone 15 Pro',
       time: '15 phút trước',
-      status: 'info'
+      status: 'info',
     },
     {
       id: 3,
       type: 'order',
       message: 'Đơn hàng mới: #12345 - 2.5M VNĐ',
       time: '30 phút trước',
-      status: 'success'
+      status: 'success',
     },
     {
       id: 4,
       type: 'alert',
       message: 'Sản phẩm cần kiểm duyệt: MacBook Pro',
       time: '1 giờ trước',
-      status: 'warning'
+      status: 'warning',
     },
     {
       id: 5,
       type: 'user',
       message: 'Người dùng bị khóa: Trần Thị B',
       time: '2 giờ trước',
-      status: 'error'
-    }
+      status: 'error',
+    },
   ]
 
   const topProducts = [
@@ -92,7 +97,7 @@ export function AdminOverview() {
     { name: 'Samsung Galaxy S23', sales: 134, revenue: '3.4B VNĐ' },
     { name: 'MacBook Pro M2', sales: 89, revenue: '3.1B VNĐ' },
     { name: 'iPad Air', sales: 67, revenue: '1.7B VNĐ' },
-    { name: 'AirPods Pro', sales: 234, revenue: '1.2B VNĐ' }
+    { name: 'AirPods Pro', sales: 234, revenue: '1.2B VNĐ' },
   ]
 
   const getActivityIcon = (type: string) => {
@@ -129,7 +134,7 @@ export function AdminOverview() {
     <div className="space-y-6">
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => {
+        {stats.map(stat => {
           const Icon = stat.icon
           return (
             <Card key={stat.title}>
@@ -146,9 +151,13 @@ export function AdminOverview() {
                       ) : (
                         <TrendingDown className="h-4 w-4 text-destructive mr-1" />
                       )}
-                      <span className={`text-sm ${
-                        stat.trend === 'up' ? 'text-success' : 'text-destructive'
-                      }`}>
+                      <span
+                        className={`text-sm ${
+                          stat.trend === 'up'
+                            ? 'text-success'
+                            : 'text-destructive'
+                        }`}
+                      >
                         {stat.change}
                       </span>
                     </div>
@@ -174,14 +183,18 @@ export function AdminOverview() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentActivities.map((activity) => (
+              {recentActivities.map(activity => (
                 <div key={activity.id} className="flex items-start space-x-3">
-                  <div className={`p-2 rounded-full bg-muted ${getActivityColor(activity.status)}`}>
+                  <div
+                    className={`p-2 rounded-full bg-muted ${getActivityColor(activity.status)}`}
+                  >
                     {getActivityIcon(activity.type)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">{activity.message}</p>
-                    <p className="text-xs text-muted-foreground">{activity.time}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {activity.time}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -203,18 +216,27 @@ export function AdminOverview() {
           <CardContent>
             <div className="space-y-4">
               {topProducts.map((product, index) => (
-                <div key={product.name} className="flex items-center justify-between">
+                <div
+                  key={product.name}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-bold text-primary">#{index + 1}</span>
+                      <span className="text-sm font-bold text-primary">
+                        #{index + 1}
+                      </span>
                     </div>
                     <div>
                       <p className="text-sm font-medium">{product.name}</p>
-                      <p className="text-xs text-muted-foreground">{product.sales} đơn hàng</p>
+                      <p className="text-xs text-muted-foreground">
+                        {product.sales} đơn hàng
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-success">{product.revenue}</p>
+                    <p className="text-sm font-semibold text-success">
+                      {product.revenue}
+                    </p>
                   </div>
                 </div>
               ))}

@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useInfiniteQuery,
+} from '@tanstack/react-query'
 import { ordersApi } from '@user/api/orders'
 import type { UpdateOrderRequest } from '@user/api/orders'
 
@@ -19,7 +24,10 @@ export const useOrder = (id: string) => {
   })
 }
 
-export const useUserOrders = (filters?: { page?: number; pageSize?: number }) => {
+export const useUserOrders = (filters?: {
+  page?: number
+  pageSize?: number
+}) => {
   return useQuery({
     queryKey: ['orders', 'user', filters],
     queryFn: () => ordersApi.getUserOrders(filters),
@@ -27,7 +35,10 @@ export const useUserOrders = (filters?: { page?: number; pageSize?: number }) =>
   })
 }
 
-export const useStoreOrders = (storeId: string, filters?: { page?: number; pageSize?: number }) => {
+export const useStoreOrders = (
+  storeId: string,
+  filters?: { page?: number; pageSize?: number }
+) => {
   return useQuery({
     queryKey: ['orders', 'store', storeId, filters],
     queryFn: () => ordersApi.getStoreOrders(storeId, filters),
@@ -36,7 +47,10 @@ export const useStoreOrders = (storeId: string, filters?: { page?: number; pageS
   })
 }
 
-export const useInfiniteStoreOrders = (storeId: string, pageSize: number = 20) => {
+export const useInfiniteStoreOrders = (
+  storeId: string,
+  pageSize: number = 20
+) => {
   return useInfiniteQuery({
     queryKey: ['orders', 'store', 'infinite', storeId],
     queryFn: ({ pageParam = 1 }) => {
@@ -111,8 +125,13 @@ export const useUpdateOrderPaymentStatus = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, paymentStatus }: { id: string; paymentStatus: string }) =>
-      ordersApi.updateOrderPaymentStatus(id, paymentStatus),
+    mutationFn: ({
+      id,
+      paymentStatus,
+    }: {
+      id: string
+      paymentStatus: string
+    }) => ordersApi.updateOrderPaymentStatus(id, paymentStatus),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       queryClient.invalidateQueries({ queryKey: ['orders', id] })

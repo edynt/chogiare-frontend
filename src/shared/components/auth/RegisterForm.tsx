@@ -2,7 +2,12 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { PasswordInput } from '@shared/components/ui/password-input'
@@ -15,7 +20,10 @@ import type { RegisterData } from '@/types'
 export function RegisterForm() {
   const navigate = useNavigate()
   const registerMutation = useRegister()
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error'
+    text: string
+  } | null>(null)
 
   const {
     register,
@@ -37,8 +45,11 @@ export function RegisterForm() {
       password: registerData.password,
     }
     registerMutation.mutate(finalData, {
-      onSuccess: (response) => {
-        setMessage({ type: 'success', text: 'Đăng ký thành công! Mã OTP đã được gửi đến email của bạn' })
+      onSuccess: response => {
+        setMessage({
+          type: 'success',
+          text: 'Đăng ký thành công! Mã OTP đã được gửi đến email của bạn',
+        })
         setTimeout(() => {
           navigate('/auth/verify-email', { state: { email: response.email } })
         }, 1500)
@@ -135,11 +146,13 @@ export function RegisterForm() {
           </Button>
 
           {message && (
-            <div className={`flex items-center gap-2 rounded-lg border p-3 text-sm ${
-              message.type === 'success'
-                ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
-                : 'border-red-500 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
-            }`}>
+            <div
+              className={`flex items-center gap-2 rounded-lg border p-3 text-sm ${
+                message.type === 'success'
+                  ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
+                  : 'border-red-500 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
+              }`}
+            >
               {message.type === 'success' ? (
                 <CheckCircle className="h-4 w-4 flex-shrink-0" />
               ) : (

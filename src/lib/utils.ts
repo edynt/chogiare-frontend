@@ -22,12 +22,12 @@ export function formatCurrency(price: number): string {
 export function formatDate(date: string | Date): string {
   try {
     const dateObj = new Date(date)
-    
+
     // Check if the date is valid
     if (isNaN(dateObj.getTime())) {
       return 'Ngày không hợp lệ'
     }
-    
+
     return new Intl.DateTimeFormat('vi-VN', {
       year: 'numeric',
       month: 'long',
@@ -62,18 +62,24 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-export const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+'
+export const PLACEHOLDER_IMAGE =
+  'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+'
 
 /**
  * Extract error message from API error response
  * Backend error format: { success: false, error: { code, message, details }, code }
  */
-export function getApiErrorMessage(error: unknown, fallbackMessage = 'Đã xảy ra lỗi'): string {
+export function getApiErrorMessage(
+  error: unknown,
+  fallbackMessage = 'Đã xảy ra lỗi'
+): string {
   if (!error) return fallbackMessage
 
   // Handle axios error
   if (typeof error === 'object' && 'response' in error) {
-    const axiosError = error as { response?: { data?: { error?: { message?: string }; message?: string } } }
+    const axiosError = error as {
+      response?: { data?: { error?: { message?: string }; message?: string } }
+    }
     const data = axiosError.response?.data
 
     // Backend error format: { error: { message } }
@@ -104,7 +110,10 @@ export function getApiErrorMessage(error: unknown, fallbackMessage = 'Đã xảy
  * Extract success message from API response
  * Backend success format: { success: true, data, message }
  */
-export function getApiSuccessMessage(response: unknown, fallbackMessage = 'Thành công'): string {
+export function getApiSuccessMessage(
+  response: unknown,
+  fallbackMessage = 'Thành công'
+): string {
   if (!response) return fallbackMessage
 
   if (typeof response === 'object' && 'message' in response) {

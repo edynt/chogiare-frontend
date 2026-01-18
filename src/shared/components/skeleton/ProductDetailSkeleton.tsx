@@ -23,7 +23,7 @@ export function ProductDetailSkeleton() {
             <Skeleton className="h-8 w-3/4" />
             <Skeleton className="h-4 w-1/2" />
           </div>
-          
+
           <div className="space-y-2">
             <Skeleton className="h-10 w-40" />
             <Skeleton className="h-4 w-32" />
@@ -92,4 +92,3 @@ export function ProductDetailSectionSkeleton() {
     </Card>
   )
 }
-

@@ -11,7 +11,12 @@ import {
 } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/components/ui/tabs'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@shared/components/ui/tabs'
 import {
   Select,
   SelectContent,
@@ -72,10 +77,10 @@ export default function RevenueReportsPage() {
     useCategoryRevenue({ timeRange })
 
   const formatNumber = (num: number): string => {
-    if(!num) {
-        return null;
+    if (!num) {
+      return null
     }
-    
+
     if (num >= 1000000000) {
       return `${(num / 1000000000).toFixed(1)}B`
     }

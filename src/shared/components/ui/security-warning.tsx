@@ -1,5 +1,9 @@
 import React from 'react'
-import { Alert, AlertDescription, AlertTitle } from '@shared/components/ui/alert'
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@shared/components/ui/alert'
 import { Shield, CreditCard, Phone, Ban } from 'lucide-react'
 
 interface SecurityWarningProps {
@@ -7,7 +11,10 @@ interface SecurityWarningProps {
   className?: string
 }
 
-export function SecurityWarning({ variant = 'default', className }: SecurityWarningProps) {
+export function SecurityWarning({
+  variant = 'default',
+  className,
+}: SecurityWarningProps) {
   const warnings = {
     default: {
       icon: Shield,
@@ -18,8 +25,8 @@ export function SecurityWarning({ variant = 'default', className }: SecurityWarn
         'Nền tảng không xử lý thanh toán, không chịu trách nhiệm về giao dịch tài chính',
         'Vui lòng thỏa thuận rõ ràng với người bán về điều kiện thanh toán trước khi đặt hàng',
         'Kiểm tra kỹ thông tin người bán, đánh giá và uy tín trước khi quyết định',
-        'Nếu có vấn đề, vui lòng liên hệ trực tiếp với người bán hoặc báo cáo cho chúng tôi'
-      ]
+        'Nếu có vấn đề, vui lòng liên hệ trực tiếp với người bán hoặc báo cáo cho chúng tôi',
+      ],
     },
     payment: {
       icon: CreditCard,
@@ -30,8 +37,8 @@ export function SecurityWarning({ variant = 'default', className }: SecurityWarn
         'Nên thanh toán sau khi nhận hàng và kiểm tra chất lượng (COD) để an toàn hơn',
         'Nếu chuyển khoản trước, chỉ chuyển sau khi đã thỏa thuận rõ ràng và tin tưởng người bán',
         'Lưu giữ đầy đủ hóa đơn, chứng từ giao dịch để làm bằng chứng nếu có tranh chấp',
-        'Nếu có vấn đề về thanh toán, vui lòng liên hệ trực tiếp với người bán để giải quyết'
-      ]
+        'Nếu có vấn đề về thanh toán, vui lòng liên hệ trực tiếp với người bán để giải quyết',
+      ],
     },
     contact: {
       icon: Phone,
@@ -41,8 +48,8 @@ export function SecurityWarning({ variant = 'default', className }: SecurityWarn
         'Nên trao đổi rõ ràng về sản phẩm, giá cả, phương thức thanh toán và giao hàng',
         'Lưu giữ lịch sử chat để làm bằng chứng nếu có tranh chấp',
         'Nếu người bán yêu cầu thông tin nhạy cảm (mật khẩu, OTP), hãy từ chối và báo cáo',
-        'Nền tảng chỉ là trung gian kết nối, không chịu trách nhiệm về nội dung trao đổi giữa các bên'
-      ]
+        'Nền tảng chỉ là trung gian kết nối, không chịu trách nhiệm về nội dung trao đổi giữa các bên',
+      ],
     },
     scam: {
       icon: Ban,
@@ -53,9 +60,9 @@ export function SecurityWarning({ variant = 'default', className }: SecurityWarn
         'KHÔNG cung cấp thông tin nhạy cảm như mật khẩu, OTP, mã PIN cho bất kỳ ai',
         'Kiểm tra kỹ đánh giá, uy tín và thông tin của người bán trước khi quyết định',
         'Nếu có dấu hiệu lừa đảo hoặc hành vi đáng ngờ, hãy báo cáo ngay cho chúng tôi',
-        'Lưu giữ đầy đủ hóa đơn, chứng từ và lịch sử giao dịch để làm bằng chứng'
-      ]
-    }
+        'Lưu giữ đầy đủ hóa đơn, chứng từ và lịch sử giao dịch để làm bằng chứng',
+      ],
+    },
   }
 
   const warning = warnings[variant]
@@ -75,11 +82,11 @@ export function SecurityWarning({ variant = 'default', className }: SecurityWarn
         </ul>
         <div className="mt-3 pt-3 border-t border-orange-200">
           <p className="text-xs text-orange-700">
-            <strong>Hotline hỗ trợ:</strong> 1900-xxxx | <strong>Email:</strong> support@chogiare.com
+            <strong>Hotline hỗ trợ:</strong> 1900-xxxx | <strong>Email:</strong>{' '}
+            support@chogiare.com
           </p>
         </div>
       </AlertDescription>
     </Alert>
   )
 }
-

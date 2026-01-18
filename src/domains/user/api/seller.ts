@@ -5,7 +5,7 @@ import type {
   PaginatedResponse,
   ApiResponse,
   Order,
-  User
+  User,
 } from '@/types'
 import { constructProductFormData } from '@shared/utils/form-data'
 import type { CreateProductFormDataInput } from '@shared/utils/form-data'
@@ -56,12 +56,16 @@ export interface CustomerStats {
 export const sellerApi = {
   // Dashboard
   getDashboardStats: async (): Promise<SellerDashboardStats> => {
-    const response = await apiClient.get<ApiResponse<SellerDashboardStats>>('/seller/dashboard/stats')
+    const response = await apiClient.get<ApiResponse<SellerDashboardStats>>(
+      '/seller/dashboard/stats'
+    )
     return response.data.data
   },
 
   // Products Management
-  getMyProducts: async (filters: Omit<SearchFilters, 'sellerId'> = {}): Promise<PaginatedResponse<Product>> => {
+  getMyProducts: async (
+    filters: Omit<SearchFilters, 'sellerId'> = {}
+  ): Promise<PaginatedResponse<Product>> => {
     const params: Record<string, unknown> = {}
 
     if (filters.page !== undefined) params.page = filters.page
@@ -73,15 +77,16 @@ export const sellerApi = {
     if (filters.search !== undefined) params.search = filters.search
     if (filters.query !== undefined) params.search = filters.query
 
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Product>>>(
-      '/seller/products',
-      { params }
-    )
+    const response = await apiClient.get<
+      ApiResponse<PaginatedResponse<Product>>
+    >('/seller/products', { params })
     return response.data.data
   },
 
   getMyProduct: async (id: string): Promise<Product> => {
-    const response = await apiClient.get<ApiResponse<Product>>(`/seller/products/${id}`)
+    const response = await apiClient.get<ApiResponse<Product>>(
+      `/seller/products/${id}`
+    )
     return response.data.data
   },
 
@@ -91,7 +96,7 @@ export const sellerApi = {
    */
   createProductWithImages: async (
     data: CreateProductFormDataInput,
-    files: File[],
+    files: File[]
   ): Promise<Product> => {
     const formData = constructProductFormData(data, files)
 
@@ -132,12 +137,21 @@ export const sellerApi = {
     storeId?: number
     images?: string[]
   }): Promise<Product> => {
-    const response = await apiClient.post<ApiResponse<Product>>('/seller/products', data)
+    const response = await apiClient.post<ApiResponse<Product>>(
+      '/seller/products',
+      data
+    )
     return response.data.data
   },
 
-  updateProduct: async (id: string, data: Partial<Product>): Promise<Product> => {
-    const response = await apiClient.patch<ApiResponse<Product>>(`/seller/products/${id}`, data)
+  updateProduct: async (
+    id: string,
+    data: Partial<Product>
+  ): Promise<Product> => {
+    const response = await apiClient.patch<ApiResponse<Product>>(
+      `/seller/products/${id}`,
+      data
+    )
     return response.data.data
   },
 
@@ -145,8 +159,13 @@ export const sellerApi = {
     await apiClient.delete(`/seller/products/${id}`)
   },
 
-  bulkUpdateProducts: async (updates: Array<{ id: string; data: Partial<Product> }>): Promise<Product[]> => {
-    const response = await apiClient.patch<ApiResponse<Product[]>>('/seller/products/bulk', { updates })
+  bulkUpdateProducts: async (
+    updates: Array<{ id: string; data: Partial<Product> }>
+  ): Promise<Product[]> => {
+    const response = await apiClient.patch<ApiResponse<Product[]>>(
+      '/seller/products/bulk',
+      { updates }
+    )
     return response.data.data
   },
 
@@ -160,9 +179,12 @@ export const sellerApi = {
   },
 
   getLowStockProducts: async (threshold = 10): Promise<Product[]> => {
-    const response = await apiClient.get<ApiResponse<Product[]>>('/seller/products/low-stock', {
-      params: { threshold }
-    })
+    const response = await apiClient.get<ApiResponse<Product[]>>(
+      '/seller/products/low-stock',
+      {
+        params: { threshold },
+      }
+    )
     return response.data.data
   },
 
@@ -181,11 +203,16 @@ export const sellerApi = {
   },
 
   getMyOrder: async (id: string): Promise<Order> => {
-    const response = await apiClient.get<ApiResponse<Order>>(`/seller/orders/${id}`)
+    const response = await apiClient.get<ApiResponse<Order>>(
+      `/seller/orders/${id}`
+    )
     return response.data.data
   },
 
-  updateOrderStatus: async (orderId: string, status: string): Promise<Order> => {
+  updateOrderStatus: async (
+    orderId: string,
+    status: string
+  ): Promise<Order> => {
     const response = await apiClient.patch<ApiResponse<Order>>(
       `/seller/orders/${orderId}/status`,
       { status }
@@ -199,9 +226,12 @@ export const sellerApi = {
     endDate?: string
     period?: 'daily' | 'weekly' | 'monthly'
   }): Promise<RevenueStats> => {
-    const response = await apiClient.get<ApiResponse<RevenueStats>>('/seller/revenue', {
-      params
-    })
+    const response = await apiClient.get<ApiResponse<RevenueStats>>(
+      '/seller/revenue',
+      {
+        params,
+      }
+    )
     return response.data.data
   },
 
@@ -219,14 +249,19 @@ export const sellerApi = {
   },
 
   getCustomerStats: async (): Promise<CustomerStats> => {
-    const response = await apiClient.get<ApiResponse<CustomerStats>>('/seller/customers/stats')
+    const response = await apiClient.get<ApiResponse<CustomerStats>>(
+      '/seller/customers/stats'
+    )
     return response.data.data
   },
 
-  getCustomerOrders: async (customerId: string, params?: {
-    page?: number
-    pageSize?: number
-  }): Promise<PaginatedResponse<Order>> => {
+  getCustomerOrders: async (
+    customerId: string,
+    params?: {
+      page?: number
+      pageSize?: number
+    }
+  ): Promise<PaginatedResponse<Order>> => {
     const response = await apiClient.get<ApiResponse<PaginatedResponse<Order>>>(
       `/seller/customers/${customerId}/orders`,
       { params }

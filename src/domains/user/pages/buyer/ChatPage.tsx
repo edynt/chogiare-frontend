@@ -11,11 +11,11 @@ import { Input } from '@shared/components/ui/input'
 export default function ChatPage() {
   const { chatId } = useParams<{ chatId?: string }>()
   const [searchQuery, setSearchQuery] = useState('')
-  
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      
+
       <main className="flex-1 flex flex-col container mx-auto px-4 py-8 overflow-hidden">
         <div className="mb-6 flex-shrink-0">
           <div className="flex items-center gap-2 mb-4">
@@ -25,7 +25,7 @@ export default function ChatPage() {
           <p className="text-muted-foreground text-lg">
             Liên hệ trực tiếp với người bán để được tư vấn và hỗ trợ tốt nhất
           </p>
-          
+
           {/* Trust indicators */}
           <div className="flex items-center gap-6 mt-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
@@ -54,12 +54,12 @@ export default function ChatPage() {
                     <Input
                       placeholder="Tìm kiếm cuộc trò chuyện..."
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={e => setSearchQuery(e.target.value)}
                       className="pl-10"
                     />
                   </div>
                 </div>
-                
+
                 <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
                   <ChatList searchQuery={searchQuery} selectedChatId={chatId} />
                 </div>
@@ -77,7 +77,9 @@ export default function ChatPage() {
                   <div className="flex-1 flex items-center justify-center">
                     <div className="text-center">
                       <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">Chọn cuộc trò chuyện</h3>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Chọn cuộc trò chuyện
+                      </h3>
                       <p className="text-muted-foreground">
                         Chọn một cuộc trò chuyện từ danh sách để bắt đầu chat
                       </p>

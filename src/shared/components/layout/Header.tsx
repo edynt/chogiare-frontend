@@ -1,6 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@shared/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/components/ui/avatar'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@shared/components/ui/avatar'
 import { Badge } from '@shared/components/ui/badge'
 import { Input } from '@shared/components/ui/input'
 import {

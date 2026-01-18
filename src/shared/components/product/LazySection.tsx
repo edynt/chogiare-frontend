@@ -11,12 +11,12 @@ interface LazySectionProps {
   rootMargin?: string
 }
 
-export function LazySection({ 
-  children, 
-  fallback, 
+export function LazySection({
+  children,
+  fallback,
   className,
   threshold = 0.1,
-  rootMargin = '100px' // Load 100px before visible
+  rootMargin = '100px', // Load 100px before visible
 }: LazySectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver({
     threshold,
@@ -25,10 +25,7 @@ export function LazySection({
   })
 
   return (
-    <div 
-      ref={ref} 
-      className={cn(className)}
-    >
+    <div ref={ref} className={cn(className)}>
       {isIntersecting ? (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
           {children}
@@ -39,4 +36,3 @@ export function LazySection({
     </div>
   )
 }
-

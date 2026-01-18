@@ -95,8 +95,13 @@ export const ordersApi = {
     return response.data.data
   },
 
-  createOrderFromCart: async (data: CreateOrderFromCartRequest): Promise<Order> => {
-    const response = await apiClient.post<ApiResponse<Order>>('/orders/from-cart', data)
+  createOrderFromCart: async (
+    data: CreateOrderFromCartRequest
+  ): Promise<Order> => {
+    const response = await apiClient.post<ApiResponse<Order>>(
+      '/orders/from-cart',
+      data
+    )
     return response.data.data
   },
 
@@ -105,59 +110,96 @@ export const ordersApi = {
     return response.data.data
   },
 
-  getOrders: async (filters?: { page?: number; pageSize?: number }): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders', {
-      params: { 
-        page: filters?.page || 1, 
-        pageSize: filters?.pageSize || 10 
+  getOrders: async (filters?: {
+    page?: number
+    pageSize?: number
+  }): Promise<OrderListResponse> => {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>(
+      '/orders',
+      {
+        params: {
+          page: filters?.page || 1,
+          pageSize: filters?.pageSize || 10,
+        },
       }
-    })
+    )
     return response.data.data
   },
 
-  getUserOrders: async (filters?: { page?: number; pageSize?: number }): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders/my', {
-      params: { 
-        page: filters?.page || 1, 
-        pageSize: filters?.pageSize || 10 
+  getUserOrders: async (filters?: {
+    page?: number
+    pageSize?: number
+  }): Promise<OrderListResponse> => {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>(
+      '/orders/my',
+      {
+        params: {
+          page: filters?.page || 1,
+          pageSize: filters?.pageSize || 10,
+        },
       }
-    })
+    )
     return response.data.data
   },
 
-  getStoreOrders: async (storeId: string, filters?: { page?: number; pageSize?: number }): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>(`/orders/store/${storeId}`, {
-      params: { 
-        page: filters?.page || 1, 
-        pageSize: filters?.pageSize || 10 
+  getStoreOrders: async (
+    storeId: string,
+    filters?: { page?: number; pageSize?: number }
+  ): Promise<OrderListResponse> => {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>(
+      `/orders/store/${storeId}`,
+      {
+        params: {
+          page: filters?.page || 1,
+          pageSize: filters?.pageSize || 10,
+        },
       }
-    })
+    )
     return response.data.data
   },
 
   listOrders: async (page = 1, pageSize = 10): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders', {
-      params: { page, pageSize }
-    })
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>(
+      '/orders',
+      {
+        params: { page, pageSize },
+      }
+    )
     return response.data.data
   },
 
-  listUserOrders: async (page = 1, pageSize = 10): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>('/orders/my', {
-      params: { page, pageSize }
-    })
+  listUserOrders: async (
+    page = 1,
+    pageSize = 10
+  ): Promise<OrderListResponse> => {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>(
+      '/orders/my',
+      {
+        params: { page, pageSize },
+      }
+    )
     return response.data.data
   },
 
-  listStoreOrders: async (storeId: string, page = 1, pageSize = 10): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<OrderListResponse>>(`/orders/store/${storeId}`, {
-      params: { page, pageSize }
-    })
+  listStoreOrders: async (
+    storeId: string,
+    page = 1,
+    pageSize = 10
+  ): Promise<OrderListResponse> => {
+    const response = await apiClient.get<ApiResponse<OrderListResponse>>(
+      `/orders/store/${storeId}`,
+      {
+        params: { page, pageSize },
+      }
+    )
     return response.data.data
   },
 
   updateOrder: async (id: string, data: UpdateOrderRequest): Promise<Order> => {
-    const response = await apiClient.put<ApiResponse<Order>>(`/orders/${id}`, data)
+    const response = await apiClient.put<ApiResponse<Order>>(
+      `/orders/${id}`,
+      data
+    )
     return response.data.data
   },
 
@@ -179,7 +221,10 @@ export const ordersApi = {
     return response.data.data
   },
 
-  updateOrderPaymentStatus: async (id: string, paymentStatus: string): Promise<Order> => {
+  updateOrderPaymentStatus: async (
+    id: string,
+    paymentStatus: string
+  ): Promise<Order> => {
     const response = await apiClient.patch<ApiResponse<Order>>(
       `/orders/${id}/payment-status`,
       {},
@@ -194,17 +239,21 @@ export const ordersApi = {
 
   // Statistics
   getOrderStats: async (): Promise<OrderStats> => {
-    const response = await apiClient.get<ApiResponse<OrderStats>>('/orders/stats')
+    const response =
+      await apiClient.get<ApiResponse<OrderStats>>('/orders/stats')
     return response.data.data
   },
 
   getStoreOrderStats: async (storeId: string): Promise<OrderStats> => {
-    const response = await apiClient.get<ApiResponse<OrderStats>>(`/orders/stats/store/${storeId}`)
+    const response = await apiClient.get<ApiResponse<OrderStats>>(
+      `/orders/stats/store/${storeId}`
+    )
     return response.data.data
   },
 
   getUserOrderStats: async (): Promise<OrderStats> => {
-    const response = await apiClient.get<ApiResponse<OrderStats>>('/orders/stats/my')
+    const response =
+      await apiClient.get<ApiResponse<OrderStats>>('/orders/stats/my')
     return response.data.data
   },
 }

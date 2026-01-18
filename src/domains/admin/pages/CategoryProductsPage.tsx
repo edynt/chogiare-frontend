@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
@@ -58,7 +63,9 @@ export default function CategoryProductsPage() {
   const pageSize = 50
 
   const { data: categoriesData } = useAdminCategories()
-  const category = categoriesData?.items?.find(cat => cat.id.toString() === categoryId)
+  const category = categoriesData?.items?.find(
+    cat => cat.id.toString() === categoryId
+  )
 
   const { data: productsData, isLoading } = useModerationProducts({
     page,
@@ -78,30 +85,42 @@ export default function CategoryProductsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800'
-      case 'rejected': return 'bg-red-100 text-red-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'draft': return 'bg-gray-100 text-gray-800'
-      case 'active': return 'bg-blue-100 text-blue-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'approved':
+        return 'bg-green-100 text-green-800'
+      case 'rejected':
+        return 'bg-red-100 text-red-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'draft':
+        return 'bg-gray-100 text-gray-800'
+      case 'active':
+        return 'bg-blue-100 text-blue-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'approved': return 'Đã duyệt'
-      case 'rejected': return 'Từ chối'
-      case 'pending': return 'Chờ duyệt'
-      case 'draft': return 'Bản nháp'
-      case 'active': return 'Đang bán'
-      default: return status
+      case 'approved':
+        return 'Đã duyệt'
+      case 'rejected':
+        return 'Từ chối'
+      case 'pending':
+        return 'Chờ duyệt'
+      case 'draft':
+        return 'Bản nháp'
+      case 'active':
+        return 'Đang bán'
+      default:
+        return status
     }
   }
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -111,7 +130,7 @@ export default function CategoryProductsPage() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -157,9 +176,7 @@ export default function CategoryProductsPage() {
           <h2 className="text-2xl font-bold">
             Sản phẩm trong danh mục: {category?.name || 'Đang tải...'}
           </h2>
-          <p className="text-muted-foreground">
-            Tổng số sản phẩm: {total}
-          </p>
+          <p className="text-muted-foreground">Tổng số sản phẩm: {total}</p>
         </div>
       </div>
 
@@ -173,7 +190,7 @@ export default function CategoryProductsPage() {
                 <Input
                   placeholder="Tìm kiếm theo tên sản phẩm..."
                   value={searchQuery}
-                  onChange={(e) => {
+                  onChange={e => {
                     setSearchQuery(e.target.value)
                     setPage(1)
                   }}
@@ -182,7 +199,13 @@ export default function CategoryProductsPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <Select value={statusFilter} onValueChange={(value) => { setStatusFilter(value); setPage(1) }}>
+              <Select
+                value={statusFilter}
+                onValueChange={value => {
+                  setStatusFilter(value)
+                  setPage(1)
+                }}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Trạng thái" />
                 </SelectTrigger>
@@ -229,20 +252,26 @@ export default function CategoryProductsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {products.map((product) => (
+                  {products.map(product => (
                     <TableRow key={product.id} className="hover:bg-gray-50">
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <img
-                            src={product.images && product.images.length > 0 ? product.images[0] : PLACEHOLDER_IMAGE}
+                            src={
+                              product.images && product.images.length > 0
+                                ? product.images[0]
+                                : PLACEHOLDER_IMAGE
+                            }
                             alt={product.title}
                             className="w-16 h-16 rounded-lg object-cover"
-                            onError={(e) => {
+                            onError={e => {
                               e.currentTarget.src = PLACEHOLDER_IMAGE
                             }}
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900 line-clamp-2">{product.title}</p>
+                            <p className="font-medium text-gray-900 line-clamp-2">
+                              {product.title}
+                            </p>
                             <div className="flex items-center gap-2 mt-1">
                               <Badge variant="outline" className="text-xs">
                                 {product.category}
@@ -254,7 +283,9 @@ export default function CategoryProductsPage() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-gray-400" />
-                          <span className="text-sm font-medium">{product.seller}</span>
+                          <span className="text-sm font-medium">
+                            {product.seller}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -272,7 +303,9 @@ export default function CategoryProductsPage() {
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <p className="text-gray-900">{formatDate(product.submittedAt)}</p>
+                          <p className="text-gray-900">
+                            {formatDate(product.submittedAt)}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -281,7 +314,10 @@ export default function CategoryProductsPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleApprove(product.id)}
-                            disabled={approveProductMutation.isPending || product.status === 'approved'}
+                            disabled={
+                              approveProductMutation.isPending ||
+                              product.status === 'approved'
+                            }
                             className="text-green-600 hover:text-green-700"
                             title="Duyệt sản phẩm"
                           >
@@ -300,7 +336,12 @@ export default function CategoryProductsPage() {
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <AlertDialog open={deleteDialogOpen === product.id} onOpenChange={(open) => setDeleteDialogOpen(open ? product.id : null)}>
+                          <AlertDialog
+                            open={deleteDialogOpen === product.id}
+                            onOpenChange={open =>
+                              setDeleteDialogOpen(open ? product.id : null)
+                            }
+                          >
                             <AlertDialogTrigger asChild>
                               <Button
                                 variant="ghost"
@@ -313,9 +354,13 @@ export default function CategoryProductsPage() {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Xác nhận xóa sản phẩm</AlertDialogTitle>
+                                <AlertDialogTitle>
+                                  Xác nhận xóa sản phẩm
+                                </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Bạn có chắc chắn muốn xóa sản phẩm "{product.title}"? Hành động này không thể hoàn tác.
+                                  Bạn có chắc chắn muốn xóa sản phẩm "
+                                  {product.title}"? Hành động này không thể hoàn
+                                  tác.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
@@ -381,4 +426,3 @@ export default function CategoryProductsPage() {
     </div>
   )
 }
-

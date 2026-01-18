@@ -237,12 +237,16 @@ function generateUsers(count: number): User[] {
 function generateProducts(count: number, users: User[]): Product[] {
   return Array.from({ length: count }, (_, index) => {
     const category = faker.helpers.arrayElement(categories)
-    const categoryNames = productNames[category.id as keyof typeof productNames] || []
+    const categoryNames =
+      productNames[category.id as keyof typeof productNames] || []
     const productName = faker.helpers.arrayElement(categoryNames)
     const seller = faker.helpers.arrayElement(users)
     const basePrice = faker.number.int({ min: 100000, max: 50000000 })
-    const originalPrice = faker.datatype.boolean({ probability: 0.3 }) 
-      ? faker.number.int({ min: Math.floor(basePrice * 1.1), max: Math.floor(basePrice * 1.5) })
+    const originalPrice = faker.datatype.boolean({ probability: 0.3 })
+      ? faker.number.int({
+          min: Math.floor(basePrice * 1.1),
+          max: Math.floor(basePrice * 1.5),
+        })
       : undefined
 
     return {
@@ -253,20 +257,39 @@ function generateProducts(count: number, users: User[]): Product[] {
       originalPrice,
       categoryId: category.id,
       category,
-      images: Array.from({ length: faker.number.int({ min: 1, max: 5 }) }, () => 
+      images: Array.from({ length: faker.number.int({ min: 1, max: 5 }) }, () =>
         faker.image.url()
       ),
-      condition: faker.helpers.arrayElement(['new', 'like_new', 'good', 'fair', 'poor']),
-      tags: faker.helpers.arrayElements([
-        'hot', 'new', 'sale', 'trending', 'limited', 'premium', 'eco-friendly', 'handmade'
-      ], { min: 1, max: 3 }),
+      condition: faker.helpers.arrayElement([
+        'new',
+        'like_new',
+        'good',
+        'fair',
+        'poor',
+      ]),
+      tags: faker.helpers.arrayElements(
+        [
+          'hot',
+          'new',
+          'sale',
+          'trending',
+          'limited',
+          'premium',
+          'eco-friendly',
+          'handmade',
+        ],
+        { min: 1, max: 3 }
+      ),
       location: faker.helpers.arrayElement(locations),
       stock: faker.number.int({ min: 0, max: 100 }),
       sellerId: seller.id,
       seller,
       store: seller.storeInfo,
       status: faker.helpers.arrayElement(['active', 'sold', 'draft']),
-      badges: faker.helpers.arrayElements(['NEW', 'FEATURED', 'PROMO', 'HOT', 'SALE'], { min: 0, max: 2 }),
+      badges: faker.helpers.arrayElements(
+        ['NEW', 'FEATURED', 'PROMO', 'HOT', 'SALE'],
+        { min: 0, max: 2 }
+      ),
       rating: faker.number.float({ min: 3, max: 5, fractionDigits: 1 }),
       reviewCount: faker.number.int({ min: 0, max: 200 }),
       viewCount: faker.number.int({ min: 0, max: 1000 }),
@@ -280,10 +303,13 @@ function generateProducts(count: number, users: User[]): Product[] {
 
 // Update category product counts
 function updateCategoryCounts(products: Product[]): Category[] {
-  const categoryCounts = products.reduce((acc, product) => {
-    acc[product.categoryId] = (acc[product.categoryId] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
+  const categoryCounts = products.reduce(
+    (acc, product) => {
+      acc[product.categoryId] = (acc[product.categoryId] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>
+  )
 
   return categories.map(category => ({
     ...category,
@@ -294,19 +320,19 @@ function updateCategoryCounts(products: Product[]): Category[] {
 // Main seeder function
 export function seedData() {
   console.log('🌱 Starting data seeding...')
-  
+
   // Generate users
   const users = generateUsers(50)
   console.log(`✅ Generated ${users.length} users`)
-  
+
   // Generate products
   const products = generateProducts(200, users)
   console.log(`✅ Generated ${products.length} products`)
-  
+
   // Update category counts
   const updatedCategories = updateCategoryCounts(products)
   console.log(`✅ Updated category counts`)
-  
+
   return {
     users,
     products,
@@ -320,30 +346,30 @@ export { generateUsers, generateProducts, updateCategoryCounts, categories }
 // CLI usage
 if (import.meta.url === `file://${process.argv[1]}`) {
   const data = seedData()
-  
+
   console.log('\n📊 Seeding Summary:')
   console.log(`- Users: ${data.users.length}`)
   console.log(`- Products: ${data.products.length}`)
   console.log(`- Categories: ${data.categories.length}`)
-  
+
   // Save to JSON files for development
   const fs = await import('fs')
   const path = await import('path')
   const { fileURLToPath } = await import('url')
-  
+
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = path.dirname(__filename)
-  
+
   const outputDir = path.join(__dirname, '../../public/data')
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true })
   }
-  
+
   fs.writeFileSync(
     path.join(outputDir, 'seed-data.json'),
     JSON.stringify(data, null, 2)
   )
-  
+
   console.log(`\n💾 Data saved to ${outputDir}/seed-data.json`)
   console.log('🎉 Seeding completed!')
 }

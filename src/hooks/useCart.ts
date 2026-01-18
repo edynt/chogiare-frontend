@@ -15,10 +15,17 @@ export const useAddToCart = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ productId, quantity }: { productId: string | number; quantity: number }) =>
-      cartApi.addItem({ 
-        productId: typeof productId === 'string' ? parseInt(productId, 10) : productId, 
-        quantity 
+    mutationFn: ({
+      productId,
+      quantity,
+    }: {
+      productId: string | number
+      quantity: number
+    }) =>
+      cartApi.addItem({
+        productId:
+          typeof productId === 'string' ? parseInt(productId, 10) : productId,
+        quantity,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] })
@@ -32,9 +39,14 @@ export const useUpdateCartItem = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ itemId, data }: { itemId: string; data: UpdateCartItemQuantityRequest }) =>
-      cartApi.updateItemQuantity(itemId, data),
-    onSuccess: (data) => {
+    mutationFn: ({
+      itemId,
+      data,
+    }: {
+      itemId: string
+      data: UpdateCartItemQuantityRequest
+    }) => cartApi.updateItemQuantity(itemId, data),
+    onSuccess: data => {
       updateQuantity(data.productId, data.quantity)
       queryClient.invalidateQueries({ queryKey: ['cart'] })
     },

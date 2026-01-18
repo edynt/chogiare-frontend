@@ -34,21 +34,28 @@ export interface MarkAsReadResponse {
 }
 
 export const notificationsApi = {
-  getNotifications: async (params?: QueryNotificationParams): Promise<NotificationListResponse> => {
-    const response = await apiClient.get<ApiResponse<NotificationListResponse>>('/notifications', {
-      params: {
-        page: params?.page || 1,
-        pageSize: params?.pageSize || 10,
-        type: params?.type,
-        isRead: params?.isRead,
-      },
-    })
+  getNotifications: async (
+    params?: QueryNotificationParams
+  ): Promise<NotificationListResponse> => {
+    const response = await apiClient.get<ApiResponse<NotificationListResponse>>(
+      '/notifications',
+      {
+        params: {
+          page: params?.page || 1,
+          pageSize: params?.pageSize || 10,
+          type: params?.type,
+          isRead: params?.isRead,
+        },
+      }
+    )
     return response.data.data
   },
 
   getUnreadCount: async (): Promise<number> => {
     try {
-      const response = await apiClient.get<ApiResponse<{ unreadCount: number }>>('/notifications/unread-count')
+      const response = await apiClient.get<
+        ApiResponse<{ unreadCount: number }>
+      >('/notifications/unread-count')
       return response.data.data?.unreadCount ?? 0
     } catch {
       return 0
@@ -56,12 +63,16 @@ export const notificationsApi = {
   },
 
   markAsRead: async (id: string): Promise<MarkAsReadResponse> => {
-    const response = await apiClient.post<ApiResponse<MarkAsReadResponse>>(`/notifications/${id}/read`)
+    const response = await apiClient.post<ApiResponse<MarkAsReadResponse>>(
+      `/notifications/${id}/read`
+    )
     return response.data.data
   },
 
   markAllAsRead: async (): Promise<MarkAsReadResponse> => {
-    const response = await apiClient.post<ApiResponse<MarkAsReadResponse>>('/notifications/read-all')
+    const response = await apiClient.post<ApiResponse<MarkAsReadResponse>>(
+      '/notifications/read-all'
+    )
     return response.data.data
   },
 
@@ -69,5 +80,3 @@ export const notificationsApi = {
     await apiClient.delete(`/notifications/${id}`)
   },
 }
-
-

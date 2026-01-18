@@ -10,7 +10,10 @@ export const useReviews = (filters?: { page?: number; pageSize?: number }) => {
   })
 }
 
-export const useProductReviews = (productId: string, filters?: { page?: number; pageSize?: number }) => {
+export const useProductReviews = (
+  productId: string,
+  filters?: { page?: number; pageSize?: number }
+) => {
   return useQuery({
     queryKey: ['reviews', 'product', productId, filters],
     queryFn: () => reviewsApi.getProductReviews(productId, filters),
@@ -19,7 +22,10 @@ export const useProductReviews = (productId: string, filters?: { page?: number; 
   })
 }
 
-export const useUserReviews = (filters?: { page?: number; pageSize?: number }) => {
+export const useUserReviews = (filters?: {
+  page?: number
+  pageSize?: number
+}) => {
   return useQuery({
     queryKey: ['reviews', 'user', filters],
     queryFn: () => reviewsApi.getUserReviews(filters),
@@ -27,7 +33,10 @@ export const useUserReviews = (filters?: { page?: number; pageSize?: number }) =
   })
 }
 
-export const useStoreReviews = (storeId: string, filters?: { page?: number; pageSize?: number }) => {
+export const useStoreReviews = (
+  storeId: string,
+  filters?: { page?: number; pageSize?: number }
+) => {
   return useQuery({
     queryKey: ['reviews', 'store', storeId, filters],
     queryFn: () => reviewsApi.getStoreReviews(storeId, filters),
@@ -52,8 +61,12 @@ export const useCreateReview = () => {
     mutationFn: reviewsApi.createReview,
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['reviews'] })
-      queryClient.invalidateQueries({ queryKey: ['reviews', 'product', variables.productId] })
-      queryClient.invalidateQueries({ queryKey: ['products', variables.productId] })
+      queryClient.invalidateQueries({
+        queryKey: ['reviews', 'product', variables.productId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['products', variables.productId],
+      })
     },
   })
 }

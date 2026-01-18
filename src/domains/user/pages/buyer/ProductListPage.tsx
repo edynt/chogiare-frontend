@@ -7,10 +7,19 @@ import { ProductCard } from '@shared/components/product/ProductCard'
 import { Pagination } from '@shared/components/ui/pagination'
 import { ErrorMessage } from '@shared/components/ui/error-boundary'
 import { EmptyProducts } from '@shared/components/ui/empty-state'
-import { ProductListFiltersSkeleton, ProductListSortBarSkeleton } from '@shared/components/skeleton/ProductListSkeleton'
+import {
+  ProductListFiltersSkeleton,
+  ProductListSortBarSkeleton,
+} from '@shared/components/skeleton/ProductListSkeleton'
 import { ProductGridSkeleton } from '@shared/components/skeleton/ProductCardSkeleton'
 import { LazySection } from '@shared/components/product/LazySection'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@shared/components/ui/select'
 import { Button } from '@shared/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { APP_NAME } from '@/constants/app.constants'
@@ -29,14 +38,23 @@ export default function ProductListPage() {
       page: parseInt(searchParams.get('page') || '1', 10),
       limit: parseInt(searchParams.get('limit') || '20', 10),
       query: searchParams.get('query') || undefined,
-      categoryId: searchParams.get('category') || searchParams.get('categoryId') || undefined,
-      minPrice: searchParams.get('minPrice') ? parseInt(searchParams.get('minPrice')!, 10) : undefined,
-      maxPrice: searchParams.get('maxPrice') ? parseInt(searchParams.get('maxPrice')!, 10) : undefined,
+      categoryId:
+        searchParams.get('category') ||
+        searchParams.get('categoryId') ||
+        undefined,
+      minPrice: searchParams.get('minPrice')
+        ? parseInt(searchParams.get('minPrice')!, 10)
+        : undefined,
+      maxPrice: searchParams.get('maxPrice')
+        ? parseInt(searchParams.get('maxPrice')!, 10)
+        : undefined,
       condition: (searchParams.get('condition') as any) || undefined,
       location: searchParams.get('location') || undefined,
       sortBy: searchParams.get('sortBy') || 'createdAt',
       sortOrder: (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc',
-      rating: searchParams.get('rating') ? parseFloat(searchParams.get('rating')!) : undefined,
+      rating: searchParams.get('rating')
+        ? parseFloat(searchParams.get('rating')!)
+        : undefined,
     }
 
     // Handle badges
@@ -63,9 +81,12 @@ export default function ProductListPage() {
     const params = new URLSearchParams()
 
     if (newFilters.query) params.set('query', newFilters.query)
-    if (newFilters.categoryId) params.set('category', String(newFilters.categoryId))
-    if (newFilters.minPrice) params.set('minPrice', newFilters.minPrice.toString())
-    if (newFilters.maxPrice) params.set('maxPrice', newFilters.maxPrice.toString())
+    if (newFilters.categoryId)
+      params.set('category', String(newFilters.categoryId))
+    if (newFilters.minPrice)
+      params.set('minPrice', newFilters.minPrice.toString())
+    if (newFilters.maxPrice)
+      params.set('maxPrice', newFilters.maxPrice.toString())
     if (newFilters.condition) params.set('condition', newFilters.condition)
     if (newFilters.location) params.set('location', newFilters.location)
     if (newFilters.sortBy) params.set('sortBy', newFilters.sortBy)
@@ -76,8 +97,10 @@ export default function ProductListPage() {
     }
     if (newFilters.promoted) params.set('promoted', 'true')
     if (newFilters.featured) params.set('featured', 'true')
-    if (newFilters.page && newFilters.page > 1) params.set('page', newFilters.page.toString())
-    if (newFilters.limit && newFilters.limit !== 20) params.set('limit', newFilters.limit.toString())
+    if (newFilters.page && newFilters.page > 1)
+      params.set('page', newFilters.page.toString())
+    if (newFilters.limit && newFilters.limit !== 20)
+      params.set('limit', newFilters.limit.toString())
 
     setSearchParams(params, { replace: true })
   }
@@ -150,7 +173,9 @@ export default function ProductListPage() {
 
           {/* Page Title */}
           <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-500">
-            <h1 className="text-2xl md:text-3xl font-bold">Danh sách sản phẩm</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">
+              Danh sách sản phẩm
+            </h1>
             {isLoading ? (
               <div className="h-6 w-48 bg-muted animate-pulse rounded mt-2" />
             ) : totalItems > 0 ? (
@@ -187,40 +212,49 @@ export default function ProductListPage() {
               ) : (
                 <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-card p-4 rounded-lg border animate-in fade-in slide-in-from-top-4 duration-500">
                   <div className="flex items-center gap-4 w-full sm:w-auto">
-                  <span className="text-sm font-medium whitespace-nowrap">Sắp xếp theo:</span>
-                  <Select
-                    value={filters.sortBy || 'createdAt'}
-                    onValueChange={(value) => handleSortChange(value, filters.sortOrder || 'desc')}
-                  >
-                    <SelectTrigger className="w-full sm:w-[180px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {sortOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select
-                    value={filters.sortOrder || 'desc'}
-                    onValueChange={(value) => handleSortChange(filters.sortBy || 'createdAt', value as 'asc' | 'desc')}
-                  >
-                    <SelectTrigger className="w-full sm:w-[140px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="desc">Giảm dần</SelectItem>
-                      <SelectItem value="asc">Tăng dần</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {totalItems > 0 && (
-                  <div className="text-sm text-muted-foreground">
-                    Trang {currentPage} / {totalPages}
+                    <span className="text-sm font-medium whitespace-nowrap">
+                      Sắp xếp theo:
+                    </span>
+                    <Select
+                      value={filters.sortBy || 'createdAt'}
+                      onValueChange={value =>
+                        handleSortChange(value, filters.sortOrder || 'desc')
+                      }
+                    >
+                      <SelectTrigger className="w-full sm:w-[180px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sortOptions.map(option => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={filters.sortOrder || 'desc'}
+                      onValueChange={value =>
+                        handleSortChange(
+                          filters.sortBy || 'createdAt',
+                          value as 'asc' | 'desc'
+                        )
+                      }
+                    >
+                      <SelectTrigger className="w-full sm:w-[140px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="desc">Giảm dần</SelectItem>
+                        <SelectItem value="asc">Tăng dần</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                )}
+                  {totalItems > 0 && (
+                    <div className="text-sm text-muted-foreground">
+                      Trang {currentPage} / {totalPages}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -234,9 +268,7 @@ export default function ProductListPage() {
               )}
 
               {/* Loading State - Show skeleton grid */}
-              {isLoading && !error && (
-                <ProductGridSkeleton count={12} />
-              )}
+              {isLoading && !error && <ProductGridSkeleton count={12} />}
 
               {/* Empty State */}
               {!isLoading && !error && products.length === 0 && (
@@ -253,7 +285,9 @@ export default function ProductListPage() {
                       <div
                         key={product.id}
                         className="animate-in fade-in slide-in-from-bottom-4 duration-500"
-                        style={{ animationDelay: `${Math.min(index * 30, 600)}ms` }}
+                        style={{
+                          animationDelay: `${Math.min(index * 30, 600)}ms`,
+                        }}
                       >
                         <ProductCard product={product} />
                       </div>
@@ -286,4 +320,3 @@ export default function ProductListPage() {
     </div>
   )
 }
-

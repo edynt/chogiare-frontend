@@ -31,12 +31,18 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
 
       // Simulate first failed refresh
       sessionStorage.setItem('auth_refresh_failed', loginUrl)
-      sessionStorage.setItem('auth_refresh_failed_timestamp', Date.now().toString())
+      sessionStorage.setItem(
+        'auth_refresh_failed_timestamp',
+        Date.now().toString()
+      )
 
       expect(sessionStorage.getItem('auth_refresh_failed')).toBe(loginUrl)
 
       // Simulating second failed refresh should update timestamp, not create duplicate
-      sessionStorage.setItem('auth_refresh_failed_timestamp', (Date.now() + 1000).toString())
+      sessionStorage.setItem(
+        'auth_refresh_failed_timestamp',
+        (Date.now() + 1000).toString()
+      )
 
       expect(sessionStorage.getItem('auth_refresh_failed')).toBe(loginUrl)
       // Only one flag entry, timestamp updated
@@ -71,7 +77,9 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
       const now = Date.now()
       sessionStorage.setItem('auth_refresh_failed_timestamp', now.toString())
 
-      const storedTimestamp = sessionStorage.getItem('auth_refresh_failed_timestamp')
+      const storedTimestamp = sessionStorage.getItem(
+        'auth_refresh_failed_timestamp'
+      )
       expect(storedTimestamp).toBe(now.toString())
     })
   })
@@ -81,7 +89,10 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
       const now = Date.now()
       const failedAt = now - 2000 // 2 seconds ago (within cooldown)
 
-      sessionStorage.setItem('auth_refresh_failed_timestamp', failedAt.toString())
+      sessionStorage.setItem(
+        'auth_refresh_failed_timestamp',
+        failedAt.toString()
+      )
 
       const elapsed = now - failedAt
       const inCooldown = elapsed < 5000
@@ -93,7 +104,10 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
       const now = Date.now()
       const failedAt = now - 6000 // 6 seconds ago (outside cooldown)
 
-      sessionStorage.setItem('auth_refresh_failed_timestamp', failedAt.toString())
+      sessionStorage.setItem(
+        'auth_refresh_failed_timestamp',
+        failedAt.toString()
+      )
 
       const elapsed = now - failedAt
       const inCooldown = elapsed < 5000
@@ -103,7 +117,10 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
 
     it('should redirect immediately if in cooldown without retrying refresh', () => {
       // Set timestamp to within cooldown
-      sessionStorage.setItem('auth_refresh_failed_timestamp', (Date.now() - 2000).toString())
+      sessionStorage.setItem(
+        'auth_refresh_failed_timestamp',
+        (Date.now() - 2000).toString()
+      )
       sessionStorage.setItem('auth_refresh_failed', '/auth/login')
 
       const elapsed = 2000
@@ -115,7 +132,10 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
 
     it('should clear cooldown on successful login', () => {
       sessionStorage.setItem('auth_refresh_failed', '/auth/login')
-      sessionStorage.setItem('auth_refresh_failed_timestamp', Date.now().toString())
+      sessionStorage.setItem(
+        'auth_refresh_failed_timestamp',
+        Date.now().toString()
+      )
 
       expect(sessionStorage.getItem('auth_refresh_failed')).toBeTruthy()
 
@@ -192,10 +212,10 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
     ]
 
     it('should skip token refresh for all auth endpoints', () => {
-      authEndpoints.forEach((endpoint) => {
+      authEndpoints.forEach(endpoint => {
         const requestUrl = endpoint
 
-        const isAuthEndpoint = authEndpoints.some((ep) => requestUrl.includes(ep))
+        const isAuthEndpoint = authEndpoints.some(ep => requestUrl.includes(ep))
 
         expect(isAuthEndpoint).toBe(true)
       })
@@ -205,17 +225,22 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
       const endpoint = '/auth/refresh'
       const authEndpoints = ['/auth/login', '/auth/refresh', '/admin/login']
 
-      const isAuthEndpoint = authEndpoints.some((ep) => endpoint.includes(ep))
+      const isAuthEndpoint = authEndpoints.some(ep => endpoint.includes(ep))
 
       expect(isAuthEndpoint).toBe(true)
     })
 
     it('should attempt refresh for protected endpoints', () => {
-      const protectedEndpoints = ['/products', '/orders', '/profile', '/admin/users']
+      const protectedEndpoints = [
+        '/products',
+        '/orders',
+        '/profile',
+        '/admin/users',
+      ]
       const authEndpoints = ['/auth/login', '/auth/refresh', '/admin/login']
 
-      protectedEndpoints.forEach((endpoint) => {
-        const isAuthEndpoint = authEndpoints.some((ep) => endpoint.includes(ep))
+      protectedEndpoints.forEach(endpoint => {
+        const isAuthEndpoint = authEndpoints.some(ep => endpoint.includes(ep))
         expect(isAuthEndpoint).toBe(false)
       })
     })
@@ -290,7 +315,10 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
 
       // First redirect sets flag
       sessionStorage.setItem('auth_refresh_failed', loginUrl)
-      sessionStorage.setItem('auth_refresh_failed_timestamp', Date.now().toString())
+      sessionStorage.setItem(
+        'auth_refresh_failed_timestamp',
+        Date.now().toString()
+      )
       window.location.href = loginUrl
 
       // Second error should not redirect again (in cooldown)
@@ -314,7 +342,10 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
     it('should clear failure flags on successful login to allow new refresh cycle', () => {
       // Setup failed state
       sessionStorage.setItem('auth_refresh_failed', '/auth/login')
-      sessionStorage.setItem('auth_refresh_failed_timestamp', Date.now().toString())
+      sessionStorage.setItem(
+        'auth_refresh_failed_timestamp',
+        Date.now().toString()
+      )
 
       expect(sessionStorage.getItem('auth_refresh_failed')).toBeTruthy()
 
@@ -330,11 +361,13 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
 
       // AdminAuthProvider checks for '/admin/login' flag
       sessionStorage.setItem('auth_refresh_failed', '/admin/login')
-      const adminRefreshFailed = sessionStorage.getItem('auth_refresh_failed') === '/admin/login'
+      const adminRefreshFailed =
+        sessionStorage.getItem('auth_refresh_failed') === '/admin/login'
 
       // UserAuthProvider checks for '/auth/login' flag
       sessionStorage.setItem('auth_refresh_failed', '/auth/login')
-      const userRefreshFailed = sessionStorage.getItem('auth_refresh_failed') === '/auth/login'
+      const userRefreshFailed =
+        sessionStorage.getItem('auth_refresh_failed') === '/auth/login'
 
       // Both should be independent
       expect(adminRefreshFailed).toBe(false) // Changed to /auth/login
@@ -359,7 +392,10 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
         // Step 4: Set failure flag
         const loginUrl = '/auth/login'
         sessionStorage.setItem('auth_refresh_failed', loginUrl)
-        sessionStorage.setItem('auth_refresh_failed_timestamp', Date.now().toString())
+        sessionStorage.setItem(
+          'auth_refresh_failed_timestamp',
+          Date.now().toString()
+        )
 
         // Step 5: Redirect
         const isAuthPage = window.location.pathname.startsWith('/auth/')
@@ -379,7 +415,10 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
       // Initial failed refresh
       sessionStorage.setItem('auth_refresh_failed', '/auth/login')
       const failureTime = Date.now()
-      sessionStorage.setItem('auth_refresh_failed_timestamp', failureTime.toString())
+      sessionStorage.setItem(
+        'auth_refresh_failed_timestamp',
+        failureTime.toString()
+      )
       window.location.href = '/auth/login'
 
       // Simulate another error arriving 2 seconds later
@@ -395,7 +434,10 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
       // Initial failed refresh
       const oldFailureTime = Date.now() - 6000 // 6 seconds ago
       sessionStorage.setItem('auth_refresh_failed', '/auth/login')
-      sessionStorage.setItem('auth_refresh_failed_timestamp', oldFailureTime.toString())
+      sessionStorage.setItem(
+        'auth_refresh_failed_timestamp',
+        oldFailureTime.toString()
+      )
 
       // After login, flags are cleared
       apiClient.clearRefreshFailureFlags()
@@ -432,7 +474,8 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
       window.location.pathname = '/auth/login'
 
       // Provider recognizes refresh failed and disables profile fetch
-      const shouldFetchProfile = sessionStorage.getItem('auth_refresh_failed') !== '/auth/login'
+      const shouldFetchProfile =
+        sessionStorage.getItem('auth_refresh_failed') !== '/auth/login'
       expect(shouldFetchProfile).toBe(false)
 
       // Provider does NOT redirect (would cause loop)

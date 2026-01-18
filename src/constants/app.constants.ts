@@ -5,4 +5,3 @@ export const APP_CONFIG = {
   domain: 'chogiare.com',
   url: 'https://chogiare.com',
 } as const
-

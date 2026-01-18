@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
@@ -29,7 +34,7 @@ import {
   Shield,
   Bot,
   Flag,
-  Loader2
+  Loader2,
 } from 'lucide-react'
 import { PLACEHOLDER_IMAGE } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -70,66 +75,94 @@ export default function ProductModerationPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800'
-      case 'rejected': return 'bg-red-100 text-red-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'draft': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'approved':
+        return 'bg-green-100 text-green-800'
+      case 'rejected':
+        return 'bg-red-100 text-red-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'draft':
+        return 'bg-gray-100 text-gray-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'approved': return 'Đã duyệt'
-      case 'rejected': return 'Từ chối'
-      case 'pending': return 'Chờ duyệt'
-      case 'draft': return 'Bản nháp'
-      default: return status
+      case 'approved':
+        return 'Đã duyệt'
+      case 'rejected':
+        return 'Từ chối'
+      case 'pending':
+        return 'Chờ duyệt'
+      case 'draft':
+        return 'Bản nháp'
+      default:
+        return status
     }
   }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800'
-      case 'medium': return 'bg-yellow-100 text-yellow-800'
-      case 'low': return 'bg-green-100 text-green-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'high':
+        return 'bg-red-100 text-red-800'
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'low':
+        return 'bg-green-100 text-green-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getPriorityLabel = (priority: string) => {
     switch (priority) {
-      case 'high': return 'Cao'
-      case 'medium': return 'Trung bình'
-      case 'low': return 'Thấp'
-      default: return priority
+      case 'high':
+        return 'Cao'
+      case 'medium':
+        return 'Trung bình'
+      case 'low':
+        return 'Thấp'
+      default:
+        return priority
     }
   }
 
   const getViolationColor = (violation: string) => {
     switch (violation) {
-      case 'potential_fake': return 'bg-red-100 text-red-800'
-      case 'price_manipulation': return 'bg-orange-100 text-orange-800'
-      case 'copyright_violation': return 'bg-purple-100 text-purple-800'
-      case 'misleading_title': return 'bg-yellow-100 text-yellow-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'potential_fake':
+        return 'bg-red-100 text-red-800'
+      case 'price_manipulation':
+        return 'bg-orange-100 text-orange-800'
+      case 'copyright_violation':
+        return 'bg-purple-100 text-purple-800'
+      case 'misleading_title':
+        return 'bg-yellow-100 text-yellow-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getViolationLabel = (violation: string) => {
     switch (violation) {
-      case 'potential_fake': return 'Có thể là hàng giả'
-      case 'price_manipulation': return 'Thao túng giá'
-      case 'copyright_violation': return 'Vi phạm bản quyền'
-      case 'misleading_title': return 'Tiêu đề gây hiểu lầm'
-      default: return violation
+      case 'potential_fake':
+        return 'Có thể là hàng giả'
+      case 'price_manipulation':
+        return 'Thao túng giá'
+      case 'copyright_violation':
+        return 'Vi phạm bản quyền'
+      case 'misleading_title':
+        return 'Tiêu đề gây hiểu lầm'
+      default:
+        return violation
     }
   }
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -139,7 +172,7 @@ export default function ProductModerationPage() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -164,7 +197,7 @@ export default function ProductModerationPage() {
 
     if (action === 'approve') {
       bulkApproveMutation.mutate(selectedProducts, {
-        onSuccess: (data) => {
+        onSuccess: data => {
           toast.success(`Đã duyệt ${data.count} sản phẩm`)
           setSelectedProducts([])
         },
@@ -173,15 +206,18 @@ export default function ProductModerationPage() {
         },
       })
     } else if (action === 'reject') {
-      bulkRejectMutation.mutate({ productIds: selectedProducts }, {
-        onSuccess: (data) => {
-          toast.success(`Đã từ chối ${data.count} sản phẩm`)
-          setSelectedProducts([])
-        },
-        onError: () => {
-          toast.error('Có lỗi xảy ra khi từ chối sản phẩm')
-        },
-      })
+      bulkRejectMutation.mutate(
+        { productIds: selectedProducts },
+        {
+          onSuccess: data => {
+            toast.success(`Đã từ chối ${data.count} sản phẩm`)
+            setSelectedProducts([])
+          },
+          onError: () => {
+            toast.error('Có lỗi xảy ra khi từ chối sản phẩm')
+          },
+        }
+      )
     }
   }
 
@@ -197,14 +233,17 @@ export default function ProductModerationPage() {
   }
 
   const handleReject = (productId: string) => {
-    rejectProductMutation.mutate({ id: productId }, {
-      onSuccess: () => {
-        toast.success('Đã từ chối sản phẩm')
-      },
-      onError: () => {
-        toast.error('Có lỗi xảy ra khi từ chối sản phẩm')
-      },
-    })
+    rejectProductMutation.mutate(
+      { id: productId },
+      {
+        onSuccess: () => {
+          toast.success('Đã từ chối sản phẩm')
+        },
+        onError: () => {
+          toast.error('Có lỗi xảy ra khi từ chối sản phẩm')
+        },
+      }
+    )
   }
 
   return (
@@ -212,12 +251,18 @@ export default function ProductModerationPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Kiểm duyệt sản phẩm</h1>
-          <p className="text-gray-600 mt-1">Duyệt và quản lý sản phẩm đăng bán trên nền tảng</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Kiểm duyệt sản phẩm
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Duyệt và quản lý sản phẩm đăng bán trên nền tảng
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Button
-            disabled={selectedProducts.length === 0 || bulkApproveMutation.isPending}
+            disabled={
+              selectedProducts.length === 0 || bulkApproveMutation.isPending
+            }
             onClick={() => handleBulkAction('approve')}
           >
             {bulkApproveMutation.isPending ? (
@@ -240,7 +285,7 @@ export default function ProductModerationPage() {
                 <Input
                   placeholder="Tìm kiếm theo tên sản phẩm, người bán hoặc danh mục..."
                   value={searchQuery}
-                  onChange={(e) => {
+                  onChange={e => {
                     setSearchQuery(e.target.value)
                     setPage(1)
                   }}
@@ -249,7 +294,13 @@ export default function ProductModerationPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <Select value={statusFilter} onValueChange={(value) => { setStatusFilter(value); setPage(1) }}>
+              <Select
+                value={statusFilter}
+                onValueChange={value => {
+                  setStatusFilter(value)
+                  setPage(1)
+                }}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Trạng thái" />
                 </SelectTrigger>
@@ -261,7 +312,13 @@ export default function ProductModerationPage() {
                   <SelectItem value="draft">Bản nháp</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={categoryFilter} onValueChange={(value) => { setCategoryFilter(value); setPage(1) }}>
+              <Select
+                value={categoryFilter}
+                onValueChange={value => {
+                  setCategoryFilter(value)
+                  setPage(1)
+                }}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Danh mục" />
                 </SelectTrigger>
@@ -273,7 +330,13 @@ export default function ProductModerationPage() {
                   <SelectItem value="Thời trang">Thời trang</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={priorityFilter} onValueChange={(value) => { setPriorityFilter(value); setPage(1) }}>
+              <Select
+                value={priorityFilter}
+                onValueChange={value => {
+                  setPriorityFilter(value)
+                  setPage(1)
+                }}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Ưu tiên" />
                 </SelectTrigger>
@@ -367,7 +430,10 @@ export default function ProductModerationPage() {
                     <TableHead className="w-12">
                       <input
                         type="checkbox"
-                        checked={selectedProducts.length === products.length && products.length > 0}
+                        checked={
+                          selectedProducts.length === products.length &&
+                          products.length > 0
+                        }
                         onChange={handleSelectAll}
                         className="rounded border-gray-300"
                       />
@@ -383,7 +449,7 @@ export default function ProductModerationPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {products.map((product) => (
+                  {products.map(product => (
                     <TableRow key={product.id} className="hover:bg-gray-50">
                       <TableCell>
                         <input
@@ -396,15 +462,21 @@ export default function ProductModerationPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <img
-                            src={product.images && product.images.length > 0 ? product.images[0] : PLACEHOLDER_IMAGE}
+                            src={
+                              product.images && product.images.length > 0
+                                ? product.images[0]
+                                : PLACEHOLDER_IMAGE
+                            }
                             alt={product.title}
                             className="w-16 h-16 rounded-lg object-cover"
-                            onError={(e) => {
+                            onError={e => {
                               e.currentTarget.src = PLACEHOLDER_IMAGE
                             }}
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900 line-clamp-2">{product.title}</p>
+                            <p className="font-medium text-gray-900 line-clamp-2">
+                              {product.title}
+                            </p>
                             <div className="flex items-center gap-2 mt-1">
                               <span className="text-sm font-semibold text-green-600">
                                 {formatPrice(product.price)}
@@ -429,7 +501,9 @@ export default function ProductModerationPage() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-gray-400" />
-                          <span className="text-sm font-medium">{product.seller}</span>
+                          <span className="text-sm font-medium">
+                            {product.seller}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -454,27 +528,37 @@ export default function ProductModerationPage() {
                               </Badge>
                             ))
                           ) : (
-                            <span className="text-xs text-gray-500">Không có</span>
+                            <span className="text-xs text-gray-500">
+                              Không có
+                            </span>
                           )}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <div className={`w-12 h-2 rounded-full ${
-                            product.aiScore >= 80 ? 'bg-green-200' :
-                            product.aiScore >= 60 ? 'bg-yellow-200' :
-                            'bg-red-200'
-                          }`}>
+                          <div
+                            className={`w-12 h-2 rounded-full ${
+                              product.aiScore >= 80
+                                ? 'bg-green-200'
+                                : product.aiScore >= 60
+                                  ? 'bg-yellow-200'
+                                  : 'bg-red-200'
+                            }`}
+                          >
                             <div
                               className={`h-2 rounded-full ${
-                                product.aiScore >= 80 ? 'bg-green-500' :
-                                product.aiScore >= 60 ? 'bg-yellow-500' :
-                                'bg-red-500'
+                                product.aiScore >= 80
+                                  ? 'bg-green-500'
+                                  : product.aiScore >= 60
+                                    ? 'bg-yellow-500'
+                                    : 'bg-red-500'
                               }`}
                               style={{ width: `${product.aiScore}%` }}
                             />
                           </div>
-                          <span className="text-sm font-medium">{product.aiScore}%</span>
+                          <span className="text-sm font-medium">
+                            {product.aiScore}%
+                          </span>
                           {product.manualReview && (
                             <Shield className="h-4 w-4 text-blue-600" />
                           )}
@@ -482,7 +566,9 @@ export default function ProductModerationPage() {
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <p className="text-gray-900">{formatDate(product.submittedAt)}</p>
+                          <p className="text-gray-900">
+                            {formatDate(product.submittedAt)}
+                          </p>
                           {product.reviewedAt && (
                             <p className="text-gray-500">
                               Duyệt: {formatDate(product.reviewedAt)}
@@ -501,7 +587,10 @@ export default function ProductModerationPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleApprove(product.id)}
-                            disabled={approveProductMutation.isPending || product.status === 'approved'}
+                            disabled={
+                              approveProductMutation.isPending ||
+                              product.status === 'approved'
+                            }
                             className="text-green-600 hover:text-green-700"
                           >
                             {approveProductMutation.isPending ? (
@@ -514,7 +603,10 @@ export default function ProductModerationPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleReject(product.id)}
-                            disabled={rejectProductMutation.isPending || product.status === 'rejected'}
+                            disabled={
+                              rejectProductMutation.isPending ||
+                              product.status === 'rejected'
+                            }
                             className="text-red-600"
                           >
                             {rejectProductMutation.isPending ? (
@@ -575,7 +667,8 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Chờ duyệt</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {productsData?.items?.filter(p => p.status === 'pending').length ?? 0}
+                  {productsData?.items?.filter(p => p.status === 'pending')
+                    .length ?? 0}
                 </p>
               </div>
             </div>
@@ -590,7 +683,8 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Đã duyệt</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {productsData?.items?.filter(p => p.status === 'approved').length ?? 0}
+                  {productsData?.items?.filter(p => p.status === 'approved')
+                    .length ?? 0}
                 </p>
               </div>
             </div>
@@ -605,7 +699,8 @@ export default function ProductModerationPage() {
               <div>
                 <p className="text-sm text-gray-600">Từ chối</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {productsData?.items?.filter(p => p.status === 'rejected').length ?? 0}
+                  {productsData?.items?.filter(p => p.status === 'rejected')
+                    .length ?? 0}
                 </p>
               </div>
             </div>
@@ -619,9 +714,7 @@ export default function ProductModerationPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">AI Score TB</p>
-                <p className="text-xl font-bold text-gray-900">
-                  0%
-                </p>
+                <p className="text-xl font-bold text-gray-900">0%</p>
               </div>
             </div>
           </CardContent>

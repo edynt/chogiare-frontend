@@ -5,7 +5,12 @@ import { Footer } from '@shared/components/layout/Footer'
 import { Card, CardContent } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/components/ui/tabs'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@shared/components/ui/tabs'
 import {
   Dialog,
   DialogContent,
@@ -15,7 +20,7 @@ import {
   DialogTitle,
 } from '@shared/components/ui/dialog'
 import { Textarea } from '@shared/components/ui/textarea'
-import { 
+import {
   ShoppingBag,
   User,
   Phone,
@@ -26,10 +31,14 @@ import {
   RefreshCw,
   Eye,
   Calendar,
-  CreditCard
+  CreditCard,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useInfiniteStoreOrders, useConfirmOrder, useUpdateOrderStatus } from '@/hooks/useOrders'
+import {
+  useInfiniteStoreOrders,
+  useConfirmOrder,
+  useUpdateOrderStatus,
+} from '@/hooks/useOrders'
 import type { Order as OrderType } from '@user/api/orders'
 import { cn } from '@/lib/utils'
 import { LoadingSpinner } from '@shared/components/ui/loading'
@@ -47,7 +56,7 @@ const STATUS_CONFIG = {
     bgColor: 'bg-gradient-to-br from-amber-50 to-orange-50',
     borderColor: 'border-amber-200',
     textColor: 'text-amber-700',
-    badgeColor: 'bg-amber-500'
+    badgeColor: 'bg-amber-500',
   },
   confirmed: {
     label: 'Đã xác nhận',
@@ -56,7 +65,7 @@ const STATUS_CONFIG = {
     bgColor: 'bg-gradient-to-br from-blue-50 to-indigo-50',
     borderColor: 'border-blue-200',
     textColor: 'text-blue-700',
-    badgeColor: 'bg-blue-500'
+    badgeColor: 'bg-blue-500',
   },
   preparing: {
     label: 'Đang chuẩn bị',
@@ -65,7 +74,7 @@ const STATUS_CONFIG = {
     bgColor: 'bg-gradient-to-br from-purple-50 to-violet-50',
     borderColor: 'border-purple-200',
     textColor: 'text-purple-700',
-    badgeColor: 'bg-purple-500'
+    badgeColor: 'bg-purple-500',
   },
   ready: {
     label: 'Sẵn sàng',
@@ -74,7 +83,7 @@ const STATUS_CONFIG = {
     bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
     borderColor: 'border-green-200',
     textColor: 'text-green-700',
-    badgeColor: 'bg-green-500'
+    badgeColor: 'bg-green-500',
   },
   completed: {
     label: 'Hoàn thành',
@@ -83,7 +92,7 @@ const STATUS_CONFIG = {
     bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
     borderColor: 'border-green-200',
     textColor: 'text-green-700',
-    badgeColor: 'bg-green-500'
+    badgeColor: 'bg-green-500',
   },
   cancelled: {
     label: 'Đã hủy',
@@ -92,8 +101,8 @@ const STATUS_CONFIG = {
     bgColor: 'bg-gradient-to-br from-red-50 to-rose-50',
     borderColor: 'border-red-200',
     textColor: 'text-red-700',
-    badgeColor: 'bg-red-500'
-  }
+    badgeColor: 'bg-red-500',
+  },
 }
 
 export default function OrdersPage() {
@@ -104,11 +113,11 @@ export default function OrdersPage() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [sellerNotes, setSellerNotes] = useState('')
   const [cancelReason, setCancelReason] = useState('')
-  
+
   // Get store ID from auth context or use a default
   // TODO: Replace with actual store ID from auth context
   const storeId = 'default-store-id'
-  
+
   const {
     data: ordersData,
     isLoading,
@@ -119,15 +128,15 @@ export default function OrdersPage() {
   } = useInfiniteStoreOrders(storeId, 20)
   const confirmOrderMutation = useConfirmOrder()
   const updateOrderStatusMutation = useUpdateOrderStatus()
-  
+
   // Flatten all pages into a single array
-  const orders = ordersData?.pages.flatMap((page) => page.items) || []
+  const orders = ordersData?.pages.flatMap(page => page.items) || []
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -137,18 +146,22 @@ export default function OrdersPage() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
   const getOrdersByStatus = (status: string) => {
     if (status === 'all') return orders
     if (status === 'pending') return orders.filter(o => o.status === 'pending')
-    if (status === 'confirmed') return orders.filter(o => o.status === 'confirmed')
-    if (status === 'preparing') return orders.filter(o => o.status === 'preparing')
+    if (status === 'confirmed')
+      return orders.filter(o => o.status === 'confirmed')
+    if (status === 'preparing')
+      return orders.filter(o => o.status === 'preparing')
     if (status === 'ready') return orders.filter(o => o.status === 'ready')
-    if (status === 'completed') return orders.filter(o => o.status === 'completed')
-    if (status === 'cancelled') return orders.filter(o => o.status === 'cancelled')
+    if (status === 'completed')
+      return orders.filter(o => o.status === 'completed')
+    if (status === 'cancelled')
+      return orders.filter(o => o.status === 'cancelled')
     return []
   }
 
@@ -159,11 +172,11 @@ export default function OrdersPage() {
 
   const handleConfirmOrder = async () => {
     if (!selectedOrderId) return
-    
+
     try {
       await confirmOrderMutation.mutateAsync({
         id: selectedOrderId,
-        sellerNotes: sellerNotes || undefined
+        sellerNotes: sellerNotes || undefined,
       })
       toast.success('Đã xác nhận đơn hàng thành công')
       setShowConfirmDialog(false)
@@ -183,11 +196,11 @@ export default function OrdersPage() {
 
   const handleCancelOrder = async () => {
     if (!selectedOrderId) return
-    
+
     try {
       await updateOrderStatusMutation.mutateAsync({
         id: selectedOrderId,
-        status: 'cancelled'
+        status: 'cancelled',
       })
       toast.success('Đã hủy đơn hàng')
       setShowCancelDialog(false)
@@ -208,7 +221,7 @@ export default function OrdersPage() {
   // Intersection Observer để detect khi scroll đến cuối
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const firstEntry = entries[0]
         if (firstEntry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
           fetchNextPage()
@@ -246,7 +259,9 @@ export default function OrdersPage() {
           <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-              <p className="text-muted-foreground">Đang tải danh sách đơn hàng...</p>
+              <p className="text-muted-foreground">
+                Đang tải danh sách đơn hàng...
+              </p>
             </div>
           </div>
         </main>
@@ -274,13 +289,20 @@ export default function OrdersPage() {
               <Button
                 variant="outline"
                 onClick={handleRefresh}
-                disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                disabled={
+                  confirmOrderMutation.isPending ||
+                  updateOrderStatusMutation.isPending
+                }
                 className="shadow-sm hover:shadow-md transition-shadow"
               >
-                <RefreshCw className={cn(
-                  "h-4 w-4 mr-2",
-                  (confirmOrderMutation.isPending || updateOrderStatusMutation.isPending) && "animate-spin"
-                )} />
+                <RefreshCw
+                  className={cn(
+                    'h-4 w-4 mr-2',
+                    (confirmOrderMutation.isPending ||
+                      updateOrderStatusMutation.isPending) &&
+                      'animate-spin'
+                  )}
+                />
                 Làm mới
               </Button>
             </div>
@@ -292,8 +314,12 @@ export default function OrdersPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Chờ xác nhận</p>
-                      <p className="text-xl md:text-2xl font-bold text-amber-700">{pendingCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Chờ xác nhận
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-amber-700">
+                        {pendingCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-amber-100 flex items-center justify-center">
                       <Clock className="h-5 w-5 md:h-6 md:w-6 text-amber-600" />
@@ -301,14 +327,18 @@ export default function OrdersPage() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Đã xác nhận */}
               <Card className="border-0 shadow-md bg-gradient-to-br from-blue-50 to-indigo-50">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Đã xác nhận</p>
-                      <p className="text-xl md:text-2xl font-bold text-blue-700">{confirmedCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Đã xác nhận
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-blue-700">
+                        {confirmedCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-100 flex items-center justify-center">
                       <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
@@ -316,14 +346,18 @@ export default function OrdersPage() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Đang chuẩn bị */}
               <Card className="border-0 shadow-md bg-gradient-to-br from-purple-50 to-violet-50">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Đang chuẩn bị</p>
-                      <p className="text-xl md:text-2xl font-bold text-purple-700">{preparingCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Đang chuẩn bị
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-purple-700">
+                        {preparingCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-purple-100 flex items-center justify-center">
                       <Package className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
@@ -331,14 +365,18 @@ export default function OrdersPage() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Sẵn sàng lấy hàng */}
               <Card className="border-0 shadow-md bg-gradient-to-br from-cyan-50 to-teal-50">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Sẵn sàng lấy hàng</p>
-                      <p className="text-xl md:text-2xl font-bold text-cyan-700">{readyCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Sẵn sàng lấy hàng
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-cyan-700">
+                        {readyCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-cyan-100 flex items-center justify-center">
                       <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-cyan-600" />
@@ -346,14 +384,18 @@ export default function OrdersPage() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Đã hoàn thành */}
               <Card className="border-0 shadow-md bg-gradient-to-br from-green-50 to-emerald-50">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Đã hoàn thành</p>
-                      <p className="text-xl md:text-2xl font-bold text-green-700">{completedCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Đã hoàn thành
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-green-700">
+                        {completedCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-green-100 flex items-center justify-center">
                       <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
@@ -361,14 +403,18 @@ export default function OrdersPage() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Đã huỷ */}
               <Card className="border-0 shadow-md bg-gradient-to-br from-red-50 to-rose-50">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Đã huỷ</p>
-                      <p className="text-xl md:text-2xl font-bold text-red-700">{cancelledCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Đã huỷ
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-red-700">
+                        {cancelledCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-red-100 flex items-center justify-center">
                       <XCircle className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
@@ -380,10 +426,14 @@ export default function OrdersPage() {
           </div>
 
           {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="space-y-6"
+          >
             <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 h-auto p-1 bg-muted/50">
-              <TabsTrigger 
-                value="all" 
+              <TabsTrigger
+                value="all"
                 className="relative data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
                 Tất cả
@@ -393,8 +443,8 @@ export default function OrdersPage() {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger 
-                value="pending" 
+              <TabsTrigger
+                value="pending"
                 className="relative data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
                 Cần xác nhận
@@ -404,7 +454,7 @@ export default function OrdersPage() {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="confirmed"
                 className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
@@ -415,7 +465,7 @@ export default function OrdersPage() {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="preparing"
                 className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
@@ -426,7 +476,7 @@ export default function OrdersPage() {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="ready"
                 className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
@@ -437,7 +487,7 @@ export default function OrdersPage() {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="completed"
                 className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
@@ -448,7 +498,7 @@ export default function OrdersPage() {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="cancelled"
                 className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
@@ -469,7 +519,9 @@ export default function OrdersPage() {
                     <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
                       <ShoppingBag className="h-10 w-10 text-muted-foreground" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">Chưa có đơn hàng</h3>
+                    <h3 className="text-lg font-semibold mb-2">
+                      Chưa có đơn hàng
+                    </h3>
                     <p className="text-muted-foreground text-center max-w-md">
                       Các đơn hàng của bạn sẽ hiển thị ở đây
                     </p>
@@ -477,14 +529,21 @@ export default function OrdersPage() {
                 </Card>
               ) : (
                 <div className="grid gap-3">
-                  {orders.map((order) => {
-                    const statusConfig = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.pending
+                  {orders.map(order => {
+                    const statusConfig =
+                      STATUS_CONFIG[
+                        order.status as keyof typeof STATUS_CONFIG
+                      ] || STATUS_CONFIG.pending
                     const StatusIcon = statusConfig.icon
-                    const isPaid = order.paymentStatus === 'completed' || order.paymentStatus === 'paid'
+                    const isPaid =
+                      order.paymentStatus === 'completed' ||
+                      order.paymentStatus === 'paid'
                     const getPaymentStatusLabel = () => {
                       if (isPaid) return 'Đã thanh toán'
-                      if (order.paymentStatus === 'pending') return 'Chờ thanh toán'
-                      if (order.paymentStatus === 'failed') return 'Thanh toán thất bại'
+                      if (order.paymentStatus === 'pending')
+                        return 'Chờ thanh toán'
+                      if (order.paymentStatus === 'failed')
+                        return 'Thanh toán thất bại'
                       return 'Chưa thanh toán'
                     }
 
@@ -492,9 +551,9 @@ export default function OrdersPage() {
                       <Card
                         key={order.id}
                         className={cn(
-                          "group cursor-pointer transition-all duration-200 hover:shadow-md border overflow-hidden",
+                          'group cursor-pointer transition-all duration-200 hover:shadow-md border overflow-hidden',
                           statusConfig.borderColor,
-                          "hover:border-primary/50"
+                          'hover:border-primary/50'
                         )}
                         onClick={() => navigate(`/orders/${order.id}`)}
                       >
@@ -508,31 +567,37 @@ export default function OrdersPage() {
                                 </h3>
                                 <Badge
                                   className={cn(
-                                    "flex items-center gap-1 px-2 py-0.5 text-xs font-medium",
+                                    'flex items-center gap-1 px-2 py-0.5 text-xs font-medium',
                                     statusConfig.bgColor,
                                     statusConfig.textColor,
                                     statusConfig.borderColor,
-                                    "border"
+                                    'border'
                                   )}
                                 >
                                   <StatusIcon className="h-3 w-3" />
                                   {statusConfig.label}
                                 </Badge>
                               </div>
-                              
+
                               <div className="space-y-1 mb-2">
                                 {/* Customer Info - Compact */}
                                 <div className="flex items-center gap-3 text-xs">
                                   <div className="flex items-center gap-1.5">
                                     <User className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                                    <span className="font-medium text-foreground">{order.userName || 'Khách hàng'}</span>
+                                    <span className="font-medium text-foreground">
+                                      {order.userName || 'Khách hàng'}
+                                    </span>
                                   </div>
                                   {order.userEmail && (
                                     <>
-                                      <span className="text-muted-foreground">•</span>
+                                      <span className="text-muted-foreground">
+                                        •
+                                      </span>
                                       <div className="flex items-center gap-1">
                                         <Phone className="h-3 w-3 text-muted-foreground" />
-                                        <span className="text-muted-foreground">{order.userEmail}</span>
+                                        <span className="text-muted-foreground">
+                                          {order.userEmail}
+                                        </span>
                                       </div>
                                     </>
                                   )}
@@ -542,22 +607,28 @@ export default function OrdersPage() {
                                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                                   <div className="flex items-center gap-1">
                                     <CreditCard className="h-3 w-3" />
-                                    <Badge 
-                                      variant={isPaid ? "default" : "secondary"}
+                                    <Badge
+                                      variant={isPaid ? 'default' : 'secondary'}
                                       className={cn(
-                                        "text-xs px-1.5 py-0.5 h-auto font-medium",
-                                        isPaid ? "bg-green-100 text-green-700 border-green-200" : "bg-amber-100 text-amber-700 border-amber-200"
+                                        'text-xs px-1.5 py-0.5 h-auto font-medium',
+                                        isPaid
+                                          ? 'bg-green-100 text-green-700 border-green-200'
+                                          : 'bg-amber-100 text-amber-700 border-amber-200'
                                       )}
                                     >
                                       {getPaymentStatusLabel()}
                                     </Badge>
                                   </div>
-                                  <span className="text-muted-foreground">•</span>
+                                  <span className="text-muted-foreground">
+                                    •
+                                  </span>
                                   <span className="flex items-center gap-1">
                                     <Calendar className="h-3 w-3" />
                                     {formatDate(order.createdAt)}
                                   </span>
-                                  <span className="text-muted-foreground">•</span>
+                                  <span className="text-muted-foreground">
+                                    •
+                                  </span>
                                   <span className="flex items-center gap-1">
                                     <ShoppingBag className="h-3 w-3" />
                                     {getTotalQuantity(order)} sản phẩm
@@ -573,7 +644,7 @@ export default function OrdersPage() {
                                   {formatPrice(order.total)}
                                 </p>
                               </div>
-                              
+
                               {/* Action Buttons */}
                               <div className="flex gap-2">
                                 {order.status === 'pending' && (
@@ -581,11 +652,14 @@ export default function OrdersPage() {
                                     <Button
                                       size="sm"
                                       className="bg-green-600 hover:bg-green-700 text-white text-xs h-8"
-                                      onClick={(e) => {
+                                      onClick={e => {
                                         e.stopPropagation()
                                         handleConfirm(order.id)
                                       }}
-                                      disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                                      disabled={
+                                        confirmOrderMutation.isPending ||
+                                        updateOrderStatusMutation.isPending
+                                      }
                                     >
                                       <CheckCircle className="h-3 w-3 mr-1" />
                                       Xác nhận
@@ -594,23 +668,28 @@ export default function OrdersPage() {
                                       size="sm"
                                       variant="outline"
                                       className="border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 text-xs h-8"
-                                      onClick={(e) => {
+                                      onClick={e => {
                                         e.stopPropagation()
                                         handleCancel(order.id)
                                       }}
-                                      disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                                      disabled={
+                                        confirmOrderMutation.isPending ||
+                                        updateOrderStatusMutation.isPending
+                                      }
                                     >
                                       <XCircle className="h-3 w-3 mr-1" />
                                       Hủy
                                     </Button>
                                   </>
                                 )}
-                                {(order.status === 'confirmed' || order.status === 'preparing' || order.status === 'ready') && (
+                                {(order.status === 'confirmed' ||
+                                  order.status === 'preparing' ||
+                                  order.status === 'ready') && (
                                   <Button
                                     size="sm"
                                     variant="outline"
                                     className="border-primary text-primary hover:bg-primary/10 text-xs h-8"
-                                    onClick={(e) => {
+                                    onClick={e => {
                                       e.stopPropagation()
                                       navigate(`/orders/${order.id}`)
                                     }}
@@ -619,12 +698,13 @@ export default function OrdersPage() {
                                     Chi tiết
                                   </Button>
                                 )}
-                                {(order.status === 'completed' || order.status === 'cancelled') && (
+                                {(order.status === 'completed' ||
+                                  order.status === 'cancelled') && (
                                   <Button
                                     size="sm"
                                     variant="outline"
                                     className="border-primary text-primary hover:bg-primary/10 text-xs h-8"
-                                    onClick={(e) => {
+                                    onClick={e => {
                                       e.stopPropagation()
                                       navigate(`/orders/${order.id}`)
                                     }}
@@ -642,10 +722,13 @@ export default function OrdersPage() {
                   })}
                 </div>
               )}
-              
+
               {/* Load More Sentinel */}
               {orders.length > 0 && (
-                <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
+                <div
+                  ref={loadMoreRef}
+                  className="h-20 flex items-center justify-center"
+                >
                   {isFetchingNextPage && (
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <LoadingSpinner size="sm" />
@@ -661,33 +744,52 @@ export default function OrdersPage() {
               )}
             </TabsContent>
 
-            {['pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'].map((status) => {
+            {[
+              'pending',
+              'confirmed',
+              'preparing',
+              'ready',
+              'completed',
+              'cancelled',
+            ].map(status => {
               const statusOrders = getOrdersByStatus(status)
-              const statusConfig = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]
+              const statusConfig =
+                STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]
               const StatusIcon = statusConfig.icon
 
               return (
-                <TabsContent key={status} value={status} className="space-y-4 mt-6">
+                <TabsContent
+                  key={status}
+                  value={status}
+                  className="space-y-4 mt-6"
+                >
                   {statusOrders.length === 0 ? (
                     <Card className="border-2 border-dashed">
                       <CardContent className="flex flex-col items-center justify-center py-16">
                         <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
                           <ShoppingBag className="h-10 w-10 text-muted-foreground" />
                         </div>
-                        <h3 className="text-lg font-semibold mb-2">Chưa có đơn hàng</h3>
+                        <h3 className="text-lg font-semibold mb-2">
+                          Chưa có đơn hàng
+                        </h3>
                         <p className="text-muted-foreground text-center max-w-md">
-                          Các đơn hàng {statusConfig.label.toLowerCase()} sẽ hiển thị ở đây
+                          Các đơn hàng {statusConfig.label.toLowerCase()} sẽ
+                          hiển thị ở đây
                         </p>
                       </CardContent>
                     </Card>
                   ) : (
                     <div className="grid gap-3">
-                      {statusOrders.map((order) => {
-                        const isPaid = order.paymentStatus === 'completed' || order.paymentStatus === 'paid'
+                      {statusOrders.map(order => {
+                        const isPaid =
+                          order.paymentStatus === 'completed' ||
+                          order.paymentStatus === 'paid'
                         const getPaymentStatusLabel = () => {
                           if (isPaid) return 'Đã thanh toán'
-                          if (order.paymentStatus === 'pending') return 'Chờ thanh toán'
-                          if (order.paymentStatus === 'failed') return 'Thanh toán thất bại'
+                          if (order.paymentStatus === 'pending')
+                            return 'Chờ thanh toán'
+                          if (order.paymentStatus === 'failed')
+                            return 'Thanh toán thất bại'
                           return 'Chưa thanh toán'
                         }
 
@@ -695,9 +797,9 @@ export default function OrdersPage() {
                           <Card
                             key={order.id}
                             className={cn(
-                              "group cursor-pointer transition-all duration-200 hover:shadow-md border overflow-hidden",
+                              'group cursor-pointer transition-all duration-200 hover:shadow-md border overflow-hidden',
                               statusConfig.borderColor,
-                              "hover:border-primary/50"
+                              'hover:border-primary/50'
                             )}
                             onClick={() => navigate(`/orders/${order.id}`)}
                           >
@@ -711,31 +813,37 @@ export default function OrdersPage() {
                                     </h3>
                                     <Badge
                                       className={cn(
-                                        "flex items-center gap-1 px-2 py-0.5 text-xs font-medium",
+                                        'flex items-center gap-1 px-2 py-0.5 text-xs font-medium',
                                         statusConfig.bgColor,
                                         statusConfig.textColor,
                                         statusConfig.borderColor,
-                                        "border"
+                                        'border'
                                       )}
                                     >
                                       <StatusIcon className="h-3 w-3" />
                                       {statusConfig.label}
                                     </Badge>
                                   </div>
-                                  
+
                                   <div className="space-y-1 mb-2">
                                     {/* Customer Info - Compact */}
                                     <div className="flex items-center gap-3 text-xs">
                                       <div className="flex items-center gap-1.5">
                                         <User className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                                        <span className="font-medium text-foreground">{order.userName || 'Khách hàng'}</span>
+                                        <span className="font-medium text-foreground">
+                                          {order.userName || 'Khách hàng'}
+                                        </span>
                                       </div>
                                       {order.userEmail && (
                                         <>
-                                          <span className="text-muted-foreground">•</span>
+                                          <span className="text-muted-foreground">
+                                            •
+                                          </span>
                                           <div className="flex items-center gap-1">
                                             <Phone className="h-3 w-3 text-muted-foreground" />
-                                            <span className="text-muted-foreground">{order.userEmail}</span>
+                                            <span className="text-muted-foreground">
+                                              {order.userEmail}
+                                            </span>
                                           </div>
                                         </>
                                       )}
@@ -745,22 +853,30 @@ export default function OrdersPage() {
                                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
                                       <div className="flex items-center gap-1">
                                         <CreditCard className="h-3 w-3" />
-                                        <Badge 
-                                          variant={isPaid ? "default" : "secondary"}
+                                        <Badge
+                                          variant={
+                                            isPaid ? 'default' : 'secondary'
+                                          }
                                           className={cn(
-                                            "text-xs px-1.5 py-0.5 h-auto font-medium",
-                                            isPaid ? "bg-green-100 text-green-700 border-green-200" : "bg-amber-100 text-amber-700 border-amber-200"
+                                            'text-xs px-1.5 py-0.5 h-auto font-medium',
+                                            isPaid
+                                              ? 'bg-green-100 text-green-700 border-green-200'
+                                              : 'bg-amber-100 text-amber-700 border-amber-200'
                                           )}
                                         >
                                           {getPaymentStatusLabel()}
                                         </Badge>
                                       </div>
-                                      <span className="text-muted-foreground">•</span>
+                                      <span className="text-muted-foreground">
+                                        •
+                                      </span>
                                       <span className="flex items-center gap-1">
                                         <Calendar className="h-3 w-3" />
                                         {formatDate(order.createdAt)}
                                       </span>
-                                      <span className="text-muted-foreground">•</span>
+                                      <span className="text-muted-foreground">
+                                        •
+                                      </span>
                                       <span className="flex items-center gap-1">
                                         <ShoppingBag className="h-3 w-3" />
                                         {getTotalQuantity(order)} sản phẩm
@@ -776,7 +892,7 @@ export default function OrdersPage() {
                                       {formatPrice(order.total)}
                                     </p>
                                   </div>
-                                  
+
                                   {/* Action Buttons */}
                                   <div className="flex gap-2">
                                     {order.status === 'pending' && (
@@ -784,11 +900,14 @@ export default function OrdersPage() {
                                         <Button
                                           size="sm"
                                           className="bg-green-600 hover:bg-green-700 text-white text-xs h-8"
-                                          onClick={(e) => {
+                                          onClick={e => {
                                             e.stopPropagation()
                                             handleConfirm(order.id)
                                           }}
-                                          disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                                          disabled={
+                                            confirmOrderMutation.isPending ||
+                                            updateOrderStatusMutation.isPending
+                                          }
                                         >
                                           <CheckCircle className="h-3 w-3 mr-1" />
                                           Xác nhận
@@ -797,23 +916,28 @@ export default function OrdersPage() {
                                           size="sm"
                                           variant="outline"
                                           className="border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 text-xs h-8"
-                                          onClick={(e) => {
+                                          onClick={e => {
                                             e.stopPropagation()
                                             handleCancel(order.id)
                                           }}
-                                          disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                                          disabled={
+                                            confirmOrderMutation.isPending ||
+                                            updateOrderStatusMutation.isPending
+                                          }
                                         >
                                           <XCircle className="h-3 w-3 mr-1" />
                                           Hủy
                                         </Button>
                                       </>
                                     )}
-                                    {(order.status === 'confirmed' || order.status === 'preparing' || order.status === 'ready') && (
+                                    {(order.status === 'confirmed' ||
+                                      order.status === 'preparing' ||
+                                      order.status === 'ready') && (
                                       <Button
                                         size="sm"
                                         variant="outline"
                                         className="border-primary text-primary hover:bg-primary/10 text-xs h-8"
-                                        onClick={(e) => {
+                                        onClick={e => {
                                           e.stopPropagation()
                                           navigate(`/orders/${order.id}`)
                                         }}
@@ -822,12 +946,13 @@ export default function OrdersPage() {
                                         Chi tiết
                                       </Button>
                                     )}
-                                    {(order.status === 'completed' || order.status === 'cancelled') && (
+                                    {(order.status === 'completed' ||
+                                      order.status === 'cancelled') && (
                                       <Button
                                         size="sm"
                                         variant="outline"
                                         className="border-primary text-primary hover:bg-primary/10 text-xs h-8"
-                                        onClick={(e) => {
+                                        onClick={e => {
                                           e.stopPropagation()
                                           navigate(`/orders/${order.id}`)
                                         }}
@@ -845,14 +970,19 @@ export default function OrdersPage() {
                       })}
                     </div>
                   )}
-                  
+
                   {/* Load More Sentinel */}
                   {statusOrders.length > 0 && (
-                    <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
+                    <div
+                      ref={loadMoreRef}
+                      className="h-20 flex items-center justify-center"
+                    >
                       {isFetchingNextPage && (
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <LoadingSpinner size="sm" />
-                          <span className="text-sm">Đang tải thêm đơn hàng...</span>
+                          <span className="text-sm">
+                            Đang tải thêm đơn hàng...
+                          </span>
                         </div>
                       )}
                       {!hasNextPage && orders.length > 0 && (
@@ -876,30 +1006,37 @@ export default function OrdersPage() {
           <DialogHeader>
             <DialogTitle className="text-xl">Xác nhận đơn hàng</DialogTitle>
             <DialogDescription>
-              Bạn có chắc chắn muốn xác nhận đơn hàng <strong>{selectedOrderId}</strong>? Đơn hàng sẽ chuyển sang trạng thái "Đã xác nhận".
+              Bạn có chắc chắn muốn xác nhận đơn hàng{' '}
+              <strong>{selectedOrderId}</strong>? Đơn hàng sẽ chuyển sang trạng
+              thái "Đã xác nhận".
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Ghi chú (tùy chọn)</label>
+              <label className="text-sm font-medium mb-2 block">
+                Ghi chú (tùy chọn)
+              </label>
               <Textarea
                 placeholder="Nhập ghi chú cho đơn hàng..."
                 value={sellerNotes}
-                onChange={(e) => setSellerNotes(e.target.value)}
+                onChange={e => setSellerNotes(e.target.value)}
                 className="mt-2"
                 rows={3}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setShowConfirmDialog(false)
-              setSellerNotes('')
-              setSelectedOrderId(null)
-            }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowConfirmDialog(false)
+                setSellerNotes('')
+                setSelectedOrderId(null)
+              }}
+            >
               Hủy
             </Button>
-            <Button 
+            <Button
               onClick={handleConfirmOrder}
               disabled={confirmOrderMutation.isPending}
               className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
@@ -916,35 +1053,44 @@ export default function OrdersPage() {
           <DialogHeader>
             <DialogTitle className="text-xl">Hủy đơn hàng</DialogTitle>
             <DialogDescription>
-              Bạn có chắc chắn muốn hủy đơn hàng <strong>{selectedOrderId}</strong>? Hành động này không thể hoàn tác.
+              Bạn có chắc chắn muốn hủy đơn hàng{' '}
+              <strong>{selectedOrderId}</strong>? Hành động này không thể hoàn
+              tác.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Lý do hủy (tùy chọn)</label>
+              <label className="text-sm font-medium mb-2 block">
+                Lý do hủy (tùy chọn)
+              </label>
               <Textarea
                 placeholder="Nhập lý do hủy đơn hàng..."
                 value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
+                onChange={e => setCancelReason(e.target.value)}
                 className="mt-2"
                 rows={3}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setShowCancelDialog(false)
-              setCancelReason('')
-              setSelectedOrderId(null)
-            }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowCancelDialog(false)
+                setCancelReason('')
+                setSelectedOrderId(null)
+              }}
+            >
               Không
             </Button>
-            <Button 
+            <Button
               variant="destructive"
               onClick={handleCancelOrder}
               disabled={updateOrderStatusMutation.isPending}
             >
-              {updateOrderStatusMutation.isPending ? 'Đang xử lý...' : 'Hủy đơn'}
+              {updateOrderStatusMutation.isPending
+                ? 'Đang xử lý...'
+                : 'Hủy đơn'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,6 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { useVerifyEmail, useResendVerification } from '@/hooks/useAuth'
@@ -16,7 +22,7 @@ export default function VerifyEmailPage() {
   const { notify } = useNotification()
   const verifyMutation = useVerifyEmail()
   const resendMutation = useResendVerification()
-  
+
   const email = location.state?.email || ''
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [isResending, setIsResending] = useState(false)
@@ -40,7 +46,10 @@ export default function VerifyEmailPage() {
     }
   }
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus()
     }
@@ -50,7 +59,9 @@ export default function VerifyEmailPage() {
     e.preventDefault()
     const pastedData = e.clipboardData.getData('text').slice(0, 6)
     if (/^\d+$/.test(pastedData)) {
-      const newOtp = pastedData.split('').concat(Array(6 - pastedData.length).fill(''))
+      const newOtp = pastedData
+        .split('')
+        .concat(Array(6 - pastedData.length).fill(''))
       setOtp(newOtp)
       inputRefs.current[Math.min(pastedData.length, 5)]?.focus()
     }
@@ -136,15 +147,15 @@ export default function VerifyEmailPage() {
                 {otp.map((digit, index) => (
                   <Input
                     key={index}
-                    ref={(el) => {
+                    ref={el => {
                       inputRefs.current[index] = el
                     }}
                     type="text"
                     inputMode="numeric"
                     maxLength={1}
                     value={digit}
-                    onChange={(e) => handleOtpChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    onChange={e => handleOtpChange(index, e.target.value)}
+                    onKeyDown={e => handleKeyDown(index, e)}
                     onPaste={handlePaste}
                     className="w-12 h-14 text-center text-2xl font-bold"
                     autoFocus={index === 0}
@@ -205,4 +216,3 @@ export default function VerifyEmailPage() {
     </div>
   )
 }
-

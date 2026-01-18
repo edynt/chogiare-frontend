@@ -2,20 +2,25 @@ import React from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Alert, AlertDescription } from '@shared/components/ui/alert'
 import { useOrder } from '@/hooks/useOrders'
 import type { Order as ApiOrder } from '@user/api/orders'
 import { LoadingSpinner } from '@shared/components/ui/loading'
 import { ErrorMessage } from '@shared/components/ui/error-boundary'
-import { 
-  CheckCircle2, 
+import {
+  CheckCircle2,
   Package,
   AlertCircle,
   ExternalLink,
   Home,
-  ArrowLeft
+  ArrowLeft,
 } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 
@@ -84,8 +89,12 @@ export default function OrderConfirmationPage() {
               <div className="inline-block">
                 <Card className="bg-primary/5 border-primary/20">
                   <CardContent className="p-4">
-                    <p className="text-sm text-muted-foreground mb-1">Mã đơn hàng</p>
-                    <p className="text-2xl font-bold font-mono text-primary">{order.id}</p>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Mã đơn hàng
+                    </p>
+                    <p className="text-2xl font-bold font-mono text-primary">
+                      {order.id}
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -104,8 +113,11 @@ export default function OrderConfirmationPage() {
               {/* Order Items */}
               <div className="space-y-3">
                 {order.items && order.items.length > 0 ? (
-                  order.items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-4 p-3 border rounded-lg">
+                  order.items.map(item => (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-4 p-3 border rounded-lg"
+                    >
                       {item.productImage && (
                         <img
                           src={item.productImage}
@@ -159,8 +171,10 @@ export default function OrderConfirmationPage() {
           <Alert className="bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
             <AlertCircle className="h-4 w-4 text-amber-600" />
             <AlertDescription className="text-amber-800 dark:text-amber-200">
-              <strong>Lưu ý quan trọng:</strong> Bạn cần <strong>tự đến lấy hàng</strong> hoặc <strong>tự đặt dịch vụ vận chuyển</strong>. 
-              Chúng tôi không cung cấp dịch vụ vận chuyển.
+              <strong>Lưu ý quan trọng:</strong> Bạn cần{' '}
+              <strong>tự đến lấy hàng</strong> hoặc{' '}
+              <strong>tự đặt dịch vụ vận chuyển</strong>. Chúng tôi không cung
+              cấp dịch vụ vận chuyển.
             </AlertDescription>
           </Alert>
 
@@ -168,8 +182,8 @@ export default function OrderConfirmationPage() {
           <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800">
             <AlertCircle className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-800 dark:text-blue-200">
-              <strong>Thanh toán:</strong> Bạn cần thỏa thuận phương thức thanh toán trực tiếp với người bán 
-              (COD, chuyển khoản, ví điện tử...).
+              <strong>Thanh toán:</strong> Bạn cần thỏa thuận phương thức thanh
+              toán trực tiếp với người bán (COD, chuyển khoản, ví điện tử...).
             </AlertDescription>
           </Alert>
 
@@ -184,7 +198,8 @@ export default function OrderConfirmationPage() {
                 <div>
                   <p className="font-semibold">Đang chờ người bán xác nhận</p>
                   <p className="text-sm text-muted-foreground">
-                    Đơn hàng của bạn đã được ghi nhận và đang chờ người bán xác nhận
+                    Đơn hàng của bạn đã được ghi nhận và đang chờ người bán xác
+                    nhận
                   </p>
                 </div>
               </div>
@@ -227,4 +242,3 @@ export default function OrderConfirmationPage() {
     </div>
   )
 }
-

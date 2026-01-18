@@ -43,7 +43,8 @@ export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
   }
 
   // Check if user has admin role via roleIds (1=admin) or legacy roles array
-  const isAdmin = user?.roleIds?.includes(ROLE_IDS.ADMIN) || user?.roles?.includes('admin')
+  const isAdmin =
+    user?.roleIds?.includes(ROLE_IDS.ADMIN) || user?.roles?.includes('admin')
 
   if (!isAdmin) {
     // If regular user tries to access admin routes, redirect to home

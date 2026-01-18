@@ -5,18 +5,29 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Label } from '@shared/components/ui/label'
 import { Textarea } from '@shared/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@shared/components/ui/select'
 import { Badge } from '@shared/components/ui/badge'
 import { Alert, AlertDescription } from '@shared/components/ui/alert'
 import { useProduct } from '@/hooks/useProducts'
 import { useNotification } from '@shared/components/notification-provider'
 import { useLoading } from '@/hooks/useLoading'
-import { 
+import {
   Package,
   ArrowLeft,
   Plus,
@@ -26,7 +37,7 @@ import {
   BarChart3,
   TrendingUp,
   Save,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react'
 
 // Stock In Form Schema
@@ -64,8 +75,14 @@ export default function StockInPage() {
   const { productId } = useParams<{ productId?: string }>()
   const { notify } = useNotification()
   const { data: product } = useProduct(productId || '')
-  
-  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; sku: string; currentStock: number; costPrice: number } | null>(null)
+
+  const [selectedProduct, setSelectedProduct] = useState<{
+    id: string
+    name: string
+    sku: string
+    currentStock: number
+    costPrice: number
+  } | null>(null)
   const [stockInHistory, setStockInHistory] = useState<StockInRecord[]>([])
 
   const {
@@ -83,7 +100,7 @@ export default function StockInPage() {
       costPrice: 0,
       supplier: '',
       location: 'Kho A',
-    }
+    },
   })
 
   const watchedValues = watch()
@@ -91,9 +108,27 @@ export default function StockInPage() {
 
   // Mock data for demonstration
   const mockProducts = [
-    { id: '1', name: 'iPhone 14 Pro Max 256GB', sku: 'IPH14PM-256', currentStock: 15, costPrice: 22000000 },
-    { id: '2', name: 'AirPods Pro 2nd Gen', sku: 'APP2-001', currentStock: 25, costPrice: 4500000 },
-    { id: '3', name: 'MacBook Pro M2 13"', sku: 'MBP13-M2', currentStock: 8, costPrice: 35000000 },
+    {
+      id: '1',
+      name: 'iPhone 14 Pro Max 256GB',
+      sku: 'IPH14PM-256',
+      currentStock: 15,
+      costPrice: 22000000,
+    },
+    {
+      id: '2',
+      name: 'AirPods Pro 2nd Gen',
+      sku: 'APP2-001',
+      currentStock: 25,
+      costPrice: 4500000,
+    },
+    {
+      id: '3',
+      name: 'MacBook Pro M2 13"',
+      sku: 'MBP13-M2',
+      currentStock: 8,
+      costPrice: 35000000,
+    },
   ]
 
   const mockStockInHistory: StockInRecord[] = [
@@ -109,7 +144,7 @@ export default function StockInPage() {
       location: 'Kho A - Kệ 1',
       notes: 'Nhập hàng định kỳ',
       createdAt: '2024-01-15T10:30:00Z',
-      createdBy: 'Nguyễn Văn A'
+      createdBy: 'Nguyễn Văn A',
     },
     {
       id: '2',
@@ -123,8 +158,8 @@ export default function StockInPage() {
       location: 'Kho A - Kệ 2',
       notes: 'Nhập hàng khuyến mãi',
       createdAt: '2024-01-14T14:20:00Z',
-      createdBy: 'Trần Thị B'
-    }
+      createdBy: 'Trần Thị B',
+    },
   ]
 
   useEffect(() => {
@@ -146,21 +181,24 @@ export default function StockInPage() {
       })
       reset()
       // Refresh stock in history
-      setStockInHistory(prev => [{
-        id: Date.now().toString(),
-        productId: watchedValues.productId,
-        productName: selectedProduct?.name || 'Sản phẩm',
-        quantity: watchedValues.quantity,
-        costPrice: watchedValues.costPrice,
-        totalCost: totalCost,
-        supplier: watchedValues.supplier,
-        batchNumber: watchedValues.batchNumber,
-        expiryDate: watchedValues.expiryDate,
-        location: watchedValues.location,
-        notes: watchedValues.notes,
-        createdAt: new Date().toISOString(),
-        createdBy: 'Người dùng hiện tại'
-      }, ...prev])
+      setStockInHistory(prev => [
+        {
+          id: Date.now().toString(),
+          productId: watchedValues.productId,
+          productName: selectedProduct?.name || 'Sản phẩm',
+          quantity: watchedValues.quantity,
+          costPrice: watchedValues.costPrice,
+          totalCost: totalCost,
+          supplier: watchedValues.supplier,
+          batchNumber: watchedValues.batchNumber,
+          expiryDate: watchedValues.expiryDate,
+          location: watchedValues.location,
+          notes: watchedValues.notes,
+          createdAt: new Date().toISOString(),
+          createdBy: 'Người dùng hiện tại',
+        },
+        ...prev,
+      ])
     },
     onError: (error: Error) => {
       notify({
@@ -179,7 +217,13 @@ export default function StockInPage() {
     })
   }
 
-  const handleProductSelect = (product: { id: string; name: string; sku: string; currentStock: number; costPrice: number }) => {
+  const handleProductSelect = (product: {
+    id: string
+    name: string
+    sku: string
+    currentStock: number
+    costPrice: number
+  }) => {
     setSelectedProduct(product)
     setValue('productId', product.id)
     setValue('costPrice', product.costPrice)
@@ -188,7 +232,7 @@ export default function StockInPage() {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -198,7 +242,7 @@ export default function StockInPage() {
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -216,7 +260,9 @@ export default function StockInPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold">Nhập kho sản phẩm</h1>
-                <p className="text-muted-foreground">Quản lý nhập kho và tồn kho sản phẩm</p>
+                <p className="text-muted-foreground">
+                  Quản lý nhập kho và tồn kho sản phẩm
+                </p>
               </div>
             </div>
             <Button variant="outline" onClick={() => window.location.reload()}>
@@ -240,15 +286,17 @@ export default function StockInPage() {
                     {/* Product Selection */}
                     <div className="space-y-2">
                       <Label htmlFor="productId">Sản phẩm</Label>
-                      <Select onValueChange={(value) => {
-                        const product = mockProducts.find(p => p.id === value)
-                        if (product) handleProductSelect(product)
-                      }}>
+                      <Select
+                        onValueChange={value => {
+                          const product = mockProducts.find(p => p.id === value)
+                          if (product) handleProductSelect(product)
+                        }}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Chọn sản phẩm..." />
                         </SelectTrigger>
                         <SelectContent>
-                          {mockProducts.map((product) => (
+                          {mockProducts.map(product => (
                             <SelectItem key={product.id} value={product.id}>
                               <div className="flex items-center justify-between w-full">
                                 <span>{product.name}</span>
@@ -261,7 +309,9 @@ export default function StockInPage() {
                         </SelectContent>
                       </Select>
                       {errors.productId && (
-                        <p className="text-sm text-red-500">{errors.productId.message}</p>
+                        <p className="text-sm text-red-500">
+                          {errors.productId.message}
+                        </p>
                       )}
                     </div>
 
@@ -271,7 +321,10 @@ export default function StockInPage() {
                         <CheckCircle className="h-4 w-4" />
                         <AlertDescription>
                           <div className="flex items-center justify-between">
-                            <span><strong>{selectedProduct.name}</strong> (SKU: {selectedProduct.sku})</span>
+                            <span>
+                              <strong>{selectedProduct.name}</strong> (SKU:{' '}
+                              {selectedProduct.sku})
+                            </span>
                             <Badge variant="outline">
                               Tồn kho hiện tại: {selectedProduct.currentStock}
                             </Badge>
@@ -289,7 +342,12 @@ export default function StockInPage() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => setValue('quantity', Math.max(1, watchedValues.quantity - 1))}
+                            onClick={() =>
+                              setValue(
+                                'quantity',
+                                Math.max(1, watchedValues.quantity - 1)
+                              )
+                            }
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
@@ -304,13 +362,17 @@ export default function StockInPage() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => setValue('quantity', watchedValues.quantity + 1)}
+                            onClick={() =>
+                              setValue('quantity', watchedValues.quantity + 1)
+                            }
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
                         </div>
                         {errors.quantity && (
-                          <p className="text-sm text-red-500">{errors.quantity.message}</p>
+                          <p className="text-sm text-red-500">
+                            {errors.quantity.message}
+                          </p>
                         )}
                       </div>
 
@@ -324,7 +386,9 @@ export default function StockInPage() {
                           placeholder="0"
                         />
                         {errors.costPrice && (
-                          <p className="text-sm text-red-500">{errors.costPrice.message}</p>
+                          <p className="text-sm text-red-500">
+                            {errors.costPrice.message}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -332,7 +396,9 @@ export default function StockInPage() {
                     {/* Total Cost Display */}
                     <div className="bg-primary/10 p-4 rounded-lg">
                       <div className="flex items-center justify-between">
-                        <span className="font-medium">Tổng giá trị nhập kho:</span>
+                        <span className="font-medium">
+                          Tổng giá trị nhập kho:
+                        </span>
                         <span className="text-2xl font-bold text-primary">
                           {formatPrice(totalCost)}
                         </span>
@@ -349,13 +415,17 @@ export default function StockInPage() {
                           placeholder="Tên nhà cung cấp"
                         />
                         {errors.supplier && (
-                          <p className="text-sm text-red-500">{errors.supplier.message}</p>
+                          <p className="text-sm text-red-500">
+                            {errors.supplier.message}
+                          </p>
                         )}
                       </div>
 
                       <div className="space-y-2">
                         <Label htmlFor="location">Vị trí kho</Label>
-                        <Select onValueChange={(value) => setValue('location', value)}>
+                        <Select
+                          onValueChange={value => setValue('location', value)}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Chọn vị trí..." />
                           </SelectTrigger>
@@ -367,7 +437,9 @@ export default function StockInPage() {
                           </SelectContent>
                         </Select>
                         {errors.location && (
-                          <p className="text-sm text-red-500">{errors.location.message}</p>
+                          <p className="text-sm text-red-500">
+                            {errors.location.message}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -384,7 +456,9 @@ export default function StockInPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="expiryDate">Hạn sử dụng (tùy chọn)</Label>
+                        <Label htmlFor="expiryDate">
+                          Hạn sử dụng (tùy chọn)
+                        </Label>
                         <Input
                           id="expiryDate"
                           type="date"
@@ -406,7 +480,11 @@ export default function StockInPage() {
 
                     {/* Submit Button */}
                     <div className="flex gap-4 pt-4">
-                      <Button type="submit" disabled={isLoading} className="flex-1">
+                      <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className="flex-1"
+                      >
                         {isLoading ? (
                           <>
                             <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
@@ -419,7 +497,11 @@ export default function StockInPage() {
                           </>
                         )}
                       </Button>
-                      <Button type="button" variant="outline" onClick={() => reset()}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => reset()}
+                      >
                         Làm mới
                       </Button>
                     </div>
@@ -439,10 +521,15 @@ export default function StockInPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {stockInHistory.map((record) => (
-                      <div key={record.id} className="border rounded-lg p-4 space-y-2">
+                    {stockInHistory.map(record => (
+                      <div
+                        key={record.id}
+                        className="border rounded-lg p-4 space-y-2"
+                      >
                         <div className="flex items-center justify-between">
-                          <h4 className="font-medium text-sm">{record.productName}</h4>
+                          <h4 className="font-medium text-sm">
+                            {record.productName}
+                          </h4>
                           <Badge variant="outline" className="text-xs">
                             {record.quantity} sản phẩm
                           </Badge>

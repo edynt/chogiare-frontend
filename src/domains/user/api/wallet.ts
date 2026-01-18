@@ -70,35 +70,47 @@ export interface DepositPackage {
 
 export const walletApi = {
   getBalance: async (): Promise<WalletBalance> => {
-    const response = await apiClient.get<ApiResponse<WalletBalance>>('/payments/balance')
+    const response =
+      await apiClient.get<ApiResponse<WalletBalance>>('/payments/balance')
     return response.data.data
   },
 
-  getTransactions: async (params?: QueryTransactionParams): Promise<TransactionListResponse> => {
-    const response = await apiClient.get<ApiResponse<TransactionListResponse>>('/payments/transactions', {
-      params: {
-        page: params?.page || 1,
-        pageSize: params?.pageSize || 10,
-        type: params?.type,
-        status: params?.status,
-      },
-    })
+  getTransactions: async (
+    params?: QueryTransactionParams
+  ): Promise<TransactionListResponse> => {
+    const response = await apiClient.get<ApiResponse<TransactionListResponse>>(
+      '/payments/transactions',
+      {
+        params: {
+          page: params?.page || 1,
+          pageSize: params?.pageSize || 10,
+          type: params?.type,
+          status: params?.status,
+        },
+      }
+    )
     return response.data.data
   },
 
   getTransaction: async (id: number): Promise<Transaction> => {
-    const response = await apiClient.get<ApiResponse<Transaction>>(`/payments/transactions/${id}`)
+    const response = await apiClient.get<ApiResponse<Transaction>>(
+      `/payments/transactions/${id}`
+    )
     return response.data.data
   },
 
   deposit: async (data: DepositRequest): Promise<DepositResponse> => {
-    const response = await apiClient.post<ApiResponse<DepositResponse>>('/payments/deposit', data)
+    const response = await apiClient.post<ApiResponse<DepositResponse>>(
+      '/payments/deposit',
+      data
+    )
     return response.data.data
   },
 
   getDepositPackages: async (): Promise<DepositPackage[]> => {
-    const response = await apiClient.get<ApiResponse<DepositPackage[]>>('/payments/deposit-packages')
+    const response = await apiClient.get<ApiResponse<DepositPackage[]>>(
+      '/payments/deposit-packages'
+    )
     return response.data.data
   },
 }
-

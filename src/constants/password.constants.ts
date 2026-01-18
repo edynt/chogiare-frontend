@@ -27,4 +27,3 @@ export const PASSWORD_REQUIREMENTS = [
     pattern: PASSWORD_PATTERNS.SPECIAL_CHAR,
   },
 ] as const
-

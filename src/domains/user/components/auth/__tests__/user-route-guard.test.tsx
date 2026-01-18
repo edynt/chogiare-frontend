@@ -10,7 +10,7 @@ vi.mock('@/stores/authStore', () => {
 })
 
 // Mock react-router
-vi.mock('react-router-dom', async (importOriginal) => {
+vi.mock('react-router-dom', async importOriginal => {
   const actual = await importOriginal<typeof import('react-router-dom')>()
   return {
     ...actual,

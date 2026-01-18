@@ -7,52 +7,83 @@ export const loginSchema = z.object({
   password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
 })
 
-export const registerSchema = z.object({
-  name: z.string().min(2, 'Tên phải có ít nhất 2 ký tự'),
-  email: z.string().email('Email không hợp lệ'),
-  password: z
-    .string()
-    .min(PASSWORD_PATTERNS.MIN_LENGTH, 'Mật khẩu phải có ít nhất 6 ký tự')
-    .regex(PASSWORD_PATTERNS.LOWERCASE, 'Mật khẩu phải có ít nhất 1 chữ thường')
-    .regex(PASSWORD_PATTERNS.UPPERCASE, 'Mật khẩu phải có ít nhất 1 chữ hoa')
-    .regex(PASSWORD_PATTERNS.SPECIAL_CHAR, 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Mật khẩu xác nhận không khớp',
-  path: ['confirmPassword'],
-})
+export const registerSchema = z
+  .object({
+    name: z.string().min(2, 'Tên phải có ít nhất 2 ký tự'),
+    email: z.string().email('Email không hợp lệ'),
+    password: z
+      .string()
+      .min(PASSWORD_PATTERNS.MIN_LENGTH, 'Mật khẩu phải có ít nhất 6 ký tự')
+      .regex(
+        PASSWORD_PATTERNS.LOWERCASE,
+        'Mật khẩu phải có ít nhất 1 chữ thường'
+      )
+      .regex(PASSWORD_PATTERNS.UPPERCASE, 'Mật khẩu phải có ít nhất 1 chữ hoa')
+      .regex(
+        PASSWORD_PATTERNS.SPECIAL_CHAR,
+        'Mật khẩu phải có ít nhất 1 ký tự đặc biệt'
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: 'Mật khẩu xác nhận không khớp',
+    path: ['confirmPassword'],
+  })
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email('Email không hợp lệ'),
 })
 
-export const resetPasswordSchema = z.object({
-  password: z
-    .string()
-    .min(PASSWORD_PATTERNS.MIN_LENGTH, 'Mật khẩu phải có ít nhất 6 ký tự')
-    .regex(PASSWORD_PATTERNS.LOWERCASE, 'Mật khẩu phải có ít nhất 1 chữ thường')
-    .regex(PASSWORD_PATTERNS.UPPERCASE, 'Mật khẩu phải có ít nhất 1 chữ hoa')
-    .regex(PASSWORD_PATTERNS.SPECIAL_CHAR, 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Mật khẩu xác nhận không khớp',
-  path: ['confirmPassword'],
-})
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(PASSWORD_PATTERNS.MIN_LENGTH, 'Mật khẩu phải có ít nhất 6 ký tự')
+      .regex(
+        PASSWORD_PATTERNS.LOWERCASE,
+        'Mật khẩu phải có ít nhất 1 chữ thường'
+      )
+      .regex(PASSWORD_PATTERNS.UPPERCASE, 'Mật khẩu phải có ít nhất 1 chữ hoa')
+      .regex(
+        PASSWORD_PATTERNS.SPECIAL_CHAR,
+        'Mật khẩu phải có ít nhất 1 ký tự đặc biệt'
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: 'Mật khẩu xác nhận không khớp',
+    path: ['confirmPassword'],
+  })
 
 // Product schemas
 export const productSchema = z.object({
   title: z.string().min(1, 'Tên sản phẩm là bắt buộc'),
   description: z.string().optional(),
-  price: z.union([
-    z.string().min(1, 'Giá là bắt buộc').regex(/^\d+(\.\d+)?$/, 'Giá phải là số hợp lệ').transform((val) => parseFloat(val)),
-    z.number()
-  ]).refine((val) => val >= 0, 'Giá phải lớn hơn hoặc bằng 0'),
-  originalPrice: z.union([
-    z.string().regex(/^\d+(\.\d+)?$/, 'Giá gốc phải là số hợp lệ').transform((val) => parseFloat(val)),
-    z.literal('').transform(() => undefined),
-    z.number(),
-    z.undefined()
-  ]).optional().refine((val) => val === undefined || val >= 0, 'Giá gốc phải lớn hơn hoặc bằng 0'),
+  price: z
+    .union([
+      z
+        .string()
+        .min(1, 'Giá là bắt buộc')
+        .regex(/^\d+(\.\d+)?$/, 'Giá phải là số hợp lệ')
+        .transform(val => parseFloat(val)),
+      z.number(),
+    ])
+    .refine(val => val >= 0, 'Giá phải lớn hơn hoặc bằng 0'),
+  originalPrice: z
+    .union([
+      z
+        .string()
+        .regex(/^\d+(\.\d+)?$/, 'Giá gốc phải là số hợp lệ')
+        .transform(val => parseFloat(val)),
+      z.literal('').transform(() => undefined),
+      z.number(),
+      z.undefined(),
+    ])
+    .optional()
+    .refine(
+      val => val === undefined || val >= 0,
+      'Giá gốc phải lớn hơn hoặc bằng 0'
+    ),
   categoryId: z.number().min(1, 'Danh mục là bắt buộc'),
   condition: z.enum(['new', 'like_new', 'good', 'fair', 'poor']),
   location: z.string().optional(),
@@ -62,7 +93,9 @@ export const productSchema = z.object({
 })
 
 export const productUpdateSchema = productSchema.partial().extend({
-  status: z.enum(['draft', 'active', 'sold', 'archived', 'suspended']).optional(),
+  status: z
+    .enum(['draft', 'active', 'sold', 'archived', 'suspended'])
+    .optional(),
 })
 
 // Search filters schema
@@ -98,15 +131,25 @@ export const addToCartSchema = z.object({
 
 // Order schemas
 export const orderSchema = z.object({
-  storeId: z.union([z.string(), z.number()]).transform((val) => typeof val === 'string' ? parseInt(val, 10) : val),
+  storeId: z
+    .union([z.string(), z.number()])
+    .transform(val => (typeof val === 'string' ? parseInt(val, 10) : val)),
   paymentMethod: z.string().optional(),
   deliveryAddressId: z.number().optional(),
   billingAddressId: z.number().optional(),
   notes: z.string().optional(),
-  items: z.array(z.object({
-    productId: z.union([z.string(), z.number()]).transform((val) => typeof val === 'string' ? parseInt(val, 10) : val),
-    quantity: z.number().min(1),
-  })).min(1, 'Phải có ít nhất 1 sản phẩm'),
+  items: z
+    .array(
+      z.object({
+        productId: z
+          .union([z.string(), z.number()])
+          .transform(val =>
+            typeof val === 'string' ? parseInt(val, 10) : val
+          ),
+        quantity: z.number().min(1),
+      })
+    )
+    .min(1, 'Phải có ít nhất 1 sản phẩm'),
 })
 
 // Store schemas

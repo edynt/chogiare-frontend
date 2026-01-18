@@ -36,7 +36,9 @@ export const useDeposit = () => {
     mutationFn: (data: DepositRequest) => walletApi.deposit(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.wallet.balance })
-      queryClient.invalidateQueries({ queryKey: queryKeys.wallet.transactions() })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.wallet.transactions(),
+      })
     },
   })
 }
@@ -48,5 +50,3 @@ export const useDepositPackages = () => {
     staleTime: 5 * 60 * 1000, // Cache 5 minutes
   })
 }
-
-

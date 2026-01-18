@@ -1,8 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { chatApi } from '@user/api/chat'
-import type { UpdateConversationRequest, CreateChatMessageRequest } from '@user/api/chat'
+import type {
+  UpdateConversationRequest,
+  CreateChatMessageRequest,
+} from '@user/api/chat'
 
-export const useConversations = (filters?: { page?: number; pageSize?: number }) => {
+export const useConversations = (filters?: {
+  page?: number
+  pageSize?: number
+}) => {
   return useQuery({
     queryKey: ['chat', 'conversations', filters],
     queryFn: async () => {
@@ -31,7 +37,10 @@ export const useConversation = (id: string) => {
   })
 }
 
-export const useConversationMessages = (conversationId: string, filters?: { page?: number; pageSize?: number }) => {
+export const useConversationMessages = (
+  conversationId: string,
+  filters?: { page?: number; pageSize?: number }
+) => {
   return useQuery({
     queryKey: ['chat', 'messages', conversationId, filters],
     queryFn: () => chatApi.getConversationMessages(conversationId, filters),
@@ -56,8 +65,13 @@ export const useUpdateConversation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateConversationRequest }) =>
-      chatApi.updateConversation(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string
+      data: UpdateConversationRequest
+    }) => chatApi.updateConversation(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] })
       queryClient.invalidateQueries({ queryKey: ['chat', 'conversations', id] })
@@ -80,11 +94,18 @@ export const useAddParticipant = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ conversationId, userId }: { conversationId: string; userId: string }) =>
-      chatApi.addParticipant(conversationId, userId),
+    mutationFn: ({
+      conversationId,
+      userId,
+    }: {
+      conversationId: string
+      userId: string
+    }) => chatApi.addParticipant(conversationId, userId),
     onSuccess: (_, { conversationId }) => {
       queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] })
-      queryClient.invalidateQueries({ queryKey: ['chat', 'conversations', conversationId] })
+      queryClient.invalidateQueries({
+        queryKey: ['chat', 'conversations', conversationId],
+      })
     },
   })
 }
@@ -93,11 +114,18 @@ export const useRemoveParticipant = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ conversationId, userId }: { conversationId: string; userId: string }) =>
-      chatApi.removeParticipant(conversationId, userId),
+    mutationFn: ({
+      conversationId,
+      userId,
+    }: {
+      conversationId: string
+      userId: string
+    }) => chatApi.removeParticipant(conversationId, userId),
     onSuccess: (_, { conversationId }) => {
       queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] })
-      queryClient.invalidateQueries({ queryKey: ['chat', 'conversations', conversationId] })
+      queryClient.invalidateQueries({
+        queryKey: ['chat', 'conversations', conversationId],
+      })
     },
   })
 }
@@ -106,10 +134,17 @@ export const useSendMessage = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ conversationId, data }: { conversationId: string; data: CreateChatMessageRequest }) =>
-      chatApi.sendMessage(conversationId, data),
+    mutationFn: ({
+      conversationId,
+      data,
+    }: {
+      conversationId: string
+      data: CreateChatMessageRequest
+    }) => chatApi.sendMessage(conversationId, data),
     onSuccess: (_, { conversationId }) => {
-      queryClient.invalidateQueries({ queryKey: ['chat', 'messages', conversationId] })
+      queryClient.invalidateQueries({
+        queryKey: ['chat', 'messages', conversationId],
+      })
       queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] })
     },
   })
@@ -119,10 +154,17 @@ export const useMarkMessageAsRead = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ conversationId, messageId }: { conversationId: string; messageId: string }) =>
-      chatApi.markMessageAsRead(conversationId, messageId),
+    mutationFn: ({
+      conversationId,
+      messageId,
+    }: {
+      conversationId: string
+      messageId: string
+    }) => chatApi.markMessageAsRead(conversationId, messageId),
     onSuccess: (_, { conversationId }) => {
-      queryClient.invalidateQueries({ queryKey: ['chat', 'messages', conversationId] })
+      queryClient.invalidateQueries({
+        queryKey: ['chat', 'messages', conversationId],
+      })
       queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] })
     },
   })
@@ -132,10 +174,17 @@ export const useDeleteMessage = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ conversationId, messageId }: { conversationId: string; messageId: string }) =>
-      chatApi.deleteMessage(conversationId, messageId),
+    mutationFn: ({
+      conversationId,
+      messageId,
+    }: {
+      conversationId: string
+      messageId: string
+    }) => chatApi.deleteMessage(conversationId, messageId),
     onSuccess: (_, { conversationId }) => {
-      queryClient.invalidateQueries({ queryKey: ['chat', 'messages', conversationId] })
+      queryClient.invalidateQueries({
+        queryKey: ['chat', 'messages', conversationId],
+      })
     },
   })
 }

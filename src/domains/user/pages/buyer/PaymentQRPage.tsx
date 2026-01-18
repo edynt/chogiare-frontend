@@ -2,16 +2,21 @@ import React, { useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { APP_NAME } from '@/constants/app.constants'
-import { 
+import {
   CreditCard,
   Copy,
   CheckCircle,
   Info,
   ArrowLeft,
-  QrCode
+  QrCode,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -19,14 +24,14 @@ export default function PaymentQRPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [copied, setCopied] = useState(false)
-  
+
   const amount = parseFloat(searchParams.get('amount') || '0')
   const transactionId = searchParams.get('transactionId') || `TXN${Date.now()}`
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -34,7 +39,7 @@ export default function PaymentQRPage() {
     bankName: 'Vietcombank',
     accountNumber: '1234567890',
     accountHolder: 'CONG TY TNHH CHO GIA RE',
-    branch: 'Chi nhánh Hà Nội'
+    branch: 'Chi nhánh Hà Nội',
   }
 
   const copyToClipboard = (text: string, label: string) => {
@@ -55,11 +60,7 @@ export default function PaymentQRPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto space-y-6">
           {/* Back Button */}
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="mb-4"
-          >
+          <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Quay lại
           </Button>
@@ -67,7 +68,9 @@ export default function PaymentQRPage() {
           {/* Amount Card */}
           <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
             <CardContent className="p-6 text-center">
-              <p className="text-sm text-muted-foreground mb-2">Số tiền cần thanh toán</p>
+              <p className="text-sm text-muted-foreground mb-2">
+                Số tiền cần thanh toán
+              </p>
               <p className="text-4xl font-bold text-primary">
                 {formatPrice(amount)}
               </p>
@@ -117,16 +120,20 @@ export default function PaymentQRPage() {
                     <p className="font-medium">{bankInfo.bankName}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div className="flex-1">
-                    <p className="text-sm text-muted-foreground">Số tài khoản</p>
+                    <p className="text-sm text-muted-foreground">
+                      Số tài khoản
+                    </p>
                     <p className="font-medium">{bankInfo.accountNumber}</p>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => copyToClipboard(bankInfo.accountNumber, 'số tài khoản')}
+                    onClick={() =>
+                      copyToClipboard(bankInfo.accountNumber, 'số tài khoản')
+                    }
                   >
                     {copied ? (
                       <CheckCircle className="h-4 w-4 text-green-600" />
@@ -138,20 +145,26 @@ export default function PaymentQRPage() {
 
                 <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div>
-                    <p className="text-sm text-muted-foreground">Chủ tài khoản</p>
+                    <p className="text-sm text-muted-foreground">
+                      Chủ tài khoản
+                    </p>
                     <p className="font-medium">{bankInfo.accountHolder}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div className="flex-1">
-                    <p className="text-sm text-muted-foreground">Nội dung chuyển khoản</p>
+                    <p className="text-sm text-muted-foreground">
+                      Nội dung chuyển khoản
+                    </p>
                     <p className="font-medium font-mono">{transactionId}</p>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => copyToClipboard(transactionId, 'nội dung chuyển khoản')}
+                    onClick={() =>
+                      copyToClipboard(transactionId, 'nội dung chuyển khoản')
+                    }
                   >
                     {copied ? (
                       <CheckCircle className="h-4 w-4 text-green-600" />
@@ -181,12 +194,22 @@ export default function PaymentQRPage() {
               <div className="flex items-start gap-3">
                 <Info className="h-5 w-5 text-blue-600 mt-0.5" />
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-blue-900">Hướng dẫn thanh toán</h3>
+                  <h3 className="font-semibold text-blue-900">
+                    Hướng dẫn thanh toán
+                  </h3>
                   <ol className="space-y-2 text-sm text-blue-800 list-decimal list-inside">
                     <li>Mở ứng dụng ngân hàng trên điện thoại</li>
                     <li>Quét mã QR hoặc chuyển khoản theo thông tin trên</li>
-                    <li>Nhập đúng nội dung chuyển khoản: <span className="font-mono font-semibold">{transactionId}</span></li>
-                    <li>Sau khi chuyển khoản thành công, tiền sẽ được cộng vào tài khoản trong vòng 5-10 phút</li>
+                    <li>
+                      Nhập đúng nội dung chuyển khoản:{' '}
+                      <span className="font-mono font-semibold">
+                        {transactionId}
+                      </span>
+                    </li>
+                    <li>
+                      Sau khi chuyển khoản thành công, tiền sẽ được cộng vào tài
+                      khoản trong vòng 5-10 phút
+                    </li>
                   </ol>
                 </div>
               </div>
@@ -202,10 +225,7 @@ export default function PaymentQRPage() {
             >
               Quay lại
             </Button>
-            <Button
-              onClick={() => navigate('/top-up')}
-              className="flex-1"
-            >
+            <Button onClick={() => navigate('/top-up')} className="flex-1">
               Đã thanh toán
             </Button>
           </div>
@@ -215,4 +235,3 @@ export default function PaymentQRPage() {
     </div>
   )
 }
-

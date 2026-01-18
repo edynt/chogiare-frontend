@@ -2,7 +2,12 @@ import React, { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { PasswordInput } from '@shared/components/ui/password-input'
@@ -32,7 +37,8 @@ export function UserLoginForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   // Get the page user was trying to access before login
-  const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/'
+  const from =
+    (location.state as { from?: { pathname?: string } })?.from?.pathname || '/'
 
   const { isLoading, execute } = useLoading({
     delay: 1000,
@@ -88,7 +94,9 @@ export function UserLoginForm() {
               placeholder="Nhập email của bạn"
             />
             {errors.email && (
-              <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -104,16 +112,14 @@ export function UserLoginForm() {
               placeholder="Nhập mật khẩu"
             />
             {errors.password && (
-              <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -145,7 +151,10 @@ export function UserLoginForm() {
           {/* Register Link */}
           <div className="text-center text-sm">
             Chưa có tài khoản?{' '}
-            <Link to="/auth/register" className="text-primary hover:underline font-medium">
+            <Link
+              to="/auth/register"
+              className="text-primary hover:underline font-medium"
+            >
               Đăng ký ngay
             </Link>
           </div>

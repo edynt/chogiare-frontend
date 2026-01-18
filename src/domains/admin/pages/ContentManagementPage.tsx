@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Textarea } from '@shared/components/ui/textarea'
@@ -41,7 +46,7 @@ import {
   Edit3,
   Link,
   Loader2,
-  Send
+  Send,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -94,39 +99,57 @@ export default function ContentManagementPage() {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'policy': return 'bg-red-100 text-red-800'
-      case 'guide': return 'bg-blue-100 text-blue-800'
-      case 'faq': return 'bg-green-100 text-green-800'
-      case 'blog': return 'bg-purple-100 text-purple-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'policy':
+        return 'bg-red-100 text-red-800'
+      case 'guide':
+        return 'bg-blue-100 text-blue-800'
+      case 'faq':
+        return 'bg-green-100 text-green-800'
+      case 'blog':
+        return 'bg-purple-100 text-purple-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'policy': return 'Chính sách'
-      case 'guide': return 'Hướng dẫn'
-      case 'faq': return 'FAQ'
-      case 'blog': return 'Blog'
-      default: return type
+      case 'policy':
+        return 'Chính sách'
+      case 'guide':
+        return 'Hướng dẫn'
+      case 'faq':
+        return 'FAQ'
+      case 'blog':
+        return 'Blog'
+      default:
+        return type
     }
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'published': return 'bg-green-100 text-green-800'
-      case 'draft': return 'bg-yellow-100 text-yellow-800'
-      case 'archived': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'published':
+        return 'bg-green-100 text-green-800'
+      case 'draft':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'archived':
+        return 'bg-gray-100 text-gray-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'published': return 'Đã xuất bản'
-      case 'draft': return 'Bản nháp'
-      case 'archived': return 'Đã lưu trữ'
-      default: return status
+      case 'published':
+        return 'Đã xuất bản'
+      case 'draft':
+        return 'Bản nháp'
+      case 'archived':
+        return 'Đã lưu trữ'
+      default:
+        return status
     }
   }
 
@@ -136,7 +159,7 @@ export default function ContentManagementPage() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -170,7 +193,10 @@ export default function ContentManagementPage() {
   }
 
   const handleCreate = () => {
-    const tags = tagsText.split(',').map(t => t.trim()).filter(t => t)
+    const tags = tagsText
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t)
 
     createContentMutation.mutate(
       { ...formData, tags },
@@ -189,7 +215,10 @@ export default function ContentManagementPage() {
   const handleUpdate = () => {
     if (!editingContent) return
 
-    const tags = tagsText.split(',').map(t => t.trim()).filter(t => t)
+    const tags = tagsText
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t)
 
     updateContentMutation.mutate(
       { id: editingContent.id, data: { ...formData, tags } },
@@ -236,7 +265,9 @@ export default function ContentManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Quản lý nội dung</h1>
-          <p className="text-gray-600 mt-1">Quản lý các trang chính sách, hướng dẫn và blog</p>
+          <p className="text-gray-600 mt-1">
+            Quản lý các trang chính sách, hướng dẫn và blog
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline">
@@ -260,7 +291,9 @@ export default function ContentManagementPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Tổng nội dung</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.total ?? 0}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats?.total ?? 0}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -273,7 +306,9 @@ export default function ContentManagementPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Đã xuất bản</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.published ?? 0}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats?.published ?? 0}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -286,7 +321,9 @@ export default function ContentManagementPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Bản nháp</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.draft ?? 0}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats?.draft ?? 0}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -299,7 +336,9 @@ export default function ContentManagementPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Tổng lượt xem</p>
-                <p className="text-2xl font-bold text-gray-900">{(stats?.totalViews ?? 0).toLocaleString()}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {(stats?.totalViews ?? 0).toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -316,7 +355,7 @@ export default function ContentManagementPage() {
                 <Input
                   placeholder="Tìm kiếm theo tiêu đề, nội dung hoặc tag..."
                   value={searchQuery}
-                  onChange={(e) => {
+                  onChange={e => {
                     setSearchQuery(e.target.value)
                     setPage(1)
                   }}
@@ -325,7 +364,13 @@ export default function ContentManagementPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <Select value={typeFilter} onValueChange={(value) => { setTypeFilter(value); setPage(1) }}>
+              <Select
+                value={typeFilter}
+                onValueChange={value => {
+                  setTypeFilter(value)
+                  setPage(1)
+                }}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Loại nội dung" />
                 </SelectTrigger>
@@ -337,7 +382,13 @@ export default function ContentManagementPage() {
                   <SelectItem value="blog">Blog</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={statusFilter} onValueChange={(value) => { setStatusFilter(value); setPage(1) }}>
+              <Select
+                value={statusFilter}
+                onValueChange={value => {
+                  setStatusFilter(value)
+                  setPage(1)
+                }}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Trạng thái" />
                 </SelectTrigger>
@@ -386,13 +437,17 @@ export default function ContentManagementPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {contentItems.map((item) => (
+                  {contentItems.map(item => (
                     <TableRow key={item.id} className="hover:bg-gray-50">
                       <TableCell>
                         <div className="flex items-start gap-3">
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900 line-clamp-1">{item.title}</p>
-                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">{item.content}</p>
+                            <p className="font-medium text-gray-900 line-clamp-1">
+                              {item.title}
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                              {item.content}
+                            </p>
                             <div className="flex items-center gap-2 mt-2">
                               <div className="flex items-center gap-1">
                                 {item.isPublic ? (
@@ -406,12 +461,18 @@ export default function ContentManagementPage() {
                               </div>
                               <div className="flex items-center gap-1">
                                 <Link className="h-3 w-3 text-gray-400" />
-                                <span className="text-xs text-gray-500">/{item.slug}</span>
+                                <span className="text-xs text-gray-500">
+                                  /{item.slug}
+                                </span>
                               </div>
                             </div>
                             <div className="flex items-center gap-1 mt-2">
                               {item.tags.map((tag, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
+                                <Badge
+                                  key={index}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
                                   {tag}
                                 </Badge>
                               ))}
@@ -438,13 +499,19 @@ export default function ContentManagementPage() {
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <EyeIcon className="h-4 w-4 text-gray-400" />
-                          <span className="text-sm">{item.views.toLocaleString()}</span>
+                          <span className="text-sm">
+                            {item.views.toLocaleString()}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <p className="text-gray-900">{formatDate(item.updatedAt)}</p>
-                          <p className="text-gray-500">Tạo: {formatDate(item.createdAt)}</p>
+                          <p className="text-gray-900">
+                            {formatDate(item.updatedAt)}
+                          </p>
+                          <p className="text-gray-500">
+                            Tạo: {formatDate(item.createdAt)}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -536,7 +603,9 @@ export default function ContentManagementPage() {
               <label className="text-sm font-medium">Tiêu đề</label>
               <Input
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
                 placeholder="Nhập tiêu đề..."
               />
             </div>
@@ -583,7 +652,9 @@ export default function ContentManagementPage() {
               <label className="text-sm font-medium">Slug (URL)</label>
               <Input
                 value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, slug: e.target.value })
+                }
                 placeholder="vd: privacy-policy"
               />
             </div>
@@ -591,16 +662,20 @@ export default function ContentManagementPage() {
               <label className="text-sm font-medium">Nội dung</label>
               <Textarea
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, content: e.target.value })
+                }
                 placeholder="Nhập nội dung..."
                 rows={8}
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Tags (phân cách bằng dấu phẩy)</label>
+              <label className="text-sm font-medium">
+                Tags (phân cách bằng dấu phẩy)
+              </label>
               <Input
                 value={tagsText}
-                onChange={(e) => setTagsText(e.target.value)}
+                onChange={e => setTagsText(e.target.value)}
                 placeholder="vd: policy, legal, terms"
               />
             </div>
@@ -609,17 +684,27 @@ export default function ContentManagementPage() {
                 type="checkbox"
                 id="isPublic"
                 checked={formData.isPublic}
-                onChange={(e) => setFormData({ ...formData, isPublic: e.target.checked })}
+                onChange={e =>
+                  setFormData({ ...formData, isPublic: e.target.checked })
+                }
                 className="rounded"
               />
-              <label htmlFor="isPublic" className="text-sm font-medium">Công khai</label>
+              <label htmlFor="isPublic" className="text-sm font-medium">
+                Công khai
+              </label>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsCreateDialogOpen(false)}
+            >
               Hủy
             </Button>
-            <Button onClick={handleCreate} disabled={createContentMutation.isPending}>
+            <Button
+              onClick={handleCreate}
+              disabled={createContentMutation.isPending}
+            >
               {createContentMutation.isPending ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : null}
@@ -640,7 +725,9 @@ export default function ContentManagementPage() {
               <label className="text-sm font-medium">Tiêu đề</label>
               <Input
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -686,22 +773,28 @@ export default function ContentManagementPage() {
               <label className="text-sm font-medium">Slug (URL)</label>
               <Input
                 value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, slug: e.target.value })
+                }
               />
             </div>
             <div>
               <label className="text-sm font-medium">Nội dung</label>
               <Textarea
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, content: e.target.value })
+                }
                 rows={8}
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Tags (phân cách bằng dấu phẩy)</label>
+              <label className="text-sm font-medium">
+                Tags (phân cách bằng dấu phẩy)
+              </label>
               <Input
                 value={tagsText}
-                onChange={(e) => setTagsText(e.target.value)}
+                onChange={e => setTagsText(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-2">
@@ -709,17 +802,27 @@ export default function ContentManagementPage() {
                 type="checkbox"
                 id="isPublicEdit"
                 checked={formData.isPublic}
-                onChange={(e) => setFormData({ ...formData, isPublic: e.target.checked })}
+                onChange={e =>
+                  setFormData({ ...formData, isPublic: e.target.checked })
+                }
                 className="rounded"
               />
-              <label htmlFor="isPublicEdit" className="text-sm font-medium">Công khai</label>
+              <label htmlFor="isPublicEdit" className="text-sm font-medium">
+                Công khai
+              </label>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDialogOpen(false)}
+            >
               Hủy
             </Button>
-            <Button onClick={handleUpdate} disabled={updateContentMutation.isPending}>
+            <Button
+              onClick={handleUpdate}
+              disabled={updateContentMutation.isPending}
+            >
               {updateContentMutation.isPending ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : null}

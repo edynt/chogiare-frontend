@@ -40,16 +40,16 @@ export const useCartStore = create<CartStore>()(
       addItem: (product, quantity) => {
         const { items } = get()
         const existingItem = items.find(item => item.productId === product.id)
-        
+
         if (existingItem) {
-          set((state) => ({
+          set(state => ({
             items: state.items.map(item =>
               item.productId === product.id
                 ? { ...item, quantity: item.quantity + quantity }
                 : item
             ),
             totalItems: state.totalItems + quantity,
-            totalValue: state.totalValue + (product.price * quantity),
+            totalValue: state.totalValue + product.price * quantity,
             isOpen: true, // Auto-open cart when adding item
           }))
         } else {
@@ -71,11 +71,11 @@ export const useCartStore = create<CartStore>()(
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           }
-          
-          set((state) => ({
+
+          set(state => ({
             items: [...state.items, newItem],
             totalItems: state.totalItems + quantity,
-            totalValue: state.totalValue + (product.price * quantity),
+            totalValue: state.totalValue + product.price * quantity,
             isOpen: true, // Auto-open cart when adding item
           }))
         }
@@ -87,7 +87,7 @@ export const useCartStore = create<CartStore>()(
           return
         }
 
-        set((state) => {
+        set(state => {
           const item = state.items.find(item => item.productId === productId)
           if (!item) return state
 
@@ -106,35 +106,36 @@ export const useCartStore = create<CartStore>()(
         })
       },
 
-      removeItem: (productId) => {
-        set((state) => {
+      removeItem: productId => {
+        set(state => {
           const item = state.items.find(item => item.productId === productId)
           if (!item) return state
 
           return {
             items: state.items.filter(item => item.productId !== productId),
             totalItems: state.totalItems - item.quantity,
-            totalValue: state.totalValue - (item.productPrice * item.quantity),
+            totalValue: state.totalValue - item.productPrice * item.quantity,
           }
         })
       },
 
-      clearCart: () => set({
-        items: [],
-        totalItems: 0,
-        totalValue: 0,
-      }),
+      clearCart: () =>
+        set({
+          items: [],
+          totalItems: 0,
+          totalValue: 0,
+        }),
 
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
 
-      setLoading: (isLoading) => set({ isLoading }),
-      setError: (error) => set({ error }),
+      setLoading: isLoading => set({ isLoading }),
+      setError: error => set({ error }),
       clearError: () => set({ error: null }),
     }),
     {
       name: 'cart-storage',
-      partialize: (state) => ({
+      partialize: state => ({
         items: state.items,
         totalItems: state.totalItems,
         totalValue: state.totalValue,

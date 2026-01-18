@@ -9,25 +9,23 @@ interface LazySectionProps {
   className?: string
 }
 
-export function LazySection({ 
-  children, 
+export function LazySection({
+  children,
   fallback = <div className="h-32 animate-pulse bg-muted/20 rounded-lg" />,
   threshold = 0.1,
   rootMargin = '50px',
-  className = ''
+  className = '',
 }: LazySectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver({
     threshold,
     rootMargin,
-    freezeOnceVisible: true
+    freezeOnceVisible: true,
   })
 
   return (
     <div ref={ref} className={className}>
       {isIntersecting ? (
-        <Suspense fallback={fallback}>
-          {children}
-        </Suspense>
+        <Suspense fallback={fallback}>{children}</Suspense>
       ) : (
         fallback
       )}

@@ -1,16 +1,21 @@
 import React, { useState, useMemo } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@shared/components/ui/select'
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -18,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from '@shared/components/ui/table'
-import { 
+import {
   Search,
   Filter,
   Eye,
@@ -33,13 +38,13 @@ import {
   Clock,
   XCircle,
   Loader2,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react'
-import { 
-  useAdminOrders, 
+import {
+  useAdminOrders,
   useAdminOrderStats,
   useUpdateOrderStatus,
-  useUpdateOrderPaymentStatus
+  useUpdateOrderPaymentStatus,
 } from '@/hooks/useAdmin'
 import { PLACEHOLDER_IMAGE, getApiErrorMessage } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -53,16 +58,24 @@ export default function OrderManagementPage() {
   const [page, setPage] = useState(1)
   const pageSize = 10
 
-  const queryParams = useMemo(() => ({
-    page,
-    pageSize,
-    search: searchQuery || undefined,
-    status: statusFilter !== 'all' ? statusFilter : undefined,
-    paymentStatus: paymentFilter !== 'all' ? paymentFilter : undefined,
-    dateFilter: dateFilter !== 'all' ? dateFilter : undefined,
-  }), [page, pageSize, searchQuery, statusFilter, paymentFilter, dateFilter])
+  const queryParams = useMemo(
+    () => ({
+      page,
+      pageSize,
+      search: searchQuery || undefined,
+      status: statusFilter !== 'all' ? statusFilter : undefined,
+      paymentStatus: paymentFilter !== 'all' ? paymentFilter : undefined,
+      dateFilter: dateFilter !== 'all' ? dateFilter : undefined,
+    }),
+    [page, pageSize, searchQuery, statusFilter, paymentFilter, dateFilter]
+  )
 
-  const { data: ordersData, isLoading: ordersLoading, error: ordersError, refetch } = useAdminOrders(queryParams)
+  const {
+    data: ordersData,
+    isLoading: ordersLoading,
+    error: ordersError,
+    refetch,
+  } = useAdminOrders(queryParams)
   const { data: orderStats, isLoading: statsLoading } = useAdminOrderStats()
   const updateOrderStatusMutation = useUpdateOrderStatus()
   const updateOrderPaymentStatusMutation = useUpdateOrderPaymentStatus()
@@ -73,59 +86,85 @@ export default function OrderManagementPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800'
-      case 'shipped': return 'bg-blue-100 text-blue-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'cancelled': return 'bg-red-100 text-red-800'
-      case 'processing': return 'bg-purple-100 text-purple-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'completed':
+        return 'bg-green-100 text-green-800'
+      case 'shipped':
+        return 'bg-blue-100 text-blue-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'cancelled':
+        return 'bg-red-100 text-red-800'
+      case 'processing':
+        return 'bg-purple-100 text-purple-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'completed': return 'Hoàn thành'
-      case 'shipped': return 'Đã giao'
-      case 'pending': return 'Chờ xử lý'
-      case 'cancelled': return 'Đã hủy'
-      case 'processing': return 'Đang xử lý'
-      default: return status
+      case 'completed':
+        return 'Hoàn thành'
+      case 'shipped':
+        return 'Đã giao'
+      case 'pending':
+        return 'Chờ xử lý'
+      case 'cancelled':
+        return 'Đã hủy'
+      case 'processing':
+        return 'Đang xử lý'
+      default:
+        return status
     }
   }
 
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
-      case 'paid': return 'bg-green-100 text-green-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'failed': return 'bg-red-100 text-red-800'
-      case 'refunded': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'paid':
+        return 'bg-green-100 text-green-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'failed':
+        return 'bg-red-100 text-red-800'
+      case 'refunded':
+        return 'bg-gray-100 text-gray-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getPaymentStatusLabel = (status: string) => {
     switch (status) {
-      case 'paid': return 'Đã thanh toán'
-      case 'pending': return 'Chờ thanh toán'
-      case 'failed': return 'Thanh toán thất bại'
-      case 'refunded': return 'Đã hoàn tiền'
-      default: return status
+      case 'paid':
+        return 'Đã thanh toán'
+      case 'pending':
+        return 'Chờ thanh toán'
+      case 'failed':
+        return 'Thanh toán thất bại'
+      case 'refunded':
+        return 'Đã hoàn tiền'
+      default:
+        return status
     }
   }
 
   const getPaymentMethodIcon = (method: string) => {
     switch (method) {
-      case 'credit_card': return <CreditCard className="h-4 w-4" />
-      case 'momo': return <DollarSign className="h-4 w-4" />
-      case 'bank_transfer': return <DollarSign className="h-4 w-4" />
-      default: return <DollarSign className="h-4 w-4" />
+      case 'credit_card':
+        return <CreditCard className="h-4 w-4" />
+      case 'momo':
+        return <DollarSign className="h-4 w-4" />
+      case 'bank_transfer':
+        return <DollarSign className="h-4 w-4" />
+      default:
+        return <DollarSign className="h-4 w-4" />
     }
   }
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(price)
   }
 
@@ -135,13 +174,13 @@ export default function OrderManagementPage() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
   const handleSelectOrder = (orderId: string) => {
-    setSelectedOrders(prev => 
-      prev.includes(orderId) 
+    setSelectedOrders(prev =>
+      prev.includes(orderId)
         ? prev.filter(id => id !== orderId)
         : [...prev, orderId]
     )
@@ -149,8 +188,8 @@ export default function OrderManagementPage() {
 
   const handleSelectAll = () => {
     setSelectedOrders(
-      selectedOrders.length === orders.length 
-        ? [] 
+      selectedOrders.length === orders.length
+        ? []
         : orders.map(order => order.id)
     )
   }
@@ -161,13 +200,19 @@ export default function OrderManagementPage() {
     try {
       if (action === 'process') {
         for (const orderId of selectedOrders) {
-          await updateOrderStatusMutation.mutateAsync({ id: orderId, status: 'processing' })
+          await updateOrderStatusMutation.mutateAsync({
+            id: orderId,
+            status: 'processing',
+          })
         }
         toast.success(`Đã xử lý ${selectedOrders.length} đơn hàng`)
         setSelectedOrders([])
       } else if (action === 'cancel') {
         for (const orderId of selectedOrders) {
-          await updateOrderStatusMutation.mutateAsync({ id: orderId, status: 'cancelled' })
+          await updateOrderStatusMutation.mutateAsync({
+            id: orderId,
+            status: 'cancelled',
+          })
         }
         toast.success(`Đã hủy ${selectedOrders.length} đơn hàng`)
         setSelectedOrders([])
@@ -188,12 +233,20 @@ export default function OrderManagementPage() {
     }
   }
 
-  const handleUpdatePaymentStatus = async (orderId: string, paymentStatus: string) => {
+  const handleUpdatePaymentStatus = async (
+    orderId: string,
+    paymentStatus: string
+  ) => {
     try {
-      await updateOrderPaymentStatusMutation.mutateAsync({ id: orderId, paymentStatus })
+      await updateOrderPaymentStatusMutation.mutateAsync({
+        id: orderId,
+        paymentStatus,
+      })
       toast.success('Đã cập nhật trạng thái thanh toán')
     } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Không thể cập nhật trạng thái thanh toán'))
+      toast.error(
+        getApiErrorMessage(error, 'Không thể cập nhật trạng thái thanh toán')
+      )
     }
   }
 
@@ -202,8 +255,12 @@ export default function OrderManagementPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Quản lý đơn hàng & Thanh toán</h1>
-          <p className="text-gray-600 mt-1">Theo dõi và quản lý tất cả đơn hàng và giao dịch trên nền tảng</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Quản lý đơn hàng & Thanh toán
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Theo dõi và quản lý tất cả đơn hàng và giao dịch trên nền tảng
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={() => refetch()}>
@@ -232,7 +289,9 @@ export default function OrderManagementPage() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Tổng đơn hàng</p>
-                  <p className="text-xl font-bold text-gray-900">{orderStats?.totalOrders || 0}</p>
+                  <p className="text-xl font-bold text-gray-900">
+                    {orderStats?.totalOrders || 0}
+                  </p>
                 </div>
               </div>
             )}
@@ -313,7 +372,7 @@ export default function OrderManagementPage() {
                 <Input
                   placeholder="Tìm kiếm theo mã đơn hàng, tên khách hàng hoặc người bán..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -377,24 +436,24 @@ export default function OrderManagementPage() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => handleBulkAction('process')}
                 >
                   <RefreshCw className="h-4 w-4 mr-1" />
                   Xử lý
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => handleBulkAction('export')}
                 >
                   <Download className="h-4 w-4 mr-1" />
                   Xuất
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => handleBulkAction('cancel')}
                 >
@@ -437,24 +496,27 @@ export default function OrderManagementPage() {
                       <TableHead className="w-12">
                         <input
                           type="checkbox"
-                          checked={selectedOrders.length === orders.length && orders.length > 0}
+                          checked={
+                            selectedOrders.length === orders.length &&
+                            orders.length > 0
+                          }
                           onChange={handleSelectAll}
                           className="rounded border-gray-300"
                         />
                       </TableHead>
-                  <TableHead>Đơn hàng</TableHead>
-                  <TableHead>Khách hàng</TableHead>
-                  <TableHead>Người bán</TableHead>
-                  <TableHead>Sản phẩm</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead>Thanh toán</TableHead>
-                  <TableHead>Tổng tiền</TableHead>
-                  <TableHead>Thời gian</TableHead>
-                  <TableHead className="w-12">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
+                      <TableHead>Đơn hàng</TableHead>
+                      <TableHead>Khách hàng</TableHead>
+                      <TableHead>Người bán</TableHead>
+                      <TableHead>Sản phẩm</TableHead>
+                      <TableHead>Trạng thái</TableHead>
+                      <TableHead>Thanh toán</TableHead>
+                      <TableHead>Tổng tiền</TableHead>
+                      <TableHead>Thời gian</TableHead>
+                      <TableHead className="w-12">Thao tác</TableHead>
+                    </TableRow>
+                  </TableHeader>
                   <TableBody>
-                    {orders.map((order) => (
+                    {orders.map(order => (
                       <TableRow key={order.id} className="hover:bg-gray-50">
                         <TableCell>
                           <input
@@ -466,12 +528,16 @@ export default function OrderManagementPage() {
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium text-gray-900">{order.id}</p>
+                            <p className="font-medium text-gray-900">
+                              {order.id}
+                            </p>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium text-gray-900">{order.userName || 'N/A'}</p>
+                            <p className="font-medium text-gray-900">
+                              {order.userName || 'N/A'}
+                            </p>
                             {order.userPhone && (
                               <div className="flex items-center gap-1 text-sm text-gray-500">
                                 <Phone className="h-3 w-3" />
@@ -481,14 +547,18 @@ export default function OrderManagementPage() {
                             {order.userEmail && (
                               <div className="flex items-center gap-1 text-sm text-gray-500">
                                 <Mail className="h-3 w-3" />
-                                <span className="truncate max-w-32">{order.userEmail}</span>
+                                <span className="truncate max-w-32">
+                                  {order.userEmail}
+                                </span>
                               </div>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium text-gray-900">{order.sellerName || order.storeName || 'N/A'}</p>
+                            <p className="font-medium text-gray-900">
+                              {order.sellerName || order.storeName || 'N/A'}
+                            </p>
                             {order.sellerPhone && (
                               <div className="flex items-center gap-1 text-sm text-gray-500">
                                 <Phone className="h-3 w-3" />
@@ -502,10 +572,13 @@ export default function OrderManagementPage() {
                             {order.items && order.items.length > 0 && (
                               <>
                                 <img
-                                  src={order.items[0].productImage || PLACEHOLDER_IMAGE}
+                                  src={
+                                    order.items[0].productImage ||
+                                    PLACEHOLDER_IMAGE
+                                  }
                                   alt={order.items[0].productName}
                                   className="w-12 h-12 rounded-lg object-cover"
-                                  onError={(e) => {
+                                  onError={e => {
                                     e.currentTarget.src = PLACEHOLDER_IMAGE
                                   }}
                                 />
@@ -533,13 +606,19 @@ export default function OrderManagementPage() {
                         </TableCell>
                         <TableCell>
                           <div className="space-y-1">
-                            <Badge className={getPaymentStatusColor(order.paymentStatus)}>
+                            <Badge
+                              className={getPaymentStatusColor(
+                                order.paymentStatus
+                              )}
+                            >
                               {getPaymentStatusLabel(order.paymentStatus)}
                             </Badge>
                             {order.paymentMethod && (
                               <div className="flex items-center gap-1 text-xs text-gray-500">
                                 {getPaymentMethodIcon(order.paymentMethod)}
-                                <span className="capitalize">{order.paymentMethod.replace('_', ' ')}</span>
+                                <span className="capitalize">
+                                  {order.paymentMethod.replace('_', ' ')}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -563,7 +642,9 @@ export default function OrderManagementPage() {
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">
-                            <p className="text-gray-900">{formatDate(order.createdAt)}</p>
+                            <p className="text-gray-900">
+                              {formatDate(order.createdAt)}
+                            </p>
                             {order.completedAt && (
                               <p className="text-gray-500">
                                 Hoàn thành: {formatDate(order.completedAt)}
@@ -573,14 +654,20 @@ export default function OrderManagementPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
-                            <Button variant="ghost" size="icon" title="Xem chi tiết">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              title="Xem chi tiết"
+                            >
                               <Eye className="h-4 w-4" />
                             </Button>
                             {order.status === 'pending' && (
-                              <Button 
-                                variant="ghost" 
+                              <Button
+                                variant="ghost"
                                 size="icon"
-                                onClick={() => handleUpdateStatus(order.id, 'processing')}
+                                onClick={() =>
+                                  handleUpdateStatus(order.id, 'processing')
+                                }
                                 disabled={updateOrderStatusMutation.isPending}
                                 title="Xử lý đơn hàng"
                               >
@@ -588,11 +675,15 @@ export default function OrderManagementPage() {
                               </Button>
                             )}
                             {order.paymentStatus === 'pending' && (
-                              <Button 
-                                variant="ghost" 
+                              <Button
+                                variant="ghost"
                                 size="icon"
-                                onClick={() => handleUpdatePaymentStatus(order.id, 'paid')}
-                                disabled={updateOrderPaymentStatusMutation.isPending}
+                                onClick={() =>
+                                  handleUpdatePaymentStatus(order.id, 'paid')
+                                }
+                                disabled={
+                                  updateOrderPaymentStatusMutation.isPending
+                                }
                                 title="Xác nhận thanh toán"
                               >
                                 <CheckCircle className="h-4 w-4" />

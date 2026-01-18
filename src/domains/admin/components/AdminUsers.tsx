@@ -1,19 +1,28 @@
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Badge } from '@shared/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/components/ui/avatar'
-import { 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  UserCheck, 
-  UserX, 
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@shared/components/ui/avatar'
+import {
+  Search,
+  Filter,
+  MoreVertical,
+  UserCheck,
+  UserX,
   Shield,
   Mail,
   Phone,
-  Calendar
+  Calendar,
 } from 'lucide-react'
 
 export function AdminUsers() {
@@ -29,7 +38,7 @@ export function AdminUsers() {
       status: 'active',
       joinDate: '2024-01-15',
       avatar: 'https://i.pravatar.cc/150?img=1',
-      lastActive: '2 giờ trước'
+      lastActive: '2 giờ trước',
     },
     {
       id: '2',
@@ -40,7 +49,7 @@ export function AdminUsers() {
       status: 'active',
       joinDate: '2024-01-10',
       avatar: 'https://i.pravatar.cc/150?img=2',
-      lastActive: '1 ngày trước'
+      lastActive: '1 ngày trước',
     },
     {
       id: '3',
@@ -51,8 +60,8 @@ export function AdminUsers() {
       status: 'suspended',
       joinDate: '2024-01-05',
       avatar: 'https://i.pravatar.cc/150?img=3',
-      lastActive: '1 tuần trước'
-    }
+      lastActive: '1 tuần trước',
+    },
   ]
 
   const getRoleBadge = (role: string) => {
@@ -87,7 +96,9 @@ export function AdminUsers() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold">Quản lý người dùng</h2>
-          <p className="text-muted-foreground">Quản lý tài khoản người dùng và quyền hạn</p>
+          <p className="text-muted-foreground">
+            Quản lý tài khoản người dùng và quyền hạn
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
@@ -109,7 +120,7 @@ export function AdminUsers() {
             <Input
               placeholder="Tìm kiếm theo tên, email hoặc số điện thoại..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -123,21 +134,24 @@ export function AdminUsers() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {users.map((user) => (
-              <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+            {users.map(user => (
+              <div
+                key={user.id}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={user.avatar} />
                     <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  
+
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
                       <h3 className="font-semibold">{user.name}</h3>
                       {getRoleBadge(user.role)}
                       {getStatusBadge(user.status)}
                     </div>
-                    
+
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <div className="flex items-center space-x-1">
                         <Mail className="h-4 w-4" />
@@ -152,13 +166,13 @@ export function AdminUsers() {
                         <span>Tham gia: {user.joinDate}</span>
                       </div>
                     </div>
-                    
+
                     <p className="text-xs text-muted-foreground mt-1">
                       Hoạt động cuối: {user.lastActive}
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   <Button variant="outline" size="sm">
                     <Shield className="h-4 w-4 mr-1" />

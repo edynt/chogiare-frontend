@@ -2,7 +2,12 @@ import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
 import { Separator } from '@shared/components/ui/separator'
@@ -15,7 +20,7 @@ import {
   DialogTitle,
 } from '@shared/components/ui/dialog'
 import { Textarea } from '@shared/components/ui/textarea'
-import { 
+import {
   ArrowLeft,
   Package,
   Truck,
@@ -29,9 +34,13 @@ import {
   MapPin,
   Phone,
   Calendar,
-  DollarSign
+  DollarSign,
 } from 'lucide-react'
-import { useOrder, useConfirmOrder, useUpdateOrderStatus } from '@/hooks/useOrders'
+import {
+  useOrder,
+  useConfirmOrder,
+  useUpdateOrderStatus,
+} from '@/hooks/useOrders'
 import { ErrorBoundary } from '@shared/components/ui/error-boundary'
 import { toast } from 'sonner'
 import { cn, getApiErrorMessage } from '@/lib/utils'
@@ -41,10 +50,11 @@ export default function OrderDetailPage() {
   const navigate = useNavigate()
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
-  const [showStartPreparingDialog, setShowStartPreparingDialog] = useState(false)
+  const [showStartPreparingDialog, setShowStartPreparingDialog] =
+    useState(false)
   const [sellerNotes, setSellerNotes] = useState('')
   const [cancelReason, setCancelReason] = useState('')
-  
+
   const { data: order, isLoading, error } = useOrder(orderId || '')
   const confirmOrderMutation = useConfirmOrder()
   const updateOrderStatusMutation = useUpdateOrderStatus()
@@ -54,7 +64,9 @@ export default function OrderDetailPage() {
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Đang tải thông tin đơn hàng...</p>
+          <p className="text-muted-foreground">
+            Đang tải thông tin đơn hàng...
+          </p>
         </div>
       </div>
     )
@@ -68,7 +80,9 @@ export default function OrderDetailPage() {
             <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
               <XCircle className="h-8 w-8 text-red-500" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">Không tìm thấy đơn hàng</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              Không tìm thấy đơn hàng
+            </h2>
             <p className="text-muted-foreground mb-6">
               Đơn hàng bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.
             </p>
@@ -85,8 +99,10 @@ export default function OrderDetailPage() {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
-    }).format(price).replace('₫', 'đ')
+      currency: 'VND',
+    })
+      .format(price)
+      .replace('₫', 'đ')
   }
 
   const formatDate = (dateString: string) => {
@@ -95,7 +111,7 @@ export default function OrderDetailPage() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -108,7 +124,7 @@ export default function OrderDetailPage() {
           bgColor: 'bg-gradient-to-br from-amber-50 to-orange-50',
           borderColor: 'border-amber-200',
           textColor: 'text-amber-700',
-          icon: Clock
+          icon: Clock,
         }
       case 'confirmed':
         return {
@@ -117,7 +133,7 @@ export default function OrderDetailPage() {
           bgColor: 'bg-gradient-to-br from-blue-50 to-indigo-50',
           borderColor: 'border-blue-200',
           textColor: 'text-blue-700',
-          icon: CheckCircle
+          icon: CheckCircle,
         }
       case 'preparing':
         return {
@@ -126,7 +142,7 @@ export default function OrderDetailPage() {
           bgColor: 'bg-gradient-to-br from-purple-50 to-violet-50',
           borderColor: 'border-purple-200',
           textColor: 'text-purple-700',
-          icon: Package
+          icon: Package,
         }
       case 'ready':
         return {
@@ -135,7 +151,7 @@ export default function OrderDetailPage() {
           bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
           borderColor: 'border-green-200',
           textColor: 'text-green-700',
-          icon: Truck
+          icon: Truck,
         }
       case 'completed':
         return {
@@ -144,7 +160,7 @@ export default function OrderDetailPage() {
           bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
           borderColor: 'border-green-200',
           textColor: 'text-green-700',
-          icon: CheckCircle
+          icon: CheckCircle,
         }
       case 'cancelled':
         return {
@@ -153,7 +169,7 @@ export default function OrderDetailPage() {
           bgColor: 'bg-gradient-to-br from-red-50 to-rose-50',
           borderColor: 'border-red-200',
           textColor: 'text-red-700',
-          icon: XCircle
+          icon: XCircle,
         }
       default:
         return {
@@ -162,28 +178,39 @@ export default function OrderDetailPage() {
           bgColor: 'bg-muted',
           borderColor: 'border-border',
           textColor: 'text-muted-foreground',
-          icon: Clock
+          icon: Clock,
         }
     }
   }
 
   const getPaymentMethodLabel = (method: string) => {
     switch (method) {
-      case 'cod': return 'Thanh toán khi nhận hàng'
-      case 'bank': return 'Chuyển khoản ngân hàng'
-      case 'bank_transfer': return 'Chuyển khoản ngân hàng'
-      case 'ewallet': return 'Ví điện tử'
-      case 'momo': return 'Ví điện tử MoMo'
-      case 'credit_card': return 'Thẻ tín dụng'
-      default: return method.replace('_', ' ')
+      case 'cod':
+        return 'Thanh toán khi nhận hàng'
+      case 'bank':
+        return 'Chuyển khoản ngân hàng'
+      case 'bank_transfer':
+        return 'Chuyển khoản ngân hàng'
+      case 'ewallet':
+        return 'Ví điện tử'
+      case 'momo':
+        return 'Ví điện tử MoMo'
+      case 'credit_card':
+        return 'Thẻ tín dụng'
+      default:
+        return method.replace('_', ' ')
     }
   }
 
   const isPaid = order.paymentStatus === 'completed'
-  const confirmedTimestamp = (order.status === 'confirmed' || order.status === 'preparing' || order.status === 'ready' || order.status === 'completed') 
-    ? order.updatedAt 
-    : ''
-  
+  const confirmedTimestamp =
+    order.status === 'confirmed' ||
+    order.status === 'preparing' ||
+    order.status === 'ready' ||
+    order.status === 'completed'
+      ? order.updatedAt
+      : ''
+
   const buyerName = order.userName || 'N/A'
   const buyerPhone = order.userEmail || 'N/A'
   const fullAddress = order.deliveryAddress || ''
@@ -192,18 +219,20 @@ export default function OrderDetailPage() {
 
   const handleConfirmOrder = async () => {
     if (!orderId) return
-    
+
     try {
       await confirmOrderMutation.mutateAsync({
         id: orderId,
-        sellerNotes: sellerNotes || undefined
+        sellerNotes: sellerNotes || undefined,
       })
       toast.success('Đã xác nhận đơn hàng thành công')
       setShowConfirmDialog(false)
       setSellerNotes('')
       navigate(-1)
     } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Có lỗi xảy ra khi xác nhận đơn hàng'))
+      toast.error(
+        getApiErrorMessage(error, 'Có lỗi xảy ra khi xác nhận đơn hàng')
+      )
       console.error('Error confirming order:', error)
     }
   }
@@ -214,7 +243,7 @@ export default function OrderDetailPage() {
     try {
       await updateOrderStatusMutation.mutateAsync({
         id: orderId,
-        status: 'cancelled'
+        status: 'cancelled',
       })
       toast.success('Đã hủy đơn hàng')
       setShowCancelDialog(false)
@@ -232,13 +261,15 @@ export default function OrderDetailPage() {
     try {
       await updateOrderStatusMutation.mutateAsync({
         id: orderId,
-        status: 'preparing'
+        status: 'preparing',
       })
       toast.success('Đã bắt đầu chuẩn bị hàng')
       setShowStartPreparingDialog(false)
       navigate(-1)
     } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Có lỗi xảy ra khi cập nhật trạng thái'))
+      toast.error(
+        getApiErrorMessage(error, 'Có lỗi xảy ra khi cập nhật trạng thái')
+      )
       console.error('Error updating order status:', error)
     }
   }
@@ -253,8 +284,8 @@ export default function OrderDetailPage() {
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           {/* Header */}
           <div className="mb-6">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => navigate(-1)}
               className="mb-4 hover:bg-muted"
             >
@@ -278,31 +309,41 @@ export default function OrderDetailPage() {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Status Card */}
-              <Card className={cn("border-2 overflow-hidden shadow-lg", statusConfig.borderColor)}>
-                <div className={cn("h-2 w-full", statusConfig.bgColor)} />
+              <Card
+                className={cn(
+                  'border-2 overflow-hidden shadow-lg',
+                  statusConfig.borderColor
+                )}
+              >
+                <div className={cn('h-2 w-full', statusConfig.bgColor)} />
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
-                    <div 
+                    <div
                       className={cn(
-                        "w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md",
+                        'w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md',
                         statusConfig.bgColor
                       )}
                     >
-                      <StatusIcon className="h-8 w-8" style={{ color: statusConfig.color }} />
+                      <StatusIcon
+                        className="h-8 w-8"
+                        style={{ color: statusConfig.color }}
+                      />
                     </div>
                     <div className="flex-1">
                       <Badge
                         className={cn(
-                          "mb-2 px-3 py-1 text-sm font-semibold",
+                          'mb-2 px-3 py-1 text-sm font-semibold',
                           statusConfig.bgColor,
                           statusConfig.textColor,
                           statusConfig.borderColor,
-                          "border"
+                          'border'
                         )}
                       >
                         {statusConfig.label}
                       </Badge>
-                      <p className="text-sm text-muted-foreground">Mã đơn: {orderNumber}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Mã đơn: {orderNumber}
+                      </p>
                       {confirmedTimestamp && (
                         <div className="flex items-center gap-1 mt-2">
                           <Clock className="h-3.5 w-3.5 text-muted-foreground" />
@@ -331,19 +372,20 @@ export default function OrderDetailPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {order.items.map((item, index) => (
-                    <div 
-                      key={item.id} 
+                    <div
+                      key={item.id}
                       className={cn(
-                        "flex items-start gap-4 p-4 rounded-lg border transition-all hover:shadow-md",
-                        index !== order.items.length - 1 && "border-b"
+                        'flex items-start gap-4 p-4 rounded-lg border transition-all hover:shadow-md',
+                        index !== order.items.length - 1 && 'border-b'
                       )}
                     >
                       <img
                         src={item.productImage}
                         alt={item.productName}
                         className="w-20 h-20 rounded-xl object-cover flex-shrink-0 border shadow-sm"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/80'
+                        onError={e => {
+                          ;(e.target as HTMLImageElement).src =
+                            'https://via.placeholder.com/80'
                         }}
                       />
                       <div className="flex-1 min-w-0">
@@ -351,7 +393,12 @@ export default function OrderDetailPage() {
                           {item.productName}
                         </h4>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span>Số lượng: <strong className="text-foreground">{item.quantity}</strong></span>
+                          <span>
+                            Số lượng:{' '}
+                            <strong className="text-foreground">
+                              {item.quantity}
+                            </strong>
+                          </span>
                           <span className="text-xs">×</span>
                           <span>{formatPrice(item.price)}</span>
                         </div>
@@ -367,7 +414,10 @@ export default function OrderDetailPage() {
               </Card>
 
               {/* Timeline Card */}
-              {(order.status === 'confirmed' || order.status === 'preparing' || order.status === 'ready' || order.status === 'completed') && (
+              {(order.status === 'confirmed' ||
+                order.status === 'preparing' ||
+                order.status === 'ready' ||
+                order.status === 'completed') && (
                 <Card className="shadow-md">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center gap-2">
@@ -381,72 +431,134 @@ export default function OrderDetailPage() {
                     <div className="space-y-4">
                       {/* Timeline Items */}
                       {[
-                        { status: 'created', label: 'Đơn hàng được tạo', date: order.createdAt, icon: ShoppingBag, color: 'green' },
-                        { status: 'confirmed', label: 'Đơn hàng đã được xác nhận', date: confirmedTimestamp, icon: CheckCircle, color: 'blue' },
-                        { status: 'preparing', label: 'Đang chuẩn bị hàng', date: '', icon: Package, color: 'purple' },
-                        { status: 'ready', label: 'Sẵn sàng lấy hàng', date: '', icon: Truck, color: 'green' },
-                        { status: 'completed', label: 'Hoàn thành', date: '', icon: CheckCircle, color: 'green' },
+                        {
+                          status: 'created',
+                          label: 'Đơn hàng được tạo',
+                          date: order.createdAt,
+                          icon: ShoppingBag,
+                          color: 'green',
+                        },
+                        {
+                          status: 'confirmed',
+                          label: 'Đơn hàng đã được xác nhận',
+                          date: confirmedTimestamp,
+                          icon: CheckCircle,
+                          color: 'blue',
+                        },
+                        {
+                          status: 'preparing',
+                          label: 'Đang chuẩn bị hàng',
+                          date: '',
+                          icon: Package,
+                          color: 'purple',
+                        },
+                        {
+                          status: 'ready',
+                          label: 'Sẵn sàng lấy hàng',
+                          date: '',
+                          icon: Truck,
+                          color: 'green',
+                        },
+                        {
+                          status: 'completed',
+                          label: 'Hoàn thành',
+                          date: '',
+                          icon: CheckCircle,
+                          color: 'green',
+                        },
                       ].map((timeline, index, array) => {
-                        const isActive = 
-                          (timeline.status === 'created') ||
-                          (timeline.status === 'confirmed' && (order.status === 'confirmed' || order.status === 'preparing' || order.status === 'ready' || order.status === 'completed')) ||
-                          (timeline.status === 'preparing' && (order.status === 'preparing' || order.status === 'ready' || order.status === 'completed')) ||
-                          (timeline.status === 'ready' && (order.status === 'ready' || order.status === 'completed')) ||
-                          (timeline.status === 'completed' && order.status === 'completed')
-                        
-                        const isCurrent = 
-                          (timeline.status === 'created' && order.status === 'pending') ||
-                          (timeline.status === 'confirmed' && order.status === 'confirmed') ||
-                          (timeline.status === 'preparing' && order.status === 'preparing') ||
-                          (timeline.status === 'ready' && order.status === 'ready') ||
-                          (timeline.status === 'completed' && order.status === 'completed')
+                        const isActive =
+                          timeline.status === 'created' ||
+                          (timeline.status === 'confirmed' &&
+                            (order.status === 'confirmed' ||
+                              order.status === 'preparing' ||
+                              order.status === 'ready' ||
+                              order.status === 'completed')) ||
+                          (timeline.status === 'preparing' &&
+                            (order.status === 'preparing' ||
+                              order.status === 'ready' ||
+                              order.status === 'completed')) ||
+                          (timeline.status === 'ready' &&
+                            (order.status === 'ready' ||
+                              order.status === 'completed')) ||
+                          (timeline.status === 'completed' &&
+                            order.status === 'completed')
+
+                        const isCurrent =
+                          (timeline.status === 'created' &&
+                            order.status === 'pending') ||
+                          (timeline.status === 'confirmed' &&
+                            order.status === 'confirmed') ||
+                          (timeline.status === 'preparing' &&
+                            order.status === 'preparing') ||
+                          (timeline.status === 'ready' &&
+                            order.status === 'ready') ||
+                          (timeline.status === 'completed' &&
+                            order.status === 'completed')
 
                         const Icon = timeline.icon
                         const colorClasses = {
                           green: {
                             bg: 'bg-green-100 border-green-500 text-green-600',
                             line: 'bg-green-200',
-                            text: 'text-green-600'
+                            text: 'text-green-600',
                           },
                           blue: {
                             bg: 'bg-blue-100 border-blue-500 text-blue-600',
                             line: 'bg-blue-200',
-                            text: 'text-blue-600'
+                            text: 'text-blue-600',
                           },
                           purple: {
                             bg: 'bg-purple-100 border-purple-500 text-purple-600',
                             line: 'bg-purple-200',
-                            text: 'text-purple-600'
+                            text: 'text-purple-600',
                           },
                         }
 
-                        const colorClass = colorClasses[timeline.color as keyof typeof colorClasses] || colorClasses.green
+                        const colorClass =
+                          colorClasses[
+                            timeline.color as keyof typeof colorClasses
+                          ] || colorClasses.green
 
                         return (
                           <div key={timeline.status} className="flex gap-4">
                             <div className="flex flex-col items-center">
-                              <div className={cn(
-                                "w-10 h-10 rounded-full flex items-center justify-center border-2 flex-shrink-0 transition-all",
-                                isActive ? colorClass.bg : 'bg-gray-100 border-gray-300 text-gray-400'
-                              )}>
+                              <div
+                                className={cn(
+                                  'w-10 h-10 rounded-full flex items-center justify-center border-2 flex-shrink-0 transition-all',
+                                  isActive
+                                    ? colorClass.bg
+                                    : 'bg-gray-100 border-gray-300 text-gray-400'
+                                )}
+                              >
                                 <Icon className="h-5 w-5" />
                               </div>
                               {index < array.length - 1 && (
-                                <div className={cn(
-                                  "w-0.5 flex-1 my-2",
-                                  isActive ? colorClass.line : 'bg-gray-200'
-                                )} />
+                                <div
+                                  className={cn(
+                                    'w-0.5 flex-1 my-2',
+                                    isActive ? colorClass.line : 'bg-gray-200'
+                                  )}
+                                />
                               )}
                             </div>
                             <div className="flex-1 pb-4">
-                              <p className={cn(
-                                "text-sm font-medium mb-1",
-                                isCurrent ? cn(colorClass.text, "font-bold") : isActive ? 'text-foreground' : 'text-muted-foreground'
-                              )}>
+                              <p
+                                className={cn(
+                                  'text-sm font-medium mb-1',
+                                  isCurrent
+                                    ? cn(colorClass.text, 'font-bold')
+                                    : isActive
+                                      ? 'text-foreground'
+                                      : 'text-muted-foreground'
+                                )}
+                              >
                                 {timeline.label}
                               </p>
                               {timeline.date && (
-                                <p className="text-xs text-muted-foreground">{formatDate(timeline.date)}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {formatDate(timeline.date)}
+                                </p>
                               )}
                             </div>
                           </div>
@@ -475,23 +587,35 @@ export default function OrderDetailPage() {
                     <div className="flex items-start gap-3">
                       <User className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground mb-1">Họ tên</p>
-                        <p className="text-sm font-semibold text-foreground">{buyerName}</p>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Họ tên
+                        </p>
+                        <p className="text-sm font-semibold text-foreground">
+                          {buyerName}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <Phone className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground mb-1">Số điện thoại</p>
-                        <p className="text-sm font-semibold text-foreground">{buyerPhone}</p>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Số điện thoại
+                        </p>
+                        <p className="text-sm font-semibold text-foreground">
+                          {buyerPhone}
+                        </p>
                       </div>
                     </div>
                     {fullAddress && (
                       <div className="flex items-start gap-3">
                         <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs text-muted-foreground mb-1">Địa chỉ</p>
-                          <p className="text-sm font-semibold text-foreground">{fullAddress}</p>
+                          <p className="text-xs text-muted-foreground mb-1">
+                            Địa chỉ
+                          </p>
+                          <p className="text-sm font-semibold text-foreground">
+                            {fullAddress}
+                          </p>
                         </div>
                       </div>
                     )}
@@ -499,8 +623,12 @@ export default function OrderDetailPage() {
                       <div className="flex items-start gap-3">
                         <FileText className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs text-muted-foreground mb-1">Ghi chú</p>
-                          <p className="text-sm font-semibold text-foreground">{buyerNotes}</p>
+                          <p className="text-xs text-muted-foreground mb-1">
+                            Ghi chú
+                          </p>
+                          <p className="text-sm font-semibold text-foreground">
+                            {buyerNotes}
+                          </p>
                         </div>
                       </div>
                     )}
@@ -521,14 +649,21 @@ export default function OrderDetailPage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     <div>
-                      <p className="text-xs text-muted-foreground mb-1">Phương thức</p>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Phương thức
+                      </p>
                       <p className="text-sm font-semibold text-foreground">
                         {getPaymentMethodLabel(order.paymentMethod)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground mb-1">Trạng thái</p>
-                      <Badge variant={isPaid ? "default" : "secondary"} className="mt-1">
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Trạng thái
+                      </p>
+                      <Badge
+                        variant={isPaid ? 'default' : 'secondary'}
+                        className="mt-1"
+                      >
                         {isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
                       </Badge>
                     </div>
@@ -550,21 +685,29 @@ export default function OrderDetailPage() {
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Tạm tính</span>
-                      <span className="font-semibold text-foreground">{formatPrice(order.subtotal)}</span>
+                      <span className="font-semibold text-foreground">
+                        {formatPrice(order.subtotal)}
+                      </span>
                     </div>
                     {order.discount > 0 && (
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Giảm giá</span>
-                        <span className="font-semibold text-red-600">-{formatPrice(order.discount)}</span>
+                        <span className="font-semibold text-red-600">
+                          -{formatPrice(order.discount)}
+                        </span>
                       </div>
                     )}
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Vận chuyển</span>
-                      <span className="font-semibold text-foreground">Tự đến lấy</span>
+                      <span className="font-semibold text-foreground">
+                        Tự đến lấy
+                      </span>
                     </div>
                     <Separator className="my-4" />
                     <div className="flex justify-between items-center pt-2">
-                      <span className="text-lg font-bold text-foreground">Tổng cộng</span>
+                      <span className="text-lg font-bold text-foreground">
+                        Tổng cộng
+                      </span>
                       <span className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                         {formatPrice(order.total)}
                       </span>
@@ -597,16 +740,16 @@ export default function OrderDetailPage() {
               {/* Action Buttons */}
               {order.status === 'pending' && (
                 <div className="space-y-3">
-                  <Button 
-                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-12 shadow-md" 
+                  <Button
+                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-12 shadow-md"
                     onClick={() => setShowConfirmDialog(true)}
                   >
                     <CheckCircle className="h-5 w-5 mr-2" />
                     Xác nhận đơn hàng
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 h-12" 
+                  <Button
+                    variant="outline"
+                    className="w-full border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 h-12"
                     onClick={() => setShowCancelDialog(true)}
                   >
                     <XCircle className="h-5 w-5 mr-2" />
@@ -617,16 +760,16 @@ export default function OrderDetailPage() {
 
               {order.status === 'confirmed' && (
                 <div className="space-y-3">
-                  <Button 
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-12 shadow-md" 
+                  <Button
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-12 shadow-md"
                     onClick={() => setShowStartPreparingDialog(true)}
                   >
                     <Package className="h-5 w-5 mr-2" />
                     Bắt đầu chuẩn bị hàng
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 h-12" 
+                  <Button
+                    variant="outline"
+                    className="w-full border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 h-12"
                     onClick={() => setShowCancelDialog(true)}
                   >
                     <XCircle className="h-5 w-5 mr-2" />
@@ -646,29 +789,35 @@ export default function OrderDetailPage() {
           <DialogHeader>
             <DialogTitle className="text-xl">Xác nhận đơn hàng</DialogTitle>
             <DialogDescription>
-              Bạn có chắc chắn muốn xác nhận đơn hàng <strong>{orderNumber}</strong>?
+              Bạn có chắc chắn muốn xác nhận đơn hàng{' '}
+              <strong>{orderNumber}</strong>?
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Ghi chú (tùy chọn)</label>
+              <label className="text-sm font-medium mb-2 block">
+                Ghi chú (tùy chọn)
+              </label>
               <Textarea
                 placeholder="Nhập ghi chú cho đơn hàng..."
                 value={sellerNotes}
-                onChange={(e) => setSellerNotes(e.target.value)}
+                onChange={e => setSellerNotes(e.target.value)}
                 className="mt-2"
                 rows={3}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setShowConfirmDialog(false)
-              setSellerNotes('')
-            }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowConfirmDialog(false)
+                setSellerNotes('')
+              }}
+            >
               Hủy
             </Button>
-            <Button 
+            <Button
               onClick={handleConfirmOrder}
               disabled={confirmOrderMutation.isPending}
               className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
@@ -690,53 +839,69 @@ export default function OrderDetailPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Lý do hủy (tùy chọn)</label>
+              <label className="text-sm font-medium mb-2 block">
+                Lý do hủy (tùy chọn)
+              </label>
               <Textarea
                 placeholder="Nhập lý do hủy đơn hàng..."
                 value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
+                onChange={e => setCancelReason(e.target.value)}
                 className="mt-2"
                 rows={3}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setShowCancelDialog(false)
-              setCancelReason('')
-            }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowCancelDialog(false)
+                setCancelReason('')
+              }}
+            >
               Không
             </Button>
-            <Button 
+            <Button
               variant="destructive"
               onClick={handleCancelOrder}
               disabled={updateOrderStatusMutation.isPending}
             >
-              {updateOrderStatusMutation.isPending ? 'Đang xử lý...' : 'Hủy đơn'}
+              {updateOrderStatusMutation.isPending
+                ? 'Đang xử lý...'
+                : 'Hủy đơn'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Start Preparing Dialog */}
-      <Dialog open={showStartPreparingDialog} onOpenChange={setShowStartPreparingDialog}>
+      <Dialog
+        open={showStartPreparingDialog}
+        onOpenChange={setShowStartPreparingDialog}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl">Bắt đầu chuẩn bị hàng</DialogTitle>
             <DialogDescription>
-              Bạn có chắc chắn muốn bắt đầu chuẩn bị đơn hàng <strong>{orderNumber}</strong>?
+              Bạn có chắc chắn muốn bắt đầu chuẩn bị đơn hàng{' '}
+              <strong>{orderNumber}</strong>?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowStartPreparingDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowStartPreparingDialog(false)}
+            >
               Hủy
             </Button>
-            <Button 
+            <Button
               onClick={handleStartPreparing}
               disabled={updateOrderStatusMutation.isPending}
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
             >
-              {updateOrderStatusMutation.isPending ? 'Đang xử lý...' : 'Xác nhận'}
+              {updateOrderStatusMutation.isPending
+                ? 'Đang xử lý...'
+                : 'Xác nhận'}
             </Button>
           </DialogFooter>
         </DialogContent>

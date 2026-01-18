@@ -51,7 +51,9 @@ export const useMarkNotificationAsRead = () => {
     mutationFn: (id: string) => notificationsApi.markAsRead(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.unreadCount })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.unreadCount,
+      })
     },
   })
 }
@@ -63,7 +65,9 @@ export const useMarkAllNotificationsAsRead = () => {
     mutationFn: () => notificationsApi.markAllAsRead(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.unreadCount })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.unreadCount,
+      })
     },
   })
 }
@@ -75,7 +79,9 @@ export const useDeleteNotification = () => {
     mutationFn: (id: string) => notificationsApi.deleteNotification(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.unreadCount })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.unreadCount,
+      })
     },
   })
 }
@@ -84,11 +90,13 @@ export const useCreateNotification = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: CreateNotificationRequest) => adminNotificationsApi.createNotification(data),
+    mutationFn: (data: CreateNotificationRequest) =>
+      adminNotificationsApi.createNotification(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.unreadCount })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.unreadCount,
+      })
     },
   })
 }
-

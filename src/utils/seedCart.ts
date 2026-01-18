@@ -7,20 +7,20 @@ import type { Product } from '@/types'
  */
 export function seedFakeCartData(products: Product[]) {
   const { addItem, clearCart } = useCartStore.getState()
-  
+
   // Clear existing cart first
   clearCart()
-  
+
   // Filter products that have seller/store info
-  const validProducts = products.filter(p => 
-    p.sellerId && (p.seller || p.store)
+  const validProducts = products.filter(
+    p => p.sellerId && (p.seller || p.store)
   )
-  
+
   if (validProducts.length === 0) {
     console.warn('⚠️ No products with seller/store info found for seeding cart')
     return
   }
-  
+
   // Group products by seller
   const productsBySeller = new Map<string, Product[]>()
   validProducts.forEach(product => {
@@ -30,27 +30,27 @@ export function seedFakeCartData(products: Product[]) {
     }
     productsBySeller.get(sellerId)!.push(product)
   })
-  
+
   // Add 2-3 products from each seller to cart
   let addedCount = 0
   const maxProductsPerSeller = 3
   const maxSellers = 4 // Limit to 4 different sellers
-  
+
   for (const [sellerId, sellerProducts] of productsBySeller.entries()) {
     if (addedCount >= maxSellers) break
-    
+
     // Take up to maxProductsPerSeller products from this seller
     const productsToAdd = sellerProducts.slice(0, maxProductsPerSeller)
-    
+
     productsToAdd.forEach((product, index) => {
       // Add with different quantities
       const quantity = index + 1 // 1, 2, or 3
       addItem(product, quantity)
     })
-    
+
     addedCount++
   }
-  
+
   console.log(`✅ Seeded cart with products from ${addedCount} sellers`)
 }
 
@@ -60,9 +60,8 @@ export function seedFakeCartData(products: Product[]) {
  */
 export function initializeFakeCart(products: Product[]) {
   const { items } = useCartStore.getState()
-  
+
   if (items.length === 0 && products.length > 0) {
     seedFakeCartData(products)
   }
 }
-

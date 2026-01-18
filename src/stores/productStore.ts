@@ -58,40 +58,47 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   error: null,
 
   // Actions
-  setProducts: (products) => set({ products }),
-  setFeaturedProducts: (featuredProducts) => set({ featuredProducts }),
-  setCurrentProduct: (currentProduct) => set({ currentProduct }),
-  
-  setSearchFilters: (filters) => set((state) => ({
-    searchFilters: { ...state.searchFilters, ...filters }
-  })),
-  
-  setPagination: (pagination) => set({ pagination }),
-  setLoading: (isLoading) => set({ isLoading }),
-  setError: (error) => set({ error }),
-  
-  addProduct: (product) => set((state) => ({
-    products: [product, ...state.products]
-  })),
-  
-  updateProduct: (id, updates) => set((state) => ({
-    products: state.products.map(product =>
-      product.id === id ? { ...product, ...updates } : product
-    ),
-    currentProduct: state.currentProduct?.id === id
-      ? { ...state.currentProduct, ...updates }
-      : state.currentProduct,
-  })),
-  
-  removeProduct: (id) => set((state) => ({
-    products: state.products.filter(product => product.id !== id),
-    currentProduct: state.currentProduct?.id === id ? null : state.currentProduct,
-  })),
-  
-  clearProducts: () => set({
-    products: [],
-    currentProduct: null,
-  }),
-  
+  setProducts: products => set({ products }),
+  setFeaturedProducts: featuredProducts => set({ featuredProducts }),
+  setCurrentProduct: currentProduct => set({ currentProduct }),
+
+  setSearchFilters: filters =>
+    set(state => ({
+      searchFilters: { ...state.searchFilters, ...filters },
+    })),
+
+  setPagination: pagination => set({ pagination }),
+  setLoading: isLoading => set({ isLoading }),
+  setError: error => set({ error }),
+
+  addProduct: product =>
+    set(state => ({
+      products: [product, ...state.products],
+    })),
+
+  updateProduct: (id, updates) =>
+    set(state => ({
+      products: state.products.map(product =>
+        product.id === id ? { ...product, ...updates } : product
+      ),
+      currentProduct:
+        state.currentProduct?.id === id
+          ? { ...state.currentProduct, ...updates }
+          : state.currentProduct,
+    })),
+
+  removeProduct: id =>
+    set(state => ({
+      products: state.products.filter(product => product.id !== id),
+      currentProduct:
+        state.currentProduct?.id === id ? null : state.currentProduct,
+    })),
+
+  clearProducts: () =>
+    set({
+      products: [],
+      currentProduct: null,
+    }),
+
   clearError: () => set({ error: null }),
 }))

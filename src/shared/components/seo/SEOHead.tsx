@@ -17,14 +17,14 @@ export function SEOHead({
   image = '/og-image.jpg',
   url = 'https://chogiare.com',
   type: _type = 'website',
-  structuredData
+  structuredData,
 }: SEOHeadProps) {
   const fullTitle = title.includes('Chogiare') ? title : `${title} | Chogiare`
-  
+
   useEffect(() => {
     // Update document title
     document.title = fullTitle
-    
+
     // Update meta description
     const metaDescription = document.querySelector('meta[name="description"]')
     if (metaDescription) {
@@ -35,7 +35,7 @@ export function SEOHead({
       meta.content = description
       document.head.appendChild(meta)
     }
-    
+
     // Update meta keywords
     const metaKeywords = document.querySelector('meta[name="keywords"]')
     if (metaKeywords) {
@@ -46,7 +46,7 @@ export function SEOHead({
       meta.content = keywords
       document.head.appendChild(meta)
     }
-    
+
     // Update Open Graph tags
     const ogTitle = document.querySelector('meta[property="og:title"]')
     if (ogTitle) {
@@ -57,8 +57,10 @@ export function SEOHead({
       meta.content = fullTitle
       document.head.appendChild(meta)
     }
-    
-    const ogDescription = document.querySelector('meta[property="og:description"]')
+
+    const ogDescription = document.querySelector(
+      'meta[property="og:description"]'
+    )
     if (ogDescription) {
       ogDescription.setAttribute('content', description)
     } else {
@@ -67,7 +69,7 @@ export function SEOHead({
       meta.content = description
       document.head.appendChild(meta)
     }
-    
+
     const ogImage = document.querySelector('meta[property="og:image"]')
     if (ogImage) {
       ogImage.setAttribute('content', image)
@@ -77,7 +79,7 @@ export function SEOHead({
       meta.content = image
       document.head.appendChild(meta)
     }
-    
+
     const ogUrl = document.querySelector('meta[property="og:url"]')
     if (ogUrl) {
       ogUrl.setAttribute('content', url)
@@ -87,10 +89,12 @@ export function SEOHead({
       meta.content = url
       document.head.appendChild(meta)
     }
-    
+
     // Add structured data
     if (structuredData) {
-      const existingScript = document.querySelector('script[type="application/ld+json"]')
+      const existingScript = document.querySelector(
+        'script[type="application/ld+json"]'
+      )
       if (existingScript) {
         existingScript.textContent = JSON.stringify(structuredData)
       } else {
@@ -101,6 +105,6 @@ export function SEOHead({
       }
     }
   }, [title, description, keywords, image, url, fullTitle, structuredData])
-  
+
   return null
 }

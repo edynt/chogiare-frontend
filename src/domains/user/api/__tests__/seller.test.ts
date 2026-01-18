@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { sellerApi } from '../seller'
-import type { SellerDashboardStats, RevenueStats, CustomerStats } from '../seller'
+import type {
+  SellerDashboardStats,
+  RevenueStats,
+  CustomerStats,
+} from '../seller'
 import * as axios from '@shared/api/axios'
 
 // Mock the axios client
@@ -145,7 +149,10 @@ describe('Seller API', () => {
         condition: 'new',
       })
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/seller/products', expect.any(Object))
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        '/seller/products',
+        expect.any(Object)
+      )
     })
 
     it('should call /seller/products/:id for updating product', async () => {
@@ -157,7 +164,10 @@ describe('Seller API', () => {
 
       await sellerApi.updateProduct('1', { title: 'Updated Product' })
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith('/seller/products/1', expect.any(Object))
+      expect(mockApiClient.patch).toHaveBeenCalledWith(
+        '/seller/products/1',
+        expect.any(Object)
+      )
     })
 
     it('should call /seller/products/:id for deleting product', async () => {
@@ -177,7 +187,10 @@ describe('Seller API', () => {
 
       await sellerApi.bulkUpdateProducts([{ id: '1', data: {} }])
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith('/seller/products/bulk', expect.any(Object))
+      expect(mockApiClient.patch).toHaveBeenCalledWith(
+        '/seller/products/bulk',
+        expect.any(Object)
+      )
     })
   })
 
@@ -191,7 +204,10 @@ describe('Seller API', () => {
 
       await sellerApi.updateStock('1', 50)
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith('/seller/products/1/stock', { stock: 50 })
+      expect(mockApiClient.patch).toHaveBeenCalledWith(
+        '/seller/products/1/stock',
+        { stock: 50 }
+      )
     })
 
     it('should call /seller/products/low-stock endpoint', async () => {
@@ -203,9 +219,12 @@ describe('Seller API', () => {
 
       await sellerApi.getLowStockProducts(10)
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/seller/products/low-stock', {
-        params: { threshold: 10 },
-      })
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        '/seller/products/low-stock',
+        {
+          params: { threshold: 10 },
+        }
+      )
     })
   })
 
@@ -245,9 +264,12 @@ describe('Seller API', () => {
 
       await sellerApi.updateOrderStatus('1', 'shipped')
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith('/seller/orders/1/status', {
-        status: 'shipped',
-      })
+      expect(mockApiClient.patch).toHaveBeenCalledWith(
+        '/seller/orders/1/status',
+        {
+          status: 'shipped',
+        }
+      )
     })
   })
 
@@ -314,9 +336,12 @@ describe('Seller API', () => {
 
       await sellerApi.getCustomerOrders('1', { page: 1 })
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/seller/customers/1/orders', {
-        params: { page: 1 },
-      })
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        '/seller/customers/1/orders',
+        {
+          params: { page: 1 },
+        }
+      )
     })
   })
 
@@ -340,7 +365,9 @@ describe('Seller API', () => {
 
       await sellerApi.markNotificationAsRead('1')
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith('/seller/notifications/1/read')
+      expect(mockApiClient.patch).toHaveBeenCalledWith(
+        '/seller/notifications/1/read'
+      )
     })
 
     it('should call /seller/notifications/read-all endpoint', async () => {
@@ -348,7 +375,9 @@ describe('Seller API', () => {
 
       await sellerApi.markAllNotificationsAsRead()
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith('/seller/notifications/read-all')
+      expect(mockApiClient.patch).toHaveBeenCalledWith(
+        '/seller/notifications/read-all'
+      )
     })
   })
 
@@ -362,16 +391,27 @@ describe('Seller API', () => {
       // Test that all endpoints start with /seller/
       await sellerApi.getDashboardStats()
       await sellerApi.getMyProducts()
-      await sellerApi.createProduct({ title: '', categoryId: 1, price: 0, stock: 0, condition: '' })
+      await sellerApi.createProduct({
+        title: '',
+        categoryId: 1,
+        price: 0,
+        stock: 0,
+        condition: '',
+      })
       await sellerApi.updateProduct('1', {})
       await sellerApi.deleteProduct('1')
       await sellerApi.getMyOrders()
       await sellerApi.getRevenueStats()
       await sellerApi.getMyCustomers()
 
-      const calls = [...mockApiClient.get.mock.calls, ...mockApiClient.post.mock.calls, ...mockApiClient.patch.mock.calls, ...mockApiClient.delete.mock.calls]
+      const calls = [
+        ...mockApiClient.get.mock.calls,
+        ...mockApiClient.post.mock.calls,
+        ...mockApiClient.patch.mock.calls,
+        ...mockApiClient.delete.mock.calls,
+      ]
 
-      calls.forEach((call) => {
+      calls.forEach(call => {
         const endpoint = call[0]
         expect(endpoint).toMatch(/^\/seller\//)
       })

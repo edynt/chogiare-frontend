@@ -2,7 +2,12 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
 import { Input } from '@shared/components/ui/input'
@@ -25,18 +30,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@shared/components/ui/alert-dialog'
-import { useAddresses, useCreateAddress, useUpdateAddress, useDeleteAddress, useSetDefaultAddress } from '@/hooks/useAddresses'
+import {
+  useAddresses,
+  useCreateAddress,
+  useUpdateAddress,
+  useDeleteAddress,
+  useSetDefaultAddress,
+} from '@/hooks/useAddresses'
 import { LoadingSpinner } from '@shared/components/ui/loading'
 import { ErrorMessage } from '@shared/components/ui/error-boundary'
 import { toast } from 'sonner'
-import { 
-  ArrowLeft, 
-  Plus, 
-  MapPin, 
-  Edit, 
-  Trash2, 
+import {
+  ArrowLeft,
+  Plus,
+  MapPin,
+  Edit,
+  Trash2,
   Star,
-  Phone
+  Phone,
 } from 'lucide-react'
 import type { Address } from '@/types'
 
@@ -112,8 +123,14 @@ export default function AddressManagementPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!formData.recipientName || !formData.recipientPhone || !formData.street || !formData.city || !formData.state) {
+
+    if (
+      !formData.recipientName ||
+      !formData.recipientPhone ||
+      !formData.street ||
+      !formData.city ||
+      !formData.state
+    ) {
       toast.error('Vui lòng điền đầy đủ thông tin')
       return
     }
@@ -212,8 +229,11 @@ export default function AddressManagementPage() {
           {/* Addresses List */}
           {addresses && addresses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {addresses.map((address) => (
-                <Card key={address.id} className="relative hover:shadow-lg transition-shadow">
+              {addresses.map(address => (
+                <Card
+                  key={address.id}
+                  className="relative hover:shadow-lg transition-shadow"
+                >
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
@@ -236,7 +256,9 @@ export default function AddressManagementPage() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="space-y-1 text-sm">
-                      <p className="font-semibold text-base">{address.recipientName}</p>
+                      <p className="font-semibold text-base">
+                        {address.recipientName}
+                      </p>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Phone className="h-3.5 w-3.5" />
                         <span>{address.recipientPhone}</span>
@@ -290,7 +312,9 @@ export default function AddressManagementPage() {
             <Card>
               <CardContent className="py-12 text-center">
                 <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Chưa có địa chỉ nào</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  Chưa có địa chỉ nào
+                </h3>
                 <p className="text-muted-foreground mb-4">
                   Thêm địa chỉ để có thể nhận hàng nhanh chóng
                 </p>
@@ -320,7 +344,12 @@ export default function AddressManagementPage() {
                         id="recipientName"
                         placeholder="Họ và tên"
                         value={formData.recipientName}
-                        onChange={(e) => setFormData({ ...formData, recipientName: e.target.value })}
+                        onChange={e =>
+                          setFormData({
+                            ...formData,
+                            recipientName: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -330,7 +359,12 @@ export default function AddressManagementPage() {
                         id="recipientPhone"
                         placeholder="0901234567"
                         value={formData.recipientPhone}
-                        onChange={(e) => setFormData({ ...formData, recipientPhone: e.target.value })}
+                        onChange={e =>
+                          setFormData({
+                            ...formData,
+                            recipientPhone: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -341,7 +375,9 @@ export default function AddressManagementPage() {
                       id="street"
                       placeholder="Số nhà, tên đường"
                       value={formData.street}
-                      onChange={(e) => setFormData({ ...formData, street: e.target.value })}
+                      onChange={e =>
+                        setFormData({ ...formData, street: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -352,7 +388,9 @@ export default function AddressManagementPage() {
                         id="ward"
                         placeholder="Ví dụ: Phường Bến Nghé"
                         value={formData.ward}
-                        onChange={(e) => setFormData({ ...formData, ward: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, ward: e.target.value })
+                        }
                       />
                     </div>
                     <div className="space-y-2">
@@ -361,7 +399,9 @@ export default function AddressManagementPage() {
                         id="district"
                         placeholder="Ví dụ: Quận 1"
                         value={formData.district}
-                        onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, district: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -373,7 +413,9 @@ export default function AddressManagementPage() {
                         id="city"
                         placeholder="Ví dụ: Hồ Chí Minh"
                         value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, city: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -383,7 +425,9 @@ export default function AddressManagementPage() {
                         id="state"
                         placeholder="Ví dụ: TP.HCM"
                         value={formData.state}
-                        onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, state: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -395,7 +439,9 @@ export default function AddressManagementPage() {
                         id="zipCode"
                         placeholder="700000"
                         value={formData.zipCode}
-                        onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, zipCode: e.target.value })
+                        }
                       />
                     </div>
                     <div className="space-y-2">
@@ -403,7 +449,9 @@ export default function AddressManagementPage() {
                       <Input
                         id="country"
                         value={formData.country}
-                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, country: e.target.value })
+                        }
                       />
                     </div>
                   </div>
@@ -412,16 +460,28 @@ export default function AddressManagementPage() {
                       type="checkbox"
                       id="isDefault"
                       checked={formData.isDefault}
-                      onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          isDefault: e.target.checked,
+                        })
+                      }
                       className="rounded border-gray-300"
                     />
-                    <Label htmlFor="isDefault" className="text-sm font-normal cursor-pointer">
+                    <Label
+                      htmlFor="isDefault"
+                      className="text-sm font-normal cursor-pointer"
+                    >
                       Đặt làm địa chỉ mặc định
                     </Label>
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsAddDialogOpen(false)}
+                  >
                     Hủy
                   </Button>
                   <Button type="submit" disabled={createAddress.isPending}>
@@ -445,22 +505,36 @@ export default function AddressManagementPage() {
                 <div className="space-y-4 py-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="edit-recipientName">Tên người nhận *</Label>
+                      <Label htmlFor="edit-recipientName">
+                        Tên người nhận *
+                      </Label>
                       <Input
                         id="edit-recipientName"
                         placeholder="Họ và tên"
                         value={formData.recipientName}
-                        onChange={(e) => setFormData({ ...formData, recipientName: e.target.value })}
+                        onChange={e =>
+                          setFormData({
+                            ...formData,
+                            recipientName: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="edit-recipientPhone">Số điện thoại *</Label>
+                      <Label htmlFor="edit-recipientPhone">
+                        Số điện thoại *
+                      </Label>
                       <Input
                         id="edit-recipientPhone"
                         placeholder="0901234567"
                         value={formData.recipientPhone}
-                        onChange={(e) => setFormData({ ...formData, recipientPhone: e.target.value })}
+                        onChange={e =>
+                          setFormData({
+                            ...formData,
+                            recipientPhone: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -471,7 +545,9 @@ export default function AddressManagementPage() {
                       id="edit-street"
                       placeholder="Số nhà, tên đường"
                       value={formData.street}
-                      onChange={(e) => setFormData({ ...formData, street: e.target.value })}
+                      onChange={e =>
+                        setFormData({ ...formData, street: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -482,7 +558,9 @@ export default function AddressManagementPage() {
                         id="edit-ward"
                         placeholder="Ví dụ: Phường Bến Nghé"
                         value={formData.ward}
-                        onChange={(e) => setFormData({ ...formData, ward: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, ward: e.target.value })
+                        }
                       />
                     </div>
                     <div className="space-y-2">
@@ -491,7 +569,9 @@ export default function AddressManagementPage() {
                         id="edit-district"
                         placeholder="Ví dụ: Quận 1"
                         value={formData.district}
-                        onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, district: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -503,7 +583,9 @@ export default function AddressManagementPage() {
                         id="edit-city"
                         placeholder="Ví dụ: Hồ Chí Minh"
                         value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, city: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -513,7 +595,9 @@ export default function AddressManagementPage() {
                         id="edit-state"
                         placeholder="Ví dụ: TP.HCM"
                         value={formData.state}
-                        onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, state: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -525,7 +609,9 @@ export default function AddressManagementPage() {
                         id="edit-zipCode"
                         placeholder="700000"
                         value={formData.zipCode}
-                        onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, zipCode: e.target.value })
+                        }
                       />
                     </div>
                     <div className="space-y-2">
@@ -533,7 +619,9 @@ export default function AddressManagementPage() {
                       <Input
                         id="edit-country"
                         value={formData.country}
-                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, country: e.target.value })
+                        }
                       />
                     </div>
                   </div>
@@ -542,16 +630,28 @@ export default function AddressManagementPage() {
                       type="checkbox"
                       id="edit-isDefault"
                       checked={formData.isDefault}
-                      onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          isDefault: e.target.checked,
+                        })
+                      }
                       className="rounded border-gray-300"
                     />
-                    <Label htmlFor="edit-isDefault" className="text-sm font-normal cursor-pointer">
+                    <Label
+                      htmlFor="edit-isDefault"
+                      className="text-sm font-normal cursor-pointer"
+                    >
                       Đặt làm địa chỉ mặc định
                     </Label>
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsEditDialogOpen(false)}
+                  >
                     Hủy
                   </Button>
                   <Button type="submit" disabled={updateAddress.isPending}>
@@ -563,17 +663,24 @@ export default function AddressManagementPage() {
           </Dialog>
 
           {/* Delete Confirmation Dialog */}
-          <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+          >
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Xác nhận xóa địa chỉ</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Bạn có chắc chắn muốn xóa địa chỉ này? Hành động này không thể hoàn tác.
+                  Bạn có chắc chắn muốn xóa địa chỉ này? Hành động này không thể
+                  hoàn tác.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Hủy</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
                   Xóa
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -585,4 +692,3 @@ export default function AddressManagementPage() {
     </div>
   )
 }
-

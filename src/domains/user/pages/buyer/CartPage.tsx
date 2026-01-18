@@ -2,21 +2,26 @@ import React from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
 import { Separator } from '@shared/components/ui/separator'
 import { useCartStore } from '@/stores/cartStore'
-import { 
-  ShoppingCart, 
-  Plus, 
-  Minus, 
-  Trash2, 
+import {
+  ShoppingCart,
+  Plus,
+  Minus,
+  Trash2,
   ArrowLeft,
   ShoppingBag,
   Package,
   Store,
-  Verified
+  Verified,
 } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -25,12 +30,23 @@ import { initializeFakeCart } from '@/utils/seedCart'
 
 export default function CartPage() {
   const navigate = useNavigate()
-  const { items, totalItems, totalValue, updateQuantity, removeItem, clearCart } = useCartStore()
+  const {
+    items,
+    totalItems,
+    totalValue,
+    updateQuantity,
+    removeItem,
+    clearCart,
+  } = useCartStore()
   const { data: productsData } = useProducts({ page: 1, limit: 50 })
 
   // Initialize fake cart data if cart is empty
   React.useEffect(() => {
-    if (items.length === 0 && productsData?.items && productsData.items.length > 0) {
+    if (
+      items.length === 0 &&
+      productsData?.items &&
+      productsData.items.length > 0
+    ) {
       initializeFakeCart(productsData.items)
     }
   }, [items.length, productsData?.items])
@@ -64,7 +80,11 @@ export default function CartPage() {
 
   const handleClearCart = () => {
     if (items.length === 0) return
-    if (window.confirm('Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng?')) {
+    if (
+      window.confirm(
+        'Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng?'
+      )
+    ) {
       clearCart()
       toast.success('Đã xóa tất cả sản phẩm khỏi giỏ hàng')
     }
@@ -91,7 +111,9 @@ export default function CartPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold">Giỏ hàng</h1>
-                <p className="text-muted-foreground mt-1">Quản lý sản phẩm trong giỏ hàng của bạn</p>
+                <p className="text-muted-foreground mt-1">
+                  Quản lý sản phẩm trong giỏ hàng của bạn
+                </p>
               </div>
             </div>
 
@@ -101,7 +123,9 @@ export default function CartPage() {
                 <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-6">
                   <ShoppingCart className="h-12 w-12 text-muted-foreground" />
                 </div>
-                <h2 className="text-2xl font-bold mb-2">Giỏ hàng của bạn đang trống</h2>
+                <h2 className="text-2xl font-bold mb-2">
+                  Giỏ hàng của bạn đang trống
+                </h2>
                 <p className="text-muted-foreground mb-6 text-center max-w-md">
                   Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm
                 </p>
@@ -132,7 +156,8 @@ export default function CartPage() {
               <div>
                 <h1 className="text-3xl font-bold">Giỏ hàng</h1>
                 <p className="text-muted-foreground mt-1">
-                  {totalItems} {totalItems === 1 ? 'sản phẩm' : 'sản phẩm'} trong giỏ hàng
+                  {totalItems} {totalItems === 1 ? 'sản phẩm' : 'sản phẩm'}{' '}
+                  trong giỏ hàng
                 </p>
               </div>
             </div>
@@ -151,10 +176,17 @@ export default function CartPage() {
             <div className="lg:col-span-2 space-y-6">
               {Object.entries(groupedItems).map(([sellerKey, sellerItems]) => {
                 const firstItem = sellerItems[0]
-                const sellerName = firstItem.sellerName || firstItem.storeName || 'Nhà cung cấp'
+                const sellerName =
+                  firstItem.sellerName || firstItem.storeName || 'Nhà cung cấp'
                 const sellerId = firstItem.sellerId || firstItem.storeId
-                const groupTotal = sellerItems.reduce((sum, item) => sum + (item.productPrice * item.quantity), 0)
-                const groupQuantity = sellerItems.reduce((sum, item) => sum + item.quantity, 0)
+                const groupTotal = sellerItems.reduce(
+                  (sum, item) => sum + item.productPrice * item.quantity,
+                  0
+                )
+                const groupQuantity = sellerItems.reduce(
+                  (sum, item) => sum + item.quantity,
+                  0
+                )
 
                 return (
                   <Card key={sellerKey} className="overflow-hidden">
@@ -162,8 +194,8 @@ export default function CartPage() {
                     <CardHeader className="bg-muted/50 border-b">
                       <div className="flex items-center justify-between gap-4">
                         {sellerId ? (
-                          <Link 
-                            to={`/shop/${sellerId}`} 
+                          <Link
+                            to={`/shop/${sellerId}`}
                             className="flex items-center gap-3 flex-1 cursor-pointer hover:bg-muted/30 transition-colors rounded-lg p-2 -ml-2 -mr-2"
                           >
                             <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
@@ -171,11 +203,15 @@ export default function CartPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <CardTitle className="text-lg flex items-center gap-2">
-                                <span className="font-bold hover:text-primary transition-colors truncate">{sellerName}</span>
+                                <span className="font-bold hover:text-primary transition-colors truncate">
+                                  {sellerName}
+                                </span>
                                 <Verified className="h-4 w-4 text-primary flex-shrink-0" />
                               </CardTitle>
                               <p className="text-xs text-muted-foreground mt-1">
-                                {groupQuantity} {groupQuantity === 1 ? 'sản phẩm' : 'sản phẩm'} • Tổng: {formatCurrency(groupTotal)}
+                                {groupQuantity}{' '}
+                                {groupQuantity === 1 ? 'sản phẩm' : 'sản phẩm'}{' '}
+                                • Tổng: {formatCurrency(groupTotal)}
                               </p>
                             </div>
                           </Link>
@@ -186,17 +222,24 @@ export default function CartPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <CardTitle className="text-lg flex items-center gap-2">
-                                <span className="font-bold truncate">{sellerName}</span>
+                                <span className="font-bold truncate">
+                                  {sellerName}
+                                </span>
                                 <Verified className="h-4 w-4 text-primary flex-shrink-0" />
                               </CardTitle>
                               <p className="text-xs text-muted-foreground mt-1">
-                                {groupQuantity} {groupQuantity === 1 ? 'sản phẩm' : 'sản phẩm'} • Tổng: {formatCurrency(groupTotal)}
+                                {groupQuantity}{' '}
+                                {groupQuantity === 1 ? 'sản phẩm' : 'sản phẩm'}{' '}
+                                • Tổng: {formatCurrency(groupTotal)}
                               </p>
                             </div>
                           </div>
                         )}
                         {sellerId && (
-                          <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                          <div
+                            className="flex-shrink-0"
+                            onClick={e => e.stopPropagation()}
+                          >
                             <Link to={`/shop/${sellerId}`}>
                               <Button variant="ghost" size="sm">
                                 Xem shop
@@ -208,11 +251,14 @@ export default function CartPage() {
                     </CardHeader>
                     <CardContent className="p-0">
                       <div className="divide-y">
-                        {sellerItems.map((item) => (
+                        {sellerItems.map(item => (
                           <div key={item.id} className="p-4">
                             <div className="flex gap-4">
                               {/* Product Image */}
-                              <Link to={`/products/${item.productId}`} className="flex-shrink-0">
+                              <Link
+                                to={`/products/${item.productId}`}
+                                className="flex-shrink-0"
+                              >
                                 <img
                                   src={item.productImage}
                                   alt={item.productName}
@@ -230,15 +276,22 @@ export default function CartPage() {
                                 <p className="text-sm text-muted-foreground mb-2">
                                   {formatCurrency(item.productPrice)} / sản phẩm
                                 </p>
-                                
+
                                 {/* Stock Status */}
-                                {item.productStock <= 5 && item.productStock > 0 && (
-                                  <Badge variant="outline" className="text-xs mb-2 text-amber-600 border-amber-600">
-                                    Còn {item.productStock} sản phẩm
-                                  </Badge>
-                                )}
+                                {item.productStock <= 5 &&
+                                  item.productStock > 0 && (
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs mb-2 text-amber-600 border-amber-600"
+                                    >
+                                      Còn {item.productStock} sản phẩm
+                                    </Badge>
+                                  )}
                                 {item.productStock === 0 && (
-                                  <Badge variant="destructive" className="text-xs mb-2">
+                                  <Badge
+                                    variant="destructive"
+                                    className="text-xs mb-2"
+                                  >
                                     Hết hàng
                                   </Badge>
                                 )}
@@ -246,13 +299,20 @@ export default function CartPage() {
                                 {/* Quantity Controls */}
                                 <div className="flex items-center gap-4 mt-3">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm text-muted-foreground">Số lượng:</span>
+                                    <span className="text-sm text-muted-foreground">
+                                      Số lượng:
+                                    </span>
                                     <div className="flex items-center border rounded-lg">
                                       <Button
                                         variant="ghost"
                                         size="icon"
                                         className="h-8 w-8 rounded-r-none"
-                                        onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
+                                        onClick={() =>
+                                          handleQuantityChange(
+                                            item.productId,
+                                            item.quantity - 1
+                                          )
+                                        }
                                         disabled={item.quantity <= 1}
                                       >
                                         <Minus className="h-4 w-4" />
@@ -264,8 +324,16 @@ export default function CartPage() {
                                         variant="ghost"
                                         size="icon"
                                         className="h-8 w-8 rounded-l-none"
-                                        onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
-                                        disabled={item.productStock > 0 && item.quantity >= item.productStock}
+                                        onClick={() =>
+                                          handleQuantityChange(
+                                            item.productId,
+                                            item.quantity + 1
+                                          )
+                                        }
+                                        disabled={
+                                          item.productStock > 0 &&
+                                          item.quantity >= item.productStock
+                                        }
                                       >
                                         <Plus className="h-4 w-4" />
                                       </Button>
@@ -278,18 +346,23 @@ export default function CartPage() {
                               <div className="flex flex-col items-end justify-between">
                                 <div className="text-right">
                                   <p className="text-lg font-bold text-primary">
-                                    {formatCurrency(item.productPrice * item.quantity)}
+                                    {formatCurrency(
+                                      item.productPrice * item.quantity
+                                    )}
                                   </p>
                                   {item.quantity > 1 && (
                                     <p className="text-xs text-muted-foreground">
-                                      {formatCurrency(item.productPrice)} × {item.quantity}
+                                      {formatCurrency(item.productPrice)} ×{' '}
+                                      {item.quantity}
                                     </p>
                                   )}
                                 </div>
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  onClick={() => handleRemoveItem(item.productId)}
+                                  onClick={() =>
+                                    handleRemoveItem(item.productId)
+                                  }
                                   className="text-destructive hover:text-destructive hover:bg-destructive/10"
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -317,12 +390,18 @@ export default function CartPage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Tạm tính ({totalItems} sản phẩm)</span>
+                      <span className="text-muted-foreground">
+                        Tạm tính ({totalItems} sản phẩm)
+                      </span>
                       <span>{formatCurrency(totalValue)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Phí vận chuyển</span>
-                      <span className="text-muted-foreground">Tự vận chuyển</span>
+                      <span className="text-muted-foreground">
+                        Phí vận chuyển
+                      </span>
+                      <span className="text-muted-foreground">
+                        Tự vận chuyển
+                      </span>
                     </div>
                     <Separator />
                     <div className="flex justify-between">
@@ -362,4 +441,3 @@ export default function CartPage() {
     </div>
   )
 }
-
