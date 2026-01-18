@@ -48,18 +48,18 @@ import {
 
 export default function ProductModerationPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [selectedProducts, setSelectedProducts] = useState<string[]>([])
   const [page, setPage] = useState(1)
   const pageSize = 10
 
+  // Only fetch pending products for moderation page
   const { data: productsData, isLoading } = useModerationProducts({
     page,
     pageSize,
     search: searchQuery || undefined,
-    status: statusFilter !== 'all' ? statusFilter : undefined,
+    status: 'pending', // Always filter by pending status
     category: categoryFilter !== 'all' ? categoryFilter : undefined,
     priority: priorityFilter !== 'all' ? priorityFilter : undefined,
   })
@@ -72,36 +72,6 @@ export default function ProductModerationPage() {
   const products = productsData?.items || []
   const total = productsData?.total || 0
   const totalPages = productsData?.totalPages || 1
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return 'bg-green-100 text-green-800'
-      case 'rejected':
-        return 'bg-red-100 text-red-800'
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'draft':
-        return 'bg-gray-100 text-gray-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return 'Đã duyệt'
-      case 'rejected':
-        return 'Từ chối'
-      case 'pending':
-        return 'Chờ duyệt'
-      case 'draft':
-        return 'Bản nháp'
-      default:
-        return status
-    }
-  }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -255,7 +225,7 @@ export default function ProductModerationPage() {
             Kiểm duyệt sản phẩm
           </h1>
           <p className="text-gray-600 mt-1">
-            Duyệt và quản lý sản phẩm đăng bán trên nền tảng
+            Duyệt các sản phẩm chờ kiểm duyệt trên nền tảng
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -294,24 +264,6 @@ export default function ProductModerationPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <Select
-                value={statusFilter}
-                onValueChange={value => {
-                  setStatusFilter(value)
-                  setPage(1)
-                }}
-              >
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Trạng thái" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                  <SelectItem value="pending">Chờ duyệt</SelectItem>
-                  <SelectItem value="approved">Đã duyệt</SelectItem>
-                  <SelectItem value="rejected">Từ chối</SelectItem>
-                  <SelectItem value="draft">Bản nháp</SelectItem>
-                </SelectContent>
-              </Select>
               <Select
                 value={categoryFilter}
                 onValueChange={value => {
@@ -440,7 +392,6 @@ export default function ProductModerationPage() {
                     </TableHead>
                     <TableHead>Sản phẩm</TableHead>
                     <TableHead>Người bán</TableHead>
-                    <TableHead>Trạng thái</TableHead>
                     <TableHead>Ưu tiên</TableHead>
                     <TableHead>Vi phạm</TableHead>
                     <TableHead>AI Score</TableHead>
@@ -505,11 +456,6 @@ export default function ProductModerationPage() {
                             {product.seller}
                           </span>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(product.status)}>
-                          {getStatusLabel(product.status)}
-                        </Badge>
                       </TableCell>
                       <TableCell>
                         <Badge className={getPriorityColor(product.priority)}>
@@ -655,71 +601,6 @@ export default function ProductModerationPage() {
           )}
         </CardContent>
       </Card>
-
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Clock className="h-5 w-5 text-yellow-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Chờ duyệt</p>
-                <p className="text-xl font-bold text-gray-900">
-                  {productsData?.items?.filter(p => p.status === 'pending')
-                    .length ?? 0}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Đã duyệt</p>
-                <p className="text-xl font-bold text-gray-900">
-                  {productsData?.items?.filter(p => p.status === 'approved')
-                    .length ?? 0}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                <XCircle className="h-5 w-5 text-red-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Từ chối</p>
-                <p className="text-xl font-bold text-gray-900">
-                  {productsData?.items?.filter(p => p.status === 'rejected')
-                    .length ?? 0}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Bot className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">AI Score TB</p>
-                <p className="text-xl font-bold text-gray-900">0%</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   )
 }
