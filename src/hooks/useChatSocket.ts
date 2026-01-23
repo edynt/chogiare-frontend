@@ -30,12 +30,28 @@ let socketRefCount = 0
 
 const getOrCreateSocket = (): Socket => {
   if (!socketInstance) {
+    console.log('[ChatSocket] Creating socket connection to:', `${SOCKET_URL}/chat`)
     socketInstance = io(`${SOCKET_URL}/chat`, {
       withCredentials: true,
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'], // Start with polling to ensure cookies are sent
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      autoConnect: true,
+      // Cookies will be sent automatically via withCredentials
+    })
+
+    // Debug listeners
+    socketInstance.on('connect', () => {
+      console.log('[ChatSocket] Socket connected with id:', socketInstance?.id)
+    })
+
+    socketInstance.on('new_message', (payload) => {
+      console.log('[ChatSocket] Received new_message event:', payload)
+    })
+
+    socketInstance.on('connect_error', (error) => {
+      console.error('[ChatSocket] Connection error:', error.message)
     })
   }
   socketRefCount++

@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom'
 import { UserAuthProvider } from '@user/components/auth/user-auth-provider'
 import { UserRouteGuard } from '@user/components/auth/user-route-guard'
 import UserAuthPage from '@user/pages/user-auth-page'
+import { ChatBubble } from '@shared/components/chat/ChatBubble'
+import { ChatPopup } from '@shared/components/chat/ChatPopup'
 
 // Lazy load pages - User Domain (Buyer)
 const HomePage = React.lazy(() => import('@user/pages/buyer/HomePage'))
@@ -168,6 +170,10 @@ export function UserApp() {
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+
+        {/* Global Chat Components */}
+        <ChatBubble />
+        <ChatPopup />
       </Suspense>
     </UserAuthProvider>
   )

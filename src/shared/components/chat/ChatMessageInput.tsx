@@ -8,6 +8,8 @@ interface ChatMessageInputProps {
   onTyping?: (isTyping: boolean) => void
   disabled?: boolean
   placeholder?: string
+  initialMessage?: string
+  onInitialMessageUsed?: () => void
 }
 
 export function ChatMessageInput({
@@ -15,10 +17,22 @@ export function ChatMessageInput({
   onTyping,
   disabled = false,
   placeholder = 'Nhập tin nhắn...',
+  initialMessage,
+  onInitialMessageUsed,
 }: ChatMessageInputProps) {
   const [message, setMessage] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const initialMessageUsedRef = useRef(false)
+
+  // Set initial message when provided
+  useEffect(() => {
+    if (initialMessage && typeof initialMessage === 'string' && !initialMessageUsedRef.current) {
+      setMessage(initialMessage)
+      initialMessageUsedRef.current = true
+      onInitialMessageUsed?.()
+    }
+  }, [initialMessage, onInitialMessageUsed])
 
   // Auto-resize textarea
   useEffect(() => {
@@ -57,7 +71,7 @@ export function ChatMessageInput({
   }, [])
 
   const handleSubmit = () => {
-    const trimmed = message.trim()
+    const trimmed = (message || '').trim()
     if (!trimmed || disabled) return
 
     onSend(trimmed)
@@ -135,7 +149,7 @@ export function ChatMessageInput({
           size="icon"
           className="h-9 w-9 flex-shrink-0"
           onClick={handleSubmit}
-          disabled={disabled || !message.trim()}
+          disabled={disabled || !(message || '').trim()}
         >
           <Send className="h-4 w-4" />
         </Button>

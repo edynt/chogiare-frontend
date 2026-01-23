@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
 import { Button } from '@shared/components/ui/button'
+import { useChatStore } from '@/stores/chatStore'
+import { useAuthStore } from '@/stores/authStore'
+import { toast } from 'sonner'
 import { Badge } from '@shared/components/ui/badge'
 import { useProducts } from '@/hooks/useProducts'
 import { InfiniteProductGrid } from '@shared/components/product/InfiniteProductGrid'
@@ -46,6 +49,22 @@ export default function SellerDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [selectedFilter, setSelectedFilter] = useState('Tất cả')
+  const { openChatWithSeller } = useChatStore()
+  const { isAuthenticated } = useAuthStore()
+
+  // Handle opening chat with seller
+  const handleChatWithSeller = () => {
+    if (!isAuthenticated) {
+      toast.error('Vui lòng đăng nhập để chat với người bán')
+      navigate('/auth/login')
+      return
+    }
+    if (!id) {
+      toast.error('Không thể xác định người bán')
+      return
+    }
+    openChatWithSeller(Number(id))
+  }
 
   // Fetch seller products for count
   const { data: productsData } = useProducts({
@@ -197,12 +216,10 @@ export default function SellerDetailPage() {
                     variant="secondary"
                     size="sm"
                     className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                    asChild
+                    onClick={handleChatWithSeller}
                   >
-                    <Link to={`/chat?sellerId=${seller.id}`}>
-                      <MessageCircle className="h-4 w-4 mr-1" />
-                      Chat
-                    </Link>
+                    <MessageCircle className="h-4 w-4 mr-1" />
+                    Chat
                   </Button>
                   {seller.phone && (
                     <Button

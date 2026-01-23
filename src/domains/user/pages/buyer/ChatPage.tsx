@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
@@ -11,26 +11,57 @@ import { useConversations, useCreateConversation } from '@/hooks/useChat'
 import { useAuthStore } from '@/stores/authStore'
 
 export default function ChatPage() {
-  const { chatId } = useParams<{ chatId?: string }>()
+  const { chatId: urlChatId } = useParams<{ chatId?: string }>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { user } = useAuthStore()
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreatingConversation, setIsCreatingConversation] = useState(false)
+  // Local state for active chatId (allows immediate update without URL change)
+  const [activeChatId, setActiveChatId] = useState<string | undefined>(urlChatId)
 
   // Get sellerId from URL query params
   const sellerId = searchParams.get('sellerId')
 
+  // Sync activeChatId with URL param when URL changes
+  useEffect(() => {
+    if (urlChatId) {
+      setActiveChatId(urlChatId)
+    }
+  }, [urlChatId])
+
   // Fetch conversations to check if conversation with seller already exists
+  // Only fetch when user is logged in
   const { data: conversationsData, isLoading: conversationsLoading } =
-    useConversations({ page: 1, pageSize: 100 })
+    useConversations({ page: 1, pageSize: 100 }, { enabled: !!user?.id })
 
   const createConversation = useCreateConversation()
 
+  // Track if we've already processed this sellerId to prevent re-runs
+  const processedSellerIdRef = useRef<string | null>(null)
+
   // Handle sellerId from URL - find or create conversation
   useEffect(() => {
-    // Skip if no sellerId, already on a chat, or still loading
-    if (!sellerId || chatId || conversationsLoading || isCreatingConversation) {
+    // Skip if no sellerId or already on a chat
+    if (!sellerId || activeChatId) {
+      return
+    }
+
+    // User must be logged in to chat - check first before loading
+    if (!user?.id) {
+      // Redirect to login with return URL
+      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`, { replace: true })
+      return
+    }
+
+    // Skip if still loading conversations or currently creating
+    if (conversationsLoading || isCreatingConversation) {
+      return
+    }
+
+    // Skip if we've already processed this sellerId (prevent duplicate API calls)
+    // But only if conversationsData is available (not first load)
+    if (processedSellerIdRef.current === sellerId && conversationsData) {
       return
     }
 
@@ -42,11 +73,14 @@ export default function ChatPage() {
     }
 
     // Don't create conversation with yourself (compare as numbers)
-    const currentUserId = typeof user?.id === 'string' ? parseInt(user.id) : user?.id
+    const currentUserId = typeof user.id === 'string' ? parseInt(user.id) : user.id
     if (sellerIdNum === currentUserId) {
       navigate('/chat', { replace: true })
       return
     }
+
+    // Mark this sellerId as processed
+    processedSellerIdRef.current = sellerId
 
     // Check if conversation with this seller already exists
     const existingConversation = conversationsData?.items?.find(conv => {
@@ -61,9 +95,12 @@ export default function ChatPage() {
       )
     })
 
-    if (existingConversation) {
-      // Navigate to existing conversation
-      navigate(`/chat/${existingConversation.id}`, { replace: true })
+    if (existingConversation && existingConversation.id != null) {
+      // Set active chat immediately - this will render ChatWindow
+      const chatId = String(existingConversation.id)
+      setActiveChatId(chatId)
+      // Update URL without causing remount (same component, different route)
+      window.history.replaceState(null, '', `/chat/${chatId}`)
     } else {
       // Create new conversation
       setIsCreatingConversation(true)
@@ -71,30 +108,44 @@ export default function ChatPage() {
         { otherUserId: sellerIdNum },
         {
           onSuccess: conversation => {
-            navigate(`/chat/${conversation.id}`, { replace: true })
-            setIsCreatingConversation(false)
+            // Validate conversation.id exists
+            if (conversation?.id != null) {
+              // Set active chat immediately - this will render ChatWindow
+              const chatId = String(conversation.id)
+              setActiveChatId(chatId)
+              // Update URL without causing remount
+              window.history.replaceState(null, '', `/chat/${chatId}`)
+            }
           },
-          onError: () => {
-            // On error, just show chat list
-            navigate('/chat', { replace: true })
+          onError: (error) => {
+            console.error('Failed to create conversation:', error)
+            // Clear sellerId from URL to prevent infinite retry
+            window.history.replaceState(null, '', '/chat')
+          },
+          onSettled: () => {
+            // Always reset creating state
             setIsCreatingConversation(false)
           },
         }
       )
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     sellerId,
-    chatId,
+    activeChatId,
     conversationsData,
     conversationsLoading,
     isCreatingConversation,
     user?.id,
     navigate,
-    createConversation,
   ])
 
-  // Show loading when creating conversation or checking for existing
-  const isInitializing = sellerId && !chatId && (conversationsLoading || isCreatingConversation)
+  // Show loading only when:
+  // - We have sellerId AND no active chat AND (loading conversations OR creating conversation)
+  // - AND we haven't processed this sellerId yet
+  const isInitializing = sellerId && !activeChatId &&
+    (conversationsLoading || isCreatingConversation) &&
+    processedSellerIdRef.current !== sellerId
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -145,7 +196,7 @@ export default function ChatPage() {
                 </div>
 
                 <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
-                  <ChatList searchQuery={searchQuery} selectedChatId={chatId} />
+                  <ChatList searchQuery={searchQuery} selectedChatId={activeChatId} />
                 </div>
               </CardContent>
             </Card>
@@ -164,8 +215,8 @@ export default function ChatPage() {
                       </p>
                     </div>
                   </div>
-                ) : chatId ? (
-                  <ChatWindow chatId={chatId} />
+                ) : activeChatId ? (
+                  <ChatWindow chatId={activeChatId} />
                 ) : (
                   <div className="flex-1 flex items-center justify-center">
                     <div className="text-center">

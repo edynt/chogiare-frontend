@@ -1,6 +1,22 @@
 import { apiClient } from '@shared/api/axios'
 import type { ApiResponse } from '@/types'
 
+/**
+ * Helper to unwrap nested response from backend
+ * Backend returns { message, data } which interceptor wraps to { success, data: { data: ... } }
+ * This function extracts the actual data from nested structure
+ */
+function unwrapResponse<T>(data: T | { data: T }): T {
+  if (data && typeof data === 'object' && 'data' in data) {
+    // Check if it's the nested structure by verifying inner data has expected properties
+    const inner = (data as { data: T }).data
+    if (inner !== undefined) {
+      return inner
+    }
+  }
+  return data as T
+}
+
 export interface ConversationParticipant {
   id?: string
   conversationId?: string
@@ -104,14 +120,14 @@ export const chatApi = {
       '/chat/conversations',
       data
     )
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 
   getConversation: async (id: string): Promise<Conversation> => {
     const response = await apiClient.get<ApiResponse<Conversation>>(
       `/chat/conversations/${id}`
     )
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 
   getConversations: async (filters?: {
@@ -127,7 +143,7 @@ export const chatApi = {
         },
       }
     )
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 
   listUserConversations: async (
@@ -140,7 +156,7 @@ export const chatApi = {
         params: { page, pageSize },
       }
     )
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 
   updateConversation: async (
@@ -151,7 +167,7 @@ export const chatApi = {
       `/chat/conversations/${id}`,
       data
     )
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 
   deleteConversation: async (id: string): Promise<void> => {
@@ -166,7 +182,7 @@ export const chatApi = {
     const response = await apiClient.post<ApiResponse<ConversationParticipant>>(
       `/chat/conversations/${conversationId}/participants/${userId}`
     )
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 
   removeParticipant: async (
@@ -194,7 +210,7 @@ export const chatApi = {
         messageType: data.messageType,
       }
     )
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 
   createChatMessage: async (
@@ -211,14 +227,14 @@ export const chatApi = {
         params: { conversationId },
       }
     )
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 
   getChatMessage: async (id: string): Promise<ChatMessage> => {
     const response = await apiClient.get<ApiResponse<ChatMessage>>(
       `/chat/messages/${id}`
     )
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 
   getConversationMessages: async (
@@ -234,7 +250,7 @@ export const chatApi = {
         },
       }
     )
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 
   listConversationMessages: async (
@@ -248,7 +264,7 @@ export const chatApi = {
         params: { page, pageSize },
       }
     )
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 
   markMessageAsRead: async (
@@ -280,6 +296,6 @@ export const chatApi = {
   // Statistics
   getChatStats: async (): Promise<ChatStats> => {
     const response = await apiClient.get<ApiResponse<ChatStats>>('/chat/stats')
-    return response.data.data
+    return unwrapResponse(response.data.data)
   },
 }

@@ -11,6 +11,7 @@ import {
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
 import { useUserOrders } from '@/hooks/useOrders'
+import { useChatStore } from '@/stores/chatStore'
 import { APP_NAME } from '@/constants/app.constants'
 import {
   ShoppingBag,
@@ -25,6 +26,7 @@ import {
 export default function BuyerDashboardPage() {
   const navigate = useNavigate()
   const { data: ordersData } = useUserOrders({ page: 1, pageSize: 5 })
+  const { openChat } = useChatStore()
 
   const orders = ordersData?.items || []
   const pendingOrders = orders.filter(o => o.status === 'pending')
@@ -92,7 +94,7 @@ export default function BuyerDashboardPage() {
 
             <Card
               className="hover:shadow-lg transition-shadow cursor-pointer"
-              onClick={() => navigate('/chat')}
+              onClick={() => openChat()}
             >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">

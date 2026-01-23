@@ -1,12 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useChatStore } from '@/stores/chatStore'
 import { useAuthStore } from '@/stores/authStore'
-import { useConversations } from '@/hooks/useChat'
+import { useConversations, useCreateConversation } from '@/hooks/useChat'
 import { useChatSocket } from '@/hooks/useChatSocket'
 import { ChatHeader } from './ChatHeader'
 import { ChatConversationList } from './ChatConversationList'
 import { ChatMessageArea } from './ChatMessageArea'
 import { cn } from '@/lib/utils'
+import { Loader2 } from 'lucide-react'
 
 export function ChatPopup() {
   const { isAuthenticated } = useAuthStore()
@@ -14,13 +15,19 @@ export function ChatPopup() {
     isOpen,
     view,
     activeConversationId,
+    pendingSellerId,
     setTotalUnreadCount,
     incrementUnreadCount,
     setUserTyping,
+    setActiveConversation,
+    setPendingSellerId,
   } = useChatStore()
 
   // Fetch conversations to get unread count
   const { data: conversationsData } = useConversations({ page: 1, pageSize: 50 })
+
+  // Create conversation mutation
+  const createConversation = useCreateConversation()
 
   // Socket connection for realtime updates
   useChatSocket({
@@ -51,10 +58,44 @@ export function ChatPopup() {
     }
   }, [conversationsData, setTotalUnreadCount])
 
+  // Store functions in refs to avoid effect re-runs
+  const setActiveConvRef = useRef(setActiveConversation)
+  const setPendingSellerRef = useRef(setPendingSellerId)
+  useEffect(() => {
+    setActiveConvRef.current = setActiveConversation
+    setPendingSellerRef.current = setPendingSellerId
+  }, [setActiveConversation, setPendingSellerId])
+
+  // Handle pending seller - create/find conversation when popup opens
+  useEffect(() => {
+    if (!isOpen || !pendingSellerId || createConversation.isPending) return
+
+    createConversation.mutate(
+      { otherUserId: pendingSellerId },
+      {
+        onSuccess: (conversation) => {
+          // Validate conversation has id before setting
+          if (conversation?.id != null) {
+            setActiveConvRef.current(conversation.id.toString())
+          }
+          setPendingSellerRef.current(null)
+        },
+        onError: (error) => {
+          console.error('Failed to create conversation:', error)
+          setPendingSellerRef.current(null)
+        },
+      }
+    )
+  }, [isOpen, pendingSellerId, createConversation])
+
   // Don't render if not authenticated or not open
   if (!isAuthenticated || !isOpen) {
     return null
   }
+
+  // Show loading when creating conversation for new seller
+  // pendingSellerId means we're waiting to create/find conversation
+  const isCreatingConversation = !!pendingSellerId
 
   return (
     <div
@@ -67,14 +108,21 @@ export function ChatPopup() {
         'max-md:bottom-0 max-md:right-0 max-md:h-full max-md:w-full max-md:rounded-none'
       )}
     >
-      {view === 'list' ? (
+      {isCreatingConversation ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">
+            Đang mở cuộc trò chuyện...
+          </span>
+        </div>
+      ) : view === 'conversation' && activeConversationId ? (
+        <ChatMessageArea conversationId={activeConversationId} />
+      ) : (
         <>
           <ChatHeader title="Tin nhắn" />
           <ChatConversationList />
         </>
-      ) : activeConversationId ? (
-        <ChatMessageArea conversationId={activeConversationId} />
-      ) : null}
+      )}
     </div>
   )
 }

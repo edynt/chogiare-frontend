@@ -48,6 +48,8 @@ import { LazySection } from './LazySection'
 import { formatCurrency, formatDate, PLACEHOLDER_IMAGE } from '@/lib/utils'
 import { SecurityWarning } from '@shared/components/ui/security-warning'
 import { useCartStore } from '@/stores/cartStore'
+import { useChatStore } from '@/stores/chatStore'
+import { useAuthStore } from '@/stores/authStore'
 import { toast } from 'sonner'
 import {
   Star,
@@ -89,6 +91,8 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const { id } = useParams<{ id: string }>()
   const productIdToUse = productId || id
   const { addItem } = useCartStore()
+  const { openChatWithSeller } = useChatStore()
+  const { isAuthenticated } = useAuthStore()
   const { data: user } = useProfile()
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
@@ -179,6 +183,20 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
     return null
   }
   const sellerIdForChat = getSellerIdForChat()
+
+  // Handle opening chat with seller
+  const handleChatWithSeller = (message?: string) => {
+    if (!isAuthenticated) {
+      toast.error('Vui lòng đăng nhập để chat với người bán')
+      window.location.href = '/auth/login'
+      return
+    }
+    if (!sellerIdForChat) {
+      toast.error('Không thể xác định người bán')
+      return
+    }
+    openChatWithSeller(Number(sellerIdForChat), message)
+  }
 
   // Check if current user is the product owner
   // Compare as strings to handle both string and number IDs from API
@@ -458,13 +476,13 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                         </Link>
                       </Button>
                       {sellerIdForChat && (
-                        <Button variant="outline" size="sm" asChild>
-                          <Link
-                            to={`/chat?sellerId=${sellerIdForChat}&productId=${product.id}`}
-                          >
-                            <MessageCircle className="h-4 w-4 mr-2" />
-                            Chat
-                          </Link>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleChatWithSeller}
+                        >
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          Chat
                         </Button>
                       )}
                     </div>
@@ -504,14 +522,10 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 {sellerIdForChat ? (
                   <Button
                     className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-6 shadow-lg hover:shadow-xl transition-all"
-                    asChild
+                    onClick={handleChatWithSeller}
                   >
-                    <Link
-                      to={`/chat?sellerId=${sellerIdForChat}&productId=${product.id}`}
-                    >
-                      <MessageCircle className="h-5 w-5 mr-2" />
-                      Chat với người bán
-                    </Link>
+                    <MessageCircle className="h-5 w-5 mr-2" />
+                    Chat với người bán
                   </Button>
                 ) : (
                   <Button
@@ -1657,13 +1671,13 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
 
                   <div className="flex gap-2 mt-4">
                     {sellerIdForChat && (
-                      <Button variant="outline" className="flex-1" asChild>
-                        <Link
-                          to={`/chat?sellerId=${sellerIdForChat}&productId=${product.id}`}
-                        >
-                          <MessageCircle className="h-4 w-4 mr-2" />
-                          Nhắn tin
-                        </Link>
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={handleChatWithSeller}
+                      >
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        Nhắn tin
                       </Button>
                     )}
                     <Button variant="outline" className="flex-1" asChild>
@@ -1702,8 +1716,8 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                         variant="outline"
                         className="w-full justify-start text-left h-auto py-3"
                         onClick={() => {
-                          // Navigate to chat with question
-                          window.location.href = '/chat'
+                          // Open chat popup with question
+                          handleChatWithSeller(`Xin chào, tôi có câu hỏi về sản phẩm "${product.title}": ${question}`)
                         }}
                       >
                         <MessageCircle className="h-4 w-4 mr-2" />
@@ -1949,15 +1963,11 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   return
                 }
 
-                const message = `Xin chào, tôi muốn xin báo giá cho sản phẩm "${product.title}" với số lượng ${quoteQuantity}${quoteMessage ? `\n\nYêu cầu: ${quoteMessage}` : ''}`
+                const quoteMsg = `Xin chào, tôi muốn xin báo giá cho sản phẩm "${product.title}" với số lượng ${quoteQuantity}${quoteMessage ? `\n\nYêu cầu: ${quoteMessage}` : ''}`
 
                 if (quoteMethod === 'chat') {
-                  // Navigate to chat with quote request
-                  if (!sellerIdForChat) {
-                    alert('Không tìm thấy thông tin người bán')
-                    return
-                  }
-                  window.location.href = `/chat?sellerId=${sellerIdForChat}&productId=${product.id}&message=${encodeURIComponent(message)}`
+                  // Open chat popup with quote request
+                  handleChatWithSeller(quoteMsg)
                 } else {
                   // Send via email
                   const emailSubject = encodeURIComponent(

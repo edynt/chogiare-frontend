@@ -22,6 +22,13 @@ interface ChatActions {
   setView: (view: 'list' | 'conversation') => void
   goBackToList: () => void
 
+  // Open chat with seller (triggers API call in ChatPopup)
+  pendingSellerId: number | null
+  pendingMessage: string | null
+  setPendingSellerId: (sellerId: number | null) => void
+  setPendingMessage: (message: string | null) => void
+  openChatWithSeller: (sellerId: number, message?: string) => void
+
   // Realtime Actions
   setUserTyping: (
     conversationId: string,
@@ -47,6 +54,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   typingUsers: {},
   onlineUsers: new Set(),
   totalUnreadCount: 0,
+  pendingSellerId: null,
+  pendingMessage: null,
 
   // UI Actions
   openChat: (conversationId?: string) => {
@@ -84,6 +93,23 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     set({
       activeConversationId: null,
       view: 'list',
+    })
+  },
+
+  setPendingSellerId: (sellerId: number | null) => {
+    set({ pendingSellerId: sellerId })
+  },
+
+  setPendingMessage: (message: string | null) => {
+    set({ pendingMessage: message })
+  },
+
+  openChatWithSeller: (sellerId: number, message?: string) => {
+    set({
+      pendingSellerId: sellerId,
+      pendingMessage: message || null,
+      isOpen: true,
+      view: 'conversation',
     })
   },
 

@@ -1,12 +1,14 @@
-import { useEffect, useRef, useCallback } from 'react'
-import { useConversationMessages, useConversation } from '@/hooks/useChat'
-import { useChatSocket } from '@/hooks/useChatSocket'
+import { useEffect, useRef, useCallback, useState } from 'react'
+import { useConversationMessages, useConversation, useSendMessage } from '@/hooks/useChat'
+import { useChatSocket, type ChatMessagePayload } from '@/hooks/useChatSocket'
 import { useChatStore } from '@/stores/chatStore'
 import { useAuthStore } from '@/stores/authStore'
 import { ChatHeader } from './ChatHeader'
 import { ChatMessageItem } from './ChatMessageItem'
 import { ChatMessageInput } from './ChatMessageInput'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
+import type { ChatMessage } from '@user/api/chat'
 
 interface ChatMessageAreaProps {
   conversationId: string
@@ -14,14 +16,40 @@ interface ChatMessageAreaProps {
 
 export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
   const { user } = useAuthStore()
-  const { typingUsers, onlineUsers, setUserTyping } = useChatStore()
+  const { typingUsers, onlineUsers, setUserTyping, pendingMessage, setPendingMessage } = useChatStore()
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
+
+  // Local state for realtime messages (optimistic updates)
+  const [realtimeMessages, setRealtimeMessages] = useState<ChatMessage[]>([])
 
   // Fetch conversation and messages
   const { data: conversation } = useConversation(conversationId)
   const { data: messagesData, isLoading } = useConversationMessages(
     conversationId,
     { page: 1, pageSize: 50 }
+  )
+
+  // Clear realtime messages when conversation changes or when data refreshes
+  useEffect(() => {
+    setRealtimeMessages([])
+  }, [conversationId])
+
+  // Stable callback for new message (realtime)
+  const handleNewMessageCallback = useCallback(
+    (payload: ChatMessagePayload) => {
+      if (payload.conversationId.toString() === conversationId) {
+        // Add new message to realtime state for instant display
+        setRealtimeMessages(prev => {
+          // Avoid duplicates
+          if (prev.some(m => m.id === payload.message.id)) {
+            return prev
+          }
+          return [...prev, payload.message]
+        })
+      }
+    },
+    [conversationId]
   )
 
   // Stable callback for typing
@@ -34,11 +62,15 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
     [conversationId, setUserTyping]
   )
 
-  // Socket connection
-  const { sendMessage, joinConversation, leaveConversation, markAsRead, sendTyping } =
+  // Socket connection with realtime message handler
+  const { isConnected, sendMessage: sendSocketMessage, joinConversation, leaveConversation, markAsRead, sendTyping } =
     useChatSocket({
+      onNewMessage: handleNewMessageCallback,
       onUserTyping: handleTypingCallback,
     })
+
+  // REST API fallback for sending messages
+  const sendMessageMutation = useSendMessage()
 
   // Store functions in refs to avoid effect re-runs
   const joinRef = useRef(joinConversation)
@@ -64,10 +96,14 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
     }
   }, [conversationId])
 
-  // Scroll to bottom when new messages arrive
+  // Scroll to bottom when new messages arrive (from API or realtime)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messagesData?.items])
+    // Small delay to ensure DOM is updated
+    const timer = setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [messagesData?.items, realtimeMessages])
 
   // Get other user info - try otherUser first, then fallback to participants
   const otherUserFromConv = conversation?.otherUser
@@ -84,15 +120,63 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
     ? conversationTypingUsers.includes(otherUserId)
     : false
 
-  // Handle send message
+  // Handle send message - try socket first, fallback to REST API
   const handleSendMessage = async (content: string) => {
     const convId = parseInt(conversationId)
-    if (isNaN(convId)) return
+    if (isNaN(convId)) {
+      toast.error('Cuộc hội thoại không hợp lệ')
+      return
+    }
+
+    // Create optimistic message for instant display
+    const optimisticMessage: ChatMessage = {
+      id: `temp-${Date.now()}`,
+      conversationId: convId,
+      senderId: user?.id || 0,
+      messageType: 'text',
+      content,
+      isRead: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      sender: {
+        userId: user?.id,
+        fullName: user?.fullName || null,
+        avatarUrl: user?.avatarUrl || null,
+      },
+    }
+
+    // Add optimistic message immediately
+    setRealtimeMessages(prev => [...prev, optimisticMessage])
 
     try {
-      await sendMessage(convId, content)
+      // Try socket first if connected
+      if (isConnected) {
+        await sendSocketMessage(convId, content)
+      } else {
+        // Fallback to REST API
+        await sendMessageMutation.mutateAsync({
+          conversationId: conversationId,
+          data: { content, messageType: 'text' },
+        })
+      }
+      // Remove optimistic message after success (real message will come via socket or query refresh)
+      setRealtimeMessages(prev => prev.filter(m => m.id !== optimisticMessage.id))
     } catch (error) {
-      console.error('Failed to send message:', error)
+      console.error('Failed to send message via socket, trying REST API:', error)
+      // If socket fails, try REST API as backup
+      try {
+        await sendMessageMutation.mutateAsync({
+          conversationId: conversationId,
+          data: { content, messageType: 'text' },
+        })
+        // Remove optimistic message after success
+        setRealtimeMessages(prev => prev.filter(m => m.id !== optimisticMessage.id))
+      } catch (apiError) {
+        console.error('Failed to send message:', apiError)
+        // Remove optimistic message on error
+        setRealtimeMessages(prev => prev.filter(m => m.id !== optimisticMessage.id))
+        toast.error('Không thể gửi tin nhắn. Vui lòng thử lại.')
+      }
     }
   }
 
@@ -104,8 +188,19 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
     }
   }
 
-  // Messages are in reverse order (newest first), so reverse for display
-  const messages = [...(messagesData?.items || [])].reverse()
+  // Combine API messages with realtime messages
+  // Sort all messages by createdAt ascending (oldest first, newest last at bottom)
+  const apiMessages = [...(messagesData?.items || [])]
+  const apiMessageIds = new Set(apiMessages.map(m => String(m.id)))
+  const newRealtimeMessages = realtimeMessages.filter(m => !apiMessageIds.has(String(m.id)))
+  const allMessages = [...apiMessages, ...newRealtimeMessages]
+
+  // Sort by createdAt ascending - oldest at top, newest at bottom
+  const messages = allMessages.sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime()
+    const dateB = new Date(b.createdAt).getTime()
+    return dateA - dateB
+  })
 
   return (
     <div className="flex h-full flex-col">
@@ -174,6 +269,8 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
       <ChatMessageInput
         onSend={handleSendMessage}
         onTyping={handleTyping}
+        initialMessage={pendingMessage || undefined}
+        onInitialMessageUsed={() => setPendingMessage(null)}
       />
     </div>
   )
