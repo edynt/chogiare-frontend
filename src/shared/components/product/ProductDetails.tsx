@@ -173,15 +173,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const isOwnProduct = user?.id != null && product.sellerId != null &&
     String(user.id) === String(product.sellerId)
 
-  // Debug log - remove after testing
-  console.log('[ProductDetails] isOwnProduct check:', {
-    userId: user?.id,
-    sellerId: product.sellerId,
-    userIdType: typeof user?.id,
-    sellerIdType: typeof product.sellerId,
-    isOwnProduct,
-  })
-
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
@@ -570,6 +561,30 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 </div>
               </div>
             </>
+          )}
+
+          {/* Owner Actions - Show Share and Promote buttons for own products */}
+          {isOwnProduct && (
+            <div className="space-y-3 py-2">
+              <Separator className="my-4" />
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                  onClick={() => {
+                    // TODO: Implement promote product dialog
+                    alert('Chức năng đẩy sản phẩm sẽ được triển khai')
+                  }}
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Đẩy sản phẩm
+                </Button>
+                <Button variant="outline" className="border-2 hover:bg-muted/50">
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Chia sẻ
+                </Button>
+              </div>
+            </div>
           )}
 
           {/* Features */}
