@@ -168,10 +168,22 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
       ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
       : 0
 
+  // Get seller ID - prefer sellerId, fallback to seller.id
+  const getSellerIdForChat = () => {
+    if (product.sellerId != null && product.sellerId !== '') {
+      return String(product.sellerId)
+    }
+    if (product.seller?.id != null) {
+      return String(product.seller.id)
+    }
+    return null
+  }
+  const sellerIdForChat = getSellerIdForChat()
+
   // Check if current user is the product owner
   // Compare as strings to handle both string and number IDs from API
-  const isOwnProduct = user?.id != null && product.sellerId != null &&
-    String(user.id) === String(product.sellerId)
+  const isOwnProduct = user?.id != null && sellerIdForChat != null &&
+    String(user.id) === sellerIdForChat
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -394,30 +406,23 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                     <div
                       className="flex items-start gap-4 flex-1 cursor-pointer"
                       onClick={() => {
-                        const sellerId = product.sellerId || product.store?.id
-                        if (sellerId) {
-                          window.location.href = `/shop/${sellerId}`
+                        if (product.sellerId) {
+                          window.location.href = `/shop/${product.sellerId}`
                         }
                       }}
                     >
                       <Avatar className="h-16 w-16">
-                        <AvatarImage
-                          src={product.seller?.avatar || product.store?.logo}
-                        />
+                        <AvatarImage src={product.seller?.avatar} />
                         <AvatarFallback>
-                          {product.seller?.name?.charAt(0) ||
-                            product.store?.name?.charAt(0) ||
-                            'S'}
+                          {product.seller?.name?.charAt(0) || 'S'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <p className="font-bold text-lg">
-                            {product.store?.name ||
-                              product.seller?.name ||
-                              'Người bán'}
+                            {product.seller?.name || 'Người bán'}
                           </p>
-                          {product.store?.isVerified && (
+                          {product.seller?.isVerified && (
                             <Badge className="bg-green-500 text-white">
                               <Verified className="h-3 w-3 mr-1" />
                               Đã xác thực
@@ -425,19 +430,17 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground mb-2">
-                          {product.seller?.name && product.store?.name
-                            ? `Người bán: ${product.seller.name}`
-                            : 'Nhà cung cấp uy tín'}
+                          Nhà cung cấp uy tín
                         </p>
                         <div className="flex items-center gap-4 text-sm">
                           <div className="flex items-center gap-1">
-                            {renderStars(product.store?.rating || 4.8)}
+                            {renderStars(product.rating || 0)}
                             <span className="font-semibold ml-1">
-                              {product.store?.rating?.toFixed(1) || '4.8'}
+                              {product.rating?.toFixed(1) || '0.0'}
                             </span>
                           </div>
                           <span className="text-muted-foreground">
-                            ({product.store?.reviewCount || 1245} đánh giá)
+                            ({product.reviewCount || 0} đánh giá)
                           </span>
                         </div>
                       </div>
@@ -449,21 +452,21 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                         asChild
                         className="whitespace-nowrap"
                       >
-                        <Link
-                          to={`/shop/${product.sellerId || product.store?.id || ''}`}
-                        >
+                        <Link to={`/shop/${product.sellerId || ''}`}>
                           <Package className="h-4 w-4 mr-2" />
-                          Xem shop
+                          Xem sản phẩm
                         </Link>
                       </Button>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link
-                          to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
-                        >
-                          <MessageCircle className="h-4 w-4 mr-2" />
-                          Chat
-                        </Link>
-                      </Button>
+                      {sellerIdForChat && (
+                        <Button variant="outline" size="sm" asChild>
+                          <Link
+                            to={`/chat?sellerId=${sellerIdForChat}&productId=${product.id}`}
+                          >
+                            <MessageCircle className="h-4 w-4 mr-2" />
+                            Chat
+                          </Link>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -498,17 +501,27 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               {/* Actions */}
               <div className="space-y-3 py-2">
                 {/* Primary Action - Chat Button */}
-                <Button
-                  className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-6 shadow-lg hover:shadow-xl transition-all"
-                  asChild
-                >
-                  <Link
-                    to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
+                {sellerIdForChat ? (
+                  <Button
+                    className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-6 shadow-lg hover:shadow-xl transition-all"
+                    asChild
+                  >
+                    <Link
+                      to={`/chat?sellerId=${sellerIdForChat}&productId=${product.id}`}
+                    >
+                      <MessageCircle className="h-5 w-5 mr-2" />
+                      Chat với người bán
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full bg-gray-400 text-white text-lg py-6 cursor-not-allowed"
+                    disabled
                   >
                     <MessageCircle className="h-5 w-5 mr-2" />
-                    Chat với người bán
-                  </Link>
-                </Button>
+                    Không thể chat (thiếu thông tin người bán)
+                  </Button>
+                )}
 
                 {/* Secondary Actions - Add to Cart & Order */}
                 <div className="grid grid-cols-2 gap-2">
@@ -1620,54 +1633,43 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                     <Avatar className="h-16 w-16">
                       <AvatarImage src={product.seller?.avatar} />
                       <AvatarFallback>
-                        {product.seller?.name?.charAt(0)}
+                        {product.seller?.name?.charAt(0) || 'S'}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <h3 className="text-lg font-semibold">
-                        {product.seller?.name}
+                        {product.seller?.name || 'Người bán'}
                       </h3>
-                      <p className="text-muted-foreground">
-                        {product.store?.name || 'Người bán cá nhân'}
-                      </p>
+                      {product.seller?.isVerified && (
+                        <Badge className="bg-green-500 text-white mt-1">
+                          <Verified className="h-3 w-3 mr-1" />
+                          Đã xác thực
+                        </Badge>
+                      )}
                       <div className="flex items-center gap-1 mt-1">
-                        {renderStars(4.5)}
+                        {renderStars(product.rating || 0)}
                         <span className="text-sm text-muted-foreground">
-                          (4.5/5)
+                          ({product.rating?.toFixed(1) || '0.0'}/5)
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {product.store && (
-                    <div className="space-y-2">
-                      <p>
-                        <strong>Địa chỉ:</strong> {product.store.address}
-                      </p>
-                      <p>
-                        <strong>Email:</strong> {product.store.email}
-                      </p>
-                      <p>
-                        <strong>Điện thoại:</strong> {product.store.phone}
-                      </p>
-                    </div>
-                  )}
-
                   <div className="flex gap-2 mt-4">
+                    {sellerIdForChat && (
+                      <Button variant="outline" className="flex-1" asChild>
+                        <Link
+                          to={`/chat?sellerId=${sellerIdForChat}&productId=${product.id}`}
+                        >
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          Nhắn tin
+                        </Link>
+                      </Button>
+                    )}
                     <Button variant="outline" className="flex-1" asChild>
-                      <Link
-                        to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
-                      >
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        Nhắn tin
-                      </Link>
-                    </Button>
-                    <Button variant="outline" className="flex-1" asChild>
-                      <Link
-                        to={`/shop/${product.sellerId || product.store?.id || ''}`}
-                      >
+                      <Link to={`/shop/${sellerIdForChat || ''}`}>
                         <Package className="h-4 w-4 mr-2" />
-                        Xem shop
+                        Xem sản phẩm
                       </Link>
                     </Button>
                   </div>
@@ -1951,15 +1953,18 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
 
                 if (quoteMethod === 'chat') {
                   // Navigate to chat with quote request
-                  window.location.href = `/chat?sellerId=${product.sellerId}&productId=${product.id}&message=${encodeURIComponent(message)}`
+                  if (!sellerIdForChat) {
+                    alert('Không tìm thấy thông tin người bán')
+                    return
+                  }
+                  window.location.href = `/chat?sellerId=${sellerIdForChat}&productId=${product.id}&message=${encodeURIComponent(message)}`
                 } else {
                   // Send via email
                   const emailSubject = encodeURIComponent(
                     `Yêu cầu báo giá sản phẩm: ${product.title}`
                   )
                   const emailBody = encodeURIComponent(message)
-                  const sellerEmail =
-                    product.seller?.email || product.store?.email || ''
+                  const sellerEmail = product.seller?.email || ''
                   if (sellerEmail) {
                     window.location.href = `mailto:${sellerEmail}?subject=${emailSubject}&body=${emailBody}`
                   } else {

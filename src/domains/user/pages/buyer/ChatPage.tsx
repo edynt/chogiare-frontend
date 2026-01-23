@@ -35,23 +35,29 @@ export default function ChatPage() {
     }
 
     const sellerIdNum = parseInt(sellerId)
-    if (isNaN(sellerIdNum)) return
+    if (isNaN(sellerIdNum)) {
+      // Invalid sellerId, redirect to chat list
+      navigate('/chat', { replace: true })
+      return
+    }
 
-    // Don't create conversation with yourself
-    if (sellerIdNum === user?.id) {
+    // Don't create conversation with yourself (compare as numbers)
+    const currentUserId = typeof user?.id === 'string' ? parseInt(user.id) : user?.id
+    if (sellerIdNum === currentUserId) {
       navigate('/chat', { replace: true })
       return
     }
 
     // Check if conversation with this seller already exists
     const existingConversation = conversationsData?.items?.find(conv => {
-      // Check in otherUser field
-      if (conv.otherUser?.userId === sellerIdNum) {
+      // Check in otherUser field (compare as numbers)
+      const otherUserId = conv.otherUser?.userId
+      if (otherUserId === sellerIdNum) {
         return true
       }
       // Fallback: check in participants
       return conv.participants?.some(
-        p => p.userId === sellerIdNum && p.userId !== user?.id
+        p => p.userId === sellerIdNum && p.userId !== currentUserId
       )
     })
 
