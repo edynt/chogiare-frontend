@@ -464,15 +464,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                           Chat
                         </Link>
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-orange-500 text-orange-600 hover:bg-orange-50"
-                        onClick={() => setShowPromoteDialog(true)}
-                      >
-                        <TrendingUp className="h-4 w-4 mr-2" />
-                        Đẩy bài
-                      </Button>
                     </div>
                   </div>
                 </CardContent>
