@@ -47,14 +47,16 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
   })
 
   const mapConversationToChat = (conversation: Conversation): Chat | null => {
-    const otherParticipant = conversation.participants.find(
+    // Try to get other user from otherUser field first, then fallback to participants
+    const otherUser = conversation.otherUser
+    const otherParticipant = otherUser || conversation.participants?.find(
       p => String(p.userId) !== String(user?.id)
     )
     if (!otherParticipant) return null
 
     const lastMessage = conversation.lastMessage
     const formatTime = (dateString: string) => {
-      const date = new Date(dateString)
+      const date = new Date(parseInt(dateString) || dateString)
       return date.toLocaleTimeString('vi-VN', {
         hour: '2-digit',
         minute: '2-digit',
@@ -62,18 +64,18 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
     }
 
     return {
-      id: conversation.id,
+      id: conversation.id.toString(),
       participant: {
         id: otherParticipant.userId.toString(),
-        name: conversation.title || `User ${otherParticipant.userId}`,
-        avatar: '',
+        name: ('fullName' in otherParticipant ? otherParticipant.fullName : null) || conversation.title || `User ${otherParticipant.userId}`,
+        avatar: ('avatarUrl' in otherParticipant ? otherParticipant.avatarUrl : '') || '',
         isOnline: false,
       },
       lastMessage: lastMessage
         ? {
             content: lastMessage.content,
             timestamp: formatTime(lastMessage.createdAt),
-            isRead: lastMessage.isRead,
+            isRead: true, // API doesn't return isRead for lastMessage
             senderId: lastMessage.senderId.toString(),
           }
         : {
@@ -82,12 +84,12 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
             isRead: true,
             senderId: '',
           },
-      unreadCount: conversation.unreadCount,
+      unreadCount: conversation.unreadCount || 0,
     }
   }
 
-  const chats: Chat[] = conversationsData?.conversations
-    ? conversationsData.conversations
+  const chats: Chat[] = conversationsData?.items
+    ? conversationsData.items
         .map(mapConversationToChat)
         .filter((chat): chat is Chat => chat !== null)
     : []

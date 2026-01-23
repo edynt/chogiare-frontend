@@ -36,7 +36,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@shared/components/ui/alert'
-import { useProduct, useProductReviews, useProducts } from '@/hooks'
+import { useProduct, useProductReviews, useProducts, useProfile } from '@/hooks'
 import { SimpleProductGrid } from '@shared/components/product/ProductGridWithPagination'
 import type { Review } from '@user/api/reviews'
 import { ErrorMessage } from '@shared/components/ui/error-boundary'
@@ -78,9 +78,6 @@ import {
   Image as ImageIcon,
   DollarSign,
   AlertCircle,
-  Wallet,
-  Calendar,
-  CheckCircle,
 } from 'lucide-react'
 
 interface ProductDetailsProps {
@@ -92,6 +89,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const { id } = useParams<{ id: string }>()
   const productIdToUse = productId || id
   const { addItem } = useCartStore()
+  const { data: user } = useProfile()
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [quantity, setQuantity] = useState<number>(1)
@@ -169,6 +167,20 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
     reviews.length > 0
       ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
       : 0
+
+  // Check if current user is the product owner
+  // Compare as strings to handle both string and number IDs from API
+  const isOwnProduct = user?.id != null && product.sellerId != null &&
+    String(user.id) === String(product.sellerId)
+
+  // Debug log - remove after testing
+  console.log('[ProductDetails] isOwnProduct check:', {
+    userId: user?.id,
+    sellerId: product.sellerId,
+    userIdType: typeof user?.id,
+    sellerIdType: typeof product.sellerId,
+    isOwnProduct,
+  })
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -380,181 +392,185 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
             </p>
           </div>
 
-          <Separator className="my-4" />
+          {/* Seller Info Card - Hide for own products */}
+          {!isOwnProduct && (
+            <>
+              <Separator className="my-4" />
 
-          {/* Seller Info Card */}
-          <Card className="hover:shadow-md transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div
-                  className="flex items-start gap-4 flex-1 cursor-pointer"
-                  onClick={() => {
-                    const sellerId = product.sellerId || product.store?.id
-                    if (sellerId) {
-                      window.location.href = `/shop/${sellerId}`
-                    }
-                  }}
-                >
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage
-                      src={product.seller?.avatar || product.store?.logo}
-                    />
-                    <AvatarFallback>
-                      {product.seller?.name?.charAt(0) ||
-                        product.store?.name?.charAt(0) ||
-                        'S'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-bold text-lg">
-                        {product.store?.name ||
-                          product.seller?.name ||
-                          'Người bán'}
-                      </p>
-                      {product.store?.isVerified && (
-                        <Badge className="bg-green-500 text-white">
-                          <Verified className="h-3 w-3 mr-1" />
-                          Đã xác thực
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {product.seller?.name && product.store?.name
-                        ? `Người bán: ${product.seller.name}`
-                        : 'Nhà cung cấp uy tín'}
-                    </p>
-                    <div className="flex items-center gap-4 text-sm">
-                      <div className="flex items-center gap-1">
-                        {renderStars(product.store?.rating || 4.8)}
-                        <span className="font-semibold ml-1">
-                          {product.store?.rating?.toFixed(1) || '4.8'}
-                        </span>
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div
+                      className="flex items-start gap-4 flex-1 cursor-pointer"
+                      onClick={() => {
+                        const sellerId = product.sellerId || product.store?.id
+                        if (sellerId) {
+                          window.location.href = `/shop/${sellerId}`
+                        }
+                      }}
+                    >
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage
+                          src={product.seller?.avatar || product.store?.logo}
+                        />
+                        <AvatarFallback>
+                          {product.seller?.name?.charAt(0) ||
+                            product.store?.name?.charAt(0) ||
+                            'S'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-bold text-lg">
+                            {product.store?.name ||
+                              product.seller?.name ||
+                              'Người bán'}
+                          </p>
+                          {product.store?.isVerified && (
+                            <Badge className="bg-green-500 text-white">
+                              <Verified className="h-3 w-3 mr-1" />
+                              Đã xác thực
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {product.seller?.name && product.store?.name
+                            ? `Người bán: ${product.seller.name}`
+                            : 'Nhà cung cấp uy tín'}
+                        </p>
+                        <div className="flex items-center gap-4 text-sm">
+                          <div className="flex items-center gap-1">
+                            {renderStars(product.store?.rating || 4.8)}
+                            <span className="font-semibold ml-1">
+                              {product.store?.rating?.toFixed(1) || '4.8'}
+                            </span>
+                          </div>
+                          <span className="text-muted-foreground">
+                            ({product.store?.reviewCount || 1245} đánh giá)
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-muted-foreground">
-                        ({product.store?.reviewCount || 1245} đánh giá)
-                      </span>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        asChild
+                        className="whitespace-nowrap"
+                      >
+                        <Link
+                          to={`/shop/${product.sellerId || product.store?.id || ''}`}
+                        >
+                          <Package className="h-4 w-4 mr-2" />
+                          Xem shop
+                        </Link>
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link
+                          to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
+                        >
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          Chat
+                        </Link>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                        onClick={() => setShowPromoteDialog(true)}
+                      >
+                        <TrendingUp className="h-4 w-4 mr-2" />
+                        Đẩy bài
+                      </Button>
                     </div>
                   </div>
-                </div>
-                <div className="flex flex-col gap-2">
+                </CardContent>
+              </Card>
+
+              <Separator className="my-4" />
+
+              {/* Security Warning */}
+              <SecurityWarning variant="scam" className="my-4" />
+
+              {/* Buyer Warning - Protect Seller */}
+              <Alert className="border-amber-500 bg-amber-50/50">
+                <AlertCircle className="h-5 w-5 text-amber-600" />
+                <AlertTitle className="text-amber-900 font-semibold mb-1">
+                  ⚠️ Lưu ý quan trọng cho người mua
+                </AlertTitle>
+                <AlertDescription className="text-amber-800 text-sm space-y-1">
+                  <p className="font-medium">
+                    Vui lòng chỉ đặt hàng hoặc liên hệ khi bạn thực sự có nhu cầu
+                    mua sản phẩm.
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>Không spam tin nhắn hoặc đặt hàng giả để tội người bán</li>
+                    <li>Hãy tôn trọng thời gian và công sức của người bán</li>
+                    <li>
+                      Đặt hàng nghiêm túc giúp tạo môi trường mua bán lành mạnh
+                    </li>
+                  </ul>
+                </AlertDescription>
+              </Alert>
+
+              {/* Actions */}
+              <div className="space-y-3 py-2">
+                {/* Primary Action - Chat Button */}
+                <Button
+                  className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-6 shadow-lg hover:shadow-xl transition-all"
+                  asChild
+                >
+                  <Link
+                    to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
+                  >
+                    <MessageCircle className="h-5 w-5 mr-2" />
+                    Chat với người bán
+                  </Link>
+                </Button>
+
+                {/* Secondary Actions - Add to Cart & Order */}
+                <div className="grid grid-cols-2 gap-2">
                   <Button
-                    variant="outline"
-                    size="sm"
+                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all"
+                    onClick={() => {
+                      addItem(product, quantity)
+                      toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`)
+                    }}
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Thêm giỏ
+                  </Button>
+                  <Button
+                    className="bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all"
                     asChild
-                    className="whitespace-nowrap"
                   >
                     <Link
-                      to={`/shop/${product.sellerId || product.store?.id || ''}`}
+                      to={`/checkout?productId=${product.id}&quantity=${quantity}`}
                     >
-                      <Package className="h-4 w-4 mr-2" />
-                      Xem shop
+                      <ShoppingBag className="h-4 w-4 mr-2" />
+                      Đặt hàng
                     </Link>
                   </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link
-                      to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Chat
-                    </Link>
-                  </Button>
+                </div>
+
+                {/* Tertiary Actions - Outline style */}
+                <div className="grid grid-cols-2 gap-2">
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="border-orange-500 text-orange-600 hover:bg-orange-50"
-                    onClick={() => setShowPromoteDialog(true)}
+                    className="border-2 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
+                    onClick={() => setShowQuoteDialog(true)}
                   >
-                    <TrendingUp className="h-4 w-4 mr-2" />
-                    Đẩy bài
+                    <FileText className="h-4 w-4 mr-2" />
+                    Xin báo giá
+                  </Button>
+                  <Button variant="outline" className="border-2 hover:bg-muted/50">
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Chia sẻ
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          <Separator className="my-4" />
-
-          {/* Security Warning */}
-          <SecurityWarning variant="scam" className="my-4" />
-
-          {/* Buyer Warning - Protect Seller */}
-          <Alert className="border-amber-500 bg-amber-50/50">
-            <AlertCircle className="h-5 w-5 text-amber-600" />
-            <AlertTitle className="text-amber-900 font-semibold mb-1">
-              ⚠️ Lưu ý quan trọng cho người mua
-            </AlertTitle>
-            <AlertDescription className="text-amber-800 text-sm space-y-1">
-              <p className="font-medium">
-                Vui lòng chỉ đặt hàng hoặc liên hệ khi bạn thực sự có nhu cầu
-                mua sản phẩm.
-              </p>
-              <ul className="list-disc list-inside space-y-1 ml-2">
-                <li>Không spam tin nhắn hoặc đặt hàng giả để tội người bán</li>
-                <li>Hãy tôn trọng thời gian và công sức của người bán</li>
-                <li>
-                  Đặt hàng nghiêm túc giúp tạo môi trường mua bán lành mạnh
-                </li>
-              </ul>
-            </AlertDescription>
-          </Alert>
-
-          {/* Actions */}
-          <div className="space-y-3 py-2">
-            {/* Primary Action - Chat Button */}
-            <Button
-              className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-6 shadow-lg hover:shadow-xl transition-all"
-              asChild
-            >
-              <Link
-                to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
-              >
-                <MessageCircle className="h-5 w-5 mr-2" />
-                Chat với người bán
-              </Link>
-            </Button>
-
-            {/* Secondary Actions - Add to Cart & Order */}
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all"
-                onClick={() => {
-                  addItem(product, quantity)
-                  toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`)
-                }}
-              >
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Thêm giỏ
-              </Button>
-              <Button
-                className="bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all"
-                asChild
-              >
-                <Link
-                  to={`/checkout?productId=${product.id}&quantity=${quantity}`}
-                >
-                  <ShoppingBag className="h-4 w-4 mr-2" />
-                  Đặt hàng
-                </Link>
-              </Button>
-            </div>
-
-            {/* Tertiary Actions - Outline style */}
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant="outline"
-                className="border-2 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
-                onClick={() => setShowQuoteDialog(true)}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Xin báo giá
-              </Button>
-              <Button variant="outline" className="border-2 hover:bg-muted/50">
-                <Share2 className="h-4 w-4 mr-2" />
-                Chia sẻ
-              </Button>
-            </div>
-          </div>
+            </>
+          )}
 
           {/* Features */}
           <div className="grid grid-cols-2 gap-4 text-sm">
@@ -1355,14 +1371,16 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
       {/* Product Details Tabs - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Tabs defaultValue="description" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className={`grid w-full ${isOwnProduct ? 'grid-cols-4' : 'grid-cols-6'}`}>
             <TabsTrigger value="description">Mô tả</TabsTrigger>
             <TabsTrigger value="reviews">
               Đánh giá ({product.reviewCount})
             </TabsTrigger>
             <TabsTrigger value="write-review">Viết đánh giá</TabsTrigger>
-            <TabsTrigger value="seller">Thông tin người bán</TabsTrigger>
-            <TabsTrigger value="faq">FAQ</TabsTrigger>
+            {!isOwnProduct && (
+              <TabsTrigger value="seller">Thông tin người bán</TabsTrigger>
+            )}
+            {!isOwnProduct && <TabsTrigger value="faq">FAQ</TabsTrigger>}
             <TabsTrigger value="certificates">Đảm bảo</TabsTrigger>
           </TabsList>
 
@@ -1584,105 +1602,111 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
             </Card>
           </TabsContent>
 
-          <TabsContent value="seller" className="mt-4">
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg">Thông tin người bán</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex items-center gap-4 mb-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage src={product.seller?.avatar} />
-                    <AvatarFallback>
-                      {product.seller?.name?.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="text-lg font-semibold">
-                      {product.seller?.name}
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {product.store?.name || 'Người bán cá nhân'}
-                    </p>
-                    <div className="flex items-center gap-1 mt-1">
-                      {renderStars(4.5)}
-                      <span className="text-sm text-muted-foreground">
-                        (4.5/5)
-                      </span>
+          {/* Seller Tab - Hide for own products */}
+          {!isOwnProduct && (
+            <TabsContent value="seller" className="mt-4">
+              <Card>
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg">Thông tin người bán</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="flex items-center gap-4 mb-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src={product.seller?.avatar} />
+                      <AvatarFallback>
+                        {product.seller?.name?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        {product.seller?.name}
+                      </h3>
+                      <p className="text-muted-foreground">
+                        {product.store?.name || 'Người bán cá nhân'}
+                      </p>
+                      <div className="flex items-center gap-1 mt-1">
+                        {renderStars(4.5)}
+                        <span className="text-sm text-muted-foreground">
+                          (4.5/5)
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {product.store && (
-                  <div className="space-y-2">
-                    <p>
-                      <strong>Địa chỉ:</strong> {product.store.address}
-                    </p>
-                    <p>
-                      <strong>Email:</strong> {product.store.email}
-                    </p>
-                    <p>
-                      <strong>Điện thoại:</strong> {product.store.phone}
-                    </p>
-                  </div>
-                )}
+                  {product.store && (
+                    <div className="space-y-2">
+                      <p>
+                        <strong>Địa chỉ:</strong> {product.store.address}
+                      </p>
+                      <p>
+                        <strong>Email:</strong> {product.store.email}
+                      </p>
+                      <p>
+                        <strong>Điện thoại:</strong> {product.store.phone}
+                      </p>
+                    </div>
+                  )}
 
-                <div className="flex gap-2 mt-4">
-                  <Button variant="outline" className="flex-1" asChild>
-                    <Link
-                      to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Nhắn tin
-                    </Link>
-                  </Button>
-                  <Button variant="outline" className="flex-1" asChild>
-                    <Link
-                      to={`/shop/${product.sellerId || product.store?.id || ''}`}
-                    >
-                      <Package className="h-4 w-4 mr-2" />
-                      Xem shop
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="faq" className="mt-4">
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg">💬 Câu hỏi thường gặp</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Chọn câu hỏi để chat với người bán
-                </p>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="space-y-3">
-                  {[
-                    'Sản phẩm có đảm bảo chất lượng không?',
-                    'Thời gian giao hàng là bao lâu?',
-                    'Có hỗ trợ đổi trả không?',
-                    'Giá có thể thương lượng không?',
-                    'Có chính sách bảo hành không?',
-                  ].map((question, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      className="w-full justify-start text-left h-auto py-3"
-                      onClick={() => {
-                        // Navigate to chat with question
-                        window.location.href = '/chat'
-                      }}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      {question}
+                  <div className="flex gap-2 mt-4">
+                    <Button variant="outline" className="flex-1" asChild>
+                      <Link
+                        to={`/chat?sellerId=${product.sellerId}&productId=${product.id}`}
+                      >
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        Nhắn tin
+                      </Link>
                     </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    <Button variant="outline" className="flex-1" asChild>
+                      <Link
+                        to={`/shop/${product.sellerId || product.store?.id || ''}`}
+                      >
+                        <Package className="h-4 w-4 mr-2" />
+                        Xem shop
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
+
+          {/* FAQ Tab - Hide for own products since it's about chatting with seller */}
+          {!isOwnProduct && (
+            <TabsContent value="faq" className="mt-4">
+              <Card>
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg">💬 Câu hỏi thường gặp</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Chọn câu hỏi để chat với người bán
+                  </p>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="space-y-3">
+                    {[
+                      'Sản phẩm có đảm bảo chất lượng không?',
+                      'Thời gian giao hàng là bao lâu?',
+                      'Có hỗ trợ đổi trả không?',
+                      'Giá có thể thương lượng không?',
+                      'Có chính sách bảo hành không?',
+                    ].map((question, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        className="w-full justify-start text-left h-auto py-3"
+                        onClick={() => {
+                          // Navigate to chat with question
+                          window.location.href = '/chat'
+                        }}
+                      >
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        {question}
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
 
           <TabsContent value="certificates" className="mt-4">
             <Card>

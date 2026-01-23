@@ -105,7 +105,7 @@ export const useNotificationSocket = (
       socketRef.current = null
       setIsConnected(false)
     }
-  }, [isAuthenticated, accessToken, handleNewNotification])
+  }, [isAuthenticated, handleNewNotification])
 
   return {
     isConnected,

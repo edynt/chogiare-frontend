@@ -21,11 +21,11 @@ import { cn, getApiErrorMessage } from '@/lib/utils'
 import {
   useConversation,
   useConversationMessages,
-  useSendMessage,
 } from '@/hooks/useChat'
 import { useAuthStore } from '@/stores/authStore'
 import { toast } from 'sonner'
 import type { ChatMessage } from '@user/api/chat'
+import { useChatSocket } from '@/hooks/useChatSocket'
 
 interface Message {
   id: string
@@ -62,14 +62,25 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
       page: 1,
       pageSize: 100,
     })
-  const sendMessageMutation = useSendMessage()
+  const {
+    sendMessage: sendSocketMessage,
+    isConnected,
+    joinConversation,
+    leaveConversation,
+    markAsRead,
+  } = useChatSocket({
+    onNewMessage: (payload) => {
+      // Real-time message updates are handled automatically by React Query invalidation
+      // in useChatSocket, no additional action needed here
+    },
+  })
 
   const isLoading = conversationLoading || messagesLoading
 
   const mapChatMessageToMessage = (msg: ChatMessage): Message => {
     const isCurrentUser = String(msg.senderId) === String(user?.id)
     const formatTime = (dateString: string) => {
-      const date = new Date(dateString)
+      const date = new Date(parseInt(dateString) || dateString)
       return date.toLocaleTimeString('vi-VN', {
         hour: '2-digit',
         minute: '2-digit',
@@ -77,21 +88,38 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
     }
 
     return {
-      id: msg.id,
+      id: msg.id.toString(),
       content: msg.content,
       timestamp: formatTime(msg.createdAt),
       senderId: msg.senderId.toString(),
       senderName: isCurrentUser
         ? 'Bạn'
-        : msg.senderName || `User ${msg.senderId}`,
-      senderAvatar: msg.senderAvatar || '',
+        : msg.sender?.fullName || `User ${msg.senderId}`,
+      senderAvatar: msg.sender?.avatarUrl || '',
       isRead: msg.isRead,
       type: (msg.messageType as 'text' | 'image' | 'file') || 'text',
     }
   }
 
   const messages: Message[] =
-    messagesData?.messages.map(mapChatMessageToMessage) || []
+    messagesData?.items?.map(mapChatMessageToMessage) || []
+
+  // Join conversation room when connected
+  useEffect(() => {
+    if (!chatId || !isConnected) return
+
+    const conversationId = parseInt(chatId)
+    if (isNaN(conversationId)) return
+
+    joinConversation(conversationId)
+
+    // Mark messages as read when viewing
+    markAsRead(conversationId)
+
+    return () => {
+      leaveConversation(conversationId)
+    }
+  }, [chatId, isConnected, joinConversation, leaveConversation, markAsRead])
 
   useEffect(() => {
     scrollToBottom()
@@ -102,18 +130,23 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
   }
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !chatId) return
+    // Validate chatId - must be non-empty and not "undefined" string
+    if (!newMessage.trim() || !chatId || chatId === 'undefined') return
+
+    // Check WebSocket connection
+    if (!isConnected) {
+      toast.error('Chưa kết nối đến máy chủ. Vui lòng thử lại.')
+      return
+    }
+
+    const messageContent = newMessage.trim()
+    setNewMessage('') // Clear input immediately for better UX
 
     try {
-      await sendMessageMutation.mutateAsync({
-        conversationId: chatId,
-        data: {
-          content: newMessage.trim(),
-          messageType: 'text',
-        },
-      })
-      setNewMessage('')
+      await sendSocketMessage(parseInt(chatId), messageContent, 'text')
     } catch (error) {
+      // Restore message if send failed
+      setNewMessage(messageContent)
       toast.error(
         getApiErrorMessage(error, 'Không thể gửi tin nhắn. Vui lòng thử lại.')
       )
@@ -138,13 +171,17 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
     return null
   }
 
-  const otherParticipant = conversation?.participants.find(
+  // Get other user - prefer otherUser field, fallback to participants
+  const otherUser = conversation?.otherUser
+  const otherParticipant = otherUser || conversation?.participants.find(
     p => String(p.userId) !== String(user?.id)
   )
+
+  // Display seller's full name
   const participantName =
-    conversation?.title || otherParticipant
-      ? `User ${otherParticipant?.userId}`
-      : 'Người dùng'
+    (otherUser?.fullName) ||
+    conversation?.title ||
+    (otherParticipant ? `User ${otherParticipant.userId}` : 'Người dùng')
 
   if (isLoading) {
     return (
@@ -164,7 +201,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="w-10 h-10">
-              <AvatarImage src={otherParticipant ? '' : ''} />
+              <AvatarImage src={otherUser?.avatarUrl || ''} />
               <AvatarFallback>
                 {participantName.charAt(0).toUpperCase()}
               </AvatarFallback>
@@ -296,7 +333,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
 
           <Button
             onClick={handleSendMessage}
-            disabled={!newMessage.trim() || sendMessageMutation.isPending}
+            disabled={!newMessage.trim() || !isConnected}
             size="icon"
           >
             <Send className="h-4 w-4" />

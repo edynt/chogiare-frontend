@@ -16,7 +16,7 @@ export const useConversations = (filters?: {
         return await chatApi.getConversations(filters)
       } catch {
         return {
-          conversations: [],
+          items: [],
           total: 0,
           page: 1,
           pageSize: 10,
@@ -29,10 +29,11 @@ export const useConversations = (filters?: {
 }
 
 export const useConversation = (id: string) => {
+  const isValidId = !!id && id !== 'undefined'
   return useQuery({
     queryKey: ['chat', 'conversations', id],
     queryFn: () => chatApi.getConversation(id),
-    enabled: !!id,
+    enabled: isValidId,
     staleTime: 1 * 60 * 1000, // 1 minute
   })
 }
@@ -41,12 +42,13 @@ export const useConversationMessages = (
   conversationId: string,
   filters?: { page?: number; pageSize?: number }
 ) => {
+  const isValidId = !!conversationId && conversationId !== 'undefined'
   return useQuery({
     queryKey: ['chat', 'messages', conversationId, filters],
     queryFn: () => chatApi.getConversationMessages(conversationId, filters),
-    enabled: !!conversationId,
+    enabled: isValidId,
     staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 30 * 1000, // Auto-refresh every 30 seconds
+    refetchInterval: isValidId ? 30 * 1000 : false, // Auto-refresh every 30 seconds only when valid
   })
 }
 

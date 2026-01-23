@@ -2,40 +2,63 @@ import { apiClient } from '@shared/api/axios'
 import type { ApiResponse } from '@/types'
 
 export interface ConversationParticipant {
-  id: string
-  conversationId: string
+  id?: string
+  conversationId?: string
   userId: number
-  role: string
-  joinedAt: string
+  role?: string
+  joinedAt?: string
+  fullName?: string | null
+  avatarUrl?: string | null
+}
+
+export interface ChatMessageSender {
+  userId?: number
+  fullName?: string | null
+  avatarUrl?: string | null
 }
 
 export interface ChatMessage {
-  id: string
-  conversationId: string
+  id: number | string
+  conversationId: number | string
   senderId: number
   messageType: string
   content: string
   isRead: boolean
-  senderName?: string
-  senderEmail?: string
-  senderAvatar?: string
+  messageMetadata?: Record<string, unknown>
+  sender?: ChatMessageSender
   createdAt: string
   updatedAt: string
 }
 
+export interface LastMessage {
+  id: number | string
+  content: string
+  messageType: string
+  senderId: number
+  createdAt: string
+}
+
+export interface OtherUser {
+  userId: number
+  fullName?: string | null
+  avatarUrl?: string | null
+}
+
 export interface Conversation {
-  id: string
+  id: number | string
   type: string
-  title?: string
-  participants: ConversationParticipant[]
-  lastMessage?: ChatMessage
-  unreadCount: number
+  title?: string | null
+  metadata?: Record<string, unknown>
+  participants?: ConversationParticipant[]
+  otherUser?: OtherUser | null
+  lastMessage?: LastMessage | null
+  unreadCount?: number
   createdAt: string
   updatedAt: string
 }
 
 export interface ConversationListResponse {
-  conversations: Conversation[]
+  items: Conversation[]
   total: number
   page: number
   pageSize: number
@@ -43,7 +66,7 @@ export interface ConversationListResponse {
 }
 
 export interface ChatMessageListResponse {
-  messages: ChatMessage[]
+  items: ChatMessage[]
   total: number
   page: number
   pageSize: number
@@ -160,6 +183,10 @@ export const chatApi = {
     conversationId: string,
     data: CreateChatMessageRequest
   ): Promise<ChatMessage> => {
+    // Validate conversationId before making API call
+    if (!conversationId || conversationId === 'undefined' || conversationId.trim() === '') {
+      throw new Error('Vui lòng chọn cuộc trò chuyện trước khi gửi tin nhắn')
+    }
     const response = await apiClient.post<ApiResponse<ChatMessage>>(
       `/chat/conversations/${conversationId}/messages`,
       {

@@ -1,16 +1,94 @@
-import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
 import { ChatList } from '@user/components/buyer/chat/ChatList'
 import { ChatWindow } from '@user/components/buyer/chat/ChatWindow'
 import { Card, CardContent } from '@shared/components/ui/card'
-import { MessageCircle, Search, Zap, Shield, Clock } from 'lucide-react'
+import { MessageCircle, Search, Zap, Shield, Clock, Loader2 } from 'lucide-react'
 import { Input } from '@shared/components/ui/input'
+import { useConversations, useCreateConversation } from '@/hooks/useChat'
+import { useAuthStore } from '@/stores/authStore'
 
 export default function ChatPage() {
   const { chatId } = useParams<{ chatId?: string }>()
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const { user } = useAuthStore()
   const [searchQuery, setSearchQuery] = useState('')
+  const [isCreatingConversation, setIsCreatingConversation] = useState(false)
+
+  // Get sellerId from URL query params
+  const sellerId = searchParams.get('sellerId')
+
+  // Fetch conversations to check if conversation with seller already exists
+  const { data: conversationsData, isLoading: conversationsLoading } =
+    useConversations({ page: 1, pageSize: 100 })
+
+  const createConversation = useCreateConversation()
+
+  // Handle sellerId from URL - find or create conversation
+  useEffect(() => {
+    // Skip if no sellerId, already on a chat, or still loading
+    if (!sellerId || chatId || conversationsLoading || isCreatingConversation) {
+      return
+    }
+
+    const sellerIdNum = parseInt(sellerId)
+    if (isNaN(sellerIdNum)) return
+
+    // Don't create conversation with yourself
+    if (sellerIdNum === user?.id) {
+      navigate('/chat', { replace: true })
+      return
+    }
+
+    // Check if conversation with this seller already exists
+    const existingConversation = conversationsData?.items?.find(conv => {
+      // Check in otherUser field
+      if (conv.otherUser?.userId === sellerIdNum) {
+        return true
+      }
+      // Fallback: check in participants
+      return conv.participants?.some(
+        p => p.userId === sellerIdNum && p.userId !== user?.id
+      )
+    })
+
+    if (existingConversation) {
+      // Navigate to existing conversation
+      navigate(`/chat/${existingConversation.id}`, { replace: true })
+    } else {
+      // Create new conversation
+      setIsCreatingConversation(true)
+      createConversation.mutate(
+        { otherUserId: sellerIdNum },
+        {
+          onSuccess: conversation => {
+            navigate(`/chat/${conversation.id}`, { replace: true })
+            setIsCreatingConversation(false)
+          },
+          onError: () => {
+            // On error, just show chat list
+            navigate('/chat', { replace: true })
+            setIsCreatingConversation(false)
+          },
+        }
+      )
+    }
+  }, [
+    sellerId,
+    chatId,
+    conversationsData,
+    conversationsLoading,
+    isCreatingConversation,
+    user?.id,
+    navigate,
+    createConversation,
+  ])
+
+  // Show loading when creating conversation or checking for existing
+  const isInitializing = sellerId && !chatId && (conversationsLoading || isCreatingConversation)
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -71,7 +149,16 @@ export default function ChatPage() {
           <div className="lg:col-span-2 order-1 lg:order-2 h-full max-h-[calc(100vh-280px)]">
             <Card className="h-full flex flex-col overflow-hidden">
               <CardContent className="p-0 h-full flex flex-col overflow-hidden">
-                {chatId ? (
+                {isInitializing ? (
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
+                      <p className="text-muted-foreground">
+                        Đang mở cuộc trò chuyện...
+                      </p>
+                    </div>
+                  </div>
+                ) : chatId ? (
                   <ChatWindow chatId={chatId} />
                 ) : (
                   <div className="flex-1 flex items-center justify-center">
