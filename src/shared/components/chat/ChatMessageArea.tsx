@@ -211,6 +211,7 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
         avatarUrl={('avatarUrl' in (otherUser || {}) ? (otherUser as { avatarUrl?: string | null })?.avatarUrl : null) || undefined}
         isOnline={isOtherUserOnline}
         showBackButton
+        conversationId={conversationId}
       />
 
       {/* Messages */}

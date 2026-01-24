@@ -176,6 +176,17 @@ export const useMarkMessageAsRead = () => {
   })
 }
 
+export const useMarkAllConversationsAsRead = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: chatApi.markAllConversationsAsRead,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] })
+    },
+  })
+}
+
 export const useDeleteMessage = () => {
   const queryClient = useQueryClient()
 

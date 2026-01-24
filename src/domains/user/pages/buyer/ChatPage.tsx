@@ -5,10 +5,18 @@ import { Footer } from '@shared/components/layout/Footer'
 import { ChatList } from '@user/components/buyer/chat/ChatList'
 import { ChatWindow } from '@user/components/buyer/chat/ChatWindow'
 import { Card, CardContent } from '@shared/components/ui/card'
-import { MessageCircle, Search, Zap, Shield, Clock, Loader2 } from 'lucide-react'
+import { Button } from '@shared/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@shared/components/ui/dropdown-menu'
+import { MessageCircle, Search, Zap, Shield, Clock, Loader2, MoreVertical, CheckCheck } from 'lucide-react'
 import { Input } from '@shared/components/ui/input'
-import { useConversations, useCreateConversation } from '@/hooks/useChat'
+import { useConversations, useCreateConversation, useMarkAllConversationsAsRead } from '@/hooks/useChat'
 import { useAuthStore } from '@/stores/authStore'
+import { toast } from 'sonner'
 
 export default function ChatPage() {
   const { chatId: urlChatId } = useParams<{ chatId?: string }>()
@@ -36,6 +44,7 @@ export default function ChatPage() {
     useConversations({ page: 1, pageSize: 100 }, { enabled: !!user?.id })
 
   const createConversation = useCreateConversation()
+  const markAllAsRead = useMarkAllConversationsAsRead()
 
   // Track if we've already processed this sellerId to prevent re-runs
   const processedSellerIdRef = useRef<string | null>(null)
@@ -147,6 +156,22 @@ export default function ChatPage() {
     (conversationsLoading || isCreatingConversation) &&
     processedSellerIdRef.current !== sellerId
 
+  const handleMarkAllAsRead = () => {
+    markAllAsRead.mutate(undefined, {
+      onSuccess: () => {
+        toast.success('Đã đánh dấu tất cả là đã đọc')
+      },
+      onError: () => {
+        toast.error('Không thể đánh dấu đã đọc. Vui lòng thử lại.')
+      },
+    })
+  }
+
+  // Check if there are any unread messages
+  const hasUnreadMessages = conversationsData?.items?.some(
+    conv => (conv.unreadCount || 0) > 0
+  ) || false
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -184,14 +209,32 @@ export default function ChatPage() {
             <Card className="h-full flex flex-col">
               <CardContent className="p-4 h-full flex flex-col overflow-hidden">
                 <div className="mb-4 flex-shrink-0">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      placeholder="Tìm kiếm cuộc trò chuyện..."
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <Input
+                        placeholder="Tìm kiếm cuộc trò chuyện..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="flex-shrink-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={handleMarkAllAsRead}
+                          disabled={markAllAsRead.isPending || !hasUnreadMessages}
+                        >
+                          <CheckCheck className="h-4 w-4 mr-2" />
+                          {markAllAsRead.isPending ? 'Đang xử lý...' : 'Đánh dấu tất cả đã đọc'}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
 

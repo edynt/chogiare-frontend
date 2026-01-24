@@ -1,8 +1,27 @@
-import { ArrowLeft, X, MoreVertical } from 'lucide-react'
+import { useState } from 'react'
+import { ArrowLeft, X, MoreVertical, Trash2 } from 'lucide-react'
 import { useChatStore } from '@/stores/chatStore'
 import { Avatar, AvatarFallback, AvatarImage } from '@shared/components/ui/avatar'
 import { Button } from '@shared/components/ui/button'
-import { cn } from '@/lib/utils'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@shared/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@shared/components/ui/alert-dialog'
+import { useDeleteConversation } from '@/hooks/useChat'
+import { toast } from 'sonner'
+import { cn, getApiErrorMessage } from '@/lib/utils'
 
 interface ChatHeaderProps {
   title?: string
@@ -11,6 +30,7 @@ interface ChatHeaderProps {
   isOnline?: boolean
   showBackButton?: boolean
   onBack?: () => void
+  conversationId?: string
 }
 
 export function ChatHeader({
@@ -20,8 +40,11 @@ export function ChatHeader({
   isOnline,
   showBackButton = false,
   onBack,
+  conversationId,
 }: ChatHeaderProps) {
   const { closeChat, goBackToList } = useChatStore()
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const deleteConversation = useDeleteConversation()
 
   const handleBack = () => {
     if (onBack) {
@@ -29,6 +52,21 @@ export function ChatHeader({
     } else {
       goBackToList()
     }
+  }
+
+  const handleDeleteConversation = () => {
+    if (!conversationId) return
+
+    deleteConversation.mutate(conversationId, {
+      onSuccess: () => {
+        toast.success('Đã xóa cuộc trò chuyện')
+        closeChat()
+      },
+      onError: (error) => {
+        toast.error(getApiErrorMessage(error, 'Không thể xóa cuộc trò chuyện'))
+      },
+    })
+    setShowDeleteDialog(false)
   }
 
   return (
@@ -75,9 +113,24 @@ export function ChatHeader({
       </div>
 
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <MoreVertical className="h-4 w-4" />
-        </Button>
+        {conversationId && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => setShowDeleteDialog(true)}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Xóa cuộc trò chuyện
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
         <Button
           variant="ghost"
           size="icon"
@@ -87,6 +140,27 @@ export function ChatHeader({
           <X className="h-4 w-4" />
         </Button>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xóa cuộc trò chuyện?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa cuộc trò chuyện này? Tất cả tin nhắn sẽ bị xóa vĩnh viễn và không thể khôi phục.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConversation}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteConversation.isPending ? 'Đang xóa...' : 'Xóa'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

@@ -280,6 +280,10 @@ export const chatApi = {
     await apiClient.post(`/chat/conversations/${id}/read`)
   },
 
+  markAllConversationsAsRead: async (): Promise<void> => {
+    await apiClient.post('/chat/conversations/read-all')
+  },
+
   deleteMessage: async (
     conversationId: string,
     messageId: string

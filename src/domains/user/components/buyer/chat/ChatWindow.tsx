@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Avatar,
   AvatarFallback,
@@ -7,20 +8,36 @@ import {
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@shared/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@shared/components/ui/alert-dialog'
+import {
   Send,
-  Phone,
-  Video,
   MoreVertical,
   Image,
   Paperclip,
   Smile,
   Check,
   CheckCheck,
+  Trash2,
 } from 'lucide-react'
 import { cn, getApiErrorMessage } from '@/lib/utils'
 import {
   useConversation,
   useConversationMessages,
+  useDeleteConversation,
 } from '@/hooks/useChat'
 import { useAuthStore } from '@/stores/authStore'
 import { toast } from 'sonner'
@@ -49,11 +66,15 @@ interface ChatWindowProps {
 }
 
 export function ChatWindow({ chatId }: ChatWindowProps) {
+  const navigate = useNavigate()
   const { user } = useAuthStore()
   const [newMessage, setNewMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const deleteConversation = useDeleteConversation()
 
   const { data: conversation, isLoading: conversationLoading } =
     useConversation(chatId)
@@ -121,13 +142,28 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
     }
   }, [chatId, isConnected, joinConversation, leaveConversation, markAsRead])
 
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+  // Track previous message count to detect new messages
+  const prevMessageCountRef = useRef<number>(0)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  // Only scroll to bottom when a NEW message is sent by current user
+  useEffect(() => {
+    const currentCount = messages.length
+    const prevCount = prevMessageCountRef.current
+
+    // Only auto-scroll if:
+    // 1. New message was added (count increased)
+    // 2. The new message was sent by current user
+    if (currentCount > prevCount && currentCount > 0) {
+      const lastMessage = messages[currentCount - 1]
+      const isOwnMessage = lastMessage?.senderId === user?.id?.toString()
+
+      if (isOwnMessage) {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+      }
+    }
+
+    prevMessageCountRef.current = currentCount
+  }, [messages, user?.id])
 
   const handleSendMessage = async () => {
     // Validate chatId - must be non-empty and not "undefined" string
@@ -169,6 +205,19 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
       )
     }
     return null
+  }
+
+  const handleDeleteConversation = () => {
+    deleteConversation.mutate(chatId, {
+      onSuccess: () => {
+        toast.success('Đã xóa cuộc trò chuyện')
+        navigate('/chat')
+      },
+      onError: (error) => {
+        toast.error(getApiErrorMessage(error, 'Không thể xóa cuộc trò chuyện'))
+      },
+    })
+    setShowDeleteDialog(false)
   }
 
   // Get other user - prefer otherUser field, fallback to participants
@@ -218,18 +267,46 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
           </div>
 
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
-              <Phone className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Video className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Xóa cuộc trò chuyện
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xóa cuộc trò chuyện?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa cuộc trò chuyện này? Tất cả tin nhắn sẽ bị xóa vĩnh viễn và không thể khôi phục.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConversation}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteConversation.isPending ? 'Đang xóa...' : 'Xóa'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
