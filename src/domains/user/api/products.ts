@@ -8,6 +8,42 @@ import type {
   ProductStatus,
 } from '@/types'
 
+export interface BoostPackage {
+  id: number
+  name: string
+  displayName: string
+  description: string | null
+  durationDays: number
+  price: number
+  features: string[]
+}
+
+export interface BoostProductResponse {
+  boost: {
+    id: number
+    productId: number
+    packageId: number
+    pricePaid: number
+    durationDays: number
+    startAt: string
+    endAt: string
+  }
+  balance: {
+    current: number
+  }
+}
+
+export interface BoostStatus {
+  isPromoted: boolean
+  boost: {
+    id: number
+    packageName: string
+    startAt: string
+    endAt: string
+    remainingDays: number
+  } | null
+}
+
 export const productsApi = {
   // Product CRUD operations
   getProducts: async (
@@ -177,6 +213,32 @@ export const productsApi = {
 
   incrementProductViews: async (id: string): Promise<void> => {
     await apiClient.post(`/products/${id}/views`)
+  },
+
+  // Boost packages and product boost
+  getBoostPackages: async (): Promise<BoostPackage[]> => {
+    const response = await apiClient.get<ApiResponse<BoostPackage[]>>(
+      '/products/boost-packages'
+    )
+    return response.data.data
+  },
+
+  boostProduct: async (
+    productId: string,
+    packageId: number
+  ): Promise<BoostProductResponse> => {
+    const response = await apiClient.post<ApiResponse<BoostProductResponse>>(
+      `/products/${productId}/boost`,
+      { packageId }
+    )
+    return response.data.data
+  },
+
+  getBoostStatus: async (productId: string): Promise<BoostStatus> => {
+    const response = await apiClient.get<ApiResponse<BoostStatus>>(
+      `/products/${productId}/boost-status`
+    )
+    return response.data.data
   },
 }
 

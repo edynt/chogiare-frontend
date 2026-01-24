@@ -26,6 +26,7 @@ import {
   useDashboardStats,
   useLowStockProducts,
   usePromotedProducts,
+  useUserStore,
 } from '@/hooks/useStores'
 import {
   Dialog,
@@ -139,11 +140,13 @@ const STATUS_CONFIG = {
 export function SellerDashboardContent() {
   const navigate = useNavigate()
   const { data: _products, isLoading: _isLoading } = useSellerProducts()
+  const { data: userStore, isLoading: isLoadingStore } = useUserStore()
+  const storeId = userStore?.id || ''
   const {
     data: ordersData,
     isLoading: isLoadingOrders,
     refetch: refetchOrders,
-  } = useStoreOrders('store-1', { page: 1, pageSize: 10 })
+  } = useStoreOrders(storeId, { page: 1, pageSize: 10 })
   const { data: dashboardStats, isLoading: isLoadingStats } =
     useDashboardStats()
   const { data: lowStockProductsData, isLoading: isLoadingLowStock } =

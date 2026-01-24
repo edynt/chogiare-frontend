@@ -45,6 +45,7 @@ import {
   ProductDetailSectionSkeleton,
 } from '@shared/components/skeleton/ProductDetailSkeleton'
 import { LazySection } from './LazySection'
+import { BoostProductModal } from './BoostProductModal'
 import { formatCurrency, formatDate, PLACEHOLDER_IMAGE } from '@/lib/utils'
 import { SecurityWarning } from '@shared/components/ui/security-warning'
 import { useCartStore } from '@/stores/cartStore'
@@ -99,6 +100,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState<number>(1)
   const [sellingPrice, setSellingPrice] = useState<number>(0)
   const [showQuoteDialog, setShowQuoteDialog] = useState(false)
+  const [showBoostDialog, setShowBoostDialog] = useState(false)
   const [quoteQuantity, setQuoteQuantity] = useState<string>('')
   const [quoteMessage, setQuoteMessage] = useState<string>('')
   const [quoteMethod, setQuoteMethod] = useState<'chat' | 'email'>('chat')
@@ -572,7 +574,14 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                     <FileText className="h-4 w-4 mr-2" />
                     Xin báo giá
                   </Button>
-                  <Button variant="outline" className="border-2 hover:bg-muted/50">
+                  <Button
+                    variant="outline"
+                    className="border-2 hover:bg-muted/50"
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href)
+                      toast.success('Đã sao chép link sản phẩm')
+                    }}
+                  >
                     <Share2 className="h-4 w-4 mr-2" />
                     Chia sẻ
                   </Button>
@@ -589,15 +598,19 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 <Button
                   variant="outline"
                   className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
-                  onClick={() => {
-                    // TODO: Implement promote product dialog
-                    alert('Chức năng đẩy sản phẩm sẽ được triển khai')
-                  }}
+                  onClick={() => setShowBoostDialog(true)}
                 >
                   <TrendingUp className="h-4 w-4 mr-2" />
                   Đẩy sản phẩm
                 </Button>
-                <Button variant="outline" className="border-2 hover:bg-muted/50">
+                <Button
+                  variant="outline"
+                  className="border-2 hover:bg-muted/50"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href)
+                    toast.success('Đã sao chép link sản phẩm')
+                  }}
+                >
                   <Share2 className="h-4 w-4 mr-2" />
                   Chia sẻ
                 </Button>
@@ -2005,6 +2018,16 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Boost Product Modal */}
+      {isOwnProduct && product && (
+        <BoostProductModal
+          isOpen={showBoostDialog}
+          onClose={() => setShowBoostDialog(false)}
+          productId={String(product.id)}
+          productTitle={product.title}
+        />
+      )}
     </div>
   )
 }

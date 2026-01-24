@@ -4,7 +4,8 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query'
-import { productsApi, getCategories } from '@user/api/products'
+import { productsApi, getCategories, type BoostPackage } from '@user/api/products'
+import { queryKeys } from '@/constants/queryKeys'
 import { sellerApi } from '@user/api/seller'
 import type { Product, SearchFilters } from '@/types'
 
@@ -159,5 +160,44 @@ export const useMyProducts = (
     queryKey: ['products', 'my', filters],
     queryFn: () => sellerApi.getMyProducts(filters),
     staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+// Boost-related hooks
+export const useBoostPackages = () => {
+  return useQuery({
+    queryKey: ['products', 'boost-packages'],
+    queryFn: () => productsApi.getBoostPackages(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+export const useBoostStatus = (productId: string, enabled = true) => {
+  return useQuery({
+    queryKey: ['products', productId, 'boost-status'],
+    queryFn: () => productsApi.getBoostStatus(productId),
+    enabled: !!productId && enabled,
+    staleTime: 1 * 60 * 1000, // 1 minute
+  })
+}
+
+export const useBoostProduct = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      productId,
+      packageId,
+    }: {
+      productId: string
+      packageId: number
+    }) => productsApi.boostProduct(productId, packageId),
+    onSuccess: (_, { productId }) => {
+      queryClient.invalidateQueries({
+        queryKey: ['products', productId, 'boost-status'],
+      })
+      queryClient.invalidateQueries({ queryKey: ['product', productId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.wallet.balance })
+    },
   })
 }
