@@ -31,7 +31,6 @@ import { useLoading } from '@/hooks/useLoading'
 import { useUploadProductImages } from '@/hooks/useUpload'
 import {
   Edit,
-  X,
   Package,
   DollarSign,
   Tag,
@@ -44,6 +43,10 @@ import {
   BarChart3,
   AlertTriangle,
 } from 'lucide-react'
+import {
+  ImageUploadWithReorder,
+  type ImageItem,
+} from '@shared/components/ui/image-upload-with-reorder'
 import type {
   Product,
   ProductCondition,
@@ -80,9 +83,8 @@ export default function EditProductPage() {
     },
   })
 
-  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([])
-  const [newImageFiles, setNewImageFiles] = useState<File[]>([])
-  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([])
+  // Unified image state - supports both existing URLs and new uploads
+  const [images, setImages] = useState<ImageItem[]>([])
   const [selectedBadges, setSelectedBadges] = useState<string[]>([])
   const [stockInQuantity, setStockInQuantity] = useState(1)
   const [stockInCostPrice, setStockInCostPrice] = useState(0)
@@ -108,7 +110,16 @@ export default function EditProductPage() {
     formState: { errors },
   } = useForm<ProductUpdateFormData>({
     resolver: zodResolver(productUpdateSchema),
+    defaultValues: {
+      condition: undefined,
+      status: undefined,
+    },
   })
+
+  // Watch form values for Select components
+  const watchedCondition = watch('condition')
+  const watchedStatus = watch('status')
+  const watchedCategoryId = watch('categoryId')
 
   const availableBadges = ['NEW', 'FEATURED', 'PROMO', 'HOT', 'SALE']
   const conditions: { value: ProductCondition; label: string }[] = [
@@ -130,54 +141,70 @@ export default function EditProductPage() {
   // Load product data when available
   useEffect(() => {
     if (product) {
+      // Parse categoryId safely to avoid NaN
+      let categoryId: number | undefined
+      if (product.categoryId !== undefined && product.categoryId !== null) {
+        const parsed =
+          typeof product.categoryId === 'string'
+            ? parseInt(product.categoryId, 10)
+            : product.categoryId
+        categoryId = Number.isNaN(parsed) ? undefined : parsed
+      }
+
+      // Validate condition value
+      const validConditions = ['new', 'like_new', 'good', 'fair', 'poor']
+      const condition = validConditions.includes(product.condition)
+        ? product.condition
+        : 'new'
+
+      // Validate status value
+      const validStatuses = [
+        'draft',
+        'active',
+        'sold',
+        'archived',
+        'suspended',
+      ]
+      const status = validStatuses.includes(product.status)
+        ? product.status
+        : 'draft'
+
       reset({
         title: product.title,
         description: product.description,
         price: product.price,
         originalPrice: product.originalPrice,
-        categoryId:
-          typeof product.categoryId === 'string'
-            ? parseInt(product.categoryId, 10)
-            : product.categoryId,
-        condition: product.condition,
+        categoryId,
+        condition: condition as ProductCondition,
         location: product.location,
         stock: product.stock,
-        tags: product.tags.join(', '),
-        status: product.status,
+        tags: (product.tags || []).join(', '),
+        status: status as ProductStatus,
       })
-      // Load existing images from product
-      const imageUrls = Array.isArray(product.images)
-        ? product.images.map((img: any) =>
-            typeof img === 'string' ? img : img.imageUrl || img.url
-          )
+
+      // Load additional fields from product data
+      setSku(product.sku || '')
+      setMinStock(product.minStock || 0)
+      setMaxStock(product.maxStock || 0)
+      setCostPrice(product.costPrice || 0)
+      setWarehouseLocation(product.warehouseLocation || '')
+      setSupplier(product.supplier || '')
+
+      // Convert existing images to ImageItem format for unified handling
+      const existingImages: ImageItem[] = Array.isArray(product.images)
+        ? product.images.map((img: any, index: number) => {
+            const url = typeof img === 'string' ? img : img.imageUrl || img.url
+            return {
+              id: `existing-${index}-${Date.now()}`,
+              url,
+              isExisting: true,
+            }
+          })
         : []
-      setExistingImageUrls(imageUrls)
-      setSelectedBadges(product.badges)
+      setImages(existingImages)
+      setSelectedBadges(product.badges || [])
     }
   }, [product, reset])
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files) {
-      const filesArray = Array.from(files)
-      setNewImageFiles(prev => [...prev, ...filesArray])
-      setNewImagePreviews(prev => [
-        ...prev,
-        ...filesArray.map(file => URL.createObjectURL(file)),
-      ])
-    }
-  }
-
-  const removeExistingImage = (index: number) => {
-    setExistingImageUrls(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const removeNewImage = (index: number) => {
-    // Revoke blob URL to prevent memory leak
-    URL.revokeObjectURL(newImagePreviews[index])
-    setNewImageFiles(prev => prev.filter((_, i) => i !== index))
-    setNewImagePreviews(prev => prev.filter((_, i) => i !== index))
-  }
 
   const handleBadgeToggle = (badge: string) => {
     setSelectedBadges(prev =>
@@ -189,17 +216,36 @@ export default function EditProductPage() {
     if (!id) return
 
     execute(async () => {
+      // Separate existing images from new uploads while preserving order
+      const existingImages = images.filter(img => img.isExisting)
+      const newImages = images.filter(img => !img.isExisting && img.file)
+
       // Upload new images if any
-      let newImageUrls: string[] = []
-      if (newImageFiles.length > 0) {
+      let uploadedUrls: string[] = []
+      if (newImages.length > 0) {
+        const filesToUpload = newImages
+          .map(img => img.file)
+          .filter((f): f is File => f !== undefined)
         const uploadResults = await uploadImagesMutation.mutateAsync({
-          files: newImageFiles,
+          files: filesToUpload,
         })
-        newImageUrls = uploadResults.map(result => result.url)
+        uploadedUrls = uploadResults.map(result => result.url)
       }
 
-      // Combine existing and new image URLs
-      const allImageUrls = [...existingImageUrls, ...newImageUrls]
+      // Build final image URLs array preserving the reordered sequence
+      const allImageUrls: string[] = []
+      let uploadIndex = 0
+      for (const img of images) {
+        if (img.isExisting) {
+          allImageUrls.push(img.url)
+        } else if (img.file) {
+          // Use the uploaded URL for new images
+          if (uploadIndex < uploadedUrls.length) {
+            allImageUrls.push(uploadedUrls[uploadIndex])
+            uploadIndex++
+          }
+        }
+      }
 
       const productData: Partial<Product> = {
         title: data.title,
@@ -341,15 +387,20 @@ export default function EditProductPage() {
                   <div>
                     <Label htmlFor="categoryId">Danh mục *</Label>
                     <Select
-                      value={watch('categoryId')?.toString()}
-                      onValueChange={value =>
-                        setValue(
-                          'categoryId',
-                          typeof value === 'string'
-                            ? parseInt(value, 10)
-                            : value
-                        )
+                      key={`category-${watchedCategoryId}`}
+                      value={
+                        watchedCategoryId !== undefined &&
+                        watchedCategoryId !== null &&
+                        !Number.isNaN(watchedCategoryId)
+                          ? String(watchedCategoryId)
+                          : undefined
                       }
+                      onValueChange={value => {
+                        const parsed = parseInt(value, 10)
+                        if (!Number.isNaN(parsed)) {
+                          setValue('categoryId', parsed)
+                        }
+                      }}
                     >
                       <SelectTrigger
                         className={
@@ -360,7 +411,10 @@ export default function EditProductPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {categories?.map(category => (
-                          <SelectItem key={category.id} value={category.id}>
+                          <SelectItem
+                            key={category.id}
+                            value={String(category.id)}
+                          >
                             {category.name}
                           </SelectItem>
                         ))}
@@ -376,7 +430,8 @@ export default function EditProductPage() {
                   <div>
                     <Label htmlFor="condition">Tình trạng *</Label>
                     <Select
-                      value={watch('condition')}
+                      key={`condition-${watchedCondition}`}
+                      value={watchedCondition || undefined}
                       onValueChange={value =>
                         setValue('condition', value as ProductCondition)
                       }
@@ -407,7 +462,8 @@ export default function EditProductPage() {
                   <div>
                     <Label htmlFor="status">Trạng thái *</Label>
                     <Select
-                      value={watch('status')}
+                      key={`status-${watchedStatus}`}
+                      value={watchedStatus || undefined}
                       onValueChange={value =>
                         setValue('status', value as ProductStatus)
                       }
@@ -610,7 +666,7 @@ export default function EditProductPage() {
               </CardContent>
             </Card>
 
-            {/* Images */}
+            {/* Images with Drag & Drop Reorder */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -618,91 +674,12 @@ export default function EditProductPage() {
                   Hình ảnh sản phẩm
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="images">Tải lên hình ảnh mới</Label>
-                  <div className="mt-2">
-                    <Input
-                      id="images"
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="cursor-pointer"
-                    />
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Tải lên tối đa 10 hình ảnh. Hình đầu tiên sẽ là ảnh đại
-                    diện.
-                  </p>
-                </div>
-
-                {/* Existing Images */}
-                {existingImageUrls.length > 0 && (
-                  <div>
-                    <Label className="mb-2 block">Hình ảnh hiện tại</Label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {existingImageUrls.map((image, index) => (
-                        <div
-                          key={`existing-${index}`}
-                          className="relative group"
-                        >
-                          <img
-                            src={image}
-                            alt={`Existing ${index + 1}`}
-                            className="w-full h-32 object-cover rounded-lg border"
-                          />
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon"
-                            className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => removeExistingImage(index)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                          {index === 0 && (
-                            <Badge className="absolute bottom-2 left-2">
-                              Ảnh chính
-                            </Badge>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* New Images */}
-                {newImagePreviews.length > 0 && (
-                  <div>
-                    <Label className="mb-2 block">Hình ảnh mới</Label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {newImagePreviews.map((image, index) => (
-                        <div key={index} className="relative group">
-                          <img
-                            src={image}
-                            alt={`Product ${index + 1}`}
-                            className="w-full h-32 object-cover rounded-lg border"
-                          />
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon"
-                            className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => removeNewImage(index)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                          {index === 0 && (
-                            <Badge className="absolute bottom-2 left-2">
-                              Ảnh chính
-                            </Badge>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              <CardContent>
+                <ImageUploadWithReorder
+                  images={images}
+                  onImagesChange={setImages}
+                  maxImages={10}
+                />
               </CardContent>
             </Card>
 

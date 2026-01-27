@@ -88,7 +88,7 @@ export function EditProductModal({
     if (product) {
       setFormData({
         ...product,
-        tags: [...product.tags],
+        tags: [...(product.tags || [])],
       })
     }
   }, [product])

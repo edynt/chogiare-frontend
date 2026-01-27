@@ -93,6 +93,14 @@ export interface Product {
   tags: string[]
   location: string
   stock: number
+  minStock?: number
+  maxStock?: number
+  costPrice?: number
+  sellingPrice?: number
+  sku?: string
+  barcode?: string
+  warehouseLocation?: string
+  supplier?: string
   sellerId: string
   seller?: User
   store?: StoreInfo

@@ -24,8 +24,9 @@ import { cn } from '@/lib/utils'
 
 export interface ImageItem {
   id: string
-  file: File
+  file?: File // Optional - only present for newly uploaded images
   url: string
+  isExisting?: boolean // True for images loaded from server
 }
 
 interface SortableImageProps {
@@ -151,6 +152,7 @@ export function ImageUploadWithReorder({
         id: `${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
         file,
         url: URL.createObjectURL(file),
+        isExisting: false,
       }))
 
       onImagesChange([...images, ...newImages])
@@ -185,7 +187,8 @@ export function ImageUploadWithReorder({
   const handleRemove = useCallback(
     (id: string) => {
       const image = images.find(img => img.id === id)
-      if (image) {
+      // Only revoke blob URLs for newly uploaded images (not existing server URLs)
+      if (image && !image.isExisting && image.file) {
         URL.revokeObjectURL(image.url)
       }
       onImagesChange(images.filter(img => img.id !== id))
