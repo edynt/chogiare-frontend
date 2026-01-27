@@ -16,12 +16,12 @@ import {
 import { useMyProducts, useDeleteProduct } from '@/hooks/useProducts'
 import { useNotification } from '@shared/components/notification-provider'
 import {
+  ArrowLeft,
   Plus,
   Search,
   Eye,
   Edit,
   Trash2,
-  MoreVertical,
   Package,
   Star,
   Filter,
@@ -184,7 +184,16 @@ export default function SellerProductsPage() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/seller/dashboard')}
+              className="mb-4"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Quay lại Dashboard
+            </Button>
+            <div className="flex items-center gap-2">
               <Package className="h-8 w-8 text-primary" />
               <h1 className="text-3xl font-bold">Quản lý sản phẩm</h1>
             </div>
@@ -306,11 +315,6 @@ export default function SellerProductsPage() {
                         />
                         <div className="absolute top-2 left-2">
                           {getStatusBadge(product.status)}
-                        </div>
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button variant="secondary" size="icon">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
                         </div>
                       </div>
 
