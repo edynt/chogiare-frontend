@@ -99,8 +99,11 @@ export interface Product {
   sellingPrice?: number
   sku?: string
   barcode?: string
-  warehouseLocation?: string
-  supplier?: string
+  inventoryInfo?: {
+    warehouseLocation?: string
+    supplier?: string
+    [key: string]: unknown
+  }
   sellerId: string
   seller?: User
   store?: StoreInfo
@@ -119,9 +122,7 @@ export type ProductCondition = 'new' | 'like_new' | 'good' | 'fair' | 'poor'
 export type ProductStatus =
   | 'draft'
   | 'active'
-  | 'sold'
-  | 'archived'
-  | 'suspended'
+  | 'out_of_stock'
 export type ProductBadge = 'NEW' | 'FEATURED' | 'PROMO' | 'HOT' | 'SALE'
 
 export interface CartItem {

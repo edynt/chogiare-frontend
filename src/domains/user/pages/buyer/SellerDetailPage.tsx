@@ -7,7 +7,7 @@ import { useChatStore } from '@/stores/chatStore'
 import { useAuthStore } from '@/stores/authStore'
 import { toast } from 'sonner'
 import { Badge } from '@shared/components/ui/badge'
-import { useProducts } from '@/hooks/useProducts'
+import { useBuyerProducts } from '@/hooks/useProducts'
 import { InfiniteProductGrid } from '@shared/components/product/InfiniteProductGrid'
 import {
   Star,
@@ -66,8 +66,8 @@ export default function SellerDetailPage() {
     openChatWithSeller(Number(id))
   }
 
-  // Fetch seller products for count
-  const { data: productsData } = useProducts({
+  // Fetch seller products for count (only active products visible to buyers)
+  const { data: productsData } = useBuyerProducts({
     sellerId: id,
     page: 1,
     limit: 1,

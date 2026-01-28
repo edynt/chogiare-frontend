@@ -38,10 +38,6 @@ import {
   Save,
   ArrowLeft,
   Trash2,
-  Plus,
-  Minus,
-  BarChart3,
-  AlertTriangle,
 } from 'lucide-react'
 import {
   ImageUploadWithReorder,
@@ -86,16 +82,6 @@ export default function EditProductPage() {
   // Unified image state - supports both existing URLs and new uploads
   const [images, setImages] = useState<ImageItem[]>([])
   const [selectedBadges, setSelectedBadges] = useState<string[]>([])
-  const [stockInQuantity, setStockInQuantity] = useState(1)
-  const [stockInCostPrice, setStockInCostPrice] = useState(0)
-  const [stockInSupplier, setStockInSupplier] = useState('')
-  const [stockInLocation, setStockInLocation] = useState('Kho A')
-  const [sku, setSku] = useState('')
-  const [minStock, setMinStock] = useState(0)
-  const [maxStock, setMaxStock] = useState(0)
-  const [warehouseLocation, setWarehouseLocation] = useState('')
-  const [supplier, setSupplier] = useState('')
-  const [costPrice, setCostPrice] = useState(0)
   const [isWarranty, setIsWarranty] = useState(false)
   const [warrantyInfo, setWarrantyInfo] = useState('')
   const [isReturnable, setIsReturnable] = useState(false)
@@ -131,11 +117,9 @@ export default function EditProductPage() {
   ]
 
   const statuses: { value: ProductStatus; label: string }[] = [
-    { value: 'draft', label: 'Bản nháp' },
+    { value: 'draft', label: 'Nháp' },
     { value: 'active', label: 'Đang bán' },
-    { value: 'sold', label: 'Đã bán' },
-    { value: 'archived', label: 'Lưu trữ' },
-    { value: 'suspended', label: 'Tạm dừng' },
+    { value: 'out_of_stock', label: 'Hết' },
   ]
 
   // Load product data when available
@@ -158,13 +142,7 @@ export default function EditProductPage() {
         : 'new'
 
       // Validate status value
-      const validStatuses = [
-        'draft',
-        'active',
-        'sold',
-        'archived',
-        'suspended',
-      ]
+      const validStatuses = ['draft', 'active', 'out_of_stock']
       const status = validStatuses.includes(product.status)
         ? product.status
         : 'draft'
@@ -181,14 +159,6 @@ export default function EditProductPage() {
         tags: (product.tags || []).join(', '),
         status: status as ProductStatus,
       })
-
-      // Load additional fields from product data
-      setSku(product.sku || '')
-      setMinStock(product.minStock || 0)
-      setMaxStock(product.maxStock || 0)
-      setCostPrice(product.costPrice || 0)
-      setWarehouseLocation(product.warehouseLocation || '')
-      setSupplier(product.supplier || '')
 
       // Convert existing images to ImageItem format for unified handling
       const existingImages: ImageItem[] = Array.isArray(product.images)
@@ -554,118 +524,6 @@ export default function EditProductPage() {
               </CardContent>
             </Card>
 
-            {/* Inventory Management */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5" />
-                  Quản lý kho
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="stock">Số lượng tồn kho *</Label>
-                    <Input
-                      id="stock"
-                      type="number"
-                      placeholder="0"
-                      {...register('stock', { valueAsNumber: true })}
-                      className={errors.stock ? 'border-destructive' : ''}
-                    />
-                    {errors.stock && (
-                      <p className="text-sm text-destructive mt-1">
-                        {errors.stock.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="sku">Mã SKU</Label>
-                    <Input
-                      id="sku"
-                      placeholder="Mã SKU sản phẩm"
-                      value={sku}
-                      onChange={e => setSku(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="minStock">Số lượng tối thiểu</Label>
-                    <Input
-                      id="minStock"
-                      type="number"
-                      placeholder="0"
-                      value={minStock}
-                      onChange={e => setMinStock(parseInt(e.target.value) || 0)}
-                    />
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Cảnh báo khi tồn kho dưới mức này
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="maxStock">Số lượng tối đa</Label>
-                    <Input
-                      id="maxStock"
-                      type="number"
-                      placeholder="0"
-                      value={maxStock}
-                      onChange={e => setMaxStock(parseInt(e.target.value) || 0)}
-                    />
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Số lượng tối đa có thể lưu trữ
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="warehouseLocation">Vị trí kho</Label>
-                    <Input
-                      id="warehouseLocation"
-                      placeholder="Ví dụ: Kho A - Kệ 1"
-                      value={warehouseLocation}
-                      onChange={e => setWarehouseLocation(e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="supplier">Nhà cung cấp</Label>
-                    <Input
-                      id="supplier"
-                      placeholder="Tên nhà cung cấp"
-                      value={supplier}
-                      onChange={e => setSupplier(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="costPrice">Giá nhập (VNĐ)</Label>
-                  <Input
-                    id="costPrice"
-                    type="text"
-                    inputMode="decimal"
-                    pattern="[0-9]*\.?[0-9]*"
-                    placeholder="0"
-                    value={costPrice}
-                    onChange={e => {
-                      const value = e.target.value
-                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                        setCostPrice(parseFloat(value) || 0)
-                      }
-                    }}
-                  />
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Giá nhập hàng từ nhà cung cấp
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Images with Drag & Drop Reorder */}
             <Card>
               <CardHeader>
@@ -772,184 +630,6 @@ export default function EditProductPage() {
                       </div>
                     ))}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Stock Management */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Quản lý tồn kho
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Current Stock Info */}
-                <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">
-                      Tồn kho hiện tại
-                    </p>
-                    <p className="text-2xl font-bold text-primary">
-                      {(product as any)?.stock || 0}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">
-                      Tồn kho tối thiểu
-                    </p>
-                    <p className="text-xl font-semibold">
-                      {(product as any)?.minStock || 0}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">
-                      Tồn kho tối đa
-                    </p>
-                    <p className="text-xl font-semibold">
-                      {(product as any)?.maxStock || 0}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Stock Alert */}
-                {product &&
-                  (product as any).stock <=
-                    ((product as any).minStock || 0) && (
-                    <div className="p-4 bg-yellow-100 border border-yellow-200 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                        <p className="text-yellow-800 font-medium">
-                          Cảnh báo: Sản phẩm sắp hết hàng! Cần nhập thêm kho.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                {/* Quick Stock In */}
-                <div className="space-y-4">
-                  <h4 className="font-medium">Nhập kho nhanh</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="stockInQuantity">Số lượng</Label>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            setStockInQuantity(Math.max(1, stockInQuantity - 1))
-                          }
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <Input
-                          id="stockInQuantity"
-                          type="number"
-                          min="1"
-                          value={stockInQuantity}
-                          onChange={e =>
-                            setStockInQuantity(parseInt(e.target.value) || 1)
-                          }
-                          className="text-center"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            setStockInQuantity(stockInQuantity + 1)
-                          }
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="stockInCostPrice">Giá nhập (VNĐ)</Label>
-                      <Input
-                        id="stockInCostPrice"
-                        type="number"
-                        min="0"
-                        value={stockInCostPrice}
-                        onChange={e =>
-                          setStockInCostPrice(parseInt(e.target.value) || 0)
-                        }
-                        placeholder="0"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="stockInSupplier">Nhà cung cấp</Label>
-                      <Input
-                        id="stockInSupplier"
-                        value={stockInSupplier}
-                        onChange={e => setStockInSupplier(e.target.value)}
-                        placeholder="Tên nhà cung cấp"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="stockInLocation">Vị trí kho</Label>
-                      <Select
-                        value={stockInLocation}
-                        onValueChange={setStockInLocation}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Kho A">Kho A</SelectItem>
-                          <SelectItem value="Kho B">Kho B</SelectItem>
-                          <SelectItem value="Kho C">Kho C</SelectItem>
-                          <SelectItem value="Kho D">Kho D</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {/* Total Cost Display */}
-                  <div className="bg-primary/10 p-4 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">
-                        Tổng giá trị nhập kho:
-                      </span>
-                      <span className="text-xl font-bold text-primary">
-                        {new Intl.NumberFormat('vi-VN', {
-                          style: 'currency',
-                          currency: 'VND',
-                        }).format(stockInQuantity * stockInCostPrice)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Stock In Button */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => {
-                      // TODO: Implement stock in functionality
-                      notify({
-                        type: 'success',
-                        title: 'Nhập kho thành công',
-                        message: `Đã nhập ${stockInQuantity} sản phẩm vào kho`,
-                      })
-                      // Reset form
-                      setStockInQuantity(1)
-                      setStockInCostPrice(0)
-                      setStockInSupplier('')
-                      setStockInLocation('Kho A')
-                    }}
-                    disabled={!stockInSupplier || stockInCostPrice <= 0}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nhập kho ({stockInQuantity} sản phẩm)
-                  </Button>
                 </div>
               </CardContent>
             </Card>

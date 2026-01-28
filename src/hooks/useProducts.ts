@@ -17,6 +17,19 @@ export const useProducts = (filters: SearchFilters = {}) => {
   })
 }
 
+/**
+ * Hook for buyer pages - only returns active products
+ * Products with status 'draft' or 'out_of_stock' are hidden from buyers
+ */
+export const useBuyerProducts = (filters: SearchFilters = {}) => {
+  const buyerFilters = { ...filters, status: 'active' as const }
+  return useQuery({
+    queryKey: ['products', 'buyer', buyerFilters],
+    queryFn: () => productsApi.getProducts(buyerFilters),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
 export const useInfiniteProducts = (
   filters: Omit<SearchFilters, 'page'> = {}
 ) => {
@@ -25,6 +38,33 @@ export const useInfiniteProducts = (
     queryFn: ({ pageParam = 1 }) => {
       return productsApi.getProducts({
         ...filters,
+        page: pageParam,
+        limit: filters.limit || 20,
+      })
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      const currentPage = allPages.length
+      const totalPages = lastPage.totalPages || 1
+      return currentPage < totalPages ? currentPage + 1 : undefined
+    },
+    initialPageParam: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+/**
+ * Infinite scroll hook for buyer pages - only returns active products
+ * Products with status 'draft', 'sold', 'archived', 'suspended' are hidden from buyers
+ */
+export const useInfiniteBuyerProducts = (
+  filters: Omit<SearchFilters, 'page'> = {}
+) => {
+  const buyerFilters = { ...filters, status: 'active' as const }
+  return useInfiniteQuery({
+    queryKey: ['products', 'infinite', 'buyer', buyerFilters],
+    queryFn: ({ pageParam = 1 }) => {
+      return productsApi.getProducts({
+        ...buyerFilters,
         page: pageParam,
         limit: filters.limit || 20,
       })

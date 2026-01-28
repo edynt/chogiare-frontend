@@ -7,7 +7,7 @@ import { APP_NAME } from '@/constants/app.constants'
 import { Card, CardContent } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
-import { useProducts, useCategories } from '@/hooks'
+import { useBuyerProducts, useCategories } from '@/hooks'
 import { InfiniteProductGrid } from '@shared/components/product/InfiniteProductGrid'
 import { LazySection } from '@shared/components/product/LazySection'
 import {
@@ -35,7 +35,7 @@ import {
 
 export default function HomePage() {
   const navigate = useNavigate()
-  const { data: allProductsData, isLoading: isLoadingProducts } = useProducts({
+  const { data: allProductsData, isLoading: isLoadingProducts } = useBuyerProducts({
     limit: 100,
   })
 

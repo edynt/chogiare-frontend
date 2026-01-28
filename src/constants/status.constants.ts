@@ -15,9 +15,7 @@ export type UserStatus = (typeof USER_STATUS)[keyof typeof USER_STATUS]
 export const PRODUCT_STATUS = {
   DRAFT: 'draft',
   ACTIVE: 'active',
-  SOLD: 'sold',
-  ARCHIVED: 'archived',
-  SUSPENDED: 'suspended',
+  OUT_OF_STOCK: 'out_of_stock',
 } as const
 
 export type ProductStatus = (typeof PRODUCT_STATUS)[keyof typeof PRODUCT_STATUS]

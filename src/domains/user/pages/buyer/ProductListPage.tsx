@@ -23,7 +23,7 @@ import {
 import { Button } from '@shared/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { APP_NAME } from '@/constants/app.constants'
-import { useProducts, useCategories } from '@/hooks'
+import { useBuyerProducts, useCategories } from '@/hooks'
 import { SEOHead } from '@shared/components/seo/SEOHead'
 import type { SearchFilters } from '@/types'
 
@@ -74,7 +74,7 @@ export default function ProductListPage() {
     return parsedFilters
   }, [searchParams])
 
-  const { data: productsData, isLoading, error, refetch } = useProducts(filters)
+  const { data: productsData, isLoading, error, refetch } = useBuyerProducts(filters)
 
   // Update URL when filters change
   const updateURL = (newFilters: SearchFilters) => {

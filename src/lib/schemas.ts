@@ -94,7 +94,7 @@ export const productSchema = z.object({
 
 export const productUpdateSchema = productSchema.partial().extend({
   status: z
-    .enum(['draft', 'active', 'sold', 'archived', 'suspended'])
+    .enum(['draft', 'active', 'out_of_stock'])
     .optional(),
 })
 

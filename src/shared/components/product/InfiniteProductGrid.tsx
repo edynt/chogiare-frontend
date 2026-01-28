@@ -4,7 +4,7 @@ import { LoadingSpinner } from '@shared/components/ui/loading'
 import { ErrorMessage } from '@shared/components/ui/error-boundary'
 import { EmptyProducts } from '@shared/components/ui/empty-state'
 import { ProductGridSkeleton } from '@shared/components/skeleton/ProductCardSkeleton'
-import { useInfiniteProducts } from '@/hooks'
+import { useInfiniteProducts, useInfiniteBuyerProducts } from '@/hooks'
 import { cn } from '@/lib/utils'
 import type { SearchFilters, Product } from '@/types'
 
@@ -12,13 +12,24 @@ interface InfiniteProductGridProps {
   filters?: Omit<SearchFilters, 'page'>
   className?: string
   onLoadMore?: () => void
+  /**
+   * When true, only shows products with status='active'
+   * Use this for buyer-facing pages (home, product list, etc.)
+   * @default true
+   */
+  buyerMode?: boolean
 }
 
 export function InfiniteProductGrid({
   filters = {},
   className,
   onLoadMore,
+  buyerMode = true,
 }: InfiniteProductGridProps) {
+  // Use buyer hook by default to only show active products
+  const buyerQuery = useInfiniteBuyerProducts(filters)
+  const allQuery = useInfiniteProducts(filters)
+
   const {
     data,
     fetchNextPage,
@@ -27,7 +38,7 @@ export function InfiniteProductGrid({
     isLoading,
     error,
     refetch,
-  } = useInfiniteProducts(filters)
+  } = buyerMode ? buyerQuery : allQuery
 
   const loadMoreRef = useRef<HTMLDivElement>(null)
 

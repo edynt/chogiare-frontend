@@ -73,15 +73,7 @@ export default function AddProductPage() {
   const [images, setImages] = useState<ImageItem[]>([])
   const [selectedBadges, setSelectedBadges] = useState<string[]>([])
   const [status, setStatus] = useState<ProductStatus>('active')
-  const [inStock, setInStock] = useState(true)
   const [moq, setMoq] = useState(1)
-  const [sku, setSku] = useState('')
-  const [warehouseStock, setWarehouseStock] = useState('')
-  const [warehouseLocation, setWarehouseLocation] = useState('')
-  const [minStock, setMinStock] = useState(0)
-  const [maxStock, setMaxStock] = useState(0)
-  const [supplier, setSupplier] = useState('')
-  const [costPrice, setCostPrice] = useState(0)
   const [material, setMaterial] = useState('')
   const [dimensions, setDimensions] = useState('')
   const [color, setColor] = useState('')
@@ -146,11 +138,6 @@ export default function AddProductPage() {
           ? data.tags.split(',').map(tag => tag.trim())
           : undefined,
         badges: selectedBadges.length > 0 ? selectedBadges : undefined,
-        minStock: minStock > 0 ? minStock : undefined,
-        maxStock: maxStock > 0 ? maxStock : undefined,
-        costPrice: costPrice > 0 ? costPrice : undefined,
-        sellingPrice: data.price > 0 ? data.price : undefined,
-        sku: sku || undefined,
       }
 
       // Extract files from images array in order (first image = representative image)
@@ -204,10 +191,9 @@ export default function AddProductPage() {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { value: 'draft', label: 'Bản nháp' },
+                    { value: 'draft', label: 'Nháp' },
                     { value: 'active', label: 'Đang bán' },
-                    { value: 'sold', label: 'Đã bán' },
-                    { value: 'archived', label: 'Lưu trữ' },
+                    { value: 'out_of_stock', label: 'Hết' },
                   ].map(s => (
                     <Button
                       key={s.value}
@@ -218,14 +204,6 @@ export default function AddProductPage() {
                       {s.label}
                     </Button>
                   ))}
-                </div>
-                <div className="flex items-center space-x-2 mt-4">
-                  <Checkbox
-                    id="inStock"
-                    checked={inStock}
-                    onCheckedChange={checked => setInStock(checked as boolean)}
-                  />
-                  <Label htmlFor="inStock">Sản phẩm còn hàng</Label>
                 </div>
               </CardContent>
             </Card>
@@ -398,57 +376,6 @@ export default function AddProductPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="sku">SKU</Label>
-                    <Input
-                      id="sku"
-                      placeholder="Mã SKU"
-                      value={sku}
-                      onChange={e => setSku(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="warehouseStock">Tồn kho</Label>
-                    <Input
-                      id="warehouseStock"
-                      type="number"
-                      placeholder="Số lượng"
-                      value={warehouseStock}
-                      onChange={e => setWarehouseStock(e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="warehouseLocation">Vị trí kho</Label>
-                    <Input
-                      id="warehouseLocation"
-                      placeholder="Vị trí kho hàng"
-                      value={warehouseLocation}
-                      onChange={e => setWarehouseLocation(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="stock">Số lượng *</Label>
-                    <Input
-                      id="stock"
-                      type="number"
-                      placeholder="1"
-                      {...register('stock', { valueAsNumber: true })}
-                      className={errors.stock ? 'border-destructive' : ''}
-                    />
-                    {errors.stock && (
-                      <p className="text-sm text-destructive mt-1">
-                        {errors.stock.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
                     <Label htmlFor="location">Địa điểm *</Label>
                     <Input
                       id="location"
@@ -482,118 +409,6 @@ export default function AddProductPage() {
                       }
                     }}
                   />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Inventory Management */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5" />
-                  Quản lý kho
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="stock">Số lượng tồn kho *</Label>
-                    <Input
-                      id="stock"
-                      type="number"
-                      placeholder="0"
-                      {...register('stock', { valueAsNumber: true })}
-                      className={errors.stock ? 'border-destructive' : ''}
-                    />
-                    {errors.stock && (
-                      <p className="text-sm text-destructive mt-1">
-                        {errors.stock.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="sku">Mã SKU</Label>
-                    <Input
-                      id="sku"
-                      placeholder="Mã SKU sản phẩm"
-                      value={sku}
-                      onChange={e => setSku(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="minStock">Số lượng tối thiểu</Label>
-                    <Input
-                      id="minStock"
-                      type="number"
-                      placeholder="0"
-                      value={minStock}
-                      onChange={e => setMinStock(parseInt(e.target.value) || 0)}
-                    />
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Cảnh báo khi tồn kho dưới mức này
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="maxStock">Số lượng tối đa</Label>
-                    <Input
-                      id="maxStock"
-                      type="number"
-                      placeholder="0"
-                      value={maxStock}
-                      onChange={e => setMaxStock(parseInt(e.target.value) || 0)}
-                    />
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Số lượng tối đa có thể lưu trữ
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="warehouseLocation">Vị trí kho</Label>
-                    <Input
-                      id="warehouseLocation"
-                      placeholder="Ví dụ: Kho A - Kệ 1"
-                      value={warehouseLocation}
-                      onChange={e => setWarehouseLocation(e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="supplier">Nhà cung cấp</Label>
-                    <Input
-                      id="supplier"
-                      placeholder="Tên nhà cung cấp"
-                      value={supplier}
-                      onChange={e => setSupplier(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="costPrice">Giá nhập (VNĐ)</Label>
-                  <Input
-                    id="costPrice"
-                    type="text"
-                    inputMode="decimal"
-                    pattern="[0-9]*\.?[0-9]*"
-                    placeholder="0"
-                    value={costPrice}
-                    onChange={e => {
-                      const value = e.target.value
-                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                        setCostPrice(parseFloat(value) || 0)
-                      }
-                    }}
-                  />
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Giá nhập hàng từ nhà cung cấp
-                  </p>
                 </div>
               </CardContent>
             </Card>

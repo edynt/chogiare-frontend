@@ -25,7 +25,7 @@ import {
 } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useProducts } from '@/hooks/useProducts'
+import { useBuyerProducts } from '@/hooks/useProducts'
 import { initializeFakeCart } from '@/utils/seedCart'
 
 export default function CartPage() {
@@ -38,7 +38,7 @@ export default function CartPage() {
     removeItem,
     clearCart,
   } = useCartStore()
-  const { data: productsData } = useProducts({ page: 1, limit: 50 })
+  const { data: productsData } = useBuyerProducts({ page: 1, limit: 50 })
 
   // Initialize fake cart data if cart is empty
   React.useEffect(() => {

@@ -111,13 +111,9 @@ export default function SellerProductsPage() {
       case 'active':
         return <Badge variant="success">Đang bán</Badge>
       case 'draft':
-        return <Badge variant="secondary">Bản nháp</Badge>
-      case 'sold':
-        return <Badge variant="outline">Đã bán</Badge>
-      case 'archived':
-        return <Badge variant="outline">Lưu trữ</Badge>
-      case 'suspended':
-        return <Badge variant="destructive">Tạm dừng</Badge>
+        return <Badge variant="secondary">Nháp</Badge>
+      case 'out_of_stock':
+        return <Badge variant="destructive">Hết</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }
@@ -129,11 +125,7 @@ export default function SellerProductsPage() {
         return 'text-success'
       case 'draft':
         return 'text-muted-foreground'
-      case 'sold':
-        return 'text-blue-600'
-      case 'archived':
-        return 'text-gray-600'
-      case 'suspended':
+      case 'out_of_stock':
         return 'text-destructive'
       default:
         return 'text-muted-foreground'
@@ -145,7 +137,7 @@ export default function SellerProductsPage() {
     total: productsData?.total || 0,
     active: productsData?.items?.filter(p => p.status === 'active').length || 0,
     draft: productsData?.items?.filter(p => p.status === 'draft').length || 0,
-    sold: productsData?.items?.filter(p => p.status === 'sold').length || 0,
+    outOfStock: productsData?.items?.filter(p => p.status === 'out_of_stock').length || 0,
     totalViews:
       productsData?.items?.reduce((sum, p) => sum + (p.viewCount || 0), 0) || 0,
     totalRevenue:
@@ -219,10 +211,8 @@ export default function SellerProductsPage() {
               <SelectContent>
                 <SelectItem value="all">Tất cả</SelectItem>
                 <SelectItem value="active">Đang bán</SelectItem>
-                <SelectItem value="draft">Bản nháp</SelectItem>
-                <SelectItem value="sold">Đã bán</SelectItem>
-                <SelectItem value="archived">Lưu trữ</SelectItem>
-                <SelectItem value="suspended">Tạm dừng</SelectItem>
+                <SelectItem value="draft">Nháp</SelectItem>
+                <SelectItem value="out_of_stock">Hết</SelectItem>
               </SelectContent>
             </Select>
 
