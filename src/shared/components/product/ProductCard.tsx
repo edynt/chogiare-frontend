@@ -17,7 +17,6 @@ import {
   TrendingUp,
   Star,
   Sparkles,
-  Shield,
 } from 'lucide-react'
 // Removed Redux imports
 import { cn, formatPrice, formatDate, PLACEHOLDER_IMAGE } from '@/lib/utils'
@@ -104,17 +103,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
         variant: 'default',
         className:
           'bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0',
-      })
-    }
-
-    // Verified seller badge
-    if (product.store?.isVerified) {
-      badges.push({
-        label: 'ĐÃ XÁC THỰC',
-        variant: 'outline',
-        icon: <Shield className="h-3 w-3" />,
-        className:
-          'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-800',
       })
     }
 
@@ -213,15 +201,15 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 src={product.seller?.avatar || product.store?.logo}
               />
               <AvatarFallback className="text-xs">
-                {(product.store?.name || product.seller?.name || 'S').charAt(0)}
+                {(product.seller?.name || 'S').charAt(0)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1">
                 <p className="text-xs font-medium truncate">
-                  {product.store?.name || product.seller?.name || 'Người bán'}
+                  {product.seller?.name || 'Người bán'}
                 </p>
-                {product.store?.isVerified && (
+                {product.seller?.isVerified && (
                   <Verified className="h-3 w-3 text-blue-500 flex-shrink-0" />
                 )}
               </div>
