@@ -138,6 +138,8 @@ export default function AddProductPage() {
           ? data.tags.split(',').map(tag => tag.trim())
           : undefined,
         badges: selectedBadges.length > 0 ? selectedBadges : undefined,
+        warranty: isWarranty && warrantyInfo ? warrantyInfo : undefined,
+        returnPolicy: isReturnable && returnPolicy ? returnPolicy : undefined,
       }
 
       // Extract files from images array in order (first image = representative image)

@@ -119,7 +119,7 @@ export default function EditProductPage() {
   const statuses: { value: ProductStatus; label: string }[] = [
     { value: 'draft', label: 'Nháp' },
     { value: 'active', label: 'Đang bán' },
-    { value: 'out_of_stock', label: 'Hết' },
+    { value: 'out_of_stock', label: 'Bán hết' },
   ]
 
   // Load product data when available
@@ -173,6 +173,16 @@ export default function EditProductPage() {
         : []
       setImages(existingImages)
       setSelectedBadges(product.badges || [])
+
+      // Load warranty and return policy data
+      if (product.warranty) {
+        setIsWarranty(true)
+        setWarrantyInfo(product.warranty)
+      }
+      if (product.returnPolicy) {
+        setIsReturnable(true)
+        setReturnPolicy(product.returnPolicy)
+      }
     }
   }, [product, reset])
 
@@ -239,6 +249,8 @@ export default function EditProductPage() {
             ? (selectedBadges as ProductBadge[])
             : undefined,
         images: allImageUrls as any,
+        warranty: isWarranty && warrantyInfo ? warrantyInfo : null,
+        returnPolicy: isReturnable && returnPolicy ? returnPolicy : null,
       }
 
       await new Promise((resolve, reject) => {

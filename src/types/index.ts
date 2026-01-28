@@ -109,6 +109,8 @@ export interface Product {
   store?: StoreInfo
   status: ProductStatus
   badges: ProductBadge[]
+  warranty?: string
+  returnPolicy?: string
   rating: number
   reviewCount: number
   viewCount: number

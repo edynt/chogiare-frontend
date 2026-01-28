@@ -90,6 +90,8 @@ export const productSchema = z.object({
   stock: z.number().min(0, 'Số lượng phải lớn hơn hoặc bằng 0'),
   tags: z.string().optional(),
   badges: z.array(z.string()).optional(),
+  warranty: z.string().optional(),
+  returnPolicy: z.string().optional(),
 })
 
 export const productUpdateSchema = productSchema.partial().extend({

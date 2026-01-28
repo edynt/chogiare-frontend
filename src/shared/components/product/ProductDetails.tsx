@@ -1748,45 +1748,59 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg">✅ Thông tin đảm bảo</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Nguồn gốc và chứng nhận
+                  Bảo hành và chính sách đổi trả
                 </p>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="space-y-4">
-                  <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
-                    <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-                    <div>
-                      <p className="font-semibold">Nguồn gốc xuất xứ</p>
-                      <p className="text-sm text-muted-foreground">
-                        Sản phẩm có nguồn gốc rõ ràng, đảm bảo chất lượng
-                      </p>
+                  {product.warranty ? (
+                    <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
+                      <Shield className="h-5 w-5 text-green-600 mt-0.5" />
+                      <div>
+                        <p className="font-semibold">Bảo hành</p>
+                        <p className="text-sm text-muted-foreground">
+                          {product.warranty}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
-                    <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
-                    <div>
-                      <p className="font-semibold">Chứng nhận chất lượng</p>
-                      <p className="text-sm text-muted-foreground">
-                        Đã được kiểm định và chứng nhận bởi cơ quan có thẩm
-                        quyền
-                      </p>
+                  ) : (
+                    <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+                      <Shield className="h-5 w-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-gray-500">Bảo hành</p>
+                        <p className="text-sm text-muted-foreground">
+                          Không có thông tin bảo hành
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  )}
+                  {product.returnPolicy ? (
+                    <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
+                      <Truck className="h-5 w-5 text-blue-600 mt-0.5" />
+                      <div>
+                        <p className="font-semibold">Chính sách đổi trả</p>
+                        <p className="text-sm text-muted-foreground whitespace-pre-line">
+                          {product.returnPolicy}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+                      <Truck className="h-5 w-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-gray-500">Chính sách đổi trả</p>
+                        <p className="text-sm text-muted-foreground">
+                          Không có thông tin đổi trả
+                        </p>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
                     <Verified className="h-5 w-5 text-purple-600 mt-0.5" />
                     <div>
                       <p className="font-semibold">Nhà cung cấp uy tín</p>
                       <p className="text-sm text-muted-foreground">
                         Đã được xác thực và đánh giá cao bởi khách hàng
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-4 bg-orange-50 rounded-lg">
-                    <Truck className="h-5 w-5 text-orange-600 mt-0.5" />
-                    <div>
-                      <p className="font-semibold">Chính sách vận chuyển</p>
-                      <p className="text-sm text-muted-foreground">
-                        Giao hàng nhanh, đóng gói cẩn thận, đảm bảo an toàn
                       </p>
                     </div>
                   </div>
