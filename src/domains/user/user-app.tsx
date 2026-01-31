@@ -79,6 +79,9 @@ const RevenueReportsPage = React.lazy(
 const SellerSupportPage = React.lazy(
   () => import('@user/pages/seller/SellerSupportPage')
 )
+const SellerOrdersPage = React.lazy(
+  () => import('@user/pages/seller/SellerOrdersPage')
+)
 
 // Shared pages
 const NotFoundPage = React.lazy(() => import('@shared/pages/NotFoundPage'))
@@ -147,6 +150,7 @@ export function UserApp() {
           />
           <Route path="/seller/revenue" element={<RevenueReportsPage />} />
           <Route path="/seller/support" element={<SellerSupportPage />} />
+          <Route path="/seller/orders" element={<SellerOrdersPage />} />
 
           {/* Buyer/User routes - Requires authentication */}
           <Route path="/chat" element={<ChatPage />} />

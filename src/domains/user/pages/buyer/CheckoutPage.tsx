@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
@@ -103,9 +103,18 @@ export default function CheckoutPage() {
     return groups
   }, [cartItems, isFromCart])
 
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    defaultAddress?.id || null
-  )
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
+
+  // Auto-select address when addresses are loaded
+  useEffect(() => {
+    if (!selectedAddressId && addresses && addresses.length > 0) {
+      // Priority: default address > first address
+      const addressToSelect = defaultAddress?.id || addresses[0]?.id
+      if (addressToSelect) {
+        setSelectedAddressId(addressToSelect)
+      }
+    }
+  }, [addresses, defaultAddress, selectedAddressId])
 
   const selectedAddress =
     addresses?.find(addr => addr.id === selectedAddressId) || defaultAddress
@@ -124,12 +133,22 @@ export default function CheckoutPage() {
     // Get storeId from first product (assuming all items are from same store)
     let storeId: number | null = null
     if (isFromCart && firstCartProduct) {
-      const storeIdStr =
-        firstCartProduct.store?.id || firstCartProduct.sellerId || ''
-      storeId = storeIdStr ? parseInt(storeIdStr, 10) : null
+      // Use storeId directly, not sellerId (sellerId is user ID, not store ID)
+      const storeIdValue =
+        firstCartProduct.storeId || firstCartProduct.store?.id
+      storeId = storeIdValue
+        ? typeof storeIdValue === 'string'
+          ? parseInt(storeIdValue, 10)
+          : storeIdValue
+        : null
     } else if (product) {
-      const storeIdStr = product.store?.id || product.sellerId || ''
-      storeId = storeIdStr ? parseInt(storeIdStr, 10) : null
+      // Use storeId directly, not sellerId (sellerId is user ID, not store ID)
+      const storeIdValue = product.storeId || product.store?.id
+      storeId = storeIdValue
+        ? typeof storeIdValue === 'string'
+          ? parseInt(storeIdValue, 10)
+          : storeIdValue
+        : null
     }
 
     if (!storeId || isNaN(storeId)) {
@@ -146,8 +165,7 @@ export default function CheckoutPage() {
     try {
       const orderData = {
         storeId,
-        paymentMethod: 'bank_transfer' as const,
-        deliveryAddressId: addressId,
+        shippingAddressId: addressId,
         billingAddressId: addressId,
         items: orderItems.map(item => ({
           productId:
@@ -166,7 +184,10 @@ export default function CheckoutPage() {
       }
 
       // Navigate to order confirmation page
-      if (order?.id) {
+      if (order?.id && order?.orderNo) {
+        toast.success('Đặt hàng thành công!')
+        navigate(`/order-confirmation?orderId=${order.id}&orderNo=${order.orderNo}`)
+      } else if (order?.id) {
         toast.success('Đặt hàng thành công!')
         navigate(`/order-confirmation?orderId=${order.id}`)
       } else {

@@ -83,6 +83,39 @@ export const useInfiniteUserOrders = (pageSize: number = 20) => {
   })
 }
 
+export const useSellerOrders = (filters?: {
+  page?: number
+  pageSize?: number
+  status?: string
+  paymentStatus?: string
+}) => {
+  return useQuery({
+    queryKey: ['orders', 'seller', filters],
+    queryFn: () => ordersApi.getSellerOrders(filters),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const useInfiniteSellerOrders = (pageSize: number = 20) => {
+  return useInfiniteQuery({
+    queryKey: ['orders', 'seller', 'infinite'],
+    queryFn: async ({ pageParam = 1 }) => {
+      console.log('[useInfiniteSellerOrders] Fetching page:', pageParam)
+      const result = await ordersApi.getSellerOrders({ page: pageParam, pageSize })
+      console.log('[useInfiniteSellerOrders] Result:', result)
+      return result
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      const currentPage = allPages.length
+      const totalPages = lastPage?.totalPages || 1
+      return currentPage < totalPages ? currentPage + 1 : undefined
+    },
+    initialPageParam: 1,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    retry: 1,
+  })
+}
+
 export const useCreateOrder = () => {
   const queryClient = useQueryClient()
 

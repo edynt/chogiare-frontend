@@ -18,7 +18,7 @@ import { StockInModal } from '@user/components/seller/stock/StockInModal'
 import { useNotification } from '@shared/components/notification-provider'
 import { useSellerProducts } from '@/hooks/useProducts'
 import {
-  useStoreOrders,
+  useSellerOrders,
   useConfirmOrder,
   useUpdateOrderStatus,
 } from '@/hooks/useOrders'
@@ -141,12 +141,11 @@ export function SellerDashboardContent() {
   const navigate = useNavigate()
   const { data: _products, isLoading: _isLoading } = useSellerProducts()
   const { data: userStore, isLoading: isLoadingStore } = useUserStore()
-  const storeId = userStore?.id || ''
   const {
     data: ordersData,
     isLoading: isLoadingOrders,
     refetch: refetchOrders,
-  } = useStoreOrders(storeId, { page: 1, pageSize: 10 })
+  } = useSellerOrders({ page: 1, pageSize: 10 })
   const { data: dashboardStats, isLoading: isLoadingStats } =
     useDashboardStats()
   const { data: lowStockProductsData, isLoading: isLoadingLowStock } =
@@ -606,7 +605,7 @@ export function SellerDashboardContent() {
                   Quản lý đơn hàng
                 </p>
                 <Button variant="outline" size="sm" asChild>
-                  <Link to="/orders">Xem</Link>
+                  <Link to="/seller/orders">Xem</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -715,7 +714,7 @@ export function SellerDashboardContent() {
                   </div>
                 )}
                 <Button variant="outline" className="w-full" asChild>
-                  <Link to="/orders">Xem tất cả đơn hàng</Link>
+                  <Link to="/seller/orders">Xem tất cả đơn hàng</Link>
                 </Button>
               </CardContent>
             </Card>

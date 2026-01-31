@@ -35,7 +35,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
-  useInfiniteStoreOrders,
+  useInfiniteUserOrders,
   useConfirmOrder,
   useUpdateOrderStatus,
 } from '@/hooks/useOrders'
@@ -114,10 +114,6 @@ export default function OrdersPage() {
   const [sellerNotes, setSellerNotes] = useState('')
   const [cancelReason, setCancelReason] = useState('')
 
-  // Get store ID from auth context or use a default
-  // TODO: Replace with actual store ID from auth context
-  const storeId = 'default-store-id'
-
   const {
     data: ordersData,
     isLoading,
@@ -125,12 +121,12 @@ export default function OrdersPage() {
     hasNextPage,
     isFetchingNextPage,
     refetch,
-  } = useInfiniteStoreOrders(storeId, 20)
+  } = useInfiniteUserOrders(20)
   const confirmOrderMutation = useConfirmOrder()
   const updateOrderStatusMutation = useUpdateOrderStatus()
 
-  // Flatten all pages into a single array
-  const orders = ordersData?.pages.flatMap(page => page.items) || []
+  // Flatten all pages into a single array, filter out undefined values
+  const orders = ordersData?.pages.flatMap(page => page.items || []).filter(Boolean) || []
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   const formatPrice = (price: number) => {

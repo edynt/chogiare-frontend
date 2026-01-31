@@ -650,14 +650,6 @@ export default function OrderDetailPage() {
                   <div className="space-y-3">
                     <div>
                       <p className="text-xs text-muted-foreground mb-1">
-                        Phương thức
-                      </p>
-                      <p className="text-sm font-semibold text-foreground">
-                        {getPaymentMethodLabel(order.paymentMethod)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-1">
                         Trạng thái
                       </p>
                       <Badge

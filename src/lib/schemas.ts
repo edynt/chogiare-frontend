@@ -137,7 +137,7 @@ export const orderSchema = z.object({
     .union([z.string(), z.number()])
     .transform(val => (typeof val === 'string' ? parseInt(val, 10) : val)),
   paymentMethod: z.string().optional(),
-  deliveryAddressId: z.number().optional(),
+  shippingAddressId: z.number().optional(),
   billingAddressId: z.number().optional(),
   notes: z.string().optional(),
   items: z

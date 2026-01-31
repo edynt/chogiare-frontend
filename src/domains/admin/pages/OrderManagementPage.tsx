@@ -613,14 +613,6 @@ export default function OrderManagementPage() {
                             >
                               {getPaymentStatusLabel(order.paymentStatus)}
                             </Badge>
-                            {order.paymentMethod && (
-                              <div className="flex items-center gap-1 text-xs text-gray-500">
-                                {getPaymentMethodIcon(order.paymentMethod)}
-                                <span className="capitalize">
-                                  {order.paymentMethod.replace('_', ' ')}
-                                </span>
-                              </div>
-                            )}
                           </div>
                         </TableCell>
                         <TableCell>
