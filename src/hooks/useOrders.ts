@@ -161,10 +161,12 @@ export const useUpdateOrderPaymentStatus = () => {
     mutationFn: ({
       id,
       paymentStatus,
+      paymentProofUrl,
     }: {
       id: string
       paymentStatus: string
-    }) => ordersApi.updateOrderPaymentStatus(id, paymentStatus),
+      paymentProofUrl?: string
+    }) => ordersApi.updateOrderPaymentStatus(id, paymentStatus, paymentProofUrl),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       queryClient.invalidateQueries({ queryKey: ['orders', id] })

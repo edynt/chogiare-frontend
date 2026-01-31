@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
@@ -20,6 +20,8 @@ import {
   DialogTitle,
 } from '@shared/components/ui/dialog'
 import { Textarea } from '@shared/components/ui/textarea'
+import { Input } from '@shared/components/ui/input'
+import { Label } from '@shared/components/ui/label'
 import {
   ArrowLeft,
   Package,
@@ -35,12 +37,17 @@ import {
   Phone,
   Calendar,
   DollarSign,
+  Upload,
+  ImageIcon,
+  ExternalLink,
 } from 'lucide-react'
 import {
   useOrder,
   useConfirmOrder,
   useUpdateOrderStatus,
+  useUpdateOrderPaymentStatus,
 } from '@/hooks/useOrders'
+import { useUploadFile } from '@/hooks/useUpload'
 import { ErrorBoundary } from '@shared/components/ui/error-boundary'
 import { toast } from 'sonner'
 import { cn, getApiErrorMessage } from '@/lib/utils'
@@ -48,16 +55,23 @@ import { cn, getApiErrorMessage } from '@/lib/utils'
 export default function OrderDetailPage() {
   const { orderId } = useParams<{ orderId: string }>()
   const navigate = useNavigate()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
-  const [showStartPreparingDialog, setShowStartPreparingDialog] =
-    useState(false)
+  const [showStartPreparingDialog, setShowStartPreparingDialog] = useState(false)
+  const [showReadyDialog, setShowReadyDialog] = useState(false)
+  const [showCompleteDialog, setShowCompleteDialog] = useState(false)
+  const [showMarkPaidDialog, setShowMarkPaidDialog] = useState(false)
   const [sellerNotes, setSellerNotes] = useState('')
   const [cancelReason, setCancelReason] = useState('')
+  const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null)
+  const [paymentProofPreview, setPaymentProofPreview] = useState<string | null>(null)
 
-  const { data: order, isLoading, error } = useOrder(orderId || '')
+  const { data: order, isLoading, error, refetch } = useOrder(orderId || '')
   const confirmOrderMutation = useConfirmOrder()
   const updateOrderStatusMutation = useUpdateOrderStatus()
+  const updatePaymentStatusMutation = useUpdateOrderPaymentStatus()
+  const uploadFileMutation = useUploadFile()
 
   if (isLoading) {
     return (
@@ -272,6 +286,102 @@ export default function OrderDetailPage() {
       )
       console.error('Error updating order status:', error)
     }
+  }
+
+  const handleMarkReady = async () => {
+    if (!orderId) return
+
+    try {
+      await updateOrderStatusMutation.mutateAsync({
+        id: orderId,
+        status: 'ready_for_pickup',
+      })
+      toast.success('Đơn hàng đã sẵn sàng để lấy')
+      setShowReadyDialog(false)
+      navigate(-1)
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(error, 'Có lỗi xảy ra khi cập nhật trạng thái')
+      )
+      console.error('Error updating order status:', error)
+    }
+  }
+
+  const handleMarkComplete = async () => {
+    if (!orderId) return
+
+    try {
+      await updateOrderStatusMutation.mutateAsync({
+        id: orderId,
+        status: 'completed',
+      })
+      toast.success('Đơn hàng đã hoàn thành')
+      setShowCompleteDialog(false)
+      navigate(-1)
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(error, 'Có lỗi xảy ra khi cập nhật trạng thái')
+      )
+      console.error('Error updating order status:', error)
+    }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Vui lòng chọn file ảnh')
+        return
+      }
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Kích thước ảnh tối đa 5MB')
+        return
+      }
+      setPaymentProofFile(file)
+      setPaymentProofPreview(URL.createObjectURL(file))
+    }
+  }
+
+  const handleMarkPaid = async () => {
+    if (!orderId) return
+
+    if (!paymentProofFile) {
+      toast.error('Vui lòng upload ảnh chứng minh thanh toán')
+      return
+    }
+
+    try {
+      // Upload image first
+      const uploadResult = await uploadFileMutation.mutateAsync({
+        file: paymentProofFile,
+      })
+
+      // Then update payment status with proof URL
+      await updatePaymentStatusMutation.mutateAsync({
+        id: orderId,
+        paymentStatus: 'completed',
+        paymentProofUrl: uploadResult.url,
+      })
+
+      toast.success('Đã đánh dấu đơn hàng đã thanh toán')
+      setShowMarkPaidDialog(false)
+      setPaymentProofFile(null)
+      setPaymentProofPreview(null)
+      refetch()
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(error, 'Có lỗi xảy ra khi cập nhật trạng thái thanh toán')
+      )
+      console.error('Error updating payment status:', error)
+    }
+  }
+
+  const handleCloseMarkPaidDialog = () => {
+    setShowMarkPaidDialog(false)
+    setPaymentProofFile(null)
+    setPaymentProofPreview(null)
   }
 
   const statusConfig = getStatusConfig(order.status)
@@ -654,11 +764,44 @@ export default function OrderDetailPage() {
                       </p>
                       <Badge
                         variant={isPaid ? 'default' : 'secondary'}
-                        className="mt-1"
+                        className={cn(
+                          'mt-1',
+                          isPaid
+                            ? 'bg-green-100 text-green-700 border-green-200'
+                            : 'bg-amber-100 text-amber-700 border-amber-200'
+                        )}
                       >
                         {isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
                       </Badge>
                     </div>
+                    {order.paymentProofUrl && (
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Ảnh chứng minh thanh toán
+                        </p>
+                        <a
+                          href={order.paymentProofUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                        >
+                          <ImageIcon className="h-4 w-4" />
+                          Xem ảnh
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                    )}
+                    {!isPaid && order.status !== 'cancelled' && (
+                      <Button
+                        size="sm"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white"
+                        onClick={() => setShowMarkPaidDialog(true)}
+                        disabled={updatePaymentStatusMutation.isPending}
+                      >
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Đánh dấu đã thanh toán
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -758,6 +901,46 @@ export default function OrderDetailPage() {
                   >
                     <Package className="h-5 w-5 mr-2" />
                     Bắt đầu chuẩn bị hàng
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 h-12"
+                    onClick={() => setShowCancelDialog(true)}
+                  >
+                    <XCircle className="h-5 w-5 mr-2" />
+                    Hủy đơn hàng
+                  </Button>
+                </div>
+              )}
+
+              {order.status === 'preparing' && (
+                <div className="space-y-3">
+                  <Button
+                    className="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white h-12 shadow-md"
+                    onClick={() => setShowReadyDialog(true)}
+                  >
+                    <Truck className="h-5 w-5 mr-2" />
+                    Sẵn sàng lấy hàng
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 h-12"
+                    onClick={() => setShowCancelDialog(true)}
+                  >
+                    <XCircle className="h-5 w-5 mr-2" />
+                    Hủy đơn hàng
+                  </Button>
+                </div>
+              )}
+
+              {order.status === 'ready_for_pickup' && (
+                <div className="space-y-3">
+                  <Button
+                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-12 shadow-md"
+                    onClick={() => setShowCompleteDialog(true)}
+                  >
+                    <CheckCircle className="h-5 w-5 mr-2" />
+                    Hoàn thành đơn hàng
                   </Button>
                   <Button
                     variant="outline"
@@ -894,6 +1077,146 @@ export default function OrderDetailPage() {
               {updateOrderStatusMutation.isPending
                 ? 'Đang xử lý...'
                 : 'Xác nhận'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Ready for Pickup Dialog */}
+      <Dialog open={showReadyDialog} onOpenChange={setShowReadyDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Sẵn sàng lấy hàng</DialogTitle>
+            <DialogDescription>
+              Xác nhận đơn hàng <strong>{orderNumber}</strong> đã sẵn sàng để
+              khách đến lấy?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowReadyDialog(false)}
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={handleMarkReady}
+              disabled={updateOrderStatusMutation.isPending}
+              className="bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700"
+            >
+              {updateOrderStatusMutation.isPending
+                ? 'Đang xử lý...'
+                : 'Xác nhận'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Complete Order Dialog */}
+      <Dialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Hoàn thành đơn hàng</DialogTitle>
+            <DialogDescription>
+              Xác nhận đơn hàng <strong>{orderNumber}</strong> đã được giao cho
+              khách hàng thành công?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowCompleteDialog(false)}
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={handleMarkComplete}
+              disabled={updateOrderStatusMutation.isPending}
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+            >
+              {updateOrderStatusMutation.isPending
+                ? 'Đang xử lý...'
+                : 'Hoàn thành'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Mark Paid Dialog */}
+      <Dialog open={showMarkPaidDialog} onOpenChange={handleCloseMarkPaidDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Đánh dấu đã thanh toán</DialogTitle>
+            <DialogDescription>
+              Xác nhận đơn hàng <strong>{orderNumber}</strong> đã được khách hàng
+              thanh toán? Vui lòng upload ảnh chứng minh.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="payment-proof" className="text-sm font-medium">
+              Ảnh chứng minh thanh toán <span className="text-red-500">*</span>
+            </Label>
+            <div className="mt-2">
+              <Input
+                ref={fileInputRef}
+                id="payment-proof"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              {paymentProofPreview ? (
+                <div className="relative">
+                  <img
+                    src={paymentProofPreview}
+                    alt="Payment proof preview"
+                    className="w-full h-48 object-cover rounded-lg border"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => {
+                      setPaymentProofFile(null)
+                      setPaymentProofPreview(null)
+                    }}
+                  >
+                    <XCircle className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                >
+                  <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    Click để chọn ảnh chứng minh thanh toán
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    PNG, JPG (tối đa 5MB)
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseMarkPaidDialog}>
+              Hủy
+            </Button>
+            <Button
+              onClick={handleMarkPaid}
+              disabled={
+                updatePaymentStatusMutation.isPending ||
+                uploadFileMutation.isPending ||
+                !paymentProofFile
+              }
+              className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700"
+            >
+              {uploadFileMutation.isPending || updatePaymentStatusMutation.isPending
+                ? 'Đang xử lý...'
+                : 'Xác nhận đã thanh toán'}
             </Button>
           </DialogFooter>
         </DialogContent>

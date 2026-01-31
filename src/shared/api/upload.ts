@@ -50,6 +50,9 @@ export const uploadApi = {
       '/upload/file',
       formData,
       {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
         onUploadProgress: progressEvent => {
           if (onProgress && progressEvent.total) {
             const progress: UploadProgress = {
@@ -82,6 +85,9 @@ export const uploadApi = {
       '/upload/files',
       formData,
       {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
         onUploadProgress: progressEvent => {
           if (onProgress && progressEvent.total) {
             const progress: UploadProgress = {
@@ -119,6 +125,9 @@ export const uploadApi = {
       '/upload/product-images',
       formData,
       {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
         params: productId ? { productId } : undefined,
         onUploadProgress: progressEvent => {
           if (onProgress && progressEvent.total) {
@@ -153,6 +162,9 @@ export const uploadApi = {
       '/upload/store-image',
       formData,
       {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
         params: { storeId },
         onUploadProgress: progressEvent => {
           if (onProgress && progressEvent.total) {
@@ -184,6 +196,9 @@ export const uploadApi = {
       '/upload/avatar',
       formData,
       {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
         onUploadProgress: progressEvent => {
           if (onProgress && progressEvent.total) {
             const progress: UploadProgress = {

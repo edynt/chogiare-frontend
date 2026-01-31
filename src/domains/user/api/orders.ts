@@ -22,6 +22,7 @@ export interface Order {
   status: string
   paymentStatus: string
   paymentMethod: string
+  paymentProofUrl?: string
   subtotal: number
   tax: number
   shipping: number
@@ -264,12 +265,17 @@ export const ordersApi = {
 
   updateOrderPaymentStatus: async (
     id: string,
-    paymentStatus: string
+    paymentStatus: string,
+    paymentProofUrl?: string
   ): Promise<Order> => {
+    const params: Record<string, string> = { paymentStatus }
+    if (paymentProofUrl) {
+      params.paymentProofUrl = paymentProofUrl
+    }
     const response = await apiClient.patch<ApiResponse<{ data: Order }>>(
       `/orders/${id}/payment-status`,
       {},
-      { params: { paymentStatus } }
+      { params }
     )
     const result = response.data.data
     return 'data' in result ? (result as { data: Order }).data : (result as unknown as Order)
