@@ -46,8 +46,9 @@ import {
   useConfirmOrder,
   useUpdateOrderStatus,
   useUpdateOrderPaymentStatus,
+  useUploadPaymentImage,
 } from '@/hooks/useOrders'
-import { useUploadFile } from '@/hooks/useUpload'
+import { useAuthStore } from '@/stores/authStore'
 import { ErrorBoundary } from '@shared/components/ui/error-boundary'
 import { toast } from 'sonner'
 import { cn, getApiErrorMessage } from '@/lib/utils'
@@ -58,6 +59,7 @@ export default function OrderDetailPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [showBuyerCancelInfoDialog, setShowBuyerCancelInfoDialog] = useState(false)
   const [showStartPreparingDialog, setShowStartPreparingDialog] = useState(false)
   const [showReadyDialog, setShowReadyDialog] = useState(false)
   const [showCompleteDialog, setShowCompleteDialog] = useState(false)
@@ -67,11 +69,12 @@ export default function OrderDetailPage() {
   const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null)
   const [paymentProofPreview, setPaymentProofPreview] = useState<string | null>(null)
 
+  const { user } = useAuthStore()
   const { data: order, isLoading, error, refetch } = useOrder(orderId || '')
   const confirmOrderMutation = useConfirmOrder()
   const updateOrderStatusMutation = useUpdateOrderStatus()
   const updatePaymentStatusMutation = useUpdateOrderPaymentStatus()
-  const uploadFileMutation = useUploadFile()
+  const uploadPaymentImageMutation = useUploadPaymentImage()
 
   if (isLoading) {
     return (
@@ -120,7 +123,17 @@ export default function OrderDetailPage() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('vi-VN', {
+    // Handle timestamp string (BigInt from backend) or ISO date string
+    const timestamp = Number(dateString)
+    const date = !isNaN(timestamp) && timestamp > 0
+      ? new Date(timestamp)
+      : new Date(dateString)
+
+    if (isNaN(date.getTime())) {
+      return 'N/A'
+    }
+
+    return date.toLocaleString('vi-VN', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -225,9 +238,15 @@ export default function OrderDetailPage() {
       ? order.updatedAt
       : ''
 
+  // Determine if current user is seller or buyer
+  // Seller: user.id matches order.sellerId (if available)
+  // Buyer: user.id matches order.userId
+  const isSeller = user?.id != null && order.sellerId != null
+    && String(user.id) === String(order.sellerId)
+
   const buyerName = order.userName || 'N/A'
   const buyerPhone = order.userEmail || 'N/A'
-  const fullAddress = order.deliveryAddress || ''
+  const fullAddress = order.shippingAddress || ''
   const buyerNotes = order.notes || ''
   const orderNumber = order.id
 
@@ -353,16 +372,16 @@ export default function OrderDetailPage() {
     }
 
     try {
-      // Upload image first
-      const uploadResult = await uploadFileMutation.mutateAsync({
+      // Upload payment image and save to order in a single API call
+      await uploadPaymentImageMutation.mutateAsync({
+        orderId,
         file: paymentProofFile,
       })
 
-      // Then update payment status with proof URL
+      // Then update payment status to completed
       await updatePaymentStatusMutation.mutateAsync({
         id: orderId,
         paymentStatus: 'completed',
-        paymentProofUrl: uploadResult.url,
       })
 
       toast.success('Đã đánh dấu đơn hàng đã thanh toán')
@@ -774,20 +793,33 @@ export default function OrderDetailPage() {
                         {isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
                       </Badge>
                     </div>
-                    {order.paymentProofUrl && (
+                    {order.paymentImage && (
                       <div>
-                        <p className="text-xs text-muted-foreground mb-1">
+                        <p className="text-xs text-muted-foreground mb-2">
                           Ảnh chứng minh thanh toán
                         </p>
                         <a
-                          href={order.paymentProofUrl}
+                          href={order.paymentImage}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                          className="block group"
                         >
-                          <ImageIcon className="h-4 w-4" />
-                          Xem ảnh
-                          <ExternalLink className="h-3 w-3" />
+                          <div className="relative w-full max-w-[200px] aspect-[3/4] rounded-lg overflow-hidden border-2 border-muted hover:border-primary/50 transition-colors">
+                            <img
+                              src={order.paymentImage}
+                              alt="Ảnh chứng minh thanh toán"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                            />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-full p-2 shadow-lg">
+                                <ExternalLink className="h-4 w-4 text-primary" />
+                              </div>
+                            </div>
+                          </div>
+                          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground mt-2 group-hover:text-primary transition-colors">
+                            <ImageIcon className="h-3 w-3" />
+                            Nhấn để xem ảnh gốc
+                          </span>
                         </a>
                       </div>
                     )}
@@ -872,8 +904,8 @@ export default function OrderDetailPage() {
                 </Card>
               )}
 
-              {/* Action Buttons */}
-              {order.status === 'pending' && (
+              {/* Action Buttons - Only show status change buttons for seller */}
+              {isSeller && order.status === 'pending' && (
                 <div className="space-y-3">
                   <Button
                     className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-12 shadow-md"
@@ -893,7 +925,7 @@ export default function OrderDetailPage() {
                 </div>
               )}
 
-              {order.status === 'confirmed' && (
+              {isSeller && order.status === 'confirmed' && (
                 <div className="space-y-3">
                   <Button
                     className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-12 shadow-md"
@@ -913,7 +945,7 @@ export default function OrderDetailPage() {
                 </div>
               )}
 
-              {order.status === 'preparing' && (
+              {isSeller && order.status === 'preparing' && (
                 <div className="space-y-3">
                   <Button
                     className="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white h-12 shadow-md"
@@ -933,7 +965,7 @@ export default function OrderDetailPage() {
                 </div>
               )}
 
-              {order.status === 'ready_for_pickup' && (
+              {isSeller && order.status === 'ready_for_pickup' && (
                 <div className="space-y-3">
                   <Button
                     className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-12 shadow-md"
@@ -946,6 +978,20 @@ export default function OrderDetailPage() {
                     variant="outline"
                     className="w-full border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 h-12"
                     onClick={() => setShowCancelDialog(true)}
+                  >
+                    <XCircle className="h-5 w-5 mr-2" />
+                    Hủy đơn hàng
+                  </Button>
+                </div>
+              )}
+
+              {/* Cancel button for buyer - only show when order is not completed/cancelled */}
+              {!isSeller && order.status !== 'completed' && order.status !== 'cancelled' && (
+                <div className="space-y-3">
+                  <Button
+                    variant="outline"
+                    className="w-full border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 h-12"
+                    onClick={() => setShowBuyerCancelInfoDialog(true)}
                   >
                     <XCircle className="h-5 w-5 mr-2" />
                     Hủy đơn hàng
@@ -1209,14 +1255,34 @@ export default function OrderDetailPage() {
               onClick={handleMarkPaid}
               disabled={
                 updatePaymentStatusMutation.isPending ||
-                uploadFileMutation.isPending ||
+                uploadPaymentImageMutation.isPending ||
                 !paymentProofFile
               }
               className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700"
             >
-              {uploadFileMutation.isPending || updatePaymentStatusMutation.isPending
+              {uploadPaymentImageMutation.isPending || updatePaymentStatusMutation.isPending
                 ? 'Đang xử lý...'
                 : 'Xác nhận đã thanh toán'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Buyer Cancel Info Dialog - Only close button, no cancel action */}
+      <Dialog open={showBuyerCancelInfoDialog} onOpenChange={setShowBuyerCancelInfoDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Hủy đơn hàng</DialogTitle>
+            <DialogDescription className="pt-4 text-base">
+              Vui lòng liên hệ với người bán để hủy đơn hàng.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              onClick={() => setShowBuyerCancelInfoDialog(false)}
+              className="w-full"
+            >
+              Đóng
             </Button>
           </DialogFooter>
         </DialogContent>

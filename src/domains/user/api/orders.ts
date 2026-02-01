@@ -18,11 +18,12 @@ export interface Order {
   id: string
   orderNo: string | null
   userId: number
+  sellerId?: number  // Seller's user ID (if returned by backend)
   storeId: string
   status: string
   paymentStatus: string
   paymentMethod: string
-  paymentProofUrl?: string
+  paymentImage?: string
   subtotal: number
   tax: number
   shipping: number
@@ -90,7 +91,49 @@ export interface UpdateOrderRequest {
   notes?: string
 }
 
+export interface UploadPaymentImageResponse {
+  url: string
+  order: Order
+}
+
 export const ordersApi = {
+  /**
+   * Upload payment proof image for an order
+   * @param orderId - The order ID
+   * @param file - The image file to upload
+   * @param onProgress - Optional progress callback
+   * @returns Updated order with payment image URL
+   */
+  uploadPaymentImage: async (
+    orderId: string,
+    file: File,
+    onProgress?: (progress: { loaded: number; total: number; percentage: number }) => void
+  ): Promise<Order> => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await apiClient.post<ApiResponse<{ data: Order }>>(
+      `/orders/${orderId}/payment-image`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: progressEvent => {
+          if (onProgress && progressEvent.total) {
+            onProgress({
+              loaded: progressEvent.loaded,
+              total: progressEvent.total,
+              percentage: Math.round((progressEvent.loaded * 100) / progressEvent.total),
+            })
+          }
+        },
+      }
+    )
+    const result = response.data.data
+    return 'data' in result ? (result as { data: Order }).data : (result as unknown as Order)
+  },
+
   // Order CRUD operations
   createOrder: async (data: CreateOrderRequest): Promise<Order> => {
     const response = await apiClient.post<ApiResponse<{ data: Order }>>('/orders', data)
@@ -268,14 +311,13 @@ export const ordersApi = {
     paymentStatus: string,
     paymentProofUrl?: string
   ): Promise<Order> => {
-    const params: Record<string, string> = { paymentStatus }
+    const body: { paymentStatus: string; paymentProofUrl?: string } = { paymentStatus }
     if (paymentProofUrl) {
-      params.paymentProofUrl = paymentProofUrl
+      body.paymentProofUrl = paymentProofUrl
     }
     const response = await apiClient.patch<ApiResponse<{ data: Order }>>(
       `/orders/${id}/payment-status`,
-      {},
-      { params }
+      body
     )
     const result = response.data.data
     return 'data' in result ? (result as { data: Order }).data : (result as unknown as Order)

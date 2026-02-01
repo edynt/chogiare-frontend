@@ -222,3 +222,27 @@ export const useConfirmOrder = () => {
     },
   })
 }
+
+/**
+ * Hook to upload payment proof image for an order
+ * Supports progress tracking during upload
+ */
+export const useUploadPaymentImage = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      orderId,
+      file,
+      onProgress,
+    }: {
+      orderId: string
+      file: File
+      onProgress?: (progress: { loaded: number; total: number; percentage: number }) => void
+    }) => ordersApi.uploadPaymentImage(orderId, file, onProgress),
+    onSuccess: (_, { orderId }) => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+      queryClient.invalidateQueries({ queryKey: ['orders', orderId] })
+    },
+  })
+}

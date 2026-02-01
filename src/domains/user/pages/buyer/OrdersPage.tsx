@@ -32,6 +32,8 @@ import {
   Eye,
   Calendar,
   CreditCard,
+  ImageIcon,
+  ExternalLink,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -615,6 +617,24 @@ export default function OrdersPage() {
                                       {getPaymentStatusLabel()}
                                     </Badge>
                                   </div>
+                                  {isPaid && order.paymentProofUrl && (
+                                    <>
+                                      <span className="text-muted-foreground">
+                                        •
+                                      </span>
+                                      <a
+                                        href={order.paymentProofUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-primary hover:underline"
+                                        onClick={e => e.stopPropagation()}
+                                      >
+                                        <ImageIcon className="h-3 w-3" />
+                                        Ảnh thanh toán
+                                        <ExternalLink className="h-2.5 w-2.5" />
+                                      </a>
+                                    </>
+                                  )}
                                   <span className="text-muted-foreground">
                                     •
                                   </span>
@@ -863,6 +883,24 @@ export default function OrdersPage() {
                                           {getPaymentStatusLabel()}
                                         </Badge>
                                       </div>
+                                      {isPaid && order.paymentProofUrl && (
+                                        <>
+                                          <span className="text-muted-foreground">
+                                            •
+                                          </span>
+                                          <a
+                                            href={order.paymentProofUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 text-primary hover:underline"
+                                            onClick={e => e.stopPropagation()}
+                                          >
+                                            <ImageIcon className="h-3 w-3" />
+                                            Ảnh thanh toán
+                                            <ExternalLink className="h-2.5 w-2.5" />
+                                          </a>
+                                        </>
+                                      )}
                                       <span className="text-muted-foreground">
                                         •
                                       </span>
