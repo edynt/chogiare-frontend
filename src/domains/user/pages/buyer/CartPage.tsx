@@ -51,11 +51,11 @@ export default function CartPage() {
     }
   }, [items.length, productsData?.items])
 
-  // Group items by seller/store
+  // Group items by seller
   const groupedItems = React.useMemo(() => {
     const groups: Record<string, typeof items> = {}
     items.forEach(item => {
-      const key = item.sellerId || item.storeId || 'unknown'
+      const key = item.sellerId || 'unknown'
       if (!groups[key]) {
         groups[key] = []
       }
@@ -176,9 +176,8 @@ export default function CartPage() {
             <div className="lg:col-span-2 space-y-6">
               {Object.entries(groupedItems).map(([sellerKey, sellerItems]) => {
                 const firstItem = sellerItems[0]
-                const sellerName =
-                  firstItem.sellerName || firstItem.storeName || 'Nhà cung cấp'
-                const sellerId = firstItem.sellerId || firstItem.storeId
+                const sellerName = firstItem.sellerName || 'Nhà cung cấp'
+                const sellerId = firstItem.sellerId
                 const groupTotal = sellerItems.reduce(
                   (sum, item) => sum + item.productPrice * item.quantity,
                   0

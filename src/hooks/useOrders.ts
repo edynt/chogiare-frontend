@@ -36,25 +36,25 @@ export const useUserOrders = (filters?: {
 }
 
 export const useStoreOrders = (
-  storeId: string,
+  sellerId: string,
   filters?: { page?: number; pageSize?: number }
 ) => {
   return useQuery({
-    queryKey: ['orders', 'store', storeId, filters],
-    queryFn: () => ordersApi.getStoreOrders(storeId, filters),
-    enabled: !!storeId,
+    queryKey: ['orders', 'seller', sellerId, filters],
+    queryFn: () => ordersApi.getSellerOrdersById(sellerId, filters),
+    enabled: !!sellerId,
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }
 
 export const useInfiniteStoreOrders = (
-  storeId: string,
+  sellerId: string,
   pageSize: number = 20
 ) => {
   return useInfiniteQuery({
-    queryKey: ['orders', 'store', 'infinite', storeId],
+    queryKey: ['orders', 'seller', 'infinite', sellerId],
     queryFn: ({ pageParam = 1 }) => {
-      return ordersApi.getStoreOrders(storeId, { page: pageParam, pageSize })
+      return ordersApi.getSellerOrdersById(sellerId, { page: pageParam, pageSize })
     },
     getNextPageParam: (lastPage, allPages) => {
       const currentPage = allPages.length
@@ -62,7 +62,7 @@ export const useInfiniteStoreOrders = (
       return currentPage < totalPages ? currentPage + 1 : undefined
     },
     initialPageParam: 1,
-    enabled: !!storeId,
+    enabled: !!sellerId,
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }
@@ -193,11 +193,11 @@ export const useOrderStats = () => {
   })
 }
 
-export const useStoreOrderStats = (storeId: string) => {
+export const useStoreOrderStats = (sellerId: string) => {
   return useQuery({
-    queryKey: ['orders', 'stats', 'store', storeId],
-    queryFn: () => ordersApi.getStoreOrderStats(storeId),
-    enabled: !!storeId,
+    queryKey: ['orders', 'stats', 'seller', sellerId],
+    queryFn: () => ordersApi.getSellerOrderStats(sellerId),
+    enabled: !!sellerId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }

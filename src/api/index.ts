@@ -19,6 +19,7 @@ export { productsApi, categoriesApi } from '@user/api/products'
 export { cartApi } from '@user/api/cart'
 export { ordersApi } from '@user/api/orders'
 export { reviewsApi } from '@user/api/reviews'
+/** @deprecated Use sellerApi instead. Store model removed from backend. */
 export { storesApi } from '@user/api/stores'
 export { chatApi } from '@user/api/chat'
 export { addressesApi } from '@user/api/addresses'
@@ -54,6 +55,7 @@ export type {
   UpdateReviewRequest,
 } from '@user/api/reviews'
 
+/** @deprecated Use seller types instead. Store model removed from backend. */
 export type {
   Store,
   StoreListResponse,

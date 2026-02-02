@@ -133,7 +133,7 @@ export const addToCartSchema = z.object({
 
 // Order schemas
 export const orderSchema = z.object({
-  storeId: z
+  sellerId: z
     .union([z.string(), z.number()])
     .transform(val => (typeof val === 'string' ? parseInt(val, 10) : val)),
   paymentMethod: z.string().optional(),
@@ -154,9 +154,9 @@ export const orderSchema = z.object({
     .min(1, 'Phải có ít nhất 1 sản phẩm'),
 })
 
-// Store schemas
-export const storeSchema = z.object({
-  name: z.string().min(1, 'Tên cửa hàng là bắt buộc'),
+// Seller schemas
+export const sellerSchema = z.object({
+  name: z.string().min(1, 'Tên người bán là bắt buộc'),
   description: z.string().optional(),
   logo: z.string().optional(),
   banner: z.string().optional(),
@@ -193,6 +193,6 @@ export type SearchFiltersFormData = z.infer<typeof searchFiltersSchema>
 export type ReviewFormData = z.infer<typeof reviewSchema>
 export type AddToCartFormData = z.infer<typeof addToCartSchema>
 export type OrderFormData = z.infer<typeof orderSchema>
-export type StoreFormData = z.infer<typeof storeSchema>
+export type SellerFormData = z.infer<typeof sellerSchema>
 export type ChatMessageFormData = z.infer<typeof chatMessageSchema>
 export type UploadFormData = z.infer<typeof uploadSchema>

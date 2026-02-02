@@ -15,7 +15,18 @@ export interface User {
   roles: UserRole[]
   roleIds?: number[] // Numeric role IDs: 1=admin, 2=user
   postCount: number
-  storeInfo?: StoreInfo
+  isSeller?: boolean
+  sellerName?: string
+  sellerSlug?: string
+  sellerLogo?: string
+  sellerBanner?: string
+  sellerDescription?: string
+  sellerAddress?: string
+  sellerPhone?: string
+  sellerEmail?: string
+  isSellerVerified?: boolean
+  sellerRating?: number
+  sellerReviewCount?: number
   createdAt: string
   updatedAt: string
 }
@@ -52,20 +63,6 @@ export const ROLE_NAMES = {
   USER: ROLES.USER.name,
 } as const
 
-export interface StoreInfo {
-  id: string
-  name: string
-  description?: string
-  logo?: string
-  banner?: string
-  address?: string
-  phone?: string
-  email?: string
-  isVerified: boolean
-  rating: number
-  reviewCount: number
-  createdAt: string
-}
 
 export interface Category {
   id: string
@@ -106,7 +103,6 @@ export interface Product {
   }
   sellerId: string
   seller?: User
-  store?: StoreInfo
   status: ProductStatus
   badges: ProductBadge[]
   warranty?: string
@@ -133,8 +129,6 @@ export interface CartItem {
   productId: string
   sellerId?: string
   sellerName?: string
-  storeId?: string
-  storeName?: string
   quantity: number
   price: number
   productName: string

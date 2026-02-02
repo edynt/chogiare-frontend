@@ -150,13 +150,13 @@ export const reviewsApi = {
     return response.data.data
   },
 
-  // Store reviews
-  getStoreReviews: async (
-    storeId: string,
+  // Seller reviews
+  getSellerReviews: async (
+    sellerId: string,
     filters?: { page?: number; pageSize?: number }
   ): Promise<ReviewListResponse> => {
     const response = await apiClient.get<ApiResponse<ReviewListResponse>>(
-      `/reviews/store/${storeId}`,
+      `/reviews/seller/${sellerId}`,
       {
         params: {
           page: filters?.page || 1,
@@ -196,9 +196,9 @@ export const reviewsApi = {
     return response.data.data
   },
 
-  getStoreReviewStats: async (storeId: string): Promise<ReviewStats> => {
+  getSellerReviewStats: async (sellerId: string): Promise<ReviewStats> => {
     const response = await apiClient.get<ApiResponse<ReviewStats>>(
-      `/reviews/stats/store/${storeId}`
+      `/reviews/stats/seller/${sellerId}`
     )
     return response.data.data
   },

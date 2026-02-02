@@ -59,7 +59,7 @@ export default function CheckoutPage() {
   const { data: product, isLoading: isLoadingProduct } = useProduct(
     productId || ''
   )
-  // Fetch first product from cart to get storeId
+  // Fetch first product from cart to get sellerId
   const firstCartProductId =
     !productId && cartItems.length > 0 ? cartItems[0].productId : null
   const { data: firstCartProduct } = useProduct(firstCartProductId || '')
@@ -89,12 +89,12 @@ export default function CheckoutPage() {
         ]
       : []
 
-  // Group cart items by seller/store
+  // Group cart items by seller
   const groupedCartItems = React.useMemo(() => {
     if (!isFromCart) return {}
     const groups: Record<string, typeof cartItems> = {}
     cartItems.forEach(item => {
-      const key = item.sellerId || item.storeId || 'unknown'
+      const key = item.sellerId || 'unknown'
       if (!groups[key]) {
         groups[key] = []
       }
@@ -130,28 +130,25 @@ export default function CheckoutPage() {
       return
     }
 
-    // Get storeId from first product (assuming all items are from same store)
-    let storeId: number | null = null
+    // Get sellerId from first product (assuming all items are from same seller)
+    let sellerId: number | null = null
     if (isFromCart && firstCartProduct) {
-      // Use storeId directly, not sellerId (sellerId is user ID, not store ID)
-      const storeIdValue =
-        firstCartProduct.storeId || firstCartProduct.store?.id
-      storeId = storeIdValue
-        ? typeof storeIdValue === 'string'
-          ? parseInt(storeIdValue, 10)
-          : storeIdValue
+      const sellerIdValue = firstCartProduct.sellerId
+      sellerId = sellerIdValue
+        ? typeof sellerIdValue === 'string'
+          ? parseInt(sellerIdValue, 10)
+          : sellerIdValue
         : null
     } else if (product) {
-      // Use storeId directly, not sellerId (sellerId is user ID, not store ID)
-      const storeIdValue = product.storeId || product.store?.id
-      storeId = storeIdValue
-        ? typeof storeIdValue === 'string'
-          ? parseInt(storeIdValue, 10)
-          : storeIdValue
+      const sellerIdValue = product.sellerId
+      sellerId = sellerIdValue
+        ? typeof sellerIdValue === 'string'
+          ? parseInt(sellerIdValue, 10)
+          : sellerIdValue
         : null
     }
 
-    if (!storeId || isNaN(storeId)) {
+    if (!sellerId || isNaN(sellerId)) {
       toast.error('Không tìm thấy thông tin người bán')
       return
     }
@@ -164,7 +161,7 @@ export default function CheckoutPage() {
 
     try {
       const orderData = {
-        storeId,
+        sellerId,
         shippingAddressId: addressId,
         billingAddressId: addressId,
         items: orderItems.map(item => ({
@@ -472,9 +469,7 @@ export default function CheckoutPage() {
                         ([sellerKey, sellerItems]) => {
                           const firstItem = sellerItems[0]
                           const sellerName =
-                            firstItem.sellerName ||
-                            firstItem.storeName ||
-                            'Nhà cung cấp'
+                            firstItem.sellerName || 'Nhà cung cấp'
                           const groupTotal = sellerItems.reduce(
                             (sum, item) =>
                               sum + item.productPrice * item.quantity,

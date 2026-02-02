@@ -160,13 +160,6 @@ export interface AdminUser {
     status: string
     thumbnailUrl?: string
   }>
-  stores?: Array<{
-    id: number
-    name: string
-    slug: string
-    status: string
-    description?: string
-  }>
 }
 
 export interface AdminUserListResponse {
@@ -273,7 +266,7 @@ export interface AdminOrderItem {
 export interface AdminOrder {
   id: string
   userId: number
-  storeId: string
+  sellerId: string
   status: string
   paymentStatus: string
   paymentMethod: string
@@ -286,12 +279,11 @@ export interface AdminOrder {
   deliveryAddress: string
   billingAddress: string
   notes?: string
-  storeName?: string
-  storeLogo?: string
+  sellerName?: string
+  sellerLogo?: string
   userEmail?: string
   userName?: string
   userPhone?: string
-  sellerName?: string
   sellerEmail?: string
   sellerPhone?: string
   items: AdminOrderItem[]

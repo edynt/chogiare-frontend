@@ -200,3 +200,24 @@ export const useResendVerification = () => {
     mutationFn: authApi.resendVerification,
   })
 }
+
+/**
+ * Main auth hook that combines store state with profile data
+ * Use this to get current user info and auth state
+ */
+export const useAuth = () => {
+  const store = useAuthStore()
+  const { data: profileData, isLoading: isProfileLoading } = useProfile()
+
+  // Sync profile data to store when available
+  if (profileData && !store.user) {
+    store.setUser(profileData)
+  }
+
+  return {
+    user: store.user || profileData,
+    isAuthenticated: store.isAuthenticated || !!profileData,
+    isLoading: store.isLoading || isProfileLoading,
+    error: store.error,
+  }
+}

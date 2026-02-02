@@ -557,7 +557,7 @@ export default function OrderManagementPage() {
                         <TableCell>
                           <div>
                             <p className="font-medium text-gray-900">
-                              {order.sellerName || order.storeName || 'N/A'}
+                              {order.sellerName || 'N/A'}
                             </p>
                             {order.sellerPhone && (
                               <div className="flex items-center gap-1 text-sm text-gray-500">

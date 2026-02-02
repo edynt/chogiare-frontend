@@ -615,32 +615,32 @@ export function ProfileContent() {
             </Card>
           </div>
 
-          {profile.storeInfo && (
+          {profile.isSeller && (
             <Card>
               <CardHeader>
-                <CardTitle>Thông tin cửa hàng</CardTitle>
+                <CardTitle>Thông tin người bán</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium">Tên cửa hàng</label>
-                    <Input value={profile.storeInfo.name} disabled />
+                    <label className="text-sm font-medium">Tên người bán</label>
+                    <Input value={profile.sellerName || ''} disabled />
                   </div>
                   <div>
                     <label className="text-sm font-medium">Mô tả</label>
                     <Input
-                      value={profile.storeInfo.description || ''}
+                      value={profile.sellerDescription || ''}
                       disabled
                     />
                   </div>
                   <div className="flex justify-between">
                     <span>Đánh giá:</span>
                     <span className="font-medium">
-                      ⭐ {profile.storeInfo.rating} (
-                      {profile.storeInfo.reviewCount} đánh giá)
+                      ⭐ {profile.sellerRating || 0} (
+                      {profile.sellerReviewCount || 0} đánh giá)
                     </span>
                   </div>
-                  <Button>Chỉnh sửa cửa hàng</Button>
+                  <Button>Chỉnh sửa thông tin người bán</Button>
                 </div>
               </CardContent>
             </Card>

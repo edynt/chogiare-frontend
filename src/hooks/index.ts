@@ -3,7 +3,10 @@ export * from './useAuth'
 // Cart hooks removed - not needed for wholesale system
 export * from './useOrders'
 export * from './useReviews'
+/** @deprecated Use useSeller hooks instead */
 export * from './useStores'
+export * from './useSeller'
+export * from './useSellerCustomers'
 export * from './useChat'
 export * from './useProducts'
 export * from './useLoading'

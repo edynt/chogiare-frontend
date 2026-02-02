@@ -17,9 +17,8 @@ export interface OrderItem {
 export interface Order {
   id: string
   orderNo: string | null
-  userId: number
-  sellerId?: number  // Seller's user ID (if returned by backend)
-  storeId: string
+  buyerId: number
+  sellerId: number
   status: string
   paymentStatus: string
   paymentMethod: string
@@ -33,10 +32,10 @@ export interface Order {
   shippingAddress: string
   billingAddress: string
   notes?: string
-  storeName?: string
-  storeLogo?: string
-  userEmail?: string
-  userName?: string
+  sellerName?: string
+  sellerLogo?: string
+  buyerEmail?: string
+  buyerName?: string
   items: OrderItem[]
   createdAt: string
   updatedAt: string
@@ -61,7 +60,7 @@ export interface OrderStats {
 }
 
 export interface CreateOrderRequest {
-  storeId: number
+  sellerId: number
   paymentMethod?: string
   shippingAddressId?: number
   billingAddressId?: number
@@ -75,7 +74,7 @@ export interface CreateOrderItemRequest {
 }
 
 export interface CreateOrderFromCartRequest {
-  storeId: number
+  sellerId: number
   paymentMethod?: string
   shippingAddressId?: number
   billingAddressId?: number
@@ -197,12 +196,12 @@ export const ordersApi = {
     return 'data' in result ? (result as { data: OrderListResponse }).data : (result as unknown as OrderListResponse)
   },
 
-  getStoreOrders: async (
-    storeId: string,
+  getSellerOrdersById: async (
+    sellerId: string,
     filters?: { page?: number; pageSize?: number }
   ): Promise<OrderListResponse> => {
     const response = await apiClient.get<ApiResponse<{ data: OrderListResponse }>>(
-      `/orders/store/${storeId}`,
+      `/orders/seller/${sellerId}`,
       {
         params: {
           page: filters?.page || 1,
@@ -262,13 +261,13 @@ export const ordersApi = {
     return 'data' in result ? (result as { data: OrderListResponse }).data : (result as unknown as OrderListResponse)
   },
 
-  listStoreOrders: async (
-    storeId: string,
+  listSellerOrders: async (
+    sellerId: string,
     page = 1,
     pageSize = 10
   ): Promise<OrderListResponse> => {
     const response = await apiClient.get<ApiResponse<{ data: OrderListResponse }>>(
-      `/orders/store/${storeId}`,
+      `/orders/seller/${sellerId}`,
       {
         params: { page, pageSize },
       }
@@ -335,9 +334,9 @@ export const ordersApi = {
     return 'data' in result ? (result as { data: OrderStats }).data : (result as unknown as OrderStats)
   },
 
-  getStoreOrderStats: async (storeId: string): Promise<OrderStats> => {
+  getSellerOrderStats: async (sellerId: string): Promise<OrderStats> => {
     const response = await apiClient.get<ApiResponse<{ data: OrderStats }>>(
-      `/orders/stats/store/${storeId}`
+      `/orders/stats/seller/${sellerId}`
     )
     const result = response.data.data
     return 'data' in result ? (result as { data: OrderStats }).data : (result as unknown as OrderStats)

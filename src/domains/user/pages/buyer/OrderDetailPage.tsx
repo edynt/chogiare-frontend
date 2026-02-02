@@ -238,14 +238,17 @@ export default function OrderDetailPage() {
       ? order.updatedAt
       : ''
 
+
   // Determine if current user is seller or buyer
-  // Seller: user.id matches order.sellerId (if available)
-  // Buyer: user.id matches order.userId
+  // Seller: user's ID matches order's sellerId
+  // Buyer: any other user viewing the order
   const isSeller = user?.id != null && order.sellerId != null
     && String(user.id) === String(order.sellerId)
 
-  const buyerName = order.userName || 'N/A'
-  const buyerPhone = order.userEmail || 'N/A'
+
+
+  const buyerName = order.buyerName || 'N/A'
+  const buyerPhone = order.buyerEmail || 'N/A'
   const fullAddress = order.shippingAddress || ''
   const buyerNotes = order.notes || ''
   const orderNumber = order.id
@@ -823,7 +826,7 @@ export default function OrderDetailPage() {
                         </a>
                       </div>
                     )}
-                    {!isPaid && order.status !== 'cancelled' && (
+                    {isSeller && !isPaid && order.status !== 'cancelled' && (
                       <Button
                         size="sm"
                         className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white"

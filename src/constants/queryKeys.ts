@@ -16,27 +16,27 @@ export const queryKeys = {
   categories: {
     all: ['categories'] as const,
   },
-  stores: {
-    all: ['stores'] as const,
-    lists: (filters?: unknown) => ['stores', filters] as const,
-    detail: (id: number | string) => ['stores', id] as const,
-    user: ['stores', 'user'] as const,
+  sellers: {
+    all: ['sellers'] as const,
+    lists: (filters?: unknown) => ['sellers', filters] as const,
+    detail: (id: number | string) => ['sellers', id] as const,
+    user: ['sellers', 'user'] as const,
     search: (query: string, filters?: unknown) =>
-      ['stores', 'search', query, filters] as const,
-    stats: ['stores', 'stats'] as const,
-    userStats: ['stores', 'stats', 'user'] as const,
-    storeStats: (storeId: number | string) =>
-      ['stores', 'stats', storeId] as const,
+      ['sellers', 'search', query, filters] as const,
+    stats: ['sellers', 'stats'] as const,
+    userStats: ['sellers', 'stats', 'user'] as const,
+    sellerStats: (sellerId: number | string) =>
+      ['sellers', 'stats', sellerId] as const,
   },
   orders: {
     all: ['orders'] as const,
     lists: (filters?: unknown) => ['orders', filters] as const,
     detail: (id: number | string) => ['orders', id] as const,
     user: (filters?: unknown) => ['orders', 'user', filters] as const,
-    store: (storeId: number | string, filters?: unknown) =>
-      ['orders', 'store', storeId, filters] as const,
-    storeInfinite: (storeId: number | string) =>
-      ['orders', 'store', 'infinite', storeId] as const,
+    seller: (sellerId: number | string, filters?: unknown) =>
+      ['orders', 'seller', sellerId, filters] as const,
+    sellerInfinite: (sellerId: number | string) =>
+      ['orders', 'seller', 'infinite', sellerId] as const,
     userInfinite: ['orders', 'user', 'infinite'] as const,
   },
   reviews: {
@@ -45,14 +45,14 @@ export const queryKeys = {
     product: (productId: number | string, filters?: unknown) =>
       ['reviews', 'product', productId, filters] as const,
     user: (filters?: unknown) => ['reviews', 'user', filters] as const,
-    store: (storeId: number | string, filters?: unknown) =>
-      ['reviews', 'store', storeId, filters] as const,
+    seller: (sellerId: number | string, filters?: unknown) =>
+      ['reviews', 'seller', sellerId, filters] as const,
     detail: (id: number | string) => ['reviews', id] as const,
     stats: ['reviews', 'stats'] as const,
     productStats: (productId: number | string) =>
       ['reviews', 'stats', 'product', productId] as const,
-    storeStats: (storeId: number | string) =>
-      ['reviews', 'stats', 'store', storeId] as const,
+    sellerStats: (sellerId: number | string) =>
+      ['reviews', 'stats', 'seller', sellerId] as const,
   },
   cart: {
     all: ['cart'] as const,

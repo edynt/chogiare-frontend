@@ -51,7 +51,7 @@ export interface QueryRevenueReportParams {
   timeRange?: '7d' | '30d' | '90d' | '1y'
   dateFrom?: string
   dateTo?: string
-  storeId?: number
+  sellerId?: number
   limit?: number
 }
 

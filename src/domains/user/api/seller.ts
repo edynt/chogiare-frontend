@@ -167,7 +167,7 @@ export const sellerApi = {
     costPrice?: number
     sellingPrice?: number
     sku?: string
-    storeId?: number
+    sellerId?: number
     images?: string[]
   }): Promise<Product> => {
     const response = await apiClient.post<ApiResponse<Product>>(

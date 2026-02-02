@@ -1,3 +1,13 @@
+/**
+ * @deprecated This file is deprecated. The Store model has been removed from the backend.
+ * Seller information is now part of the User model with fields:
+ * - isSeller, sellerName, sellerSlug, sellerDescription
+ * - sellerLogo, sellerBanner, sellerRating, etc.
+ *
+ * Please use './seller.ts' API instead for all seller-related operations.
+ * The backend endpoints have changed from /stores/* to /seller/*
+ */
+
 import { apiClient } from '@shared/api/axios'
 import type { ApiResponse } from '@/types'
 

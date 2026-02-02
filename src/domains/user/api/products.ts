@@ -92,7 +92,7 @@ export const productsApi = {
     costPrice?: number
     sellingPrice?: number
     sku?: string
-    storeId?: number
+    sellerId?: number
   }): Promise<Product> => {
     const response = await apiClient.post<ApiResponse<Product>>(
       '/products',
@@ -137,13 +137,13 @@ export const productsApi = {
     return response.data.data
   },
 
-  getProductsByStore: async (
-    storeId: string,
-    filters: Omit<SearchFilters, 'storeId'> = {}
+  getProductsBySeller: async (
+    sellerId: string,
+    filters: Omit<SearchFilters, 'sellerId'> = {}
   ): Promise<PaginatedResponse<Product>> => {
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<Product>>
-    >(`/stores/${storeId}/products`, { params: filters })
+    >(`/seller/${sellerId}/products`, { params: filters })
     return response.data.data
   },
 

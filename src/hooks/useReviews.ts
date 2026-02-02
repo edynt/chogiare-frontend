@@ -33,14 +33,14 @@ export const useUserReviews = (filters?: {
   })
 }
 
-export const useStoreReviews = (
-  storeId: string,
+export const useSellerReviews = (
+  sellerId: string,
   filters?: { page?: number; pageSize?: number }
 ) => {
   return useQuery({
-    queryKey: ['reviews', 'store', storeId, filters],
-    queryFn: () => reviewsApi.getStoreReviews(storeId, filters),
-    enabled: !!storeId,
+    queryKey: ['reviews', 'seller', sellerId, filters],
+    queryFn: () => reviewsApi.getSellerReviews(sellerId, filters),
+    enabled: !!sellerId,
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }
@@ -113,11 +113,11 @@ export const useProductReviewStats = (productId: string) => {
   })
 }
 
-export const useStoreReviewStats = (storeId: string) => {
+export const useSellerReviewStats = (sellerId: string) => {
   return useQuery({
-    queryKey: ['reviews', 'stats', 'store', storeId],
-    queryFn: () => reviewsApi.getStoreReviewStats(storeId),
-    enabled: !!storeId,
+    queryKey: ['reviews', 'stats', 'seller', sellerId],
+    queryFn: () => reviewsApi.getSellerReviewStats(sellerId),
+    enabled: !!sellerId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }

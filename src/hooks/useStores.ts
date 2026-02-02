@@ -1,3 +1,15 @@
+/**
+ * @deprecated This file is deprecated. The Store model has been removed from the backend.
+ * Seller information is now part of the User model.
+ * Please use the seller hooks from './useSeller.ts' instead.
+ *
+ * Migration guide:
+ * - useStores -> useSellerProducts (for products)
+ * - useStore -> useSellerProduct (for single product)
+ * - useUserStore -> Use user auth context for seller info
+ * - useStoreStats -> useSellerDashboardStats
+ */
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { storesApi } from '@user/api/stores'
 import type { UpdateStoreRequest } from '@user/api/stores'
