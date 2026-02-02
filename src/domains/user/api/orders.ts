@@ -106,7 +106,11 @@ export const ordersApi = {
   uploadPaymentImage: async (
     orderId: string,
     file: File,
-    onProgress?: (progress: { loaded: number; total: number; percentage: number }) => void
+    onProgress?: (progress: {
+      loaded: number
+      total: number
+      percentage: number
+    }) => void
   ): Promise<Order> => {
     const formData = new FormData()
     formData.append('file', file)
@@ -123,22 +127,31 @@ export const ordersApi = {
             onProgress({
               loaded: progressEvent.loaded,
               total: progressEvent.total,
-              percentage: Math.round((progressEvent.loaded * 100) / progressEvent.total),
+              percentage: Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              ),
             })
           }
         },
       }
     )
     const result = response.data.data
-    return 'data' in result ? (result as { data: Order }).data : (result as unknown as Order)
+    return 'data' in result
+      ? (result as { data: Order }).data
+      : (result as unknown as Order)
   },
 
   // Order CRUD operations
   createOrder: async (data: CreateOrderRequest): Promise<Order> => {
-    const response = await apiClient.post<ApiResponse<{ data: Order }>>('/orders', data)
+    const response = await apiClient.post<ApiResponse<{ data: Order }>>(
+      '/orders',
+      data
+    )
     // Backend returns { message, data: order }, so response.data.data.data is the actual order
     const result = response.data.data
-    return 'data' in result ? (result as { data: Order }).data : (result as unknown as Order)
+    return 'data' in result
+      ? (result as { data: Order }).data
+      : (result as unknown as Order)
   },
 
   createOrderFromCart: async (
@@ -150,68 +163,77 @@ export const ordersApi = {
     )
     // Backend returns { message, data: order }, so response.data.data.data is the actual order
     const result = response.data.data
-    return 'data' in result ? (result as { data: Order }).data : (result as unknown as Order)
+    return 'data' in result
+      ? (result as { data: Order }).data
+      : (result as unknown as Order)
   },
 
   getOrder: async (id: string): Promise<Order> => {
-    const response = await apiClient.get<ApiResponse<{ data: Order }>>(`/orders/${id}`)
+    const response = await apiClient.get<ApiResponse<{ data: Order }>>(
+      `/orders/${id}`
+    )
     // Backend returns { message, data: order }, so response.data.data.data is the actual order
     const result = response.data.data
-    return 'data' in result ? (result as { data: Order }).data : (result as unknown as Order)
+    return 'data' in result
+      ? (result as { data: Order }).data
+      : (result as unknown as Order)
   },
 
   getOrders: async (filters?: {
     page?: number
     pageSize?: number
   }): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<{ data: OrderListResponse }>>(
-      '/orders',
-      {
-        params: {
-          page: filters?.page || 1,
-          pageSize: filters?.pageSize || 10,
-        },
-      }
-    )
+    const response = await apiClient.get<
+      ApiResponse<{ data: OrderListResponse }>
+    >('/orders', {
+      params: {
+        page: filters?.page || 1,
+        pageSize: filters?.pageSize || 10,
+      },
+    })
     // Backend returns { message, data: result }, so response.data.data.data is the actual result
     const result = response.data.data
-    return 'data' in result ? (result as { data: OrderListResponse }).data : (result as unknown as OrderListResponse)
+    return 'data' in result
+      ? (result as { data: OrderListResponse }).data
+      : (result as unknown as OrderListResponse)
   },
 
   getUserOrders: async (filters?: {
     page?: number
     pageSize?: number
   }): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<{ data: OrderListResponse }>>(
-      '/orders/my',
-      {
-        params: {
-          page: filters?.page || 1,
-          pageSize: filters?.pageSize || 10,
-        },
-      }
-    )
+    const response = await apiClient.get<
+      ApiResponse<{ data: OrderListResponse }>
+    >('/orders/my', {
+      params: {
+        page: filters?.page || 1,
+        pageSize: filters?.pageSize || 10,
+      },
+    })
     // Backend returns { message, data: result }, so response.data.data.data is the actual result
     const result = response.data.data
-    return 'data' in result ? (result as { data: OrderListResponse }).data : (result as unknown as OrderListResponse)
+    return 'data' in result
+      ? (result as { data: OrderListResponse }).data
+      : (result as unknown as OrderListResponse)
   },
 
   getSellerOrdersById: async (
     sellerId: string,
     filters?: { page?: number; pageSize?: number }
   ): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<{ data: OrderListResponse }>>(
-      `/orders/seller/${sellerId}`,
-      {
-        params: {
-          page: filters?.page || 1,
-          pageSize: filters?.pageSize || 10,
-        },
-      }
-    )
+    const response = await apiClient.get<
+      ApiResponse<{ data: OrderListResponse }>
+    >(`/orders/seller/${sellerId}`, {
+      params: {
+        page: filters?.page || 1,
+        pageSize: filters?.pageSize || 10,
+      },
+    })
     // Backend returns { message, data: result }, so response.data.data.data is the actual result
     const result = response.data.data
-    return 'data' in result ? (result as { data: OrderListResponse }).data : (result as unknown as OrderListResponse)
+    return 'data' in result
+      ? (result as { data: OrderListResponse }).data
+      : (result as unknown as OrderListResponse)
   },
 
   getSellerOrders: async (filters?: {
@@ -220,45 +242,48 @@ export const ordersApi = {
     status?: string
     paymentStatus?: string
   }): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<{ data: OrderListResponse }>>(
-      '/orders/seller/my',
-      {
-        params: {
-          page: filters?.page || 1,
-          pageSize: filters?.pageSize || 10,
-          status: filters?.status,
-          paymentStatus: filters?.paymentStatus,
-        },
-      }
-    )
+    const response = await apiClient.get<
+      ApiResponse<{ data: OrderListResponse }>
+    >('/orders/seller/my', {
+      params: {
+        page: filters?.page || 1,
+        pageSize: filters?.pageSize || 10,
+        status: filters?.status,
+        paymentStatus: filters?.paymentStatus,
+      },
+    })
     // Backend returns { success, data: { data: { items, total, page, pageSize, totalPages } }, code, message }
     const result = response.data.data
-    return 'data' in result ? (result as { data: OrderListResponse }).data : (result as unknown as OrderListResponse)
+    return 'data' in result
+      ? (result as { data: OrderListResponse }).data
+      : (result as unknown as OrderListResponse)
   },
 
   listOrders: async (page = 1, pageSize = 10): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<{ data: OrderListResponse }>>(
-      '/orders',
-      {
-        params: { page, pageSize },
-      }
-    )
+    const response = await apiClient.get<
+      ApiResponse<{ data: OrderListResponse }>
+    >('/orders', {
+      params: { page, pageSize },
+    })
     const result = response.data.data
-    return 'data' in result ? (result as { data: OrderListResponse }).data : (result as unknown as OrderListResponse)
+    return 'data' in result
+      ? (result as { data: OrderListResponse }).data
+      : (result as unknown as OrderListResponse)
   },
 
   listUserOrders: async (
     page = 1,
     pageSize = 10
   ): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<{ data: OrderListResponse }>>(
-      '/orders/my',
-      {
-        params: { page, pageSize },
-      }
-    )
+    const response = await apiClient.get<
+      ApiResponse<{ data: OrderListResponse }>
+    >('/orders/my', {
+      params: { page, pageSize },
+    })
     const result = response.data.data
-    return 'data' in result ? (result as { data: OrderListResponse }).data : (result as unknown as OrderListResponse)
+    return 'data' in result
+      ? (result as { data: OrderListResponse }).data
+      : (result as unknown as OrderListResponse)
   },
 
   listSellerOrders: async (
@@ -266,14 +291,15 @@ export const ordersApi = {
     page = 1,
     pageSize = 10
   ): Promise<OrderListResponse> => {
-    const response = await apiClient.get<ApiResponse<{ data: OrderListResponse }>>(
-      `/orders/seller/${sellerId}`,
-      {
-        params: { page, pageSize },
-      }
-    )
+    const response = await apiClient.get<
+      ApiResponse<{ data: OrderListResponse }>
+    >(`/orders/seller/${sellerId}`, {
+      params: { page, pageSize },
+    })
     const result = response.data.data
-    return 'data' in result ? (result as { data: OrderListResponse }).data : (result as unknown as OrderListResponse)
+    return 'data' in result
+      ? (result as { data: OrderListResponse }).data
+      : (result as unknown as OrderListResponse)
   },
 
   updateOrder: async (id: string, data: UpdateOrderRequest): Promise<Order> => {
@@ -282,7 +308,9 @@ export const ordersApi = {
       data
     )
     const result = response.data.data
-    return 'data' in result ? (result as { data: Order }).data : (result as unknown as Order)
+    return 'data' in result
+      ? (result as { data: Order }).data
+      : (result as unknown as Order)
   },
 
   updateOrderStatus: async (id: string, status: string): Promise<Order> => {
@@ -292,7 +320,9 @@ export const ordersApi = {
       { params: { status } }
     )
     const result = response.data.data
-    return 'data' in result ? (result as { data: Order }).data : (result as unknown as Order)
+    return 'data' in result
+      ? (result as { data: Order }).data
+      : (result as unknown as Order)
   },
 
   confirmOrder: async (id: string, sellerNotes?: string): Promise<Order> => {
@@ -302,7 +332,9 @@ export const ordersApi = {
       { params: sellerNotes ? { sellerNotes } : {} }
     )
     const result = response.data.data
-    return 'data' in result ? (result as { data: Order }).data : (result as unknown as Order)
+    return 'data' in result
+      ? (result as { data: Order }).data
+      : (result as unknown as Order)
   },
 
   updateOrderPaymentStatus: async (
@@ -310,7 +342,9 @@ export const ordersApi = {
     paymentStatus: string,
     paymentProofUrl?: string
   ): Promise<Order> => {
-    const body: { paymentStatus: string; paymentProofUrl?: string } = { paymentStatus }
+    const body: { paymentStatus: string; paymentProofUrl?: string } = {
+      paymentStatus,
+    }
     if (paymentProofUrl) {
       body.paymentProofUrl = paymentProofUrl
     }
@@ -319,7 +353,9 @@ export const ordersApi = {
       body
     )
     const result = response.data.data
-    return 'data' in result ? (result as { data: Order }).data : (result as unknown as Order)
+    return 'data' in result
+      ? (result as { data: Order }).data
+      : (result as unknown as Order)
   },
 
   deleteOrder: async (id: string): Promise<void> => {
@@ -331,7 +367,9 @@ export const ordersApi = {
     const response =
       await apiClient.get<ApiResponse<{ data: OrderStats }>>('/orders/stats')
     const result = response.data.data
-    return 'data' in result ? (result as { data: OrderStats }).data : (result as unknown as OrderStats)
+    return 'data' in result
+      ? (result as { data: OrderStats }).data
+      : (result as unknown as OrderStats)
   },
 
   getSellerOrderStats: async (sellerId: string): Promise<OrderStats> => {
@@ -339,13 +377,17 @@ export const ordersApi = {
       `/orders/stats/seller/${sellerId}`
     )
     const result = response.data.data
-    return 'data' in result ? (result as { data: OrderStats }).data : (result as unknown as OrderStats)
+    return 'data' in result
+      ? (result as { data: OrderStats }).data
+      : (result as unknown as OrderStats)
   },
 
   getUserOrderStats: async (): Promise<OrderStats> => {
     const response =
       await apiClient.get<ApiResponse<{ data: OrderStats }>>('/orders/stats/my')
     const result = response.data.data
-    return 'data' in result ? (result as { data: OrderStats }).data : (result as unknown as OrderStats)
+    return 'data' in result
+      ? (result as { data: OrderStats }).data
+      : (result as unknown as OrderStats)
   },
 }

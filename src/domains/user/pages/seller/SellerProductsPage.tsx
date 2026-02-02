@@ -137,7 +137,8 @@ export default function SellerProductsPage() {
     total: productsData?.total || 0,
     active: productsData?.items?.filter(p => p.status === 'active').length || 0,
     draft: productsData?.items?.filter(p => p.status === 'draft').length || 0,
-    outOfStock: productsData?.items?.filter(p => p.status === 'out_of_stock').length || 0,
+    outOfStock:
+      productsData?.items?.filter(p => p.status === 'out_of_stock').length || 0,
     totalViews:
       productsData?.items?.reduce((sum, p) => sum + (p.viewCount || 0), 0) || 0,
     totalRevenue:

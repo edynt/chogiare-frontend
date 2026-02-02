@@ -1,4 +1,8 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/components/ui/avatar'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@shared/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { Check, CheckCheck } from 'lucide-react'
 
@@ -79,13 +83,12 @@ export function ChatMessageItem({
           >
             {formatTime(timestamp)}
           </span>
-          {isOwn && (
-            isRead ? (
+          {isOwn &&
+            (isRead ? (
               <CheckCheck className="h-3 w-3 text-primary-foreground/70" />
             ) : (
               <Check className="h-3 w-3 text-primary-foreground/70" />
-            )
-          )}
+            ))}
         </div>
       </div>
     </div>

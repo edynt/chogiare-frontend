@@ -24,7 +24,10 @@ export function ChatPopup() {
   } = useChatStore()
 
   // Fetch conversations to get unread count
-  const { data: conversationsData } = useConversations({ page: 1, pageSize: 50 })
+  const { data: conversationsData } = useConversations({
+    page: 1,
+    pageSize: 50,
+  })
 
   // Create conversation mutation
   const createConversation = useCreateConversation()
@@ -73,14 +76,14 @@ export function ChatPopup() {
     createConversation.mutate(
       { otherUserId: pendingSellerId },
       {
-        onSuccess: (conversation) => {
+        onSuccess: conversation => {
           // Validate conversation has id before setting
           if (conversation?.id != null) {
             setActiveConvRef.current(conversation.id.toString())
           }
           setPendingSellerRef.current(null)
         },
-        onError: (error) => {
+        onError: error => {
           console.error('Failed to create conversation:', error)
           setPendingSellerRef.current(null)
         },

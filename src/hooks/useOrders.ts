@@ -54,7 +54,10 @@ export const useInfiniteStoreOrders = (
   return useInfiniteQuery({
     queryKey: ['orders', 'seller', 'infinite', sellerId],
     queryFn: ({ pageParam = 1 }) => {
-      return ordersApi.getSellerOrdersById(sellerId, { page: pageParam, pageSize })
+      return ordersApi.getSellerOrdersById(sellerId, {
+        page: pageParam,
+        pageSize,
+      })
     },
     getNextPageParam: (lastPage, allPages) => {
       const currentPage = allPages.length
@@ -101,7 +104,10 @@ export const useInfiniteSellerOrders = (pageSize: number = 20) => {
     queryKey: ['orders', 'seller', 'infinite'],
     queryFn: async ({ pageParam = 1 }) => {
       console.log('[useInfiniteSellerOrders] Fetching page:', pageParam)
-      const result = await ordersApi.getSellerOrders({ page: pageParam, pageSize })
+      const result = await ordersApi.getSellerOrders({
+        page: pageParam,
+        pageSize,
+      })
       console.log('[useInfiniteSellerOrders] Result:', result)
       return result
     },
@@ -166,7 +172,8 @@ export const useUpdateOrderPaymentStatus = () => {
       id: string
       paymentStatus: string
       paymentProofUrl?: string
-    }) => ordersApi.updateOrderPaymentStatus(id, paymentStatus, paymentProofUrl),
+    }) =>
+      ordersApi.updateOrderPaymentStatus(id, paymentStatus, paymentProofUrl),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       queryClient.invalidateQueries({ queryKey: ['orders', id] })
@@ -238,7 +245,11 @@ export const useUploadPaymentImage = () => {
     }: {
       orderId: string
       file: File
-      onProgress?: (progress: { loaded: number; total: number; percentage: number }) => void
+      onProgress?: (progress: {
+        loaded: number
+        total: number
+        percentage: number
+      }) => void
     }) => ordersApi.uploadPaymentImage(orderId, file, onProgress),
     onSuccess: (_, { orderId }) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] })

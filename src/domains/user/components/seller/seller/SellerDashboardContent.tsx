@@ -22,10 +22,7 @@ import {
   useConfirmOrder,
   useUpdateOrderStatus,
 } from '@/hooks/useOrders'
-import {
-  useSellerDashboardStats,
-  useLowStockProducts,
-} from '@/hooks/useSeller'
+import { useSellerDashboardStats, useLowStockProducts } from '@/hooks/useSeller'
 import { usePromotedProducts } from '@/hooks/useStores'
 import { useAuth } from '@/hooks/useAuth'
 import {

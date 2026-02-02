@@ -30,7 +30,10 @@ let socketRefCount = 0
 
 const getOrCreateSocket = (): Socket => {
   if (!socketInstance) {
-    console.log('[ChatSocket] Creating socket connection to:', `${SOCKET_URL}/chat`)
+    console.log(
+      '[ChatSocket] Creating socket connection to:',
+      `${SOCKET_URL}/chat`
+    )
     socketInstance = io(`${SOCKET_URL}/chat`, {
       withCredentials: true,
       transports: ['polling', 'websocket'], // Start with polling to ensure cookies are sent
@@ -46,11 +49,11 @@ const getOrCreateSocket = (): Socket => {
       console.log('[ChatSocket] Socket connected with id:', socketInstance?.id)
     })
 
-    socketInstance.on('new_message', (payload) => {
+    socketInstance.on('new_message', payload => {
       console.log('[ChatSocket] Received new_message event:', payload)
     })
 
-    socketInstance.on('connect_error', (error) => {
+    socketInstance.on('connect_error', error => {
       console.error('[ChatSocket] Connection error:', error.message)
     })
   }
@@ -163,7 +166,10 @@ export const useChatSocket = (options: UseChatSocketOptions = {}) => {
       onUserTypingRef.current?.(payload)
     }
 
-    const handleMessageRead = (payload: { conversationId: number; userId: number }) => {
+    const handleMessageRead = (payload: {
+      conversationId: number
+      userId: number
+    }) => {
       queryClient.invalidateQueries({
         queryKey: ['chat', 'messages', payload.conversationId.toString()],
       })
@@ -197,7 +203,11 @@ export const useChatSocket = (options: UseChatSocketOptions = {}) => {
         socketRef.current!.emit(
           'send_message',
           { conversationId, content, messageType },
-          (response: { success?: boolean; error?: string; message?: ChatMessage }) => {
+          (response: {
+            success?: boolean
+            error?: string
+            message?: ChatMessage
+          }) => {
             if (response.error) {
               reject(new Error(response.error))
             } else {
@@ -219,7 +229,10 @@ export const useChatSocket = (options: UseChatSocketOptions = {}) => {
       { conversationId },
       (response: { success?: boolean; error?: string }) => {
         if (response.error) {
-          console.error('[ChatSocket] Failed to join conversation:', response.error)
+          console.error(
+            '[ChatSocket] Failed to join conversation:',
+            response.error
+          )
         }
       }
     )
@@ -233,21 +246,24 @@ export const useChatSocket = (options: UseChatSocketOptions = {}) => {
   }, [])
 
   // Mark messages as read
-  const markAsRead = useCallback((conversationId: number) => {
-    if (!socketRef.current?.connected) return
+  const markAsRead = useCallback(
+    (conversationId: number) => {
+      if (!socketRef.current?.connected) return
 
-    socketRef.current.emit(
-      'mark_read',
-      { conversationId },
-      (response: { success?: boolean; error?: string }) => {
-        if (response.success) {
-          queryClient.invalidateQueries({
-            queryKey: ['chat', 'conversations'],
-          })
+      socketRef.current.emit(
+        'mark_read',
+        { conversationId },
+        (response: { success?: boolean; error?: string }) => {
+          if (response.success) {
+            queryClient.invalidateQueries({
+              queryKey: ['chat', 'conversations'],
+            })
+          }
         }
-      }
-    )
-  }, [queryClient])
+      )
+    },
+    [queryClient]
+  )
 
   // Send typing indicator
   const sendTyping = useCallback(
@@ -270,6 +286,13 @@ export const useChatSocket = (options: UseChatSocketOptions = {}) => {
       markAsRead,
       sendTyping,
     }),
-    [isConnected, sendMessage, joinConversation, leaveConversation, markAsRead, sendTyping]
+    [
+      isConnected,
+      sendMessage,
+      joinConversation,
+      leaveConversation,
+      markAsRead,
+      sendTyping,
+    ]
   )
 }

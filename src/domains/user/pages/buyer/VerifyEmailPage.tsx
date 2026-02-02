@@ -12,7 +12,6 @@ import { Input } from '@shared/components/ui/input'
 import { useVerifyEmail, useResendVerification } from '@/hooks/useAuth'
 import { useNotification } from '@shared/components/notification-provider'
 import { Mail, Loader2, ArrowLeft } from 'lucide-react'
-import { apiClient } from '@shared/api/axios'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
 

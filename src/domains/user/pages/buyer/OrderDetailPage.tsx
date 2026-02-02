@@ -59,15 +59,19 @@ export default function OrderDetailPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
-  const [showBuyerCancelInfoDialog, setShowBuyerCancelInfoDialog] = useState(false)
-  const [showStartPreparingDialog, setShowStartPreparingDialog] = useState(false)
+  const [showBuyerCancelInfoDialog, setShowBuyerCancelInfoDialog] =
+    useState(false)
+  const [showStartPreparingDialog, setShowStartPreparingDialog] =
+    useState(false)
   const [showReadyDialog, setShowReadyDialog] = useState(false)
   const [showCompleteDialog, setShowCompleteDialog] = useState(false)
   const [showMarkPaidDialog, setShowMarkPaidDialog] = useState(false)
   const [sellerNotes, setSellerNotes] = useState('')
   const [cancelReason, setCancelReason] = useState('')
   const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null)
-  const [paymentProofPreview, setPaymentProofPreview] = useState<string | null>(null)
+  const [paymentProofPreview, setPaymentProofPreview] = useState<string | null>(
+    null
+  )
 
   const { user } = useAuthStore()
   const { data: order, isLoading, error, refetch } = useOrder(orderId || '')
@@ -125,9 +129,10 @@ export default function OrderDetailPage() {
   const formatDate = (dateString: string) => {
     // Handle timestamp string (BigInt from backend) or ISO date string
     const timestamp = Number(dateString)
-    const date = !isNaN(timestamp) && timestamp > 0
-      ? new Date(timestamp)
-      : new Date(dateString)
+    const date =
+      !isNaN(timestamp) && timestamp > 0
+        ? new Date(timestamp)
+        : new Date(dateString)
 
     if (isNaN(date.getTime())) {
       return 'N/A'
@@ -238,14 +243,13 @@ export default function OrderDetailPage() {
       ? order.updatedAt
       : ''
 
-
   // Determine if current user is seller or buyer
   // Seller: user's ID matches order's sellerId
   // Buyer: any other user viewing the order
-  const isSeller = user?.id != null && order.sellerId != null
-    && String(user.id) === String(order.sellerId)
-
-
+  const isSeller =
+    user?.id != null &&
+    order.sellerId != null &&
+    String(user.id) === String(order.sellerId)
 
   const buyerName = order.buyerName || 'N/A'
   const buyerPhone = order.buyerEmail || 'N/A'
@@ -394,7 +398,10 @@ export default function OrderDetailPage() {
       refetch()
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error, 'Có lỗi xảy ra khi cập nhật trạng thái thanh toán')
+        getApiErrorMessage(
+          error,
+          'Có lỗi xảy ra khi cập nhật trạng thái thanh toán'
+        )
       )
       console.error('Error updating payment status:', error)
     }
@@ -989,18 +996,20 @@ export default function OrderDetailPage() {
               )}
 
               {/* Cancel button for buyer - only show when order is not completed/cancelled */}
-              {!isSeller && order.status !== 'completed' && order.status !== 'cancelled' && (
-                <div className="space-y-3">
-                  <Button
-                    variant="outline"
-                    className="w-full border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 h-12"
-                    onClick={() => setShowBuyerCancelInfoDialog(true)}
-                  >
-                    <XCircle className="h-5 w-5 mr-2" />
-                    Hủy đơn hàng
-                  </Button>
-                </div>
-              )}
+              {!isSeller &&
+                order.status !== 'completed' &&
+                order.status !== 'cancelled' && (
+                  <div className="space-y-3">
+                    <Button
+                      variant="outline"
+                      className="w-full border-red-500 text-red-700 hover:bg-red-50 hover:border-red-600 h-12"
+                      onClick={() => setShowBuyerCancelInfoDialog(true)}
+                    >
+                      <XCircle className="h-5 w-5 mr-2" />
+                      Hủy đơn hàng
+                    </Button>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -1142,10 +1151,7 @@ export default function OrderDetailPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowReadyDialog(false)}
-            >
+            <Button variant="outline" onClick={() => setShowReadyDialog(false)}>
               Hủy
             </Button>
             <Button
@@ -1192,13 +1198,18 @@ export default function OrderDetailPage() {
       </Dialog>
 
       {/* Mark Paid Dialog */}
-      <Dialog open={showMarkPaidDialog} onOpenChange={handleCloseMarkPaidDialog}>
+      <Dialog
+        open={showMarkPaidDialog}
+        onOpenChange={handleCloseMarkPaidDialog}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl">Đánh dấu đã thanh toán</DialogTitle>
+            <DialogTitle className="text-xl">
+              Đánh dấu đã thanh toán
+            </DialogTitle>
             <DialogDescription>
-              Xác nhận đơn hàng <strong>{orderNumber}</strong> đã được khách hàng
-              thanh toán? Vui lòng upload ảnh chứng minh.
+              Xác nhận đơn hàng <strong>{orderNumber}</strong> đã được khách
+              hàng thanh toán? Vui lòng upload ảnh chứng minh.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -1263,7 +1274,8 @@ export default function OrderDetailPage() {
               }
               className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700"
             >
-              {uploadPaymentImageMutation.isPending || updatePaymentStatusMutation.isPending
+              {uploadPaymentImageMutation.isPending ||
+              updatePaymentStatusMutation.isPending
                 ? 'Đang xử lý...'
                 : 'Xác nhận đã thanh toán'}
             </Button>
@@ -1272,7 +1284,10 @@ export default function OrderDetailPage() {
       </Dialog>
 
       {/* Buyer Cancel Info Dialog - Only close button, no cancel action */}
-      <Dialog open={showBuyerCancelInfoDialog} onOpenChange={setShowBuyerCancelInfoDialog}>
+      <Dialog
+        open={showBuyerCancelInfoDialog}
+        onOpenChange={setShowBuyerCancelInfoDialog}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl">Hủy đơn hàng</DialogTitle>

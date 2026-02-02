@@ -34,9 +34,11 @@ export default function PaymentQRPage() {
 
   const confirmMutation = useMutation({
     mutationFn: () => walletApi.confirmDeposit(Number(transactionId)),
-    onSuccess: (result) => {
+    onSuccess: result => {
       const newBalance = result.data.balance.newBalance
-      toast.success(`Nạp tiền thành công! Số dư mới: ${formatPrice(newBalance)}`)
+      toast.success(
+        `Nạp tiền thành công! Số dư mới: ${formatPrice(newBalance)}`
+      )
       queryClient.invalidateQueries({ queryKey: ['wallet-balance'] })
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       navigate('/top-up')

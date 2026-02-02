@@ -628,10 +628,7 @@ export function ProfileContent() {
                   </div>
                   <div>
                     <label className="text-sm font-medium">Mô tả</label>
-                    <Input
-                      value={profile.sellerDescription || ''}
-                      disabled
-                    />
+                    <Input value={profile.sellerDescription || ''} disabled />
                   </div>
                   <div className="flex justify-between">
                     <span>Đánh giá:</span>

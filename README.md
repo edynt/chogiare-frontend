@@ -7,10 +7,12 @@ A modern React 19 + TypeScript marketplace platform frontend for buying, selling
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - npm or yarn
 
 ### Installation
+
 ```bash
 # Clone and install
 git clone <repository-url>
@@ -51,6 +53,7 @@ Complete documentation is in the `docs/` folder:
 ## Project Features
 
 ### User Roles
+
 - **Buyers**: Browse, search, purchase, track orders, review products
 - **Sellers**: Manage products, inventory, orders, customers, revenue
 - **Admins**: Platform oversight, user management, content moderation
@@ -58,6 +61,7 @@ Complete documentation is in the `docs/` folder:
 ### Core Capabilities
 
 #### Authentication & Authorization
+
 - Email/password login with verification
 - OAuth integration support
 - JWT token refresh (concurrency-safe)
@@ -65,6 +69,7 @@ Complete documentation is in the `docs/` folder:
 - Protected routes per role
 
 #### Product Management
+
 - Browse with pagination/infinite scroll
 - Search and advanced filtering
 - Product details with reviews and images
@@ -72,6 +77,7 @@ Complete documentation is in the `docs/` folder:
 - Stock management
 
 #### Shopping & Orders
+
 - Cart with persistence
 - Checkout flow with address management
 - Order tracking with status timeline
@@ -79,6 +85,7 @@ Complete documentation is in the `docs/` folder:
 - Returns and refunds
 
 #### Seller Dashboard
+
 - Product CRUD operations
 - Customer management
 - Revenue reports with charts
@@ -86,6 +93,7 @@ Complete documentation is in the `docs/` folder:
 - Notification management
 
 #### Admin Panel
+
 - Platform metrics and analytics
 - User management (suspend, verify, ban)
 - Content moderation (products, reviews)
@@ -93,6 +101,7 @@ Complete documentation is in the `docs/` folder:
 - System settings and reporting
 
 #### Additional Features
+
 - Real-time chat (mocked)
 - Notification system
 - Wallet/payment integration
@@ -116,11 +125,13 @@ Backend API
 ```
 
 **State Management**:
+
 - Zustand for client state (auth, cart, filters)
 - TanStack Query for server state (caching, invalidation)
 - React Hook Form for form state (validation, submission)
 
 **HTTP Client**:
+
 - Singleton Axios instance
 - Concurrency-safe token refresh
 - Automatic token injection
@@ -130,17 +141,20 @@ Backend API
 ## Code Quality
 
 ### TypeScript
+
 - Strict mode: `true`
 - `noImplicitAny`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`
 - Full type coverage, no `any` allowed
 
 ### Testing
+
 - Vitest + React Testing Library
 - MSW for API mocking
 - Minimum 80% coverage for critical paths
 - Unit, integration, component tests
 
 ### Linting & Formatting
+
 - ESLint with TypeScript/React/A11y rules
 - Prettier for consistent formatting
 - Pre-commit hooks (auto-fix)
@@ -165,18 +179,18 @@ src/
 
 ## Key Technologies
 
-| Category | Tech |
-|----------|------|
-| Framework | React 19, React Router 7 |
-| Language | TypeScript 5.9 |
-| Build | Vite 7.1 |
-| State | Zustand 5, TanStack Query 5, React Hook Form 7 |
-| UI | shadcn/ui, Tailwind CSS 3.4, Lucide Icons |
-| HTTP | Axios 1.12 |
-| Forms | Zod validation |
-| Data | PapaParse, xlsx |
-| Testing | Vitest 3.2, React Testing Library 16.3 |
-| Quality | ESLint, Prettier, TypeScript strict mode |
+| Category  | Tech                                           |
+| --------- | ---------------------------------------------- |
+| Framework | React 19, React Router 7                       |
+| Language  | TypeScript 5.9                                 |
+| Build     | Vite 7.1                                       |
+| State     | Zustand 5, TanStack Query 5, React Hook Form 7 |
+| UI        | shadcn/ui, Tailwind CSS 3.4, Lucide Icons      |
+| HTTP      | Axios 1.12                                     |
+| Forms     | Zod validation                                 |
+| Data      | PapaParse, xlsx                                |
+| Testing   | Vitest 3.2, React Testing Library 16.3         |
+| Quality   | ESLint, Prettier, TypeScript strict mode       |
 
 ## Performance Optimizations
 
@@ -187,6 +201,7 @@ src/
 - **Hooks**: useCallback, useMemo for computation optimization
 
 **Targets**:
+
 - LCP < 2.5s | FID < 100ms | CLS < 0.1
 - Main bundle < 200KB gzipped
 - Lighthouse score > 90
@@ -210,7 +225,7 @@ src/
 
 ## Development Workflow
 
-1. **Feature Branch**: Create from `develop` (feature/*, fix/*, etc)
+1. **Feature Branch**: Create from `develop` (feature/_, fix/_, etc)
 2. **Code Changes**: Follow [code standards](docs/code-standards.md)
 3. **Tests**: Write tests, ensure coverage
 4. **Quality**: `npm run lint:fix && npm run format && npm run typecheck`

@@ -114,7 +114,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   // Realtime Actions
-  setUserTyping: (conversationId: string, userId: number, isTyping: boolean) => {
+  setUserTyping: (
+    conversationId: string,
+    userId: number,
+    isTyping: boolean
+  ) => {
     set(state => {
       const typingUsers = { ...state.typingUsers }
       const currentTyping = typingUsers[conversationId] || []

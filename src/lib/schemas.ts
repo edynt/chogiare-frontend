@@ -95,9 +95,7 @@ export const productSchema = z.object({
 })
 
 export const productUpdateSchema = productSchema.partial().extend({
-  status: z
-    .enum(['draft', 'active', 'out_of_stock'])
-    .optional(),
+  status: z.enum(['draft', 'active', 'out_of_stock']).optional(),
 })
 
 // Search filters schema

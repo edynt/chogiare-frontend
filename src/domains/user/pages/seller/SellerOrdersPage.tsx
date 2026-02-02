@@ -39,7 +39,10 @@ import {
   useConfirmOrder,
   useUpdateOrderStatus,
 } from '@/hooks/useOrders'
-import { useNotificationSocket, type NotificationPayload } from '@/hooks/useNotificationSocket'
+import {
+  useNotificationSocket,
+  type NotificationPayload,
+} from '@/hooks/useNotificationSocket'
 import type { Order as OrderType } from '@user/api/orders'
 import { cn } from '@/lib/utils'
 import { LoadingSpinner } from '@shared/components/ui/loading'
@@ -135,7 +138,8 @@ export default function SellerOrdersPage() {
   })
 
   // Flatten all pages into a single array
-  const orders = ordersData?.pages.flatMap(page => page.items || []).filter(Boolean) || []
+  const orders =
+    ordersData?.pages.flatMap(page => page.items || []).filter(Boolean) || []
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   const isLoading = isLoadingOrders
@@ -160,11 +164,15 @@ export default function SellerOrdersPage() {
   const getOrdersByStatus = (status: string) => {
     if (status === 'all') return orders
     if (status === 'pending') return orders.filter(o => o.status === 'pending')
-    if (status === 'confirmed') return orders.filter(o => o.status === 'confirmed')
-    if (status === 'preparing') return orders.filter(o => o.status === 'preparing')
+    if (status === 'confirmed')
+      return orders.filter(o => o.status === 'confirmed')
+    if (status === 'preparing')
+      return orders.filter(o => o.status === 'preparing')
     if (status === 'ready') return orders.filter(o => o.status === 'ready')
-    if (status === 'completed') return orders.filter(o => o.status === 'completed')
-    if (status === 'cancelled') return orders.filter(o => o.status === 'cancelled')
+    if (status === 'completed')
+      return orders.filter(o => o.status === 'completed')
+    if (status === 'cancelled')
+      return orders.filter(o => o.status === 'cancelled')
     return []
   }
 
@@ -261,7 +269,9 @@ export default function SellerOrdersPage() {
           <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-              <p className="text-muted-foreground">Đang tải danh sách đơn hàng...</p>
+              <p className="text-muted-foreground">
+                Đang tải danh sách đơn hàng...
+              </p>
             </div>
           </div>
         </main>
@@ -271,9 +281,12 @@ export default function SellerOrdersPage() {
   }
 
   const renderOrderCard = (order: OrderType) => {
-    const statusConfig = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.pending
+    const statusConfig =
+      STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] ||
+      STATUS_CONFIG.pending
     const StatusIcon = statusConfig.icon
-    const isPaid = order.paymentStatus === 'completed' || order.paymentStatus === 'paid'
+    const isPaid =
+      order.paymentStatus === 'completed' || order.paymentStatus === 'paid'
     const getPaymentStatusLabel = () => {
       if (isPaid) return 'Đã thanh toán'
       if (order.paymentStatus === 'pending') return 'Chờ thanh toán'
@@ -327,7 +340,9 @@ export default function SellerOrdersPage() {
                       <span className="text-muted-foreground">•</span>
                       <div className="flex items-center gap-1">
                         <Phone className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-muted-foreground">{order.userEmail}</span>
+                        <span className="text-muted-foreground">
+                          {order.userEmail}
+                        </span>
                       </div>
                     </>
                   )}
@@ -382,7 +397,10 @@ export default function SellerOrdersPage() {
                         e.stopPropagation()
                         handleConfirm(order.id)
                       }}
-                      disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                      disabled={
+                        confirmOrderMutation.isPending ||
+                        updateOrderStatusMutation.isPending
+                      }
                     >
                       <CheckCircle className="h-3 w-3 mr-1" />
                       Xác nhận
@@ -395,7 +413,10 @@ export default function SellerOrdersPage() {
                         e.stopPropagation()
                         handleCancel(order.id)
                       }}
-                      disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                      disabled={
+                        confirmOrderMutation.isPending ||
+                        updateOrderStatusMutation.isPending
+                      }
                     >
                       <XCircle className="h-3 w-3 mr-1" />
                       Hủy
@@ -443,13 +464,18 @@ export default function SellerOrdersPage() {
               <Button
                 variant="outline"
                 onClick={handleRefresh}
-                disabled={confirmOrderMutation.isPending || updateOrderStatusMutation.isPending}
+                disabled={
+                  confirmOrderMutation.isPending ||
+                  updateOrderStatusMutation.isPending
+                }
                 className="shadow-sm hover:shadow-md transition-shadow"
               >
                 <RefreshCw
                   className={cn(
                     'h-4 w-4 mr-2',
-                    (confirmOrderMutation.isPending || updateOrderStatusMutation.isPending) && 'animate-spin'
+                    (confirmOrderMutation.isPending ||
+                      updateOrderStatusMutation.isPending) &&
+                      'animate-spin'
                   )}
                 />
                 Làm mới
@@ -462,8 +488,12 @@ export default function SellerOrdersPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Chờ xác nhận</p>
-                      <p className="text-xl md:text-2xl font-bold text-amber-700">{pendingCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Chờ xác nhận
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-amber-700">
+                        {pendingCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-amber-100 flex items-center justify-center">
                       <Clock className="h-5 w-5 md:h-6 md:w-6 text-amber-600" />
@@ -476,8 +506,12 @@ export default function SellerOrdersPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Đã xác nhận</p>
-                      <p className="text-xl md:text-2xl font-bold text-blue-700">{confirmedCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Đã xác nhận
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-blue-700">
+                        {confirmedCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-100 flex items-center justify-center">
                       <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
@@ -490,8 +524,12 @@ export default function SellerOrdersPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Đang chuẩn bị</p>
-                      <p className="text-xl md:text-2xl font-bold text-purple-700">{preparingCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Đang chuẩn bị
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-purple-700">
+                        {preparingCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-purple-100 flex items-center justify-center">
                       <Package className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
@@ -504,8 +542,12 @@ export default function SellerOrdersPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Sẵn sàng</p>
-                      <p className="text-xl md:text-2xl font-bold text-cyan-700">{readyCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Sẵn sàng
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-cyan-700">
+                        {readyCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-cyan-100 flex items-center justify-center">
                       <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-cyan-600" />
@@ -518,8 +560,12 @@ export default function SellerOrdersPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Hoàn thành</p>
-                      <p className="text-xl md:text-2xl font-bold text-green-700">{completedCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Hoàn thành
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-green-700">
+                        {completedCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-green-100 flex items-center justify-center">
                       <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
@@ -532,8 +578,12 @@ export default function SellerOrdersPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Đã huỷ</p>
-                      <p className="text-xl md:text-2xl font-bold text-red-700">{cancelledCount}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                        Đã huỷ
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold text-red-700">
+                        {cancelledCount}
+                      </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-red-100 flex items-center justify-center">
                       <XCircle className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
@@ -545,9 +595,16 @@ export default function SellerOrdersPage() {
           </div>
 
           {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="space-y-6"
+          >
             <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 h-auto p-1 bg-muted/50">
-              <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              <TabsTrigger
+                value="all"
+                className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
                 Tất cả
                 {orders.length > 0 && (
                   <Badge className="ml-2 bg-primary text-white text-xs px-1.5 py-0.5 rounded-full">
@@ -555,7 +612,10 @@ export default function SellerOrdersPage() {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="pending" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              <TabsTrigger
+                value="pending"
+                className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
                 Chờ xác nhận
                 {pendingCount > 0 && (
                   <Badge className="ml-2 bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full">
@@ -563,34 +623,63 @@ export default function SellerOrdersPage() {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="confirmed" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              <TabsTrigger
+                value="confirmed"
+                className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
                 Đã xác nhận
               </TabsTrigger>
-              <TabsTrigger value="preparing" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              <TabsTrigger
+                value="preparing"
+                className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
                 Đang chuẩn bị
               </TabsTrigger>
-              <TabsTrigger value="ready" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              <TabsTrigger
+                value="ready"
+                className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
                 Sẵn sàng
               </TabsTrigger>
-              <TabsTrigger value="completed" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              <TabsTrigger
+                value="completed"
+                className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
                 Hoàn thành
               </TabsTrigger>
-              <TabsTrigger value="cancelled" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              <TabsTrigger
+                value="cancelled"
+                className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
                 Đã hủy
               </TabsTrigger>
             </TabsList>
 
-            {['all', 'pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'].map(status => {
+            {[
+              'all',
+              'pending',
+              'confirmed',
+              'preparing',
+              'ready',
+              'completed',
+              'cancelled',
+            ].map(status => {
               const statusOrders = getOrdersByStatus(status)
               return (
-                <TabsContent key={status} value={status} className="space-y-4 mt-6">
+                <TabsContent
+                  key={status}
+                  value={status}
+                  className="space-y-4 mt-6"
+                >
                   {statusOrders.length === 0 ? (
                     <Card className="border-2 border-dashed">
                       <CardContent className="flex flex-col items-center justify-center py-16">
                         <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
                           <ShoppingBag className="h-10 w-10 text-muted-foreground" />
                         </div>
-                        <h3 className="text-lg font-semibold mb-2">Chưa có đơn hàng</h3>
+                        <h3 className="text-lg font-semibold mb-2">
+                          Chưa có đơn hàng
+                        </h3>
                         <p className="text-muted-foreground text-center max-w-md">
                           {status === 'all'
                             ? 'Các đơn hàng từ khách hàng sẽ hiển thị ở đây'
@@ -606,11 +695,16 @@ export default function SellerOrdersPage() {
 
                   {/* Load More Sentinel */}
                   {statusOrders.length > 0 && (
-                    <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
+                    <div
+                      ref={loadMoreRef}
+                      className="h-20 flex items-center justify-center"
+                    >
                       {isFetchingNextPage && (
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <LoadingSpinner size="sm" />
-                          <span className="text-sm">Đang tải thêm đơn hàng...</span>
+                          <span className="text-sm">
+                            Đang tải thêm đơn hàng...
+                          </span>
                         </div>
                       )}
                       {!hasNextPage && orders.length > 0 && (
@@ -634,12 +728,15 @@ export default function SellerOrdersPage() {
           <DialogHeader>
             <DialogTitle className="text-xl">Xác nhận đơn hàng</DialogTitle>
             <DialogDescription>
-              Bạn có chắc chắn muốn xác nhận đơn hàng <strong>#{selectedOrderId}</strong>?
+              Bạn có chắc chắn muốn xác nhận đơn hàng{' '}
+              <strong>#{selectedOrderId}</strong>?
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Ghi chú (tùy chọn)</label>
+              <label className="text-sm font-medium mb-2 block">
+                Ghi chú (tùy chọn)
+              </label>
               <Textarea
                 placeholder="Nhập ghi chú cho đơn hàng..."
                 value={sellerNotes}
@@ -677,12 +774,15 @@ export default function SellerOrdersPage() {
           <DialogHeader>
             <DialogTitle className="text-xl">Hủy đơn hàng</DialogTitle>
             <DialogDescription>
-              Bạn có chắc chắn muốn hủy đơn hàng <strong>#{selectedOrderId}</strong>?
+              Bạn có chắc chắn muốn hủy đơn hàng{' '}
+              <strong>#{selectedOrderId}</strong>?
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Lý do hủy (tùy chọn)</label>
+              <label className="text-sm font-medium mb-2 block">
+                Lý do hủy (tùy chọn)
+              </label>
               <Textarea
                 placeholder="Nhập lý do hủy đơn hàng..."
                 value={cancelReason}
@@ -708,7 +808,9 @@ export default function SellerOrdersPage() {
               onClick={handleCancelOrder}
               disabled={updateOrderStatusMutation.isPending}
             >
-              {updateOrderStatusMutation.isPending ? 'Đang xử lý...' : 'Hủy đơn'}
+              {updateOrderStatusMutation.isPending
+                ? 'Đang xử lý...'
+                : 'Hủy đơn'}
             </Button>
           </DialogFooter>
         </DialogContent>

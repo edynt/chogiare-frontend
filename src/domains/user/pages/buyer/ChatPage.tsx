@@ -12,9 +12,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@shared/components/ui/dropdown-menu'
-import { MessageCircle, Search, Zap, Shield, Clock, Loader2, MoreVertical, CheckCheck } from 'lucide-react'
+import {
+  MessageCircle,
+  Search,
+  Zap,
+  Shield,
+  Clock,
+  Loader2,
+  MoreVertical,
+  CheckCheck,
+} from 'lucide-react'
 import { Input } from '@shared/components/ui/input'
-import { useConversations, useCreateConversation, useMarkAllConversationsAsRead } from '@/hooks/useChat'
+import {
+  useConversations,
+  useCreateConversation,
+  useMarkAllConversationsAsRead,
+} from '@/hooks/useChat'
 import { useAuthStore } from '@/stores/authStore'
 import { toast } from 'sonner'
 
@@ -26,7 +39,9 @@ export default function ChatPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreatingConversation, setIsCreatingConversation] = useState(false)
   // Local state for active chatId (allows immediate update without URL change)
-  const [activeChatId, setActiveChatId] = useState<string | undefined>(urlChatId)
+  const [activeChatId, setActiveChatId] = useState<string | undefined>(
+    urlChatId
+  )
 
   // Get sellerId from URL query params
   const sellerId = searchParams.get('sellerId')
@@ -59,7 +74,10 @@ export default function ChatPage() {
     // User must be logged in to chat - check first before loading
     if (!user?.id) {
       // Redirect to login with return URL
-      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`, { replace: true })
+      navigate(
+        `/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`,
+        { replace: true }
+      )
       return
     }
 
@@ -82,7 +100,8 @@ export default function ChatPage() {
     }
 
     // Don't create conversation with yourself (compare as numbers)
-    const currentUserId = typeof user.id === 'string' ? parseInt(user.id) : user.id
+    const currentUserId =
+      typeof user.id === 'string' ? parseInt(user.id) : user.id
     if (sellerIdNum === currentUserId) {
       navigate('/chat', { replace: true })
       return
@@ -126,7 +145,7 @@ export default function ChatPage() {
               window.history.replaceState(null, '', `/chat/${chatId}`)
             }
           },
-          onError: (error) => {
+          onError: error => {
             console.error('Failed to create conversation:', error)
             // Clear sellerId from URL to prevent infinite retry
             window.history.replaceState(null, '', '/chat')
@@ -138,7 +157,7 @@ export default function ChatPage() {
         }
       )
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     sellerId,
     activeChatId,
@@ -152,7 +171,9 @@ export default function ChatPage() {
   // Show loading only when:
   // - We have sellerId AND no active chat AND (loading conversations OR creating conversation)
   // - AND we haven't processed this sellerId yet
-  const isInitializing = sellerId && !activeChatId &&
+  const isInitializing =
+    sellerId &&
+    !activeChatId &&
     (conversationsLoading || isCreatingConversation) &&
     processedSellerIdRef.current !== sellerId
 
@@ -168,9 +189,8 @@ export default function ChatPage() {
   }
 
   // Check if there are any unread messages
-  const hasUnreadMessages = conversationsData?.items?.some(
-    conv => (conv.unreadCount || 0) > 0
-  ) || false
+  const hasUnreadMessages =
+    conversationsData?.items?.some(conv => (conv.unreadCount || 0) > 0) || false
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -221,17 +241,25 @@ export default function ChatPage() {
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="flex-shrink-0"
+                        >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           onClick={handleMarkAllAsRead}
-                          disabled={markAllAsRead.isPending || !hasUnreadMessages}
+                          disabled={
+                            markAllAsRead.isPending || !hasUnreadMessages
+                          }
                         >
                           <CheckCheck className="h-4 w-4 mr-2" />
-                          {markAllAsRead.isPending ? 'Đang xử lý...' : 'Đánh dấu tất cả đã đọc'}
+                          {markAllAsRead.isPending
+                            ? 'Đang xử lý...'
+                            : 'Đánh dấu tất cả đã đọc'}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -239,7 +267,10 @@ export default function ChatPage() {
                 </div>
 
                 <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
-                  <ChatList searchQuery={searchQuery} selectedChatId={activeChatId} />
+                  <ChatList
+                    searchQuery={searchQuery}
+                    selectedChatId={activeChatId}
+                  />
                 </div>
               </CardContent>
             </Card>

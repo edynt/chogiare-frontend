@@ -4,7 +4,6 @@ import axios, {
   type AxiosResponse,
   type AxiosError,
 } from 'axios'
-import type { AuthTokens } from '@/types'
 
 // Error messages mapping for user-friendly display
 const ERROR_MESSAGES: Record<string, string> = {

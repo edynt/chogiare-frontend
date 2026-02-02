@@ -97,7 +97,8 @@ export default function CustomerOrdersPage() {
   const updateOrderStatusMutation = useUpdateOrderStatus()
 
   // Flatten all pages into a single array
-  const orders = ordersData?.pages.flatMap(page => page.items || []).filter(Boolean) || []
+  const orders =
+    ordersData?.pages.flatMap(page => page.items || []).filter(Boolean) || []
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   const formatPrice = (price: number) => {

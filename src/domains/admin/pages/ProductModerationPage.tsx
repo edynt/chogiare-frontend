@@ -29,10 +29,8 @@ import {
   Eye,
   CheckCircle,
   XCircle,
-  Clock,
   User,
   Shield,
-  Bot,
   Flag,
   Loader2,
 } from 'lucide-react'

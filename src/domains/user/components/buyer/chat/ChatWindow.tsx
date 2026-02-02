@@ -90,7 +90,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
     leaveConversation,
     markAsRead,
   } = useChatSocket({
-    onNewMessage: (payload) => {
+    onNewMessage: payload => {
       // Real-time message updates are handled automatically by React Query invalidation
       // in useChatSocket, no additional action needed here
     },
@@ -213,7 +213,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
         toast.success('Đã xóa cuộc trò chuyện')
         navigate('/chat')
       },
-      onError: (error) => {
+      onError: error => {
         toast.error(getApiErrorMessage(error, 'Không thể xóa cuộc trò chuyện'))
       },
     })
@@ -222,13 +222,13 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
 
   // Get other user - prefer otherUser field, fallback to participants
   const otherUser = conversation?.otherUser
-  const otherParticipant = otherUser || conversation?.participants.find(
-    p => String(p.userId) !== String(user?.id)
-  )
+  const otherParticipant =
+    otherUser ||
+    conversation?.participants.find(p => String(p.userId) !== String(user?.id))
 
   // Display seller's full name
   const participantName =
-    (otherUser?.fullName) ||
+    otherUser?.fullName ||
     conversation?.title ||
     (otherParticipant ? `User ${otherParticipant.userId}` : 'Người dùng')
 
@@ -293,7 +293,8 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Xóa cuộc trò chuyện?</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa cuộc trò chuyện này? Tất cả tin nhắn sẽ bị xóa vĩnh viễn và không thể khôi phục.
+              Bạn có chắc chắn muốn xóa cuộc trò chuyện này? Tất cả tin nhắn sẽ
+              bị xóa vĩnh viễn và không thể khôi phục.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

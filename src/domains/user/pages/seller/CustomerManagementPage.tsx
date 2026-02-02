@@ -203,7 +203,9 @@ export default function CustomerManagementPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Tổng doanh thu</p>
+                  <p className="text-sm text-muted-foreground">
+                    Tổng doanh thu
+                  </p>
                   <p className="text-2xl font-bold">
                     {isLoadingStats ? (
                       <Loader2 className="h-6 w-6 animate-spin" />
@@ -400,7 +402,9 @@ export default function CustomerManagementPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                        onClick={() =>
+                          setPage(p => Math.min(totalPages, p + 1))
+                        }
                         disabled={page === totalPages}
                       >
                         <ChevronRight className="h-4 w-4" />

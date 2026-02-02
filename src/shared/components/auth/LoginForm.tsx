@@ -14,7 +14,6 @@ import { PasswordInput } from '@shared/components/ui/password-input'
 import { useLogin } from '@/hooks/useAuth'
 import { useLoading } from '@/hooks/useLoading'
 import { Loader2, AlertCircle } from 'lucide-react'
-import { apiClient } from '@shared/api/axios'
 import { loginSchema, type LoginFormData } from '@/lib/schemas'
 
 export function LoginForm({ isAdmin = false }: { isAdmin?: boolean }) {

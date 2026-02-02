@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { sellerApi } from '@user/api/seller'
-import type { Product, Order } from '@/types'
+import type { Product } from '@/types'
 import type { CreateProductFormDataInput } from '@shared/utils/form-data'
 
 // Dashboard Stats Hook
@@ -109,13 +109,8 @@ export const useUpdateStock = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({
-      productId,
-      stock,
-    }: {
-      productId: string
-      stock: number
-    }) => sellerApi.updateStock(productId, stock),
+    mutationFn: ({ productId, stock }: { productId: string; stock: number }) =>
+      sellerApi.updateStock(productId, stock),
     onSuccess: (_, { productId }) => {
       queryClient.invalidateQueries({ queryKey: ['seller', 'products'] })
       queryClient.invalidateQueries({

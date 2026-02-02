@@ -1,5 +1,9 @@
 import { useEffect, useRef, useCallback, useState } from 'react'
-import { useConversationMessages, useConversation, useSendMessage } from '@/hooks/useChat'
+import {
+  useConversationMessages,
+  useConversation,
+  useSendMessage,
+} from '@/hooks/useChat'
 import { useChatSocket, type ChatMessagePayload } from '@/hooks/useChatSocket'
 import { useChatStore } from '@/stores/chatStore'
 import { useAuthStore } from '@/stores/authStore'
@@ -16,7 +20,13 @@ interface ChatMessageAreaProps {
 
 export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
   const { user } = useAuthStore()
-  const { typingUsers, onlineUsers, setUserTyping, pendingMessage, setPendingMessage } = useChatStore()
+  const {
+    typingUsers,
+    onlineUsers,
+    setUserTyping,
+    pendingMessage,
+    setPendingMessage,
+  } = useChatStore()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
@@ -54,7 +64,11 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
 
   // Stable callback for typing
   const handleTypingCallback = useCallback(
-    (payload: { conversationId: number; userId: number; isTyping: boolean }) => {
+    (payload: {
+      conversationId: number
+      userId: number
+      isTyping: boolean
+    }) => {
       if (payload.conversationId.toString() === conversationId) {
         setUserTyping(conversationId, payload.userId, payload.isTyping)
       }
@@ -63,11 +77,17 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
   )
 
   // Socket connection with realtime message handler
-  const { isConnected, sendMessage: sendSocketMessage, joinConversation, leaveConversation, markAsRead, sendTyping } =
-    useChatSocket({
-      onNewMessage: handleNewMessageCallback,
-      onUserTyping: handleTypingCallback,
-    })
+  const {
+    isConnected,
+    sendMessage: sendSocketMessage,
+    joinConversation,
+    leaveConversation,
+    markAsRead,
+    sendTyping,
+  } = useChatSocket({
+    onNewMessage: handleNewMessageCallback,
+    onUserTyping: handleTypingCallback,
+  })
 
   // REST API fallback for sending messages
   const sendMessageMutation = useSendMessage()
@@ -160,9 +180,14 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
         })
       }
       // Remove optimistic message after success (real message will come via socket or query refresh)
-      setRealtimeMessages(prev => prev.filter(m => m.id !== optimisticMessage.id))
+      setRealtimeMessages(prev =>
+        prev.filter(m => m.id !== optimisticMessage.id)
+      )
     } catch (error) {
-      console.error('Failed to send message via socket, trying REST API:', error)
+      console.error(
+        'Failed to send message via socket, trying REST API:',
+        error
+      )
       // If socket fails, try REST API as backup
       try {
         await sendMessageMutation.mutateAsync({
@@ -170,11 +195,15 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
           data: { content, messageType: 'text' },
         })
         // Remove optimistic message after success
-        setRealtimeMessages(prev => prev.filter(m => m.id !== optimisticMessage.id))
+        setRealtimeMessages(prev =>
+          prev.filter(m => m.id !== optimisticMessage.id)
+        )
       } catch (apiError) {
         console.error('Failed to send message:', apiError)
         // Remove optimistic message on error
-        setRealtimeMessages(prev => prev.filter(m => m.id !== optimisticMessage.id))
+        setRealtimeMessages(prev =>
+          prev.filter(m => m.id !== optimisticMessage.id)
+        )
         toast.error('Không thể gửi tin nhắn. Vui lòng thử lại.')
       }
     }
@@ -192,7 +221,9 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
   // Sort all messages by createdAt ascending (oldest first, newest last at bottom)
   const apiMessages = [...(messagesData?.items || [])]
   const apiMessageIds = new Set(apiMessages.map(m => String(m.id)))
-  const newRealtimeMessages = realtimeMessages.filter(m => !apiMessageIds.has(String(m.id)))
+  const newRealtimeMessages = realtimeMessages.filter(
+    m => !apiMessageIds.has(String(m.id))
+  )
   const allMessages = [...apiMessages, ...newRealtimeMessages]
 
   // Sort by createdAt ascending - oldest at top, newest at bottom
@@ -206,9 +237,17 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
     <div className="flex h-full flex-col">
       {/* Header */}
       <ChatHeader
-        title={('fullName' in (otherUser || {}) ? (otherUser as { fullName?: string | null })?.fullName : null) || 'Cuộc hội thoại'}
+        title={
+          ('fullName' in (otherUser || {})
+            ? (otherUser as { fullName?: string | null })?.fullName
+            : null) || 'Cuộc hội thoại'
+        }
         subtitle={isOtherUserOnline ? 'Đang hoạt động' : 'Không hoạt động'}
-        avatarUrl={('avatarUrl' in (otherUser || {}) ? (otherUser as { avatarUrl?: string | null })?.avatarUrl : null) || undefined}
+        avatarUrl={
+          ('avatarUrl' in (otherUser || {})
+            ? (otherUser as { avatarUrl?: string | null })?.avatarUrl
+            : null) || undefined
+        }
         isOnline={isOtherUserOnline}
         showBackButton
         conversationId={conversationId}
@@ -236,7 +275,8 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
               const prevMessage = index > 0 ? messages[index - 1] : null
               const showAvatar =
                 !isOwn &&
-                (!prevMessage || String(prevMessage.senderId) !== String(message.senderId))
+                (!prevMessage ||
+                  String(prevMessage.senderId) !== String(message.senderId))
 
               return (
                 <ChatMessageItem

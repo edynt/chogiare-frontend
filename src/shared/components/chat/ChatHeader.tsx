@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import { ArrowLeft, X, MoreVertical, Trash2 } from 'lucide-react'
 import { useChatStore } from '@/stores/chatStore'
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/components/ui/avatar'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@shared/components/ui/avatar'
 import { Button } from '@shared/components/ui/button'
 import {
   DropdownMenu,
@@ -62,7 +66,7 @@ export function ChatHeader({
         toast.success('Đã xóa cuộc trò chuyện')
         closeChat()
       },
-      onError: (error) => {
+      onError: error => {
         toast.error(getApiErrorMessage(error, 'Không thể xóa cuộc trò chuyện'))
       },
     })
@@ -147,7 +151,8 @@ export function ChatHeader({
           <AlertDialogHeader>
             <AlertDialogTitle>Xóa cuộc trò chuyện?</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa cuộc trò chuyện này? Tất cả tin nhắn sẽ bị xóa vĩnh viễn và không thể khôi phục.
+              Bạn có chắc chắn muốn xóa cuộc trò chuyện này? Tất cả tin nhắn sẽ
+              bị xóa vĩnh viễn và không thể khôi phục.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -200,7 +200,11 @@ export const chatApi = {
     data: CreateChatMessageRequest
   ): Promise<ChatMessage> => {
     // Validate conversationId before making API call
-    if (!conversationId || conversationId === 'undefined' || conversationId.trim() === '') {
+    if (
+      !conversationId ||
+      conversationId === 'undefined' ||
+      conversationId.trim() === ''
+    ) {
       throw new Error('Vui lòng chọn cuộc trò chuyện trước khi gửi tin nhắn')
     }
     const response = await apiClient.post<ApiResponse<ChatMessage>>(

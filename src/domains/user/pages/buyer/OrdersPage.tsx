@@ -128,7 +128,8 @@ export default function OrdersPage() {
   const updateOrderStatusMutation = useUpdateOrderStatus()
 
   // Flatten all pages into a single array, filter out undefined values
-  const orders = ordersData?.pages.flatMap(page => page.items || []).filter(Boolean) || []
+  const orders =
+    ordersData?.pages.flatMap(page => page.items || []).filter(Boolean) || []
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   const formatPrice = (price: number) => {

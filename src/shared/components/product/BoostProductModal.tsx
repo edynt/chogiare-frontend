@@ -80,7 +80,9 @@ export function BoostProductModal({
       onClose()
     } catch (error: unknown) {
       const message =
-        error instanceof Error ? error.message : 'Có lỗi xảy ra khi đẩy sản phẩm'
+        error instanceof Error
+          ? error.message
+          : 'Có lỗi xảy ra khi đẩy sản phẩm'
       toast.error(message)
     }
   }
@@ -137,7 +139,7 @@ export function BoostProductModal({
             <div className="space-y-3">
               <h4 className="font-medium">Chọn gói đẩy sản phẩm</h4>
 
-              {(Array.isArray(packages) ? packages : []).map((pkg) => {
+              {(Array.isArray(packages) ? packages : []).map(pkg => {
                 const isSelected = selectedPackage?.id === pkg.id
                 const canAfford = currentBalance >= pkg.price
 
@@ -156,7 +158,9 @@ export function BoostProductModal({
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold">{pkg.displayName}</span>
+                          <span className="font-semibold">
+                            {pkg.displayName}
+                          </span>
                           {isSelected && (
                             <CheckCircle className="h-4 w-4 text-orange-500" />
                           )}
@@ -199,11 +203,14 @@ export function BoostProductModal({
                 )
               })}
 
-              {(!packages || !Array.isArray(packages) || packages.length === 0) && (
+              {(!packages ||
+                !Array.isArray(packages) ||
+                packages.length === 0) && (
                 <Alert>
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    Chưa có gói đẩy sản phẩm nào. Vui lòng liên hệ quản trị viên.
+                    Chưa có gói đẩy sản phẩm nào. Vui lòng liên hệ quản trị
+                    viên.
                   </AlertDescription>
                 </Alert>
               )}
@@ -253,7 +260,8 @@ export function BoostProductModal({
               <>
                 <TrendingUp className="mr-2 h-4 w-4" />
                 Đẩy sản phẩm
-                {selectedPackage && ` - ${formatCurrency(selectedPackage.price)}`}
+                {selectedPackage &&
+                  ` - ${formatCurrency(selectedPackage.price)}`}
               </>
             )}
           </Button>

@@ -27,7 +27,11 @@ export function ChatMessageInput({
 
   // Set initial message when provided
   useEffect(() => {
-    if (initialMessage && typeof initialMessage === 'string' && !initialMessageUsedRef.current) {
+    if (
+      initialMessage &&
+      typeof initialMessage === 'string' &&
+      !initialMessageUsedRef.current
+    ) {
       setMessage(initialMessage)
       initialMessageUsedRef.current = true
       onInitialMessageUsed?.()

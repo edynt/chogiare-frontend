@@ -18,26 +18,20 @@ import { Skeleton } from '@shared/components/ui/skeleton'
 import {
   ShoppingBag,
   Store,
-  TrendingUp,
   ArrowRight,
   Layers,
   Flame,
-  MapPin,
   Sparkles,
   Trophy,
   Package,
-  Video,
-  Shield,
-  DollarSign,
-  Megaphone,
-  Factory,
 } from 'lucide-react'
 
 export default function HomePage() {
   const navigate = useNavigate()
-  const { data: allProductsData, isLoading: isLoadingProducts } = useBuyerProducts({
-    limit: 100,
-  })
+  const { data: allProductsData, isLoading: isLoadingProducts } =
+    useBuyerProducts({
+      limit: 100,
+    })
 
   const { data: categories } = useCategories()
 

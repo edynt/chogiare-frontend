@@ -74,7 +74,12 @@ export default function ProductListPage() {
     return parsedFilters
   }, [searchParams])
 
-  const { data: productsData, isLoading, error, refetch } = useBuyerProducts(filters)
+  const {
+    data: productsData,
+    isLoading,
+    error,
+    refetch,
+  } = useBuyerProducts(filters)
 
   // Update URL when filters change
   const updateURL = (newFilters: SearchFilters) => {

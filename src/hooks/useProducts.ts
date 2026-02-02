@@ -4,7 +4,7 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query'
-import { productsApi, getCategories, type BoostPackage } from '@user/api/products'
+import { productsApi, getCategories } from '@user/api/products'
 import { queryKeys } from '@/constants/queryKeys'
 import { sellerApi } from '@user/api/seller'
 import type { Product, SearchFilters } from '@/types'

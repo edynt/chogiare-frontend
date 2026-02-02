@@ -63,7 +63,6 @@ export const ROLE_NAMES = {
   USER: ROLES.USER.name,
 } as const
 
-
 export interface Category {
   id: string
   name: string
@@ -117,10 +116,7 @@ export interface Product {
 }
 
 export type ProductCondition = 'new' | 'like_new' | 'good' | 'fair' | 'poor'
-export type ProductStatus =
-  | 'draft'
-  | 'active'
-  | 'out_of_stock'
+export type ProductStatus = 'draft' | 'active' | 'out_of_stock'
 export type ProductBadge = 'NEW' | 'FEATURED' | 'PROMO' | 'HOT' | 'SALE'
 
 export interface CartItem {

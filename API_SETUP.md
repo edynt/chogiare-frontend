@@ -35,6 +35,7 @@ proxy: {
 ### 3. API Client Configuration
 
 API client (`src/api/axios.ts`) đã được cấu hình để:
+
 - Sử dụng `VITE_API_URL` từ environment variables
 - Fallback về `/api` nếu không có env variable
 - Tự động thêm Bearer token vào headers
@@ -97,4 +98,3 @@ Tất cả các API endpoints đã được tích hợp:
 1. Kiểm tra `auth_tokens` trong localStorage
 2. Kiểm tra response format từ `/api/auth/refresh`
 3. Xem console logs để debug
-

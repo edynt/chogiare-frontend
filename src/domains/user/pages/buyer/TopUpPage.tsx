@@ -174,7 +174,6 @@ export default function TopUpPage() {
         description: `Nạp tiền vào ví - ${formatPrice(amount)}`,
       })
 
-
       if (depositMethod === 'bank_transfer') {
         navigate(
           `/payment-qr?amount=${amount}&transactionId=${result.data.data.transaction.id}`

@@ -5,7 +5,6 @@ import type {
   PaginatedResponse,
   ApiResponse,
   Order,
-  User,
 } from '@/types'
 import { constructProductFormData } from '@shared/utils/form-data'
 import type { CreateProductFormDataInput } from '@shared/utils/form-data'
@@ -274,10 +273,9 @@ export const sellerApi = {
     pageSize?: number
     search?: string
   }): Promise<PaginatedResponse<SellerCustomer>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<SellerCustomer>>>(
-      '/seller/customers',
-      { params }
-    )
+    const response = await apiClient.get<
+      ApiResponse<PaginatedResponse<SellerCustomer>>
+    >('/seller/customers', { params })
     return response.data.data
   },
 
@@ -295,10 +293,9 @@ export const sellerApi = {
       pageSize?: number
     }
   ): Promise<PaginatedResponse<SellerCustomerOrder>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<SellerCustomerOrder>>>(
-      `/seller/customers/${customerId}/orders`,
-      { params }
-    )
+    const response = await apiClient.get<
+      ApiResponse<PaginatedResponse<SellerCustomerOrder>>
+    >(`/seller/customers/${customerId}/orders`, { params })
     return response.data.data
   },
 

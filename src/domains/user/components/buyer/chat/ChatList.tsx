@@ -49,9 +49,11 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
   const mapConversationToChat = (conversation: Conversation): Chat | null => {
     // Try to get other user from otherUser field first, then fallback to participants
     const otherUser = conversation.otherUser
-    const otherParticipant = otherUser || conversation.participants?.find(
-      p => String(p.userId) !== String(user?.id)
-    )
+    const otherParticipant =
+      otherUser ||
+      conversation.participants?.find(
+        p => String(p.userId) !== String(user?.id)
+      )
     if (!otherParticipant) return null
 
     const lastMessage = conversation.lastMessage
@@ -67,8 +69,13 @@ export function ChatList({ searchQuery, selectedChatId }: ChatListProps) {
       id: conversation.id.toString(),
       participant: {
         id: otherParticipant.userId.toString(),
-        name: ('fullName' in otherParticipant ? otherParticipant.fullName : null) || conversation.title || `User ${otherParticipant.userId}`,
-        avatar: ('avatarUrl' in otherParticipant ? otherParticipant.avatarUrl : '') || '',
+        name:
+          ('fullName' in otherParticipant ? otherParticipant.fullName : null) ||
+          conversation.title ||
+          `User ${otherParticipant.userId}`,
+        avatar:
+          ('avatarUrl' in otherParticipant ? otherParticipant.avatarUrl : '') ||
+          '',
         isOnline: false,
       },
       lastMessage: lastMessage

@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
-import { Input } from '@shared/components/ui/input'
 import { PasswordInput } from '@shared/components/ui/password-input'
 import { useResetPassword, useVerifyResetToken } from '@/hooks/useAuth'
 import { resetPasswordSchema, type ResetPasswordFormData } from '@/lib/schemas'

@@ -103,7 +103,9 @@ export default function CheckoutPage() {
     return groups
   }, [cartItems, isFromCart])
 
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
+    null
+  )
 
   // Auto-select address when addresses are loaded
   useEffect(() => {
@@ -183,7 +185,9 @@ export default function CheckoutPage() {
       // Navigate to order confirmation page
       if (order?.id && order?.orderNo) {
         toast.success('Đặt hàng thành công!')
-        navigate(`/order-confirmation?orderId=${order.id}&orderNo=${order.orderNo}`)
+        navigate(
+          `/order-confirmation?orderId=${order.id}&orderNo=${order.orderNo}`
+        )
       } else if (order?.id) {
         toast.success('Đặt hàng thành công!')
         navigate(`/order-confirmation?orderId=${order.id}`)

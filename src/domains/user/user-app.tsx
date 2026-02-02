@@ -1,7 +1,6 @@
 import React, { Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { UserAuthProvider } from '@user/components/auth/user-auth-provider'
-import { UserRouteGuard } from '@user/components/auth/user-route-guard'
 import UserAuthPage from '@user/pages/user-auth-page'
 import { ChatBubble } from '@shared/components/chat/ChatBubble'
 import { ChatPopup } from '@shared/components/chat/ChatPopup'

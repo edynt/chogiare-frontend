@@ -40,7 +40,10 @@ const STATUS_LABELS: Record<string, string> = {
   refunded: 'Hoàn tiền',
 }
 
-const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+const STATUS_VARIANTS: Record<
+  string,
+  'default' | 'secondary' | 'destructive' | 'outline'
+> = {
   pending: 'secondary',
   confirmed: 'default',
   ready_for_pickup: 'default',
@@ -174,7 +177,11 @@ export default function SellerCustomerOrdersPage() {
                               </span>
                             </TableCell>
                             <TableCell>
-                              <Badge variant={STATUS_VARIANTS[order.status] || 'secondary'}>
+                              <Badge
+                                variant={
+                                  STATUS_VARIANTS[order.status] || 'secondary'
+                                }
+                              >
                                 {STATUS_LABELS[order.status] || order.status}
                               </Badge>
                             </TableCell>
@@ -227,7 +234,9 @@ export default function SellerCustomerOrdersPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                        onClick={() =>
+                          setPage(p => Math.min(totalPages, p + 1))
+                        }
                         disabled={page === totalPages}
                       >
                         <ChevronRight className="h-4 w-4" />

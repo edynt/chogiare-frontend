@@ -202,7 +202,9 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
 
   // Check if current user is the product owner
   // Compare as strings to handle both string and number IDs from API
-  const isOwnProduct = user?.id != null && sellerIdForChat != null &&
+  const isOwnProduct =
+    user?.id != null &&
+    sellerIdForChat != null &&
     String(user.id) === sellerIdForChat
 
   const renderStars = (rating: number) => {
@@ -505,11 +507,13 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 </AlertTitle>
                 <AlertDescription className="text-amber-800 text-sm space-y-1">
                   <p className="font-medium">
-                    Vui lòng chỉ đặt hàng hoặc liên hệ khi bạn thực sự có nhu cầu
-                    mua sản phẩm.
+                    Vui lòng chỉ đặt hàng hoặc liên hệ khi bạn thực sự có nhu
+                    cầu mua sản phẩm.
                   </p>
                   <ul className="list-disc list-inside space-y-1 ml-2">
-                    <li>Không spam tin nhắn hoặc đặt hàng giả để tội người bán</li>
+                    <li>
+                      Không spam tin nhắn hoặc đặt hàng giả để tội người bán
+                    </li>
                     <li>Hãy tôn trọng thời gian và công sức của người bán</li>
                     <li>
                       Đặt hàng nghiêm túc giúp tạo môi trường mua bán lành mạnh
@@ -1417,7 +1421,9 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
       {/* Product Details Tabs - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Tabs defaultValue="description" className="w-full mt-6">
-          <TabsList className={`grid w-full ${isOwnProduct ? 'grid-cols-4' : 'grid-cols-6'}`}>
+          <TabsList
+            className={`grid w-full ${isOwnProduct ? 'grid-cols-4' : 'grid-cols-6'}`}
+          >
             <TabsTrigger value="description">Mô tả</TabsTrigger>
             <TabsTrigger value="reviews">
               Đánh giá ({product.reviewCount})
@@ -1710,7 +1716,9 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
             <TabsContent value="faq" className="mt-4">
               <Card>
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-lg">💬 Câu hỏi thường gặp</CardTitle>
+                  <CardTitle className="text-lg">
+                    💬 Câu hỏi thường gặp
+                  </CardTitle>
                   <p className="text-sm text-muted-foreground">
                     Chọn câu hỏi để chat với người bán
                   </p>
@@ -1730,7 +1738,9 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                         className="w-full justify-start text-left h-auto py-3"
                         onClick={() => {
                           // Open chat popup with question
-                          handleChatWithSeller(`Xin chào, tôi có câu hỏi về sản phẩm "${product.title}": ${question}`)
+                          handleChatWithSeller(
+                            `Xin chào, tôi có câu hỏi về sản phẩm "${product.title}": ${question}`
+                          )
                         }}
                       >
                         <MessageCircle className="h-4 w-4 mr-2" />
@@ -1788,7 +1798,9 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                     <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
                       <Truck className="h-5 w-5 text-gray-400 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-gray-500">Chính sách đổi trả</p>
+                        <p className="font-semibold text-gray-500">
+                          Chính sách đổi trả
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           Không có thông tin đổi trả
                         </p>
