@@ -51,7 +51,7 @@ const menuItems: MenuItem[] = [
     icon: ShoppingCart,
   },
   {
-    title: 'Gói dịch vụ',
+    title: 'Gói đẩy sản phẩm',
     href: '/admin/subscriptions',
     icon: Crown,
   },

@@ -97,7 +97,7 @@ const PackageFormDialog: React.FC<PackageFormDialogProps> = ({
       <DialogHeader>
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription>
-          Điền thông tin gói dịch vụ premium
+          Điền thông tin gói đẩy sản phẩm
         </DialogDescription>
       </DialogHeader>
       <div className="space-y-4 py-4">
@@ -220,7 +220,7 @@ const PackageFormDialog: React.FC<PackageFormDialogProps> = ({
             className="rounded border-gray-300"
           />
           <Label htmlFor="isActive" className="cursor-pointer">
-            Kích hoạt gói dịch vụ
+            Kích hoạt gói đẩy sản phẩm
           </Label>
         </div>
       </div>
@@ -398,10 +398,10 @@ export default function PackagesManagementPage() {
           id: formData.id,
           data: submitData,
         })
-        toast.success('Đã cập nhật gói dịch vụ thành công')
+        toast.success('Đã cập nhật gói đẩy sản phẩm thành công')
       } else {
         await createPackageMutation.mutateAsync(submitData)
-        toast.success('Đã tạo gói dịch vụ thành công')
+        toast.success('Đã tạo gói đẩy sản phẩm thành công')
       }
       handleCloseDialogs()
     } catch (error) {
@@ -409,8 +409,8 @@ export default function PackagesManagementPage() {
         getApiErrorMessage(
           error,
           formData.id
-            ? 'Không thể cập nhật gói dịch vụ'
-            : 'Không thể tạo gói dịch vụ'
+            ? 'Không thể cập nhật gói đẩy sản phẩm'
+            : 'Không thể tạo gói đẩy sản phẩm'
         )
       )
     }
@@ -419,9 +419,9 @@ export default function PackagesManagementPage() {
   const handleDelete = async (id: number) => {
     try {
       await deletePackageMutation.mutateAsync(id)
-      toast.success('Đã xóa gói dịch vụ thành công')
+      toast.success('Đã xóa gói đẩy sản phẩm thành công')
     } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Không thể xóa gói dịch vụ'))
+      toast.error(getApiErrorMessage(error, 'Không thể xóa gói đẩy sản phẩm'))
     }
   }
 
@@ -431,10 +431,10 @@ export default function PackagesManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Quản lý gói dịch vụ
+            Quản lý gói đẩy sản phẩm
           </h1>
           <p className="text-gray-600 mt-1">
-            Quản lý các gói premium membership cho người dùng
+            Quản lý các gói đẩy sản phẩm cho người bán
           </p>
         </div>
         <Button onClick={handleOpenCreateDialog}>
@@ -565,7 +565,7 @@ export default function PackagesManagementPage() {
       {/* Packages Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Danh sách gói dịch vụ ({totalPackages})</CardTitle>
+          <CardTitle>Danh sách gói đẩy sản phẩm ({totalPackages})</CardTitle>
         </CardHeader>
         <CardContent>
           {packagesError ? (
@@ -573,7 +573,7 @@ export default function PackagesManagementPage() {
               <div className="text-center">
                 <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
                 <p className="text-red-600">
-                  Không thể tải danh sách gói dịch vụ
+                  Không thể tải danh sách gói đẩy sản phẩm
                 </p>
               </div>
             </div>
@@ -584,8 +584,8 @@ export default function PackagesManagementPage() {
           ) : filteredPackages.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               {searchQuery
-                ? 'Không tìm thấy gói dịch vụ nào'
-                : 'Chưa có gói dịch vụ nào'}
+                ? 'Không tìm thấy gói đẩy sản phẩm nào'
+                : 'Chưa có gói đẩy sản phẩm nào'}
             </div>
           ) : (
             <>
@@ -690,12 +690,12 @@ export default function PackagesManagementPage() {
                               <AlertDialogContent>
                                 <AlertDialogHeader>
                                   <AlertDialogTitle>
-                                    Xác nhận xóa gói dịch vụ
+                                    Xác nhận xóa gói đẩy sản phẩm
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
                                     Bạn có chắc chắn muốn xóa gói "
                                     {pkg.displayName}"? Hành động này sẽ vô hiệu
-                                    hóa gói dịch vụ.
+                                    hóa gói đẩy sản phẩm.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
@@ -750,7 +750,7 @@ export default function PackagesManagementPage() {
       <PackageFormDialog
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
-        title="Tạo gói dịch vụ mới"
+        title="Tạo gói đẩy sản phẩm mới"
         formData={formData}
         setFormData={setFormData}
         handleCloseDialogs={handleCloseDialogs}
@@ -763,7 +763,7 @@ export default function PackagesManagementPage() {
       <PackageFormDialog
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
-        title="Chỉnh sửa gói dịch vụ"
+        title="Chỉnh sửa gói đẩy sản phẩm"
         formData={formData}
         setFormData={setFormData}
         handleCloseDialogs={handleCloseDialogs}
