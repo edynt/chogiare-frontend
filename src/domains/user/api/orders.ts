@@ -23,6 +23,7 @@ export interface Order {
   paymentStatus: string
   paymentMethod: string
   paymentImage?: string
+  paymentProofUrl?: string // New field from backend
   subtotal: number
   tax: number
   shipping: number
@@ -36,6 +37,8 @@ export interface Order {
   sellerLogo?: string
   buyerEmail?: string
   buyerName?: string
+  userEmail?: string // Alias for buyerEmail
+  userName?: string // Alias for buyerName
   items: OrderItem[]
   createdAt: string
   updatedAt: string
