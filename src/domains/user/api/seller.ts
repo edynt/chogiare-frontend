@@ -283,6 +283,7 @@ export const sellerApi = {
     startDate?: string
     endDate?: string
     period?: 'daily' | 'weekly' | 'monthly'
+    status?: string // Filter by order status (e.g., 'completed' for completed orders only)
   }): Promise<RevenueStats> => {
     const response = await apiClient.get<ApiResponse<RevenueStats>>(
       '/seller/revenue',

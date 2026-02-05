@@ -118,6 +118,30 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
     pageSize: 5,
   })
 
+  // Get seller ID - prefer sellerId, fallback to seller.id
+  // Computed early to determine hook enablement (must be before conditional returns)
+  const sellerIdForChat = (() => {
+    if (product?.sellerId != null && product.sellerId !== '') {
+      return String(product.sellerId)
+    }
+    if (product?.seller?.id != null) {
+      return String(product.seller.id)
+    }
+    return null
+  })()
+
+  // Check if current user is the product owner (computed early for hook enablement)
+  const isOwnProduct =
+    user?.id != null &&
+    sellerIdForChat != null &&
+    String(user.id) === sellerIdForChat
+
+  // Get boost status for owner's product - must be called unconditionally (before early returns)
+  const { data: boostStatus } = useBoostStatus(
+    productIdToUse || '',
+    isOwnProduct && !!product
+  )
+
   // Initialize selling price (1.5x wholesale price as suggestion)
   React.useEffect(() => {
     if (product && sellingPrice === 0) {
@@ -174,18 +198,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
       ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
       : 0
 
-  // Get seller ID - prefer sellerId, fallback to seller.id
-  const getSellerIdForChat = () => {
-    if (product.sellerId != null && product.sellerId !== '') {
-      return String(product.sellerId)
-    }
-    if (product.seller?.id != null) {
-      return String(product.seller.id)
-    }
-    return null
-  }
-  const sellerIdForChat = getSellerIdForChat()
-
   // Handle opening chat with seller
   const handleChatWithSeller = (message?: string) => {
     if (!isAuthenticated) {
@@ -199,19 +211,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
     }
     openChatWithSeller(Number(sellerIdForChat), message)
   }
-
-  // Check if current user is the product owner
-  // Compare as strings to handle both string and number IDs from API
-  const isOwnProduct =
-    user?.id != null &&
-    sellerIdForChat != null &&
-    String(user.id) === sellerIdForChat
-
-  // Get boost status for owner's product
-  const { data: boostStatus } = useBoostStatus(
-    productIdToUse || '',
-    isOwnProduct
-  )
 
   // Helper function to calculate remaining boost time
   const getRemainingBoostTime = (endAtString: string) => {

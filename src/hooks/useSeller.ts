@@ -194,6 +194,7 @@ export const useRevenueStats = (params?: {
   startDate?: string
   endDate?: string
   period?: 'daily' | 'weekly' | 'monthly'
+  status?: string // Filter by order status (e.g., 'completed')
 }) => {
   return useQuery({
     queryKey: ['seller', 'revenue', params],

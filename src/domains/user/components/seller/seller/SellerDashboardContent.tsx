@@ -14,7 +14,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@shared/components/ui/tabs'
-import { StockInModal } from '@user/components/seller/stock/StockInModal'
 import { useNotification } from '@shared/components/notification-provider'
 import { useSellerProducts } from '@/hooks/useProducts'
 import {
@@ -22,7 +21,7 @@ import {
   useConfirmOrder,
   useUpdateOrderStatus,
 } from '@/hooks/useOrders'
-import { useSellerDashboardStats, useLowStockProducts, useSellerBoostedProducts, useRemoveProductBoost } from '@/hooks/useSeller'
+import { useSellerDashboardStats, useSellerBoostedProducts, useRemoveProductBoost, useRevenueStats } from '@/hooks/useSeller'
 import { useAuth } from '@/hooks/useAuth'
 import {
   Dialog,
@@ -41,7 +40,6 @@ import {
   Users,
   Eye,
   ShoppingCart,
-  AlertTriangle,
   CheckCircle,
   BarChart3,
   Wallet,
@@ -59,21 +57,16 @@ import {
   Clock,
   Rocket,
   Trash2,
+  TrendingUp,
+  TrendingDown,
+  Target,
+  Percent,
 } from 'lucide-react'
 import { cn, getApiErrorMessage } from '@/lib/utils'
 import type { Order } from '@user/api/orders'
 import { BoostProductModal } from '@shared/components/product/BoostProductModal'
 import { SelectProductToBoostModal } from '@shared/components/product/SelectProductToBoostModal'
 
-interface StockInProduct {
-  id: string
-  name: string
-  sku: string
-  currentStock: number
-  minStock: number
-  maxStock: number
-  costPrice?: number
-}
 
 // Helper function to get total quantity from order items
 const getTotalQuantity = (order: Order) => {
@@ -140,24 +133,20 @@ const STATUS_CONFIG = {
 export function SellerDashboardContent() {
   const navigate = useNavigate()
   const { data: _products, isLoading: _isLoading } = useSellerProducts()
-  const { user } = useAuth()
+  const { user: _user } = useAuth()
   const {
     data: ordersData,
     isLoading: isLoadingOrders,
     refetch: refetchOrders,
   } = useSellerOrders({ page: 1, pageSize: 10 })
-  const { data: dashboardStats, isLoading: isLoadingStats } =
+  const { data: dashboardStats, isLoading: _isLoadingStats } =
     useSellerDashboardStats()
-  const { data: lowStockProductsData, isLoading: isLoadingLowStock } =
-    useLowStockProducts(20)
+  const { data: revenueStats, isLoading: isLoadingRevenue } =
+    useRevenueStats({ period: 'monthly', status: 'completed' })
   const { data: boostedProductsData, isLoading: isLoadingBoosted } =
     useSellerBoostedProducts()
-  const { notify } = useNotification()
+  const { notify: _notify } = useNotification()
   const [activeTab, setActiveTab] = useState('overview')
-  const [isStockInModalOpen, setIsStockInModalOpen] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<StockInProduct | null>(
-    null
-  )
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
@@ -173,34 +162,6 @@ export function SellerDashboardContent() {
   const confirmOrderMutation = useConfirmOrder()
   const updateOrderStatusMutation = useUpdateOrderStatus()
   const removeBoostMutation = useRemoveProductBoost()
-
-  const handleStockIn = async (data: {
-    quantity: number
-    costPrice: number
-    supplier: string
-    batchNumber?: string
-    expiryDate?: string
-    notes?: string
-    location: string
-    productId: string
-  }) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    notify({
-      type: 'success',
-      title: 'Nhập kho thành công',
-      message: `Đã nhập ${data.quantity} sản phẩm vào kho`,
-    })
-
-    setIsStockInModalOpen(false)
-    setSelectedProduct(null)
-  }
-
-  const handleOpenStockInModal = (product: StockInProduct) => {
-    setSelectedProduct(product)
-    setIsStockInModalOpen(true)
-  }
 
   const handleConfirm = (orderId: string) => {
     setSelectedOrderId(orderId)
@@ -345,18 +306,6 @@ export function SellerDashboardContent() {
     const isNotCompleted = order.status !== 'completed' && order.status !== 'cancelled'
     return isRecent && isNotCompleted
   })
-
-  const lowStockProducts: (StockInProduct & { status: string })[] = (
-    lowStockProductsData || []
-  ).map(product => ({
-    id: product.id,
-    name: product.name,
-    sku: product.sku,
-    currentStock: product.currentStock,
-    minStock: product.minStock,
-    maxStock: product.maxStock,
-    status: product.status,
-  }))
 
   // Get boosted products from product_boosts table via /seller/products/boosted API
   const boostedProducts = (boostedProductsData?.items || []).map(boost => ({
@@ -544,7 +493,10 @@ export function SellerDashboardContent() {
             <Sparkles className="h-4 w-4 mr-1" />
             Đang đẩy
           </TabsTrigger>
-          <TabsTrigger value="inventory">Tồn kho</TabsTrigger>
+          <TabsTrigger value="performance">
+            <TrendingUp className="h-4 w-4 mr-1" />
+            Hiệu suất
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -1151,63 +1103,255 @@ export function SellerDashboardContent() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="inventory" className="space-y-6">
+        <TabsContent value="performance" className="space-y-6">
+          {/* Performance Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-green-600 font-medium">Tổng doanh thu</p>
+                    <p className="text-2xl font-bold text-green-700">
+                      {formatPrice(revenueStats?.total || 0)}
+                    </p>
+                  </div>
+                  <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <DollarSign className="h-5 w-5 text-green-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-blue-600 font-medium">Giá trị đơn TB</p>
+                    <p className="text-2xl font-bold text-blue-700">
+                      {formatPrice(revenueStats?.averageOrderValue || 0)}
+                    </p>
+                  </div>
+                  <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <Target className="h-5 w-5 text-blue-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-purple-600 font-medium">Tổng đơn hàng</p>
+                    <p className="text-2xl font-bold text-purple-700">
+                      {dashboardStats?.totalOrders || 0}
+                    </p>
+                  </div>
+                  <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                    <ShoppingCart className="h-5 w-5 text-purple-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-amber-600 font-medium">Tỷ lệ hoàn thành</p>
+                    <p className="text-2xl font-bold text-amber-700">
+                      {dashboardStats?.totalOrders
+                        ? Math.round((dashboardStats.completedOrders / dashboardStats.totalOrders) * 100)
+                        : 0}%
+                    </p>
+                  </div>
+                  <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
+                    <Percent className="h-5 w-5 text-amber-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Monthly Revenue Chart */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                Cảnh báo tồn kho
+                <BarChart3 className="h-5 w-5 text-primary" />
+                Doanh thu theo tháng
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {lowStockProducts.map(product => (
-                  <div
-                    key={product.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
-                  >
-                    <div>
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Tồn kho: {product.currentStock} / Tối thiểu:{' '}
-                        {product.minStock}
-                      </p>
+              {isLoadingRevenue ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  <p className="mt-2 text-muted-foreground">Đang tải dữ liệu...</p>
+                </div>
+              ) : revenueStats?.monthly && revenueStats.monthly.length > 0 ? (
+                <div className="space-y-4">
+                  {revenueStats.monthly.slice(-6).map((item, index) => {
+                    const maxRevenue = Math.max(...revenueStats.monthly.map(m => m.revenue))
+                    const percentage = maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0
+                    const prevRevenue = revenueStats.monthly[revenueStats.monthly.indexOf(item) - 1]?.revenue || 0
+                    const change = prevRevenue > 0 ? ((item.revenue - prevRevenue) / prevRevenue) * 100 : 0
+                    const isPositive = change >= 0
+
+                    return (
+                      <div key={index} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">{item.month}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold">{formatPrice(item.revenue)}</span>
+                            {index > 0 && (
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  'text-xs',
+                                  isPositive
+                                    ? 'text-green-600 border-green-200 bg-green-50'
+                                    : 'text-red-600 border-red-200 bg-red-50'
+                                )}
+                              >
+                                {isPositive ? (
+                                  <TrendingUp className="h-3 w-3 mr-1" />
+                                ) : (
+                                  <TrendingDown className="h-3 w-3 mr-1" />
+                                )}
+                                {isPositive ? '+' : ''}{change.toFixed(1)}%
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-500"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>{item.orders} đơn hàng</span>
+                          <span>TB: {formatPrice(item.orders > 0 ? item.revenue / item.orders : 0)}/đơn</span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Chưa có dữ liệu doanh thu</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Bắt đầu bán hàng để xem thống kê hiệu suất!
+                  </p>
+                  <Button asChild>
+                    <Link to="/seller/products/add">Thêm sản phẩm</Link>
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Order Status Breakdown */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-primary" />
+                  Trạng thái đơn hàng
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-amber-600" />
+                      <span className="text-sm font-medium text-amber-700">Chờ xử lý</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Badge
-                        className={`${getStatusColor(product.status)} text-white`}
-                      >
-                        {getStatusLabel(product.status)}
-                      </Badge>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          const { status: _status, ...productData } = product
-                          handleOpenStockInModal(productData)
-                        }}
-                      >
-                        Nhập hàng
-                      </Button>
-                    </div>
+                    <Badge className="bg-amber-500 text-white">
+                      {dashboardStats?.pendingOrders || 0}
+                    </Badge>
                   </div>
-                ))}
+                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-700">Hoàn thành</span>
+                    </div>
+                    <Badge className="bg-green-500 text-white">
+                      {dashboardStats?.completedOrders || 0}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center gap-2">
+                      <Package className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-700">Tổng đơn</span>
+                    </div>
+                    <Badge className="bg-blue-500 text-white">
+                      {dashboardStats?.totalOrders || 0}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-primary" />
+                  Khách hàng
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-200">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-purple-600" />
+                      <span className="text-sm font-medium text-purple-700">Tổng khách hàng</span>
+                    </div>
+                    <Badge className="bg-purple-500 text-white">
+                      {dashboardStats?.totalCustomers || 0}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+                    <div className="flex items-center gap-2">
+                      <Package className="h-4 w-4 text-indigo-600" />
+                      <span className="text-sm font-medium text-indigo-700">Sản phẩm đang bán</span>
+                    </div>
+                    <Badge className="bg-indigo-500 text-white">
+                      {dashboardStats?.activeProducts || 0}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-teal-50 rounded-lg border border-teal-200">
+                    <div className="flex items-center gap-2">
+                      <ShoppingCart className="h-4 w-4 text-teal-600" />
+                      <span className="text-sm font-medium text-teal-700">Đã bán</span>
+                    </div>
+                    <Badge className="bg-teal-500 text-white">
+                      {dashboardStats?.soldProducts || 0}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quick Actions */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <p className="text-sm text-muted-foreground">
+                  Xem báo cáo chi tiết và phân tích doanh thu
+                </p>
+                <Button variant="outline" asChild>
+                  <Link to="/seller/revenue">
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Xem báo cáo đầy đủ
+                  </Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Stock In Modal */}
-      <StockInModal
-        isOpen={isStockInModalOpen}
-        onClose={() => {
-          setIsStockInModalOpen(false)
-          setSelectedProduct(null)
-        }}
-        product={selectedProduct}
-        onStockIn={handleStockIn}
-      />
 
       {/* Confirm Order Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
