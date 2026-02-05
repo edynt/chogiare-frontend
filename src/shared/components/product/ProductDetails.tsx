@@ -36,7 +36,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@shared/components/ui/alert'
-import { useProduct, useProductReviews, useProducts, useProfile } from '@/hooks'
+import { useProduct, useProductReviews, useProducts, useProfile, useBoostStatus } from '@/hooks'
 import { SimpleProductGrid } from '@shared/components/product/ProductGridWithPagination'
 import type { Review } from '@user/api/reviews'
 import { ErrorMessage } from '@shared/components/ui/error-boundary'
@@ -206,6 +206,50 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
     user?.id != null &&
     sellerIdForChat != null &&
     String(user.id) === sellerIdForChat
+
+  // Get boost status for owner's product
+  const { data: boostStatus } = useBoostStatus(
+    productIdToUse || '',
+    isOwnProduct
+  )
+
+  // Helper function to calculate remaining boost time
+  const getRemainingBoostTime = (endAtString: string) => {
+    const endTime = /^\d+$/.test(endAtString)
+      ? parseInt(endAtString, 10)
+      : new Date(endAtString).getTime()
+
+    const now = Date.now()
+    const diff = endTime - now
+
+    if (diff <= 0) {
+      return { text: 'Đã hết hạn', color: 'text-red-600', isExpired: true }
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+
+    if (days > 0) {
+      return {
+        text: `Còn ${days} ngày ${hours} giờ`,
+        color: days <= 1 ? 'text-orange-600' : 'text-green-600',
+        isExpired: false,
+      }
+    } else if (hours > 0) {
+      return {
+        text: `Còn ${hours} giờ ${minutes} phút`,
+        color: 'text-orange-600',
+        isExpired: false,
+      }
+    } else {
+      return {
+        text: `Còn ${minutes} phút`,
+        color: 'text-red-600',
+        isExpired: false,
+      }
+    }
+  }
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -598,15 +642,47 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           {isOwnProduct && (
             <div className="space-y-3 py-2">
               <Separator className="my-4" />
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  variant="outline"
-                  className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
-                  onClick={() => setShowBoostDialog(true)}
-                >
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Đẩy sản phẩm
-                </Button>
+
+              {/* Show remaining boost time if product is being boosted */}
+              {boostStatus?.isPromoted && boostStatus.boost?.endAt && (
+                <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg border-2 border-orange-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                      <TrendingUp className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground">
+                        Đang được đẩy
+                      </p>
+                      <p className={`text-lg font-bold ${getRemainingBoostTime(boostStatus.boost.endAt).color}`}>
+                        {getRemainingBoostTime(boostStatus.boost.endAt).text}
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                      onClick={() => setShowBoostDialog(true)}
+                    >
+                      <TrendingUp className="h-4 w-4 mr-1" />
+                      Đẩy thêm
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <div className={`grid gap-2 ${boostStatus?.isPromoted ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                {/* Show Boost button only when not being boosted */}
+                {!boostStatus?.isPromoted && (
+                  <Button
+                    variant="outline"
+                    className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                    onClick={() => setShowBoostDialog(true)}
+                  >
+                    <TrendingUp className="h-4 w-4 mr-2" />
+                    Đẩy sản phẩm
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   className="border-2 hover:bg-muted/50"

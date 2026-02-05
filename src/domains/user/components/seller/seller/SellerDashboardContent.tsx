@@ -22,8 +22,7 @@ import {
   useConfirmOrder,
   useUpdateOrderStatus,
 } from '@/hooks/useOrders'
-import { useSellerDashboardStats, useLowStockProducts } from '@/hooks/useSeller'
-import { usePromotedProducts } from '@/hooks/useStores'
+import { useSellerDashboardStats, useLowStockProducts, useSellerBoostedProducts, useRemoveProductBoost } from '@/hooks/useSeller'
 import { useAuth } from '@/hooks/useAuth'
 import {
   Dialog,
@@ -58,9 +57,13 @@ import {
   ShoppingBag,
   CreditCard,
   Clock,
+  Rocket,
+  Trash2,
 } from 'lucide-react'
 import { cn, getApiErrorMessage } from '@/lib/utils'
 import type { Order } from '@user/api/orders'
+import { BoostProductModal } from '@shared/components/product/BoostProductModal'
+import { SelectProductToBoostModal } from '@shared/components/product/SelectProductToBoostModal'
 
 interface StockInProduct {
   id: string
@@ -147,8 +150,8 @@ export function SellerDashboardContent() {
     useSellerDashboardStats()
   const { data: lowStockProductsData, isLoading: isLoadingLowStock } =
     useLowStockProducts(20)
-  const { data: promotedProductsData, isLoading: isLoadingPromoted } =
-    usePromotedProducts()
+  const { data: boostedProductsData, isLoading: isLoadingBoosted } =
+    useSellerBoostedProducts()
   const { notify } = useNotification()
   const [activeTab, setActiveTab] = useState('overview')
   const [isStockInModalOpen, setIsStockInModalOpen] = useState(false)
@@ -160,9 +163,16 @@ export function SellerDashboardContent() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [sellerNotes, setSellerNotes] = useState('')
   const [cancelReason, setCancelReason] = useState('')
+  const [isSelectProductModalOpen, setIsSelectProductModalOpen] = useState(false)
+  const [isBoostModalOpen, setIsBoostModalOpen] = useState(false)
+  const [selectedBoostProduct, setSelectedBoostProduct] = useState<{
+    id: string
+    title: string
+  } | null>(null)
 
   const confirmOrderMutation = useConfirmOrder()
   const updateOrderStatusMutation = useUpdateOrderStatus()
+  const removeBoostMutation = useRemoveProductBoost()
 
   const handleStockIn = async (data: {
     quantity: number
@@ -242,6 +252,33 @@ export function SellerDashboardContent() {
     }
   }
 
+  const handleSelectProductToBoost = (productId: string, productTitle: string) => {
+    setSelectedBoostProduct({ id: productId, title: productTitle })
+    setIsSelectProductModalOpen(false)
+    setIsBoostModalOpen(true)
+  }
+
+  const handleCloseBoostModal = () => {
+    setIsBoostModalOpen(false)
+    setSelectedBoostProduct(null)
+  }
+
+  // Handle boost again for a product
+  const handleBoostAgain = (productId: string, productTitle: string) => {
+    setSelectedBoostProduct({ id: productId, title: productTitle })
+    setIsBoostModalOpen(true)
+  }
+
+  // Handle remove boost from product
+  const handleRemoveBoost = async (productId: string) => {
+    try {
+      await removeBoostMutation.mutateAsync(productId)
+      toast.success('Đã xoá sản phẩm khỏi danh sách đẩy')
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Có lỗi xảy ra khi xoá boost'))
+    }
+  }
+
   const formatNumber = (num: number): string => {
     if (!num) {
       return null
@@ -297,7 +334,17 @@ export function SellerDashboardContent() {
       ]
     : []
 
-  const recentOrders = ordersData?.items || []
+  // Filter recent orders: within 7 days and not completed/cancelled
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
+  const recentOrders = (ordersData?.items || []).filter(order => {
+    // Handle both timestamp string and ISO date string
+    const orderDate = /^\d+$/.test(order.createdAt)
+      ? parseInt(order.createdAt, 10)
+      : new Date(order.createdAt).getTime()
+    const isRecent = orderDate >= sevenDaysAgo
+    const isNotCompleted = order.status !== 'completed' && order.status !== 'cancelled'
+    return isRecent && isNotCompleted
+  })
 
   const lowStockProducts: (StockInProduct & { status: string })[] = (
     lowStockProductsData || []
@@ -311,26 +358,27 @@ export function SellerDashboardContent() {
     status: product.status,
   }))
 
-  const promotedProducts = (promotedProductsData || []).map(product => ({
-    id: product.id,
-    name: product.name,
-    image: product.image,
-    price: product.price,
-    currentViews: product.currentViews,
-    totalViews: product.totalViews,
-    startDate: new Date(product.startDate),
-    endDate: product.endDate ? new Date(product.endDate) : null,
-    remainingViews: product.remainingViews,
-    packageId: product.packageId,
-    packageName: product.packageName,
-    packageType: product.packageType,
-    packagePrice: product.packagePrice,
+  // Get boosted products from product_boosts table via /seller/products/boosted API
+  const boostedProducts = (boostedProductsData?.items || []).map(boost => ({
+    id: boost.product?.id || boost.productId.toString(),
+    name: boost.product?.title || boost.product?.name || 'Sản phẩm',
+    image: boost.product?.images?.[0] || '',
+    price: boost.product?.price || 0,
+    viewCount: boost.product?.viewCount || 0,
+    packageName: boost.packageName,
+    endAt: boost.endAt,
+    isActive: boost.isActive,
   }))
 
-  // Calculate remaining time
-  const getRemainingTime = (endDate: Date) => {
-    const now = new Date()
-    const diff = endDate.getTime() - now.getTime()
+  // Calculate remaining time from endAt timestamp string
+  const getRemainingTime = (endAtString: string) => {
+    // Handle both numeric timestamp string and ISO date string
+    const endTime = /^\d+$/.test(endAtString)
+      ? parseInt(endAtString, 10)
+      : new Date(endAtString).getTime()
+
+    const now = Date.now()
+    const diff = endTime - now
 
     if (diff <= 0) {
       return { text: 'Đã hết hạn', color: 'text-red-600' }
@@ -363,7 +411,16 @@ export function SellerDashboardContent() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('vi-VN', {
+    // Handle both timestamp string (numeric) and ISO date string
+    const date = /^\d+$/.test(dateString)
+      ? new Date(parseInt(dateString, 10))
+      : new Date(dateString)
+
+    if (isNaN(date.getTime())) {
+      return 'N/A'
+    }
+
+    return date.toLocaleString('vi-VN', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -946,86 +1003,126 @@ export function SellerDashboardContent() {
         <TabsContent value="promoted" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-yellow-500" />
-                Sản phẩm đang được đẩy
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-yellow-500" />
+                  Sản phẩm đang được đẩy
+                </CardTitle>
+                <Button
+                  onClick={() => setIsSelectProductModalOpen(true)}
+                  className="bg-orange-500 hover:bg-orange-600"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Đẩy sản phẩm
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
-              {promotedProducts.length > 0 ? (
+              {isLoadingBoosted ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  <p className="mt-2 text-muted-foreground">
+                    Đang tải danh sách sản phẩm đang đẩy...
+                  </p>
+                </div>
+              ) : boostedProducts.length > 0 ? (
                 <div className="space-y-4">
-                  {promotedProducts.map(product => {
-                    const remainingTime = getRemainingTime(product.endDate)
-                    const viewProgress =
-                      (product.currentViews / product.totalViews) * 100
-
+                  {boostedProducts.map(product => {
+                    const remaining = product.endAt ? getRemainingTime(product.endAt) : null
+                    const isExpired = remaining?.text === 'Đã hết hạn'
                     return (
                       <div
                         key={product.id}
-                        className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
-                        onClick={() =>
-                          navigate(`/promoted-products/${product.id}`)
-                        }
+                        className={cn(
+                          "p-4 border rounded-lg hover:shadow-md transition-shadow",
+                          isExpired
+                            ? "border-red-200 bg-red-50/30 hover:bg-red-50"
+                            : "border-orange-200 bg-orange-50/30 hover:bg-orange-50"
+                        )}
                       >
                         <div className="flex items-start gap-4">
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
-                            onError={e => {
-                              ;(e.target as HTMLImageElement).src =
-                                'https://via.placeholder.com/80'
-                            }}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-lg mb-1">
-                              {product.name}
-                            </h3>
-                            <p className="text-sm font-medium text-primary mb-3">
+                          <div
+                            className="relative cursor-pointer"
+                            onClick={() => navigate(`/products/${product.id}`)}
+                          >
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                              onError={e => {
+                                ;(e.target as HTMLImageElement).src =
+                                  'https://via.placeholder.com/80'
+                              }}
+                            />
+                            <Badge className={cn(
+                              "absolute -top-2 -right-2 text-white text-xs px-1.5 py-0.5",
+                              isExpired ? "bg-red-500" : "bg-orange-500"
+                            )}>
+                              <Sparkles className="h-3 w-3" />
+                            </Badge>
+                          </div>
+                          <div
+                            className="flex-1 min-w-0 cursor-pointer"
+                            onClick={() => navigate(`/products/${product.id}`)}
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-lg truncate">
+                                {product.name}
+                              </h3>
+                              <Badge className={cn(
+                                "text-white text-xs flex-shrink-0",
+                                isExpired ? "bg-red-500" : "bg-orange-500"
+                              )}>
+                                {isExpired ? 'Hết hạn' : (product.packageName || 'Đang đẩy')}
+                              </Badge>
+                            </div>
+                            <p className="text-sm font-medium text-primary mb-2">
                               {formatPrice(product.price)}
                             </p>
 
-                            <div className="space-y-2">
-                              {/* Time remaining */}
-                              <div className="flex items-center gap-2">
-                                <Timer className="h-4 w-4 text-muted-foreground" />
-                                <span
-                                  className={`text-sm font-medium ${remainingTime.color}`}
-                                >
-                                  {remainingTime.text}
-                                </span>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <Eye className="h-4 w-4" />
+                                <span>{product.viewCount.toLocaleString()} lượt xem</span>
                               </div>
-
-                              {/* Views */}
-                              <div className="space-y-1">
-                                <div className="flex items-center justify-between text-sm">
-                                  <div className="flex items-center gap-2">
-                                    <Eye className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-muted-foreground">
-                                      Lượt xem:
-                                    </span>
-                                    <span className="font-semibold">
-                                      {product.currentViews.toLocaleString()}
-                                    </span>
-                                    <span className="text-muted-foreground">
-                                      / {product.totalViews.toLocaleString()}
-                                    </span>
-                                  </div>
-                                  <span className="text-muted-foreground">
-                                    Còn lại:{' '}
-                                    <span className="font-semibold text-primary">
-                                      {product.remainingViews.toLocaleString()}
-                                    </span>
-                                  </span>
+                              {remaining && (
+                                <div className={`flex items-center gap-1 ${remaining.color}`}>
+                                  <Timer className="h-4 w-4" />
+                                  <span>{remaining.text}</span>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div
-                                    className="bg-primary h-2 rounded-full transition-all"
-                                    style={{ width: `${viewProgress}%` }}
-                                  />
-                                </div>
-                              </div>
+                              )}
                             </div>
+                          </div>
+
+                          {/* Action buttons */}
+                          <div className="flex flex-col gap-2 flex-shrink-0">
+                            <Button
+                              size="sm"
+                              className="bg-orange-500 hover:bg-orange-600 text-white"
+                              onClick={e => {
+                                e.stopPropagation()
+                                handleBoostAgain(product.id, product.name)
+                              }}
+                              disabled={removeBoostMutation.isPending}
+                            >
+                              <Rocket className="h-4 w-4 mr-1" />
+                              Đẩy thêm
+                            </Button>
+                            {isExpired && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-red-500 text-red-600 hover:bg-red-50"
+                                onClick={e => {
+                                  e.stopPropagation()
+                                  handleRemoveBoost(product.id)
+                                }}
+                                disabled={removeBoostMutation.isPending}
+                              >
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                Xoá
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1041,8 +1138,12 @@ export function SellerDashboardContent() {
                   <p className="text-muted-foreground mb-6">
                     Hãy đẩy sản phẩm của bạn để tăng lượt xem và doanh số!
                   </p>
-                  <Button asChild>
-                    <Link to="/top-up">Nạp tiền để đẩy sản phẩm</Link>
+                  <Button
+                    onClick={() => setIsSelectProductModalOpen(true)}
+                    className="bg-orange-500 hover:bg-orange-600"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Đẩy sản phẩm ngay
                   </Button>
                 </div>
               )}
@@ -1199,6 +1300,23 @@ export function SellerDashboardContent() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Select Product to Boost Modal */}
+      <SelectProductToBoostModal
+        isOpen={isSelectProductModalOpen}
+        onClose={() => setIsSelectProductModalOpen(false)}
+        onSelectProduct={handleSelectProductToBoost}
+      />
+
+      {/* Boost Product Modal */}
+      {selectedBoostProduct && (
+        <BoostProductModal
+          isOpen={isBoostModalOpen}
+          onClose={handleCloseBoostModal}
+          productId={selectedBoostProduct.id}
+          productTitle={selectedBoostProduct.title}
+        />
+      )}
     </div>
   )
 }

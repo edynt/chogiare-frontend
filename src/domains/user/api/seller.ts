@@ -85,6 +85,20 @@ export interface SellerCustomerOrder {
   createdAt: string
 }
 
+// Boosted product from product_boosts table
+export interface BoostedProduct {
+  id: string
+  productId: number
+  product: Product
+  packageId: number
+  packageName: string
+  pricePaid: number
+  durationDays: number
+  startAt: string
+  endAt: string
+  isActive: boolean
+}
+
 export const sellerApi = {
   // Dashboard
   getDashboardStats: async (): Promise<SellerDashboardStats> => {
@@ -112,6 +126,18 @@ export const sellerApi = {
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<Product>>
     >('/seller/products', { params })
+    return response.data.data
+  },
+
+  // Get seller's boosted products from product_boosts table
+  getMyBoostedProducts: async (): Promise<PaginatedResponse<BoostedProduct>> => {
+    const response = await apiClient.get<
+      ApiResponse<PaginatedResponse<BoostedProduct>>
+    >('/seller/products/boosted', {
+      params: {
+        pageSize: 50, // Get all boosted products
+      },
+    })
     return response.data.data
   },
 
@@ -318,5 +344,13 @@ export const sellerApi = {
 
   markAllNotificationsAsRead: async (): Promise<void> => {
     await apiClient.patch('/seller/notifications/read-all')
+  },
+
+  // Remove boost from product
+  removeProductBoost: async (productId: string): Promise<{ removed: boolean }> => {
+    const response = await apiClient.delete<ApiResponse<{ removed: boolean }>>(
+      `/seller/products/${productId}/boost`
+    )
+    return response.data.data
   },
 }

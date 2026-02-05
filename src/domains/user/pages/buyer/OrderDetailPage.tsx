@@ -803,20 +803,20 @@ export default function OrderDetailPage() {
                         {isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
                       </Badge>
                     </div>
-                    {order.paymentImage && (
+                    {(order.paymentProofUrl || order.paymentImage) && (
                       <div>
                         <p className="text-xs text-muted-foreground mb-2">
                           Ảnh chứng minh thanh toán
                         </p>
                         <a
-                          href={order.paymentImage}
+                          href={order.paymentProofUrl || order.paymentImage}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="block group"
                         >
                           <div className="relative w-full max-w-[200px] aspect-[3/4] rounded-lg overflow-hidden border-2 border-muted hover:border-primary/50 transition-colors">
                             <img
-                              src={order.paymentImage}
+                              src={order.paymentProofUrl || order.paymentImage}
                               alt="Ảnh chứng minh thanh toán"
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                             />
@@ -975,7 +975,7 @@ export default function OrderDetailPage() {
                 </div>
               )}
 
-              {isSeller && order.status === 'ready_for_pickup' && (
+              {isSeller && order.status === 'ready' && (
                 <div className="space-y-3">
                   <Button
                     className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-12 shadow-md"

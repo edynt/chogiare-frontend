@@ -57,6 +57,7 @@ export function AdminOrders() {
         return <Badge variant="secondary">Đã xác nhận</Badge>
       case 'pending':
         return <Badge variant="warning">Chờ xử lý</Badge>
+      case 'ready':
       case 'ready_for_pickup':
         return <Badge variant="secondary">Sẵn sàng lấy hàng</Badge>
       case 'cancelled':
@@ -71,6 +72,7 @@ export function AdminOrders() {
       case 'completed':
         return <CheckCircle className="h-4 w-4 text-success" />
       case 'confirmed':
+      case 'ready':
       case 'ready_for_pickup':
         return <Truck className="h-4 w-4 text-info" />
       case 'pending':

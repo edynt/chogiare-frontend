@@ -27,10 +27,12 @@ import {
   AlertTriangle,
   Loader2,
   Sparkles,
+  Eye,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Link } from 'react-router-dom'
 import type { BoostPackage } from '@user/api/products'
+import { cn } from '@/lib/utils'
 
 interface BoostProductModalProps {
   isOpen: boolean
@@ -49,7 +51,7 @@ export function BoostProductModal({
     null
   )
 
-  const { data: packages, isLoading: packagesLoading } = useBoostPackages()
+  const { data: packages, isLoading: packagesLoading, error: packagesError } = useBoostPackages(isOpen)
   const { data: balance, isLoading: balanceLoading } = useWalletBalance()
   const { data: boostStatus, isLoading: statusLoading } = useBoostStatus(
     productId,
@@ -88,10 +90,11 @@ export function BoostProductModal({
   }
 
   const isLoading = packagesLoading || balanceLoading || statusLoading
+  const packageList = Array.isArray(packages) ? packages : []
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[850px] w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-orange-500" />
@@ -104,9 +107,13 @@ export function BoostProductModal({
 
         {isLoading ? (
           <div className="space-y-4 py-4">
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <div className="flex gap-2">
+              <Skeleton className="h-20 flex-1" />
+              <Skeleton className="h-20 flex-1" />
+              <Skeleton className="h-20 flex-1" />
+            </div>
+            <Skeleton className="h-24 w-full" />
           </div>
         ) : (
           <div className="space-y-4 py-4">
@@ -135,82 +142,129 @@ export function BoostProductModal({
 
             <Separator />
 
-            {/* Package Selection */}
+            {/* Package Selection - Horizontal Layout */}
             <div className="space-y-3">
               <h4 className="font-medium">Chọn gói đẩy sản phẩm</h4>
 
-              {(Array.isArray(packages) ? packages : []).map(pkg => {
-                const isSelected = selectedPackage?.id === pkg.id
-                const canAfford = currentBalance >= pkg.price
+              {packageList.length > 0 ? (
+                <>
+                  {/* Horizontal Package Cards */}
+                  <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+                    {packageList.map(pkg => {
+                      const isSelected = selectedPackage?.id === pkg.id
+                      const canAfford = currentBalance >= pkg.price
 
-                return (
-                  <div
-                    key={pkg.id}
-                    onClick={() => canAfford && setSelectedPackage(pkg)}
-                    className={`relative cursor-pointer rounded-lg border-2 p-4 transition-all ${
-                      isSelected
-                        ? 'border-orange-500 bg-orange-50'
-                        : canAfford
-                          ? 'border-border hover:border-orange-300'
-                          : 'cursor-not-allowed border-border opacity-50'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">
-                            {pkg.displayName}
-                          </span>
-                          {isSelected && (
-                            <CheckCircle className="h-4 w-4 text-orange-500" />
+                      return (
+                        <div
+                          key={pkg.id}
+                          onClick={() => canAfford && setSelectedPackage(pkg)}
+                          className={cn(
+                            'relative flex-shrink-0 w-[140px] cursor-pointer rounded-lg border-2 p-3 transition-all text-center',
+                            isSelected
+                              ? 'border-orange-500 bg-orange-50'
+                              : canAfford
+                                ? 'border-border hover:border-orange-300 hover:bg-orange-50/50'
+                                : 'cursor-not-allowed border-border opacity-50'
                           )}
+                        >
+                          {isSelected && (
+                            <div className="absolute -top-2 -right-2">
+                              <CheckCircle className="h-5 w-5 text-orange-500 bg-white rounded-full" />
+                            </div>
+                          )}
+                          <div className="space-y-1">
+                            <p className="font-semibold text-sm truncate">
+                              {pkg.displayName}
+                            </p>
+                            <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="h-3 w-3" />
+                              <span>{pkg.durationDays} ngày</span>
+                            </div>
+                            <p className="text-base font-bold text-orange-600">
+                              {formatCurrency(pkg.price)}
+                            </p>
+                            {!canAfford && (
+                              <p className="text-xs text-destructive">
+                                Không đủ
+                              </p>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Clock className="h-3 w-3" />
-                          <span>{pkg.durationDays} ngày</span>
+                      )
+                    })}
+                  </div>
+
+                  {/* Selected Package Details */}
+                  {selectedPackage && (
+                    <div className="rounded-lg border border-orange-200 bg-orange-50/50 p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h5 className="font-semibold text-orange-800">
+                          {selectedPackage.displayName}
+                        </h5>
+                        <Badge className="bg-orange-500">
+                          {formatCurrency(selectedPackage.price)}
+                        </Badge>
+                      </div>
+
+                      {selectedPackage.description && (
+                        <p className="text-sm text-muted-foreground">
+                          {selectedPackage.description}
+                        </p>
+                      )}
+
+                      <div className="flex flex-wrap gap-3 text-sm">
+                        <div className="flex items-center gap-1.5 text-muted-foreground">
+                          <Clock className="h-4 w-4" />
+                          <span>Thời hạn: <strong className="text-foreground">{selectedPackage.durationDays} ngày</strong></span>
                         </div>
-                        {pkg.description && (
-                          <p className="text-xs text-muted-foreground">
-                            {pkg.description}
-                          </p>
-                        )}
-                        {pkg.features && pkg.features.length > 0 && (
-                          <div className="flex flex-wrap gap-1 pt-1">
-                            {pkg.features.map((feature, idx) => (
-                              <Badge
-                                key={idx}
-                                variant="secondary"
-                                className="text-xs"
-                              >
-                                {feature}
-                              </Badge>
-                            ))}
+                        {selectedPackage.viewBoost && (
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <Eye className="h-4 w-4" />
+                            <span>Tăng <strong className="text-foreground">{selectedPackage.viewBoost}x</strong> lượt xem</span>
                           </div>
                         )}
                       </div>
-                      <div className="text-right">
-                        <span className="text-lg font-bold text-orange-600">
-                          {formatCurrency(pkg.price)}
-                        </span>
-                        {!canAfford && (
-                          <p className="text-xs text-destructive">
-                            Không đủ số dư
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
 
-              {(!packages ||
-                !Array.isArray(packages) ||
-                packages.length === 0) && (
+                      {selectedPackage.features && selectedPackage.features.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {selectedPackage.features.map((feature, idx) => (
+                            <Badge
+                              key={idx}
+                              variant="secondary"
+                              className="text-xs"
+                            >
+                              {feature}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Prompt to select if not selected */}
+                  {!selectedPackage && (
+                    <div className="rounded-lg border border-dashed border-muted-foreground/30 p-4 text-center text-sm text-muted-foreground">
+                      <Sparkles className="h-5 w-5 mx-auto mb-2 text-orange-400" />
+                      Chọn một gói ở trên để xem chi tiết
+                    </div>
+                  )}
+                </>
+              ) : null}
+
+              {packagesError && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    Không thể tải danh sách gói đẩy sản phẩm. Vui lòng thử lại sau.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {!packagesError && packageList.length === 0 && (
                 <Alert>
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    Chưa có gói đẩy sản phẩm nào. Vui lòng liên hệ quản trị
-                    viên.
+                    Chưa có gói đẩy sản phẩm nào. Vui lòng liên hệ quản trị viên.
                   </AlertDescription>
                 </Alert>
               )}

@@ -28,9 +28,22 @@ export default function BuyerDashboardPage() {
   const { data: ordersData } = useUserOrders({ page: 1, pageSize: 5 })
   const { openChat } = useChatStore()
 
-  const orders = ordersData?.items || []
-  const pendingOrders = orders.filter(o => o.status === 'pending')
-  const activeOrders = orders.filter(o =>
+  const allOrders = ordersData?.items || []
+
+  // Filter recent orders: within 7 days and not completed/cancelled
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
+  const orders = allOrders.filter(order => {
+    // Handle both timestamp string and ISO date string
+    const orderDate = /^\d+$/.test(order.createdAt)
+      ? parseInt(order.createdAt, 10)
+      : new Date(order.createdAt).getTime()
+    const isRecent = orderDate >= sevenDaysAgo
+    const isNotCompleted = order.status !== 'completed' && order.status !== 'cancelled'
+    return isRecent && isNotCompleted
+  })
+
+  const pendingOrders = allOrders.filter(o => o.status === 'pending')
+  const activeOrders = allOrders.filter(o =>
     ['confirmed', 'preparing', 'ready'].includes(o.status)
   )
 
@@ -156,9 +169,10 @@ export default function BuyerDashboardPage() {
                           </div>
                           <p className="text-sm text-muted-foreground">
                             {order.items.length} sản phẩm •{' '}
-                            {new Date(order.createdAt).toLocaleDateString(
-                              'vi-VN'
-                            )}
+                            {(/^\d+$/.test(order.createdAt)
+                              ? new Date(parseInt(order.createdAt, 10))
+                              : new Date(order.createdAt)
+                            ).toLocaleDateString('vi-VN')}
                           </p>
                         </div>
                         <div className="text-right">

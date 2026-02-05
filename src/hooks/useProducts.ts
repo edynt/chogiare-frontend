@@ -204,11 +204,13 @@ export const useMyProducts = (
 }
 
 // Boost-related hooks
-export const useBoostPackages = () => {
+export const useBoostPackages = (enabled = true) => {
   return useQuery({
     queryKey: ['products', 'boost-packages'],
     queryFn: () => productsApi.getBoostPackages(),
+    enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1,
   })
 }
 
@@ -238,6 +240,13 @@ export const useBoostProduct = () => {
       })
       queryClient.invalidateQueries({ queryKey: ['product', productId] })
       queryClient.invalidateQueries({ queryKey: queryKeys.wallet.balance })
+      // Invalidate promoted products list so dashboard refreshes
+      queryClient.invalidateQueries({
+        queryKey: ['seller', 'products', 'promoted'],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['seller', 'products'],
+      })
     },
   })
 }

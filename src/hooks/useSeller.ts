@@ -129,6 +129,29 @@ export const useLowStockProducts = (threshold?: number) => {
   })
 }
 
+// Boosted Products Hook - Get seller's boosted products from product_boosts table
+export const useSellerBoostedProducts = () => {
+  return useQuery({
+    queryKey: ['seller', 'products', 'boosted'],
+    queryFn: sellerApi.getMyBoostedProducts,
+    staleTime: 1 * 60 * 1000, // 1 minute
+  })
+}
+
+// Remove product boost
+export const useRemoveProductBoost = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: sellerApi.removeProductBoost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['seller', 'products', 'boosted'] })
+      queryClient.invalidateQueries({ queryKey: ['seller', 'products'] })
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+    },
+  })
+}
+
 // Order Management Hooks
 export const useSellerOrders = (params?: {
   page?: number

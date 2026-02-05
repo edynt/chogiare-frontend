@@ -43,7 +43,16 @@ export default function PaymentQRPage() {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       navigate('/top-up')
     },
-    onError: () => {
+    onError: (error: unknown) => {
+      // Check for specific error codes
+      const errorResponse = (error as { response?: { data?: { error?: { code?: string; message?: string } } } })?.response?.data?.error
+      if (errorResponse?.code === 'PAYMENT_INVALID_TRANSACTION') {
+        if (errorResponse.message?.includes('not pending')) {
+          toast.error('Giao dịch này đã được xử lý trước đó. Vui lòng tạo giao dịch mới.')
+          navigate('/top-up')
+          return
+        }
+      }
       toast.error('Có lỗi xảy ra khi xác nhận thanh toán. Vui lòng thử lại.')
     },
   })

@@ -34,7 +34,8 @@ import { useSellerCustomerOrders } from '@/hooks/useSellerCustomers'
 const STATUS_LABELS: Record<string, string> = {
   pending: 'Chờ xác nhận',
   confirmed: 'Đã xác nhận',
-  ready_for_pickup: 'Sẵn sàng lấy',
+  ready: 'Sẵn sàng lấy',
+  ready_for_pickup: 'Sẵn sàng lấy', // Alias for backward compatibility
   completed: 'Hoàn thành',
   cancelled: 'Đã hủy',
   refunded: 'Hoàn tiền',
@@ -46,7 +47,8 @@ const STATUS_VARIANTS: Record<
 > = {
   pending: 'secondary',
   confirmed: 'default',
-  ready_for_pickup: 'default',
+  ready: 'default',
+  ready_for_pickup: 'default', // Alias for backward compatibility
   completed: 'default',
   cancelled: 'destructive',
   refunded: 'outline',

@@ -21,7 +21,21 @@ export function formatCurrency(price: number): string {
 
 export function formatDate(date: string | Date): string {
   try {
-    const dateObj = new Date(date)
+    let dateObj: Date
+
+    if (date instanceof Date) {
+      dateObj = date
+    } else if (typeof date === 'string') {
+      // Handle timestamp string (numeric) - e.g., "1738764000000"
+      if (/^\d+$/.test(date)) {
+        dateObj = new Date(parseInt(date, 10))
+      } else {
+        // Handle ISO date string or other date formats
+        dateObj = new Date(date)
+      }
+    } else {
+      return 'Ngày không hợp lệ'
+    }
 
     // Check if the date is valid
     if (isNaN(dateObj.getTime())) {
