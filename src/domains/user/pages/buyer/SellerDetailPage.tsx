@@ -14,10 +14,7 @@ import {
   Verified,
   Phone,
   MessageCircle,
-  Timer,
-  Truck,
   Package,
-  TrendingUp,
   Store,
 } from 'lucide-react'
 import { Skeleton } from '@shared/components/ui/skeleton'
