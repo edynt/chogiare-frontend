@@ -18,6 +18,12 @@ interface InfiniteProductGridProps {
    * @default true
    */
   buyerMode?: boolean
+  /**
+   * Maximum number of products to display in this grid.
+   * When reached, infinite scroll will stop loading more.
+   * @default undefined (no limit)
+   */
+  maxProducts?: number
 }
 
 export function InfiniteProductGrid({
@@ -25,6 +31,7 @@ export function InfiniteProductGrid({
   className,
   onLoadMore,
   buyerMode = true,
+  maxProducts,
 }: InfiniteProductGridProps) {
   // Use buyer hook by default to only show active products
   const buyerQuery = useInfiniteBuyerProducts(filters)
@@ -42,12 +49,18 @@ export function InfiniteProductGrid({
 
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
+  // Calculate total products loaded so far
+  const allProducts: Product[] = data?.pages.flatMap(page => page.items) || []
+  const totalLoaded = allProducts.length
+  const reachedMaxProducts = maxProducts !== undefined && totalLoaded >= maxProducts
+
   // Intersection Observer để detect khi scroll đến cuối
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
         const firstEntry = entries[0]
-        if (firstEntry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        // Only load more if we haven't reached maxProducts limit
+        if (firstEntry?.isIntersecting && hasNextPage && !isFetchingNextPage && !reachedMaxProducts) {
           fetchNextPage()
           onLoadMore?.()
         }
@@ -67,7 +80,7 @@ export function InfiniteProductGrid({
         observer.unobserve(currentRef)
       }
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, onLoadMore])
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, onLoadMore, reachedMaxProducts])
 
   const handleRetry = () => {
     refetch()
@@ -83,8 +96,10 @@ export function InfiniteProductGrid({
     )
   }
 
-  // Flatten all pages into a single array
-  const products: Product[] = data?.pages.flatMap(page => page.items) || []
+  // Use already calculated allProducts, limit to maxProducts if specified
+  const products: Product[] = maxProducts !== undefined
+    ? allProducts.slice(0, maxProducts)
+    : allProducts
 
   if (isLoading && products.length === 0) {
     return <ProductGridSkeleton count={8} />
@@ -116,7 +131,7 @@ export function InfiniteProductGrid({
             <span className="text-sm">Đang tải thêm sản phẩm...</span>
           </div>
         )}
-        {!hasNextPage && products.length > 0 && (
+        {(reachedMaxProducts || !hasNextPage) && products.length > 0 && (
           <p className="text-sm text-muted-foreground text-center">
             Đã hiển thị tất cả sản phẩm
           </p>

@@ -41,12 +41,21 @@ interface ParsedProduct {
   description: string
   price: number
   originalPrice?: number
+  costPrice?: number
+  sellingPrice?: number
   stock: number
+  minStock?: number
+  maxStock?: number
   categoryId: string
   images: string[]
   condition: 'new' | 'like_new' | 'good' | 'fair' | 'poor'
   tags: string[]
+  badges: string[]
   location: string
+  sku?: string
+  barcode?: string
+  warranty?: string
+  returnPolicy?: string
 }
 
 export default function ImportProductsPage() {
@@ -88,42 +97,53 @@ export default function ImportProductsPage() {
 
           jsonData.forEach((row, index) => {
             try {
+              const parseNumber = (value: unknown): number | undefined => {
+                if (value === undefined || value === null || value === '') return undefined
+                if (typeof value === 'number') return value
+                const parsed = parseFloat(String(value))
+                return isNaN(parsed) ? undefined : parsed
+              }
+
+              const parseInteger = (value: unknown, defaultVal?: number): number | undefined => {
+                if (value === undefined || value === null || value === '') return defaultVal
+                if (typeof value === 'number') return Math.floor(value)
+                const parsed = parseInt(String(value), 10)
+                return isNaN(parsed) ? defaultVal : parsed
+              }
+
+              const parseStringArray = (value: unknown): string[] => {
+                if (!value) return []
+                return String(value)
+                  .split(',')
+                  .map((item: string) => item.trim())
+                  .filter(Boolean)
+              }
+
               const product: ParsedProduct = {
                 title: (row.title as string) || (row.name as string) || '',
                 description: (row.description as string) || '',
-                price:
-                  typeof row.price === 'number'
-                    ? row.price
-                    : parseFloat(String(row.price || '0')) || 0,
-                originalPrice: row.originalPrice
-                  ? typeof row.originalPrice === 'number'
-                    ? row.originalPrice
-                    : parseFloat(String(row.originalPrice)) || undefined
-                  : undefined,
-                stock:
-                  typeof row.stock === 'number'
-                    ? row.stock
-                    : parseInt(String(row.stock || '1')) || 1,
+                price: parseNumber(row.price) || 0,
+                originalPrice: parseNumber(row.originalPrice),
+                costPrice: parseNumber(row.costPrice),
+                sellingPrice: parseNumber(row.sellingPrice),
+                stock: parseInteger(row.stock, 1) || 1,
+                minStock: parseInteger(row.minStock),
+                maxStock: parseInteger(row.maxStock),
                 categoryId: String(row.categoryId || '1'),
-                images: row.images
-                  ? String(row.images)
-                      .split(',')
-                      .map((img: string) => img.trim())
-                      .filter(Boolean)
-                  : [],
+                images: parseStringArray(row.images),
                 condition: ((row.condition as string) || 'new') as
                   | 'new'
                   | 'like_new'
                   | 'good'
                   | 'fair'
                   | 'poor',
-                tags: row.tags
-                  ? String(row.tags)
-                      .split(',')
-                      .map((tag: string) => tag.trim())
-                      .filter(Boolean)
-                  : [],
+                tags: parseStringArray(row.tags),
+                badges: parseStringArray(row.badges),
                 location: (row.location as string) || 'Hà Nội',
+                sku: row.sku ? String(row.sku) : undefined,
+                barcode: row.barcode ? String(row.barcode) : undefined,
+                warranty: row.warranty ? String(row.warranty) : undefined,
+                returnPolicy: row.returnPolicy ? String(row.returnPolicy) : undefined,
               }
 
               // Validate required fields
@@ -245,13 +265,17 @@ export default function ImportProductsPage() {
         const product = parsedProducts[i]
 
         try {
-          // Convert to Product type
+          // Convert to Product type with all supported fields
           const productData = {
             title: product.title,
             description: product.description,
             price: product.price,
             originalPrice: product.originalPrice,
+            costPrice: product.costPrice,
+            sellingPrice: product.sellingPrice,
             stock: product.stock,
+            minStock: product.minStock,
+            maxStock: product.maxStock,
             categoryId:
               typeof product.categoryId === 'string'
                 ? parseInt(product.categoryId, 10)
@@ -260,10 +284,14 @@ export default function ImportProductsPage() {
               product.images.length > 0 ? product.images : [PLACEHOLDER_IMAGE],
             condition: product.condition,
             tags: product.tags,
+            badges: product.badges,
             location: product.location,
+            sku: product.sku,
+            barcode: product.barcode,
+            warranty: product.warranty,
+            returnPolicy: product.returnPolicy,
             status: 'active' as const,
             sellerId: '', // Will be set by backend
-            badges: [],
             rating: 0,
             reviewCount: 0,
             viewCount: 0,
@@ -321,41 +349,143 @@ export default function ImportProductsPage() {
   }
 
   const downloadTemplate = () => {
-    // Create template data
+    // Create template data with all supported fields
     const templateData = [
       {
-        title: 'iPhone 14 Pro Max',
-        description: 'Điện thoại iPhone 14 Pro Max 256GB',
+        title: 'iPhone 14 Pro Max 256GB',
+        description: 'Điện thoại iPhone 14 Pro Max 256GB, màu Deep Purple, còn bảo hành chính hãng 10 tháng',
         price: 25000000,
         originalPrice: 28000000,
+        costPrice: 22000000,
+        sellingPrice: 25000000,
         stock: 10,
+        minStock: 2,
+        maxStock: 50,
         categoryId: '1',
-        condition: 'new',
+        condition: 'like_new',
         location: 'Hà Nội',
-        tags: 'smartphone,iphone',
-        images: 'https://example.com/image1.jpg',
+        sku: 'IP14PM-256-PUR',
+        barcode: '1234567890123',
+        tags: 'smartphone,iphone,apple',
+        badges: 'Chính hãng,Bảo hành',
+        images: 'https://example.com/iphone14-1.jpg,https://example.com/iphone14-2.jpg',
+        warranty: 'Bảo hành 10 tháng chính hãng Apple',
+        returnPolicy: 'Đổi trả trong 7 ngày nếu lỗi từ nhà sản xuất',
       },
       {
-        title: 'Samsung Galaxy S23 Ultra',
-        description: 'Điện thoại Samsung Galaxy S23 Ultra 512GB',
+        title: 'Samsung Galaxy S23 Ultra 512GB',
+        description: 'Điện thoại Samsung Galaxy S23 Ultra 512GB, màu Phantom Black, fullbox',
         price: 22000000,
         originalPrice: 25000000,
+        costPrice: 19000000,
+        sellingPrice: 22000000,
         stock: 8,
+        minStock: 1,
+        maxStock: 30,
         categoryId: '1',
         condition: 'new',
         location: 'TP.HCM',
-        tags: 'smartphone,samsung',
-        images: 'https://example.com/image2.jpg',
+        sku: 'SS-S23U-512-BLK',
+        barcode: '9876543210987',
+        tags: 'smartphone,samsung,android',
+        badges: 'Mới 100%,Fullbox',
+        images: 'https://example.com/s23ultra-1.jpg',
+        warranty: 'Bảo hành 12 tháng chính hãng',
+        returnPolicy: 'Đổi trả trong 30 ngày',
+      },
+      {
+        title: 'MacBook Pro M3 14 inch',
+        description: 'MacBook Pro M3 14 inch, 16GB RAM, 512GB SSD, màu Space Gray',
+        price: 45000000,
+        originalPrice: 49000000,
+        costPrice: 40000000,
+        sellingPrice: 45000000,
+        stock: 5,
+        minStock: 1,
+        maxStock: 20,
+        categoryId: '2',
+        condition: 'new',
+        location: 'Đà Nẵng',
+        sku: 'MBP-M3-14-512',
+        barcode: '5555666677778',
+        tags: 'laptop,macbook,apple',
+        badges: 'Chính hãng,Freeship',
+        images: 'https://example.com/macbook-1.jpg,https://example.com/macbook-2.jpg',
+        warranty: 'Bảo hành 12 tháng Apple Care',
+        returnPolicy: 'Đổi trả trong 15 ngày',
       },
     ]
 
-    // Create workbook
+    // Create workbook with instructions sheet
     const wb = XLSX.utils.book_new()
+
+    // Instructions sheet
+    const instructionsData = [
+      ['HƯỚNG DẪN IMPORT SẢN PHẨM'],
+      [''],
+      ['CÁC TRƯỜNG BẮT BUỘC:'],
+      ['- title: Tên sản phẩm (bắt buộc)'],
+      ['- price: Giá bán (bắt buộc, số nguyên)'],
+      ['- stock: Số lượng tồn kho (bắt buộc, số nguyên)'],
+      ['- categoryId: ID danh mục (bắt buộc)'],
+      ['- condition: Tình trạng sản phẩm (bắt buộc: new, like_new, good, fair, poor)'],
+      [''],
+      ['CÁC TRƯỜNG TÙY CHỌN:'],
+      ['- description: Mô tả sản phẩm'],
+      ['- originalPrice: Giá gốc (để hiển thị giảm giá)'],
+      ['- costPrice: Giá vốn'],
+      ['- sellingPrice: Giá bán (có thể khác với price)'],
+      ['- minStock: Số lượng tối thiểu cảnh báo hết hàng'],
+      ['- maxStock: Số lượng tối đa có thể nhập'],
+      ['- location: Địa điểm (mặc định: Hà Nội)'],
+      ['- sku: Mã sản phẩm (Stock Keeping Unit)'],
+      ['- barcode: Mã vạch sản phẩm'],
+      ['- tags: Thẻ từ khóa (phân cách bằng dấu phẩy)'],
+      ['- badges: Nhãn sản phẩm (phân cách bằng dấu phẩy)'],
+      ['- images: URL hình ảnh (phân cách bằng dấu phẩy)'],
+      ['- warranty: Thông tin bảo hành'],
+      ['- returnPolicy: Chính sách đổi trả'],
+      [''],
+      ['GIÁ TRỊ CONDITION:'],
+      ['- new: Mới 100%'],
+      ['- like_new: Như mới (99%)'],
+      ['- good: Tốt (90-95%)'],
+      ['- fair: Khá (80-90%)'],
+      ['- poor: Trung bình (<80%)'],
+    ]
+    const wsInstructions = XLSX.utils.aoa_to_sheet(instructionsData)
+    XLSX.utils.book_append_sheet(wb, wsInstructions, 'Hướng dẫn')
+
+    // Products template sheet
     const ws = XLSX.utils.json_to_sheet(templateData)
-    XLSX.utils.book_append_sheet(wb, ws, 'Products')
+
+    // Set column widths for better readability
+    ws['!cols'] = [
+      { wch: 35 }, // title
+      { wch: 60 }, // description
+      { wch: 12 }, // price
+      { wch: 12 }, // originalPrice
+      { wch: 12 }, // costPrice
+      { wch: 12 }, // sellingPrice
+      { wch: 8 },  // stock
+      { wch: 8 },  // minStock
+      { wch: 8 },  // maxStock
+      { wch: 10 }, // categoryId
+      { wch: 10 }, // condition
+      { wch: 15 }, // location
+      { wch: 18 }, // sku
+      { wch: 15 }, // barcode
+      { wch: 25 }, // tags
+      { wch: 20 }, // badges
+      { wch: 50 }, // images
+      { wch: 35 }, // warranty
+      { wch: 35 }, // returnPolicy
+    ]
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Sản phẩm')
 
     // Download file
-    XLSX.writeFile(wb, 'product_import_template.xlsx')
+    XLSX.writeFile(wb, 'mau_import_san_pham.xlsx')
   }
 
   return (
@@ -584,21 +714,40 @@ export default function ImportProductsPage() {
                   </h4>
                   <ul className="space-y-1 text-muted-foreground">
                     <li>• title (Tên sản phẩm)</li>
-                    <li>• price (Giá)</li>
-                    <li>• stock (Tồn kho)</li>
+                    <li>• price (Giá bán)</li>
+                    <li>• stock (Số lượng tồn kho)</li>
+                    <li>• categoryId (ID danh mục)</li>
+                    <li>• condition (Tình trạng)</li>
                   </ul>
                 </div>
 
                 <div>
                   <h4 className="font-semibold mb-2">Các trường tùy chọn</h4>
                   <ul className="space-y-1 text-muted-foreground">
-                    <li>• description</li>
-                    <li>• originalPrice</li>
-                    <li>• categoryId</li>
-                    <li>• condition (new, like_new, good, fair, poor)</li>
-                    <li>• location</li>
-                    <li>• tags (phân cách bằng dấu phẩy)</li>
-                    <li>• images (URL, phân cách bằng dấu phẩy)</li>
+                    <li>• description (Mô tả)</li>
+                    <li>• originalPrice (Giá gốc)</li>
+                    <li>• costPrice (Giá vốn)</li>
+                    <li>• sellingPrice (Giá bán)</li>
+                    <li>• minStock / maxStock (Tồn kho min/max)</li>
+                    <li>• location (Địa điểm)</li>
+                    <li>• sku (Mã sản phẩm)</li>
+                    <li>• barcode (Mã vạch)</li>
+                    <li>• tags (Thẻ, phân cách bằng dấu phẩy)</li>
+                    <li>• badges (Nhãn, phân cách bằng dấu phẩy)</li>
+                    <li>• images (URL ảnh, phân cách bằng dấu phẩy)</li>
+                    <li>• warranty (Bảo hành)</li>
+                    <li>• returnPolicy (Chính sách đổi trả)</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold mb-2">Giá trị condition</h4>
+                  <ul className="space-y-1 text-muted-foreground text-xs">
+                    <li>• new: Mới 100%</li>
+                    <li>• like_new: Như mới</li>
+                    <li>• good: Tốt</li>
+                    <li>• fair: Khá</li>
+                    <li>• poor: Trung bình</li>
                   </ul>
                 </div>
               </CardContent>

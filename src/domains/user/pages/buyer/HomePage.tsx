@@ -24,6 +24,7 @@ import {
   Sparkles,
   Trophy,
   Package,
+  Rocket,
 } from 'lucide-react'
 
 export default function HomePage() {
@@ -126,6 +127,11 @@ export default function HomePage() {
       return (b.viewCount || 0) - (a.viewCount || 0)
     })
     .slice(0, 8)
+
+  // Boosted/Promoted products - filter products that are currently being promoted
+  const boostedProducts = allProducts
+    .filter(p => p.stock > 0 && p.isPromoted)
+    .slice(0, 30)
 
   const displayCategories = categoriesList.slice(0, 8)
 
@@ -282,6 +288,47 @@ export default function HomePage() {
             )}
           </LazySection>
 
+          {/* 0. Sản phẩm đang được đẩy (Boosted Products) - Show first */}
+          {boostedProducts.length > 0 && (
+            <LazySection fallback={<HomePageSectionSkeleton />}>
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                      <Rocket className="h-7 w-7 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold">Sản phẩm nổi bật</h2>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Sản phẩm đang được đẩy mạnh
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                    className="hover:bg-primary/10 hover:text-primary"
+                  >
+                    <Link
+                      to="/products?promoted=true"
+                      className="flex items-center"
+                    >
+                      Xem tất cả <ArrowRight className="h-4 w-4 ml-1" />
+                    </Link>
+                  </Button>
+                </div>
+                <InfiniteProductGrid
+                  filters={{
+                    promoted: true,
+                    limit: 30,
+                  }}
+                  maxProducts={30}
+                />
+              </div>
+            </LazySection>
+          )}
+
           {/* 1. Bán chạy nhất (Best sellers) - Lazy Load */}
           <LazySection fallback={<HomePageSectionSkeleton />}>
             {bestSellers.length > 0 && (
@@ -316,8 +363,9 @@ export default function HomePage() {
                   filters={{
                     sortBy: 'viewCount',
                     sortOrder: 'desc',
-                    limit: 20,
+                    limit: 30,
                   }}
+                  maxProducts={30}
                 />
               </div>
             )}
@@ -349,8 +397,9 @@ export default function HomePage() {
                   filters={{
                     sortBy: 'createdAt',
                     sortOrder: 'desc',
-                    limit: 20,
+                    limit: 30,
                   }}
+                  maxProducts={30}
                 />
               </div>
             )}
@@ -378,7 +427,7 @@ export default function HomePage() {
                     </Link>
                   </Button>
                 </div>
-                <InfiniteProductGrid filters={{ limit: 20 }} />
+                <InfiniteProductGrid filters={{ limit: 30 }} maxProducts={30} />
               </div>
             )}
           </LazySection>
@@ -405,7 +454,7 @@ export default function HomePage() {
                     </Link>
                   </Button>
                 </div>
-                <InfiniteProductGrid filters={{ limit: 20 }} />
+                <InfiniteProductGrid filters={{ limit: 30 }} maxProducts={30} />
               </div>
             )}
           </LazySection>
