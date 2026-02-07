@@ -757,7 +757,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           <div className="space-y-2">
             <h4 className="font-medium">Số lượng:</h4>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 border rounded-lg">
+              <div className="flex items-center border rounded-lg">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -768,9 +768,29 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
-                <span className="w-16 text-center font-semibold">
-                  {quantity}
-                </span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={quantity}
+                  onChange={e => {
+                    const val = e.target.value.replace(/[^0-9]/g, '')
+                    if (val === '') {
+                      setQuantity(minOrderQty)
+                    } else {
+                      const num = parseInt(val, 10)
+                      if (!isNaN(num)) {
+                        setQuantity(Math.max(minOrderQty, num))
+                      }
+                    }
+                  }}
+                  onBlur={() => {
+                    if (quantity < minOrderQty) {
+                      setQuantity(minOrderQty)
+                    }
+                  }}
+                  className="w-16 h-10 text-center font-semibold bg-transparent border-none outline-none focus:ring-0"
+                />
                 <Button
                   variant="ghost"
                   size="icon"
