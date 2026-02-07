@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
@@ -18,32 +18,9 @@ import {
   Truck,
   Package,
   TrendingUp,
+  Store,
 } from 'lucide-react'
-
-interface Seller {
-  id: string
-  name: string
-  logoUrl: string
-  description?: string
-  address?: string
-  phone?: string
-  email?: string
-  isTopSeller: boolean
-  isVerified: boolean
-  isPremium: boolean
-  totalProducts: number
-  rating: number
-  reviewCount: number
-  totalOrders: number
-  totalCustomers: number
-  joinedDate?: string
-  trustBadges?: string[]
-  responseRate?: number
-  averageResponseTime?: string
-  onTimeDeliveryRate?: number
-  cancellationRate?: number // Tỉ lệ hủy đơn
-  trustScore?: number // Độ tin cậy (0-100)
-}
+import { Skeleton } from '@shared/components/ui/skeleton'
 
 export default function SellerDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -66,40 +43,36 @@ export default function SellerDetailPage() {
     openChatWithSeller(Number(id))
   }
 
-  // Fetch seller products for count (only active products visible to buyers)
-  const { data: productsData } = useBuyerProducts({
+  // Fetch seller products to get seller info from products
+  const { data: productsData, isLoading } = useBuyerProducts({
     sellerId: id,
     page: 1,
-    limit: 1,
+    limit: 10,
   })
 
-  // Mock seller data - in production, this would come from an API
-  const seller: Seller = {
-    id: id || '1',
-    name: 'Cửa hàng Chogiare',
-    logoUrl:
-      'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop',
-    description:
-      'Cửa hàng chuyên cung cấp sản phẩm chất lượng cao với giá cả hợp lý',
-    address: '123 Đường ABC, Quận 1, TP. Hồ Chí Minh',
-    phone: '0901234567',
-    email: 'contact@chogiare.com',
-    isTopSeller: true,
-    isVerified: true,
-    isPremium: true,
-    totalProducts: productsData?.total || 0,
-    rating: 4.8,
-    reviewCount: 1245,
-    totalOrders: 3420,
-    totalCustomers: 2850,
-    joinedDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
-    trustBadges: ['Đã xác thực', 'Top Seller', 'Giao hàng nhanh'],
-    responseRate: 98.5,
-    averageResponseTime: '< 5 phút',
-    onTimeDeliveryRate: 96,
-    cancellationRate: 2.5, // 2.5% tỉ lệ hủy đơn
-    trustScore: 95, // Độ tin cậy 95/100
-  }
+  // Extract seller info from the first product that has seller data
+  const seller = useMemo(() => {
+    const productWithSeller = productsData?.items?.find(p => p.seller)
+    const sellerData = productWithSeller?.seller
+
+    if (!sellerData) {
+      return null
+    }
+
+    return {
+      id: sellerData.id || id || '',
+      name: sellerData.sellerName || sellerData.name || 'Người bán',
+      logoUrl: sellerData.sellerLogo || sellerData.avatar || '',
+      description: sellerData.sellerDescription || '',
+      address: sellerData.sellerAddress || sellerData.address || '',
+      phone: sellerData.sellerPhone || sellerData.phone || '',
+      email: sellerData.sellerEmail || sellerData.email || '',
+      isVerified: sellerData.isSellerVerified || sellerData.isVerified || false,
+      rating: sellerData.sellerRating || 0,
+      reviewCount: sellerData.sellerReviewCount || 0,
+      totalProducts: productsData?.total || 0,
+    }
+  }, [productsData, id])
 
   // Build filters for InfiniteProductGrid
   const productFilters = React.useMemo(() => {
@@ -135,6 +108,34 @@ export default function SellerDetailPage() {
 
   const filters = ['Tất cả', 'Bán chạy', 'Giá thấp', 'Giá cao', 'Mới nhất']
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="bg-gradient-to-br from-primary to-primary/80 text-white">
+          <div className="container mx-auto px-4 py-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+              <Skeleton className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white/20" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-8 w-48 bg-white/20" />
+                <Skeleton className="h-4 w-64 bg-white/20" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <main className="container mx-auto px-4 py-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <Skeleton key={i} className="h-64 rounded-lg" />
+            ))}
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -146,20 +147,26 @@ export default function SellerDetailPage() {
             {/* Seller Logo */}
             <div className="relative flex-shrink-0">
               <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white">
-                <img
-                  src={seller.logoUrl}
-                  alt={seller.name}
-                  className="w-full h-full object-cover"
-                  onError={e => {
-                    const target = e.target as HTMLImageElement
-                    target.style.display = 'none'
-                    if (target.parentElement) {
-                      target.parentElement.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-primary/10"><svg class="w-12 h-12 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg></div>`
-                    }
-                  }}
-                />
+                {seller?.logoUrl ? (
+                  <img
+                    src={seller.logoUrl}
+                    alt={seller.name}
+                    className="w-full h-full object-cover"
+                    onError={e => {
+                      const target = e.target as HTMLImageElement
+                      target.style.display = 'none'
+                      if (target.parentElement) {
+                        target.parentElement.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-primary/10"><svg class="w-12 h-12 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg></div>`
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                    <Store className="w-12 h-12 text-primary" />
+                  </div>
+                )}
               </div>
-              {seller.isVerified && (
+              {seller?.isVerified && (
                 <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
                   <Verified className="h-3 w-3 text-white" />
                 </div>
@@ -172,15 +179,9 @@ export default function SellerDetailPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <h1 className="text-xl md:text-2xl font-bold truncate">
-                      {seller.name}
+                      {seller?.name || 'Người bán'}
                     </h1>
-                    {seller.isTopSeller && (
-                      <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white text-xs">
-                        <Star className="h-3 w-3 mr-1" />
-                        Top Seller
-                      </Badge>
-                    )}
-                    {seller.isVerified && (
+                    {seller?.isVerified && (
                       <Badge className="bg-green-500 text-white text-xs">
                         <Verified className="h-3 w-3 mr-1" />
                         Đã xác thực
@@ -188,26 +189,27 @@ export default function SellerDetailPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-4 text-white/90 text-sm flex-wrap">
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-semibold">
-                        {seller.rating.toFixed(1)}
-                      </span>
-                      <span className="text-white/80">
-                        ({seller.reviewCount})
-                      </span>
-                    </div>
-                    <span className="text-white/80">•</span>
-                    <span>{seller.totalProducts} sản phẩm</span>
-                    <span className="text-white/80">•</span>
-                    <span>{seller.totalOrders} đơn hàng</span>
-                    {seller.trustScore !== undefined && (
+                    {seller?.rating !== undefined && seller.rating > 0 && (
                       <>
+                        <div className="flex items-center gap-1">
+                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                          <span className="font-semibold">
+                            {seller.rating.toFixed(1)}
+                          </span>
+                          <span className="text-white/80">
+                            ({seller.reviewCount || 0})
+                          </span>
+                        </div>
                         <span className="text-white/80">•</span>
-                        <span>Độ tin cậy: {seller.trustScore}/100</span>
                       </>
                     )}
+                    <span>{seller?.totalProducts || productsData?.total || 0} sản phẩm</span>
                   </div>
+                  {seller?.description && (
+                    <p className="text-sm text-white/80 mt-2 line-clamp-2">
+                      {seller.description}
+                    </p>
+                  )}
                 </div>
 
                 {/* Quick Actions - Compact */}
@@ -221,7 +223,7 @@ export default function SellerDetailPage() {
                     <MessageCircle className="h-4 w-4 mr-1" />
                     Chat
                   </Button>
-                  {seller.phone && (
+                  {seller?.phone && (
                     <Button
                       variant="secondary"
                       size="sm"
@@ -238,72 +240,6 @@ export default function SellerDetailPage() {
               </div>
             </div>
           </div>
-
-          {/* Trust Metrics - Compact Row */}
-          <div className="mt-4 pt-4 border-t border-white/20">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {seller.responseRate !== undefined && (
-                <div className="flex items-center gap-2">
-                  <MessageCircle className="h-4 w-4 text-white/80" />
-                  <div>
-                    <p className="text-xs text-white/70">Tỷ lệ phản hồi</p>
-                    <p className="text-sm font-semibold">
-                      {seller.responseRate}%
-                    </p>
-                  </div>
-                </div>
-              )}
-              {seller.averageResponseTime && (
-                <div className="flex items-center gap-2">
-                  <Timer className="h-4 w-4 text-white/80" />
-                  <div>
-                    <p className="text-xs text-white/70">Thời gian phản hồi</p>
-                    <p className="text-sm font-semibold">
-                      {seller.averageResponseTime}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {seller.cancellationRate !== undefined && (
-                <div className="flex items-center gap-2">
-                  <TrendingUp
-                    className={`h-4 w-4 ${
-                      seller.cancellationRate <= 3
-                        ? 'text-green-300'
-                        : seller.cancellationRate <= 5
-                          ? 'text-yellow-300'
-                          : 'text-red-300'
-                    }`}
-                  />
-                  <div>
-                    <p className="text-xs text-white/70">Tỉ lệ hủy đơn</p>
-                    <p
-                      className={`text-sm font-semibold ${
-                        seller.cancellationRate <= 3
-                          ? 'text-green-300'
-                          : seller.cancellationRate <= 5
-                            ? 'text-yellow-300'
-                            : 'text-red-300'
-                      }`}
-                    >
-                      {seller.cancellationRate}%
-                    </p>
-                  </div>
-                </div>
-              )}
-              {seller.onTimeDeliveryRate !== undefined && (
-                <div className="flex items-center gap-2">
-                  <Truck className="h-4 w-4 text-white/80" />
-                  <div>
-                    <p className="text-xs text-white/70">Giao hàng đúng hẹn</p>
-                    <p className="text-sm font-semibold">
-                      {seller.onTimeDeliveryRate}%
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -317,7 +253,7 @@ export default function SellerDetailPage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold">
-                  Sản phẩm của {seller.name}
+                  Sản phẩm của {seller?.name || 'Người bán'}
                 </h2>
               </div>
             </div>

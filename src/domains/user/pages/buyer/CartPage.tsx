@@ -25,9 +25,6 @@ import {
 } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useBuyerProducts } from '@/hooks/useProducts'
-import { initializeFakeCart } from '@/utils/seedCart'
-
 export default function CartPage() {
   const navigate = useNavigate()
   const {
@@ -38,18 +35,6 @@ export default function CartPage() {
     removeItem,
     clearCart,
   } = useCartStore()
-  const { data: productsData } = useBuyerProducts({ page: 1, limit: 50 })
-
-  // Initialize fake cart data if cart is empty
-  React.useEffect(() => {
-    if (
-      items.length === 0 &&
-      productsData?.items &&
-      productsData.items.length > 0
-    ) {
-      initializeFakeCart(productsData.items)
-    }
-  }, [items.length, productsData?.items])
 
   // Group items by seller
   const groupedItems = React.useMemo(() => {
