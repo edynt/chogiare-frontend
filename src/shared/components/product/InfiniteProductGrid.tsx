@@ -1,4 +1,6 @@
 import React, { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
 import { ProductCard } from './ProductCard'
 import { LoadingSpinner } from '@shared/components/ui/loading'
 import { ErrorMessage } from '@shared/components/ui/error-boundary'
@@ -24,6 +26,11 @@ interface InfiniteProductGridProps {
    * @default undefined (no limit)
    */
   maxProducts?: number
+  /**
+   * Link to view all products page. Shown instead of "Đã hiển thị tất cả sản phẩm"
+   * when maxProducts is reached or no more pages.
+   */
+  viewAllLink?: string
 }
 
 export function InfiniteProductGrid({
@@ -32,6 +39,7 @@ export function InfiniteProductGrid({
   onLoadMore,
   buyerMode = true,
   maxProducts,
+  viewAllLink,
 }: InfiniteProductGridProps) {
   // Use buyer hook by default to only show active products
   const buyerQuery = useInfiniteBuyerProducts(filters)
@@ -132,9 +140,18 @@ export function InfiniteProductGrid({
           </div>
         )}
         {(reachedMaxProducts || !hasNextPage) && products.length > 0 && (
-          <p className="text-sm text-muted-foreground text-center">
-            Đã hiển thị tất cả sản phẩm
-          </p>
+          viewAllLink ? (
+            <Link
+              to={viewAllLink}
+              className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+            >
+              Xem tất cả sản phẩm <ArrowRight className="h-4 w-4" />
+            </Link>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Đã hiển thị tất cả sản phẩm
+            </p>
+          )
         )}
       </div>
     </div>

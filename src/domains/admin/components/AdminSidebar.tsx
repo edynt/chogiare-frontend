@@ -12,6 +12,7 @@ import {
   Crown,
   FolderTree,
   Wallet,
+  MessageSquare,
 } from 'lucide-react'
 import { useAdminUserStats } from '@/hooks/useAdmin'
 
@@ -65,12 +66,12 @@ const menuItems: MenuItem[] = [
   //     href: '/admin/cms',
   //     icon: FileText,
   //   },
-  //   {
-  //     title: 'Hỗ trợ & Khiếu nại',
-  //     href: '/admin/support',
-  //     icon: MessageSquare,
-  //     badgeKey: 'openTickets',
-  //   },
+  {
+    title: 'Hỗ trợ & Khiếu nại',
+    href: '/admin/support',
+    icon: MessageSquare,
+    badgeKey: 'openTickets',
+  },
   //   {
   //     title: 'Email & Thông báo',
   //     href: '/admin/notifications',

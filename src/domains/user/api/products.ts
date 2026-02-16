@@ -51,6 +51,7 @@ export const productsApi = {
   ): Promise<PaginatedResponse<Product>> => {
     const params: Record<string, unknown> = {}
 
+    if (filters.cursor !== undefined) params.cursor = filters.cursor
     if (filters.page !== undefined) params.page = filters.page
     if (filters.pageSize !== undefined) params.pageSize = filters.pageSize
     else if (filters.limit !== undefined) params.pageSize = filters.limit

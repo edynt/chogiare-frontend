@@ -42,6 +42,8 @@ import { APP_NAME } from '@/constants/app.constants'
 import {
   useNotifications,
   useUnreadNotificationCount,
+  useMarkNotificationAsRead,
+  useMarkAllNotificationsAsRead,
 } from '@/hooks/useNotifications'
 import { useUserLogout } from '@user/hooks/use-user-auth'
 
@@ -67,11 +69,23 @@ export function Header() {
 
   const { data: notificationsData } = useNotifications({ page: 1, pageSize: 5 })
   const { data: unreadCount = 0 } = useUnreadNotificationCount()
+  const markAsReadMutation = useMarkNotificationAsRead()
+  const markAllAsReadMutation = useMarkAllNotificationsAsRead()
 
   const notifications = notificationsData?.items || []
 
+  const handleNotificationClick = (notification: { id: string; isRead: boolean; actionUrl?: string }) => {
+    if (!notification.isRead) {
+      markAsReadMutation.mutate(notification.id)
+    }
+    if (notification.actionUrl) {
+      navigate(notification.actionUrl)
+    }
+  }
+
   const getTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
+    const timestamp = Number(dateString)
+    const date = isNaN(timestamp) ? new Date(dateString) : new Date(timestamp)
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
     const diffMins = Math.floor(diffMs / 60000)
@@ -195,11 +209,28 @@ export function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-80">
-                <div className="p-3 border-b">
-                  <h3 className="font-semibold text-sm">Thông báo</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {unreadCount} thông báo chưa đọc
-                  </p>
+                <div className="p-3 border-b flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-sm">Thông báo</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {unreadCount} thông báo chưa đọc
+                    </p>
+                  </div>
+                  {unreadCount > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-blue-600 hover:text-blue-800 h-auto py-1 px-2"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        markAllAsReadMutation.mutate()
+                      }}
+                      disabled={markAllAsReadMutation.isPending}
+                    >
+                      {markAllAsReadMutation.isPending ? 'Đang xử lý...' : 'Đọc tất cả'}
+                    </Button>
+                  )}
                 </div>
                 <div className="max-h-96 overflow-y-auto">
                   {notifications.length === 0 ? (
@@ -211,6 +242,10 @@ export function Header() {
                       <DropdownMenuItem
                         key={notification.id}
                         className="p-3 cursor-pointer hover:bg-red-500 group transition-colors"
+                        onSelect={(e) => {
+                          e.preventDefault()
+                          handleNotificationClick(notification)
+                        }}
                       >
                         <div className="flex items-start gap-3 w-full">
                           <div
@@ -246,13 +281,13 @@ export function Header() {
                   )}
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="p-3 text-center hover:bg-red-500 group transition-colors">
-                  <Link
-                    to="/notifications"
-                    className="text-sm text-blue-600 group-hover:text-white"
-                  >
+                <DropdownMenuItem
+                  className="p-3 text-center hover:bg-red-500 group transition-colors justify-center"
+                  onSelect={() => navigate('/notifications')}
+                >
+                  <span className="text-sm text-blue-600 group-hover:text-white">
                     Xem tất cả thông báo
-                  </Link>
+                  </span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -1,6 +1,15 @@
 import { apiClient } from '@shared/api/axios'
 import type { ApiResponse } from '@/types'
 
+const NOTIFICATION_TYPE_TO_NUMBER: Record<string, number> = {
+  order: 0,
+  product: 1,
+  payment: 2,
+  system: 3,
+  promotion: 4,
+  message: 5,
+}
+
 export interface Notification {
   id: string
   type: 'order' | 'product' | 'payment' | 'system' | 'promotion' | 'message'
@@ -43,7 +52,7 @@ export const notificationsApi = {
         params: {
           page: params?.page || 1,
           pageSize: params?.pageSize || 10,
-          type: params?.type,
+          type: params?.type ? NOTIFICATION_TYPE_TO_NUMBER[params.type] : undefined,
           isRead: params?.isRead,
         },
       }

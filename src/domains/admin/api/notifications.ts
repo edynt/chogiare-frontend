@@ -1,6 +1,15 @@
 import { apiClient } from '@shared/api/axios'
 import type { ApiResponse } from '@/types'
 
+const NOTIFICATION_TYPE_TO_NUMBER: Record<string, number> = {
+  order: 0,
+  product: 1,
+  payment: 2,
+  system: 3,
+  promotion: 4,
+  message: 5,
+}
+
 export interface CreateNotificationRequest {
   type: 'order' | 'product' | 'payment' | 'system' | 'promotion' | 'message'
   title: string
@@ -26,7 +35,10 @@ export const adminNotificationsApi = {
   ): Promise<CreateNotificationResponse> => {
     const response = await apiClient.post<
       ApiResponse<CreateNotificationResponse>
-    >('/admin/notifications', data)
+    >('/admin/notifications', {
+      ...data,
+      type: NOTIFICATION_TYPE_TO_NUMBER[data.type] ?? 3,
+    })
     return response.data.data
   },
 }

@@ -346,10 +346,6 @@ export const translations: Record<Language, Translation> = {
             title: 'Chất lượng đảm bảo',
             description: 'Tất cả sản phẩm đều được kiểm duyệt kỹ lưỡng',
           },
-          {
-            title: 'Giao hàng nhanh',
-            description: 'Nhận hàng trong 24-48 giờ tại các thành phố lớn',
-          },
         ],
       },
       trust: {

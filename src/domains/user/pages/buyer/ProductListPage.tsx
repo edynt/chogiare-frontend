@@ -1,18 +1,17 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect, useRef } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
 import { ProductFilters } from '@shared/components/product/ProductFilters'
 import { ProductCard } from '@shared/components/product/ProductCard'
-import { Pagination } from '@shared/components/ui/pagination'
 import { ErrorMessage } from '@shared/components/ui/error-boundary'
 import { EmptyProducts } from '@shared/components/ui/empty-state'
+import { LoadingSpinner } from '@shared/components/ui/loading'
 import {
   ProductListFiltersSkeleton,
   ProductListSortBarSkeleton,
 } from '@shared/components/skeleton/ProductListSkeleton'
 import { ProductGridSkeleton } from '@shared/components/skeleton/ProductCardSkeleton'
-import { LazySection } from '@shared/components/product/LazySection'
 import {
   Select,
   SelectContent,
@@ -23,19 +22,19 @@ import {
 import { Button } from '@shared/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { APP_NAME } from '@/constants/app.constants'
-import { useBuyerProducts, useCategories } from '@/hooks'
+import { useCursorBuyerProducts, useCategories } from '@/hooks'
 import { SEOHead } from '@shared/components/seo/SEOHead'
-import type { SearchFilters } from '@/types'
+import type { SearchFilters, Product } from '@/types'
 
 export default function ProductListPage() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { data: categories } = useCategories()
+  const loadMoreRef = useRef<HTMLDivElement>(null)
 
-  // Parse URL params to filters - use useMemo to avoid unnecessary re-renders
-  const filters = useMemo<SearchFilters>(() => {
-    const parsedFilters: SearchFilters = {
-      page: parseInt(searchParams.get('page') || '1', 10),
+  // Parse URL params to filters
+  const filters = useMemo<Omit<SearchFilters, 'page' | 'cursor'>>(() => {
+    const parsedFilters: Omit<SearchFilters, 'page' | 'cursor'> = {
       limit: parseInt(searchParams.get('limit') || '20', 10),
       query: searchParams.get('query') || undefined,
       categoryId:
@@ -57,13 +56,10 @@ export default function ProductListPage() {
         : undefined,
     }
 
-    // Handle badges
     const badgesParam = searchParams.get('badges')
     if (badgesParam) {
       parsedFilters.badges = badgesParam.split(',') as any[]
     }
-
-    // Handle boolean flags
     if (searchParams.get('promoted') === 'true') {
       parsedFilters.promoted = true
     }
@@ -75,11 +71,32 @@ export default function ProductListPage() {
   }, [searchParams])
 
   const {
-    data: productsData,
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     isLoading,
     error,
     refetch,
-  } = useBuyerProducts(filters)
+  } = useCursorBuyerProducts(filters)
+
+  // Infinite scroll via IntersectionObserver
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
+        }
+      },
+      { rootMargin: '200px' }
+    )
+
+    const currentRef = loadMoreRef.current
+    if (currentRef) observer.observe(currentRef)
+    return () => {
+      if (currentRef) observer.unobserve(currentRef)
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
   // Update URL when filters change
   const updateURL = (newFilters: SearchFilters) => {
@@ -102,8 +119,6 @@ export default function ProductListPage() {
     }
     if (newFilters.promoted) params.set('promoted', 'true')
     if (newFilters.featured) params.set('featured', 'true')
-    if (newFilters.page && newFilters.page > 1)
-      params.set('page', newFilters.page.toString())
     if (newFilters.limit && newFilters.limit !== 20)
       params.set('limit', newFilters.limit.toString())
 
@@ -115,36 +130,16 @@ export default function ProductListPage() {
   }
 
   const handleSortChange = (sortBy: string, sortOrder: 'asc' | 'desc') => {
-    const newFilters = {
-      ...filters,
-      sortBy,
-      sortOrder,
-      page: 1, // Reset to first page when sorting changes
-    }
-    updateURL(newFilters)
-  }
-
-  const handlePageChange = (page: number) => {
-    const newFilters = { ...filters, page }
-    updateURL(newFilters)
-    // Scroll to top when page changes
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const handlePageSizeChange = (pageSize: number) => {
-    const newFilters = { ...filters, page: 1, limit: pageSize }
-    updateURL(newFilters)
+    updateURL({ ...filters, sortBy, sortOrder })
   }
 
   const handleRetry = () => {
     refetch()
   }
 
-  const products = productsData?.items || []
-  const totalPages = productsData?.totalPages || 0
-  const totalItems = productsData?.total || 0
-  const currentPage = filters.page || 1
-  const pageSize = filters.limit || 20
+  const allProducts: Product[] =
+    data?.pages.flatMap(page => page.items) || []
+  const totalItems = data?.pages[0]?.total || 0
 
   const sortOptions = [
     { value: 'createdAt', label: 'Mới nhất' },
@@ -257,7 +252,7 @@ export default function ProductListPage() {
                   </div>
                   {totalItems > 0 && (
                     <div className="text-sm text-muted-foreground">
-                      Trang {currentPage} / {totalPages}
+                      Đang hiển thị {allProducts.length} / {totalItems.toLocaleString()} sản phẩm
                     </div>
                   )}
                 </div>
@@ -276,17 +271,17 @@ export default function ProductListPage() {
               {isLoading && !error && <ProductGridSkeleton count={12} />}
 
               {/* Empty State */}
-              {!isLoading && !error && products.length === 0 && (
+              {!isLoading && !error && allProducts.length === 0 && (
                 <div className="animate-in fade-in duration-500">
                   <EmptyProducts />
                 </div>
               )}
 
-              {/* Products Grid - Load with staggered animation */}
-              {!isLoading && !error && products.length > 0 && (
-                <>
+              {/* Products Grid - Infinite scroll with cursor pagination */}
+              {!isLoading && !error && allProducts.length > 0 && (
+                <div className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in duration-500">
-                    {products.map((product, index) => (
+                    {allProducts.map((product, index) => (
                       <div
                         key={product.id}
                         className="animate-in fade-in slide-in-from-bottom-4 duration-500"
@@ -299,23 +294,26 @@ export default function ProductListPage() {
                     ))}
                   </div>
 
-                  {/* Pagination - Lazy Load when scroll near */}
-                  {totalPages > 1 && (
-                    <LazySection fallback={<div className="mt-8 h-12" />}>
-                      <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <Pagination
-                          currentPage={currentPage}
-                          totalPages={totalPages}
-                          totalItems={totalItems}
-                          pageSize={pageSize}
-                          onPageChange={handlePageChange}
-                          onPageSizeChange={handlePageSizeChange}
-                          pageSizeOptions={[12, 24, 48, 96]}
-                        />
+                  {/* Sentinel for infinite scroll */}
+                  <div
+                    ref={loadMoreRef}
+                    className="h-20 flex items-center justify-center"
+                  >
+                    {isFetchingNextPage && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <LoadingSpinner size="sm" />
+                        <span className="text-sm">
+                          Đang tải thêm sản phẩm...
+                        </span>
                       </div>
-                    </LazySection>
-                  )}
-                </>
+                    )}
+                    {!hasNextPage && allProducts.length > 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        Đã hiển thị tất cả sản phẩm
+                      </p>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           </div>

@@ -62,7 +62,7 @@ import type { SupportTicket } from '@admin/api/admin'
 
 export default function SupportTicketsPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('active')
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [page, setPage] = useState(1)
@@ -78,7 +78,7 @@ export default function SupportTicketsPage() {
     page,
     pageSize,
     search: searchQuery || undefined,
-    status: statusFilter !== 'all' ? statusFilter : undefined,
+    status: statusFilter !== 'all' ? statusFilter : undefined, // 'active' excludes resolved/closed on backend
     priority: priorityFilter !== 'all' ? priorityFilter : undefined,
     category: categoryFilter !== 'all' ? categoryFilter : undefined,
   })
@@ -355,6 +355,7 @@ export default function SupportTicketsPage() {
                   <SelectValue placeholder="Trạng thái" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="active">Đang hoạt động</SelectItem>
                   <SelectItem value="all">Tất cả trạng thái</SelectItem>
                   <SelectItem value="open">Mở</SelectItem>
                   <SelectItem value="in_progress">Đang xử lý</SelectItem>

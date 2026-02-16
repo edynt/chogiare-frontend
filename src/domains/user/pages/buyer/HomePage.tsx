@@ -324,6 +324,7 @@ export default function HomePage() {
                     limit: 30,
                   }}
                   maxProducts={30}
+                  viewAllLink="/products?promoted=true"
                 />
               </div>
             </LazySection>
@@ -366,6 +367,7 @@ export default function HomePage() {
                     limit: 30,
                   }}
                   maxProducts={30}
+                  viewAllLink="/products?sortBy=viewCount&sortOrder=desc"
                 />
               </div>
             )}
@@ -400,6 +402,7 @@ export default function HomePage() {
                     limit: 30,
                   }}
                   maxProducts={30}
+                  viewAllLink="/products?sortBy=createdAt&sortOrder=desc"
                 />
               </div>
             )}
@@ -427,7 +430,7 @@ export default function HomePage() {
                     </Link>
                   </Button>
                 </div>
-                <InfiniteProductGrid filters={{ limit: 30 }} maxProducts={30} />
+                <InfiniteProductGrid filters={{ limit: 30 }} maxProducts={30} viewAllLink="/products?discount=true" />
               </div>
             )}
           </LazySection>
@@ -454,7 +457,7 @@ export default function HomePage() {
                     </Link>
                   </Button>
                 </div>
-                <InfiniteProductGrid filters={{ limit: 30 }} maxProducts={30} />
+                <InfiniteProductGrid filters={{ limit: 30 }} maxProducts={30} viewAllLink="/products" />
               </div>
             )}
           </LazySection>

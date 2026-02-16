@@ -266,6 +266,7 @@ export interface SearchFilters {
   pageSize?: number | undefined
   limit?: number | undefined
   offset?: number | undefined
+  cursor?: number | undefined
 }
 
 export interface PaginatedResponse<T> {
@@ -274,6 +275,7 @@ export interface PaginatedResponse<T> {
   page: number
   pageSize: number
   totalPages: number
+  nextCursor?: number | null
 }
 
 export interface ApiResponse<T> {

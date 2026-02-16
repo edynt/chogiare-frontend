@@ -87,7 +87,10 @@ export default function TopUpPage() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('vi-VN', {
+    // Backend returns BigInt timestamps as strings (e.g. "1707900000000")
+    const timestamp = Number(dateString)
+    const date = isNaN(timestamp) ? new Date(dateString) : new Date(timestamp)
+    return date.toLocaleString('vi-VN', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',

@@ -49,7 +49,7 @@ import type { SupportTicket } from '@admin/api/admin'
 
 export default function CustomerSupportPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('active')
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(
@@ -64,7 +64,7 @@ export default function CustomerSupportPage() {
     page,
     pageSize,
     search: searchQuery || undefined,
-    status: statusFilter !== 'all' ? statusFilter : undefined,
+    status: statusFilter !== 'all' ? statusFilter : undefined, // 'active' excludes resolved/closed on backend
     priority: priorityFilter !== 'all' ? priorityFilter : undefined,
     category: categoryFilter !== 'all' ? categoryFilter : undefined,
   })
@@ -342,6 +342,7 @@ export default function CustomerSupportPage() {
                       <SelectValue placeholder="Trạng thái" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="active">Đang hoạt động</SelectItem>
                       <SelectItem value="all">Tất cả trạng thái</SelectItem>
                       <SelectItem value="open">Mở</SelectItem>
                       <SelectItem value="in_progress">Đang xử lý</SelectItem>
@@ -571,13 +572,53 @@ export default function CustomerSupportPage() {
                               {getPriorityLabel(selectedTicket.priority)}
                             </Badge>
                           </div>
-                          <div className="flex justify-between">
+                          <div className="flex justify-between items-center">
                             <span className="text-gray-500">Trạng thái:</span>
-                            <Badge
-                              className={getStatusColor(selectedTicket.status)}
+                            <Select
+                              value={selectedTicket.status}
+                              onValueChange={value => {
+                                updateStatusMutation.mutate(
+                                  { id: selectedTicket.id, status: value },
+                                  {
+                                    onSuccess: () => {
+                                      toast.success('Đã cập nhật trạng thái')
+                                      setSelectedTicket({
+                                        ...selectedTicket,
+                                        status: value as SupportTicket['status'],
+                                      })
+                                    },
+                                    onError: () => {
+                                      toast.error(
+                                        'Có lỗi xảy ra khi cập nhật trạng thái'
+                                      )
+                                    },
+                                  }
+                                )
+                              }}
                             >
-                              {getStatusLabel(selectedTicket.status)}
-                            </Badge>
+                              <SelectTrigger className="w-36 h-7">
+                                <Badge
+                                  className={getStatusColor(
+                                    selectedTicket.status
+                                  )}
+                                >
+                                  {getStatusLabel(selectedTicket.status)}
+                                </Badge>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="open">Mở</SelectItem>
+                                <SelectItem value="in_progress">
+                                  Đang xử lý
+                                </SelectItem>
+                                <SelectItem value="pending">
+                                  Chờ phản hồi
+                                </SelectItem>
+                                <SelectItem value="resolved">
+                                  Đã giải quyết
+                                </SelectItem>
+                                <SelectItem value="closed">Đã đóng</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-500">Phụ trách:</span>

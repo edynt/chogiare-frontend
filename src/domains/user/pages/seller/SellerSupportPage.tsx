@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { toast } from 'sonner'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
 import {
@@ -7,6 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@shared/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@shared/components/ui/dialog'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import { Textarea } from '@shared/components/ui/textarea'
@@ -26,207 +34,164 @@ import {
   CheckCircle,
   Clock,
   Send,
-  FileText,
   HelpCircle,
+  Loader2,
+  Eye,
+  User,
 } from 'lucide-react'
+import {
+  supportTicketApi,
+  type SupportTicket,
+  type SupportTicketDetail,
+} from '@/domains/user/api/support-tickets'
+
+// Enum mappings matching backend constants
+const CATEGORY_MAP: Record<number, string> = {
+  0: 'Tài khoản',
+  1: 'Sản phẩm',
+  2: 'Thanh toán',
+  3: 'Kỹ thuật',
+  4: 'Báo cáo',
+  5: 'Câu hỏi',
+  6: 'Khác',
+}
+
+const PRIORITY_MAP: Record<number, { label: string; color: string }> = {
+  0: { label: 'Thấp', color: 'bg-green-100 text-green-800' },
+  1: { label: 'Trung bình', color: 'bg-yellow-100 text-yellow-800' },
+  2: { label: 'Cao', color: 'bg-red-100 text-red-800' },
+  3: { label: 'Khẩn cấp', color: 'bg-red-200 text-red-900' },
+}
+
+const STATUS_MAP: Record<number, { label: string; color: string }> = {
+  0: { label: 'Mở', color: 'bg-red-100 text-red-800' },
+  1: { label: 'Đang xử lý', color: 'bg-blue-100 text-blue-800' },
+  2: { label: 'Chờ phản hồi', color: 'bg-yellow-100 text-yellow-800' },
+  3: { label: 'Đã giải quyết', color: 'bg-green-100 text-green-800' },
+  4: { label: 'Đã đóng', color: 'bg-gray-100 text-gray-800' },
+}
+
+function getTimeAgo(timestamp: string) {
+  const ms = Date.now() - Number(timestamp)
+  const minutes = Math.floor(ms / 60000)
+  const hours = Math.floor(ms / 3600000)
+  const days = Math.floor(ms / 86400000)
+
+  if (minutes < 60) return `${minutes} phút trước`
+  if (hours < 24) return `${hours} giờ trước`
+  return `${days} ngày trước`
+}
 
 export default function SellerSupportPage() {
+  const queryClient = useQueryClient()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [newTicket, setNewTicket] = useState({
     title: '',
     category: '',
-    priority: 'medium',
+    priority: '1',
     description: '',
   })
 
-  // Mock data - tickets của seller
-  const tickets = [
-    {
-      id: 'TICKET-001',
-      title: 'Sản phẩm bị từ chối không rõ lý do',
-      category: 'product',
-      priority: 'high',
-      status: 'open',
-      createdAt: '2024-01-26T10:30:00Z',
-      updatedAt: '2024-01-26T14:20:00Z',
-      lastReply: '2024-01-26T14:20:00Z',
-      replies: 2,
-      description:
-        'Sản phẩm iPhone 14 Pro Max của tôi bị từ chối nhưng không có lý do cụ thể. Tôi đã tuân thủ đầy đủ các quy định về hình ảnh và mô tả sản phẩm.',
-    },
-    {
-      id: 'TICKET-002',
-      title: 'Yêu cầu rút tiền bị chậm',
-      category: 'payment',
-      priority: 'high',
-      status: 'in_progress',
-      createdAt: '2024-01-24T11:20:00Z',
-      updatedAt: '2024-01-25T16:30:00Z',
-      lastReply: '2024-01-25T16:30:00Z',
-      replies: 3,
-      description:
-        'Yêu cầu rút tiền 5 triệu VNĐ đã được gửi từ 3 ngày trước nhưng vẫn chưa được xử lý.',
-    },
-    {
-      id: 'TICKET-003',
-      title: 'Hướng dẫn sử dụng tính năng quảng cáo',
-      category: 'question',
-      priority: 'low',
-      status: 'resolved',
-      createdAt: '2024-01-22T16:20:00Z',
-      updatedAt: '2024-01-23T11:30:00Z',
-      lastReply: '2024-01-23T11:30:00Z',
-      replies: 2,
-      description:
-        'Tôi muốn biết cách sử dụng tính năng quảng cáo mới. Có thể hướng dẫn chi tiết không?',
-    },
-    {
-      id: 'TICKET-004',
-      title: 'Lỗi hiển thị hình ảnh sản phẩm',
-      category: 'technical',
-      priority: 'medium',
-      status: 'resolved',
-      createdAt: '2024-01-23T14:15:00Z',
-      updatedAt: '2024-01-24T10:45:00Z',
-      lastReply: '2024-01-24T10:45:00Z',
-      replies: 4,
-      description:
-        'Hình ảnh sản phẩm không hiển thị đúng trên trang chi tiết. Một số hình ảnh bị méo hoặc không load được.',
-    },
-  ]
+  const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null)
+  const [replyMessage, setReplyMessage] = useState('')
 
-  const filteredTickets = tickets.filter(ticket => {
+  const { data, isLoading } = useQuery({
+    queryKey: ['my-support-tickets'],
+    queryFn: () => supportTicketApi.getMyTickets({ pageSize: 50 }),
+  })
+
+  const { data: ticketDetail, isLoading: isLoadingDetail } = useQuery({
+    queryKey: ['support-ticket-detail', selectedTicketId],
+    queryFn: () => supportTicketApi.getById(selectedTicketId!),
+    enabled: selectedTicketId !== null,
+  })
+
+  const replyMutation = useMutation({
+    mutationFn: ({ ticketId, message }: { ticketId: number; message: string }) =>
+      supportTicketApi.reply(ticketId, message),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['support-ticket-detail', selectedTicketId] })
+      queryClient.invalidateQueries({ queryKey: ['my-support-tickets'] })
+      setReplyMessage('')
+      toast.success('Phản hồi đã được gửi')
+    },
+    onError: () => {
+      toast.error('Gửi phản hồi thất bại')
+    },
+  })
+
+  const createMutation = useMutation({
+    mutationFn: supportTicketApi.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-support-tickets'] })
+      setShowCreateForm(false)
+      setNewTicket({ title: '', category: '', priority: '1', description: '' })
+      setFormErrors({})
+      setIsSubmitting(false)
+      toast.success('Ticket đã được gửi thành công!', {
+        description: 'Xin lỗi bạn vì sự bất tiện này. Đội ngũ hỗ trợ sẽ phản hồi trong thời gian sớm nhất.',
+      })
+    },
+    onError: () => {
+      setIsSubmitting(false)
+      toast.error('Gửi ticket thất bại', {
+        description: 'Vui lòng thử lại sau.',
+      })
+    },
+  })
+
+  const tickets = data?.items || []
+
+  const filteredTickets = tickets.filter((ticket: SupportTicket) => {
     const matchesSearch =
       ticket.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.id.toLowerCase().includes(searchQuery.toLowerCase())
+      ticket.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesStatus =
-      statusFilter === 'all' || ticket.status === statusFilter
+      statusFilter === 'all' || ticket.status === Number(statusFilter)
     const matchesCategory =
-      categoryFilter === 'all' || ticket.category === categoryFilter
+      categoryFilter === 'all' || ticket.category === Number(categoryFilter)
     return matchesSearch && matchesStatus && matchesCategory
   })
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return 'bg-red-100 text-red-800'
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'low':
-        return 'bg-green-100 text-green-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {}
+    if (!newTicket.title || newTicket.title.trim().length < 2) {
+      errors.title = 'Tiêu đề phải có ít nhất 2 ký tự'
     }
-  }
-
-  const getPriorityLabel = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return 'Cao'
-      case 'medium':
-        return 'Trung bình'
-      case 'low':
-        return 'Thấp'
-      default:
-        return priority
+    if (!newTicket.category) {
+      errors.category = 'Vui lòng chọn danh mục'
     }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'open':
-        return 'bg-red-100 text-red-800'
-      case 'in_progress':
-        return 'bg-blue-100 text-blue-800'
-      case 'resolved':
-        return 'bg-green-100 text-green-800'
-      case 'closed':
-        return 'bg-gray-100 text-gray-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
+    if (!newTicket.description || newTicket.description.trim().length < 2) {
+      errors.description = 'Mô tả phải có ít nhất 2 ký tự'
     }
-  }
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'open':
-        return 'Mở'
-      case 'in_progress':
-        return 'Đang xử lý'
-      case 'resolved':
-        return 'Đã giải quyết'
-      case 'closed':
-        return 'Đã đóng'
-      default:
-        return status
-    }
-  }
-
-  const getCategoryLabel = (category: string) => {
-    switch (category) {
-      case 'product':
-        return 'Sản phẩm'
-      case 'payment':
-        return 'Thanh toán'
-      case 'technical':
-        return 'Kỹ thuật'
-      case 'question':
-        return 'Câu hỏi'
-      case 'account':
-        return 'Tài khoản'
-      default:
-        return category
-    }
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
-
-  const getTimeAgo = (dateString: string) => {
-    const now = new Date()
-    const date = new Date(dateString)
-    const diffInHours = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-    )
-
-    if (diffInHours < 1) return 'Vừa xong'
-    if (diffInHours < 24) return `${diffInHours} giờ trước`
-    const diffInDays = Math.floor(diffInHours / 24)
-    return `${diffInDays} ngày trước`
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
   }
 
   const handleCreateTicket = () => {
-    if (newTicket.title && newTicket.category && newTicket.description) {
-      // Handle create ticket logic here
-      console.log('Creating ticket:', newTicket)
-      setShowCreateForm(false)
-      setNewTicket({
-        title: '',
-        category: '',
-        priority: 'medium',
-        description: '',
-      })
-    }
+    if (!validateForm()) return
+    setIsSubmitting(true)
+    createMutation.mutate({
+      title: newTicket.title.trim(),
+      description: newTicket.description.trim(),
+      category: Number(newTicket.category),
+      priority: Number(newTicket.priority),
+    })
   }
 
   const totalTickets = tickets.length
-  const openTickets = tickets.filter(ticket => ticket.status === 'open').length
+  const openTickets = tickets.filter((t: SupportTicket) => t.status === 0).length
   const inProgressTickets = tickets.filter(
-    ticket => ticket.status === 'in_progress'
+    (t: SupportTicket) => t.status === 1
   ).length
   const resolvedTickets = tickets.filter(
-    ticket => ticket.status === 'resolved'
+    (t: SupportTicket) => t.status === 3
   ).length
 
   return (
@@ -328,10 +293,13 @@ export default function SellerSupportPage() {
                   <Input
                     placeholder="Nhập tiêu đề ticket..."
                     value={newTicket.title}
-                    onChange={e =>
+                    onChange={e => {
                       setNewTicket({ ...newTicket, title: e.target.value })
-                    }
+                      if (formErrors.title) setFormErrors(prev => ({ ...prev, title: '' }))
+                    }}
+                    className={formErrors.title ? 'border-red-500' : ''}
                   />
+                  {formErrors.title && <p className="text-sm text-red-500 mt-1">{formErrors.title}</p>}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -348,11 +316,12 @@ export default function SellerSupportPage() {
                         <SelectValue placeholder="Chọn danh mục" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="product">Sản phẩm</SelectItem>
-                        <SelectItem value="payment">Thanh toán</SelectItem>
-                        <SelectItem value="technical">Kỹ thuật</SelectItem>
-                        <SelectItem value="question">Câu hỏi</SelectItem>
-                        <SelectItem value="account">Tài khoản</SelectItem>
+                        <SelectItem value="0">Tài khoản</SelectItem>
+                        <SelectItem value="1">Sản phẩm</SelectItem>
+                        <SelectItem value="2">Thanh toán</SelectItem>
+                        <SelectItem value="3">Kỹ thuật</SelectItem>
+                        <SelectItem value="5">Câu hỏi</SelectItem>
+                        <SelectItem value="6">Khác</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -370,9 +339,9 @@ export default function SellerSupportPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="low">Thấp</SelectItem>
-                        <SelectItem value="medium">Trung bình</SelectItem>
-                        <SelectItem value="high">Cao</SelectItem>
+                        <SelectItem value="0">Thấp</SelectItem>
+                        <SelectItem value="1">Trung bình</SelectItem>
+                        <SelectItem value="2">Cao</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -384,14 +353,17 @@ export default function SellerSupportPage() {
                   <Textarea
                     placeholder="Mô tả vấn đề hoặc yêu cầu của bạn..."
                     value={newTicket.description}
-                    onChange={e =>
+                    onChange={e => {
                       setNewTicket({
                         ...newTicket,
                         description: e.target.value,
                       })
-                    }
+                      if (formErrors.description) setFormErrors(prev => ({ ...prev, description: '' }))
+                    }}
                     rows={5}
+                    className={formErrors.description ? 'border-red-500' : ''}
                   />
+                  {formErrors.description && <p className="text-sm text-red-500 mt-1">{formErrors.description}</p>}
                 </div>
                 <div className="flex items-center justify-end gap-2">
                   <Button
@@ -400,8 +372,15 @@ export default function SellerSupportPage() {
                   >
                     Hủy
                   </Button>
-                  <Button onClick={handleCreateTicket}>
-                    <Send className="h-4 w-4 mr-2" />
+                  <Button
+                    onClick={handleCreateTicket}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4 mr-2" />
+                    )}
                     Gửi ticket
                   </Button>
                 </div>
@@ -417,7 +396,7 @@ export default function SellerSupportPage() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
-                      placeholder="Tìm kiếm theo ID, tiêu đề..."
+                      placeholder="Tìm kiếm theo tiêu đề..."
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
                       className="pl-10"
@@ -431,10 +410,10 @@ export default function SellerSupportPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                      <SelectItem value="open">Mở</SelectItem>
-                      <SelectItem value="in_progress">Đang xử lý</SelectItem>
-                      <SelectItem value="resolved">Đã giải quyết</SelectItem>
-                      <SelectItem value="closed">Đã đóng</SelectItem>
+                      <SelectItem value="0">Mở</SelectItem>
+                      <SelectItem value="1">Đang xử lý</SelectItem>
+                      <SelectItem value="3">Đã giải quyết</SelectItem>
+                      <SelectItem value="4">Đã đóng</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select
@@ -446,11 +425,11 @@ export default function SellerSupportPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Tất cả danh mục</SelectItem>
-                      <SelectItem value="product">Sản phẩm</SelectItem>
-                      <SelectItem value="payment">Thanh toán</SelectItem>
-                      <SelectItem value="technical">Kỹ thuật</SelectItem>
-                      <SelectItem value="question">Câu hỏi</SelectItem>
-                      <SelectItem value="account">Tài khoản</SelectItem>
+                      <SelectItem value="0">Tài khoản</SelectItem>
+                      <SelectItem value="1">Sản phẩm</SelectItem>
+                      <SelectItem value="2">Thanh toán</SelectItem>
+                      <SelectItem value="3">Kỹ thuật</SelectItem>
+                      <SelectItem value="5">Câu hỏi</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -466,70 +445,187 @@ export default function SellerSupportPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {filteredTickets.length === 0 ? (
-                  <div className="text-center py-12">
-                    <HelpCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500">Không tìm thấy ticket nào</p>
-                  </div>
-                ) : (
-                  filteredTickets.map(ticket => (
-                    <div
-                      key={ticket.id}
-                      className="p-4 border rounded-lg hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-medium text-gray-900">
-                              {ticket.title}
-                            </h3>
-                            <Badge
-                              className={getPriorityColor(ticket.priority)}
-                            >
-                              {getPriorityLabel(ticket.priority)}
-                            </Badge>
-                            <Badge className={getStatusColor(ticket.status)}>
-                              {getStatusLabel(ticket.status)}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-gray-500 mb-2">
-                            {ticket.id}
-                          </p>
-                          <p className="text-sm text-gray-600 line-clamp-2">
-                            {ticket.description}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <MessageSquare className="h-3 w-3" />
-                            <span>{ticket.replies} phản hồi</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            <span>{getTimeAgo(ticket.createdAt)}</span>
-                          </div>
-                          <Badge variant="outline">
-                            {getCategoryLabel(ticket.category)}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button variant="outline" size="sm">
-                            <FileText className="h-4 w-4 mr-1" />
-                            Xem chi tiết
-                          </Button>
-                        </div>
-                      </div>
+              {isLoading ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredTickets.length === 0 ? (
+                    <div className="text-center py-12">
+                      <HelpCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-500">
+                        Không tìm thấy ticket nào
+                      </p>
                     </div>
-                  ))
-                )}
-              </div>
+                  ) : (
+                    filteredTickets.map((ticket: SupportTicket) => (
+                      <div
+                        key={ticket.id}
+                        className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => setSelectedTicketId(ticket.id)}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-medium text-gray-900">
+                                {ticket.title}
+                              </h3>
+                              <Badge
+                                className={
+                                  PRIORITY_MAP[ticket.priority]?.color ||
+                                  'bg-gray-100 text-gray-800'
+                                }
+                              >
+                                {PRIORITY_MAP[ticket.priority]?.label ||
+                                  'N/A'}
+                              </Badge>
+                              <Badge
+                                className={
+                                  STATUS_MAP[ticket.status]?.color ||
+                                  'bg-gray-100 text-gray-800'
+                                }
+                              >
+                                {STATUS_MAP[ticket.status]?.label || 'N/A'}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-500 mb-2">
+                              #{ticket.id}
+                            </p>
+                            <p className="text-sm text-gray-600 line-clamp-2">
+                              {ticket.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
+                            <div className="flex items-center gap-1">
+                              <MessageSquare className="h-3 w-3" />
+                              <span>{ticket.replies} phản hồi</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              <span>{getTimeAgo(ticket.createdAt)}</span>
+                            </div>
+                            <Badge variant="outline">
+                              {CATEGORY_MAP[ticket.category] || 'Khác'}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
+
+        {/* Ticket Detail Dialog */}
+        <Dialog open={selectedTicketId !== null} onOpenChange={(open) => { if (!open) setSelectedTicketId(null) }}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Chi tiết ticket</DialogTitle>
+            </DialogHeader>
+            {isLoadingDetail ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+              </div>
+            ) : ticketDetail ? (
+              <div className="space-y-4">
+                {/* Ticket info */}
+                <div>
+                  <h3 className="text-lg font-semibold">{ticketDetail.title}</h3>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge className={PRIORITY_MAP[ticketDetail.priority]?.color || 'bg-gray-100 text-gray-800'}>
+                      {PRIORITY_MAP[ticketDetail.priority]?.label || 'N/A'}
+                    </Badge>
+                    <Badge className={STATUS_MAP[ticketDetail.status]?.color || 'bg-gray-100 text-gray-800'}>
+                      {STATUS_MAP[ticketDetail.status]?.label || 'N/A'}
+                    </Badge>
+                    <Badge variant="outline">{CATEGORY_MAP[ticketDetail.category] || 'Khác'}</Badge>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{ticketDetail.description}</p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    Gửi lúc: {new Date(Number(ticketDetail.createdAt)).toLocaleString('vi-VN')}
+                  </p>
+                </div>
+
+                {/* Replies */}
+                <div>
+                  <h4 className="font-medium mb-3 flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4" />
+                    Phản hồi ({Array.isArray(ticketDetail.replies) ? ticketDetail.replies.length : 0})
+                  </h4>
+                  {Array.isArray(ticketDetail.replies) && ticketDetail.replies.length > 0 ? (
+                    <div className="space-y-3">
+                      {ticketDetail.replies.map((reply) => (
+                        <div
+                          key={reply.id}
+                          className={`p-3 rounded-lg ${reply.isInternal ? 'bg-blue-50 border-l-4 border-blue-400' : 'bg-gray-50 border-l-4 border-gray-300'}`}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              <User className="h-3 w-3 text-gray-500" />
+                              <span className="text-sm font-medium">
+                                {reply.isInternal ? 'Quản trị viên' : (reply.user?.fullName || reply.user?.email || 'Bạn')}
+                              </span>
+                              {reply.isInternal && (
+                                <Badge className="bg-blue-100 text-blue-700 text-xs">Admin</Badge>
+                              )}
+                            </div>
+                            <span className="text-xs text-gray-400">
+                              {new Date(Number(reply.createdAt)).toLocaleString('vi-VN')}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap">{reply.message}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-400 text-center py-4">Chưa có phản hồi nào</p>
+                  )}
+                </div>
+
+                {/* Reply input */}
+                <div className="border-t pt-4">
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    Gửi phản hồi
+                  </label>
+                  <div className="flex gap-2">
+                    <Textarea
+                      placeholder="Nhập nội dung phản hồi..."
+                      value={replyMessage}
+                      onChange={e => setReplyMessage(e.target.value)}
+                      rows={2}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={() => {
+                        if (!replyMessage.trim() || !selectedTicketId) return
+                        replyMutation.mutate({ ticketId: selectedTicketId, message: replyMessage.trim() })
+                      }}
+                      disabled={replyMutation.isPending || !replyMessage.trim()}
+                      size="icon"
+                      className="self-end h-10 w-10"
+                    >
+                      {replyMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </DialogContent>
+        </Dialog>
       </main>
       <Footer />
     </div>

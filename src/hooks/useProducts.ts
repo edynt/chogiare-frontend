@@ -79,6 +79,29 @@ export const useInfiniteBuyerProducts = (
   })
 }
 
+/**
+ * Cursor-based infinite scroll for buyer pages.
+ * Uses product ID as cursor for efficient pagination.
+ */
+export const useCursorBuyerProducts = (
+  filters: Omit<SearchFilters, 'page' | 'cursor'> = {}
+) => {
+  const buyerFilters = { ...filters, status: 'active' as const }
+  return useInfiniteQuery({
+    queryKey: ['products', 'cursor', 'buyer', buyerFilters],
+    queryFn: ({ pageParam }: { pageParam: number | undefined }) => {
+      return productsApi.getProducts({
+        ...buyerFilters,
+        cursor: pageParam,
+        limit: filters.limit || 20,
+      })
+    },
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    initialPageParam: undefined as number | undefined,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
 export const useProduct = (id: string) => {
   return useQuery({
     queryKey: ['product', id],

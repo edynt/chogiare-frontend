@@ -704,10 +704,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               <span>Bảo hành chính hãng</span>
             </div>
             <div className="flex items-center gap-2">
-              <Truck className="h-4 w-4 text-blue-500" />
-              <span>Giao hàng nhanh</span>
-            </div>
-            <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-orange-500" />
               <span>{product.location}</span>
             </div>
@@ -1614,16 +1610,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                       <p className="text-sm text-muted-foreground">
                         Viết mô tả rõ ràng, nêu bật ưu điểm và đặc điểm nổi bật
                         của sản phẩm.
-                      </p>
-                    </div>
-                    <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Truck className="h-5 w-5 text-orange-600" />
-                        <h5 className="font-semibold">Giao hàng nhanh</h5>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Đảm bảo giao hàng đúng hẹn để tăng uy tín và nhận được
-                        đánh giá tốt.
                       </p>
                     </div>
                   </div>

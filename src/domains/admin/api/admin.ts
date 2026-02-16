@@ -1193,7 +1193,11 @@ export const adminApi = {
         '/admin/tickets',
         { params }
       )
-      return response.data.data
+      // Handle double-nesting from TransformInterceptor
+      const result = response.data.data
+      return 'data' in result
+        ? (result as unknown as { data: TicketListResponse }).data
+        : (result as unknown as TicketListResponse)
     } catch (error) {
       return handleApiError(error, {
         items: [],
@@ -1209,7 +1213,10 @@ export const adminApi = {
     const response = await apiClient.get<ApiResponse<SupportTicket>>(
       `/admin/tickets/${id}`
     )
-    return response.data.data
+    const result = response.data.data
+    return 'data' in result
+      ? (result as unknown as { data: SupportTicket }).data
+      : (result as unknown as SupportTicket)
   },
 
   getTicketStats: async (): Promise<TicketStats> => {
@@ -1217,7 +1224,10 @@ export const adminApi = {
       const response = await apiClient.get<ApiResponse<TicketStats>>(
         '/admin/tickets/stats'
       )
-      return response.data.data
+      const result = response.data.data
+      return 'data' in result
+        ? (result as unknown as { data: TicketStats }).data
+        : (result as unknown as TicketStats)
     } catch (error) {
       return handleApiError(error, {
         total: 0,
@@ -1237,7 +1247,10 @@ export const adminApi = {
       `/admin/tickets/${id}/status`,
       { status }
     )
-    return response.data.data
+    const result = response.data.data
+    return 'data' in result
+      ? (result as unknown as { data: SupportTicket }).data
+      : (result as unknown as SupportTicket)
   },
 
   assignTicket: async (
@@ -1248,7 +1261,10 @@ export const adminApi = {
       `/admin/tickets/${id}/assign`,
       { assignedTo }
     )
-    return response.data.data
+    const result = response.data.data
+    return 'data' in result
+      ? (result as unknown as { data: SupportTicket }).data
+      : (result as unknown as SupportTicket)
   },
 
   replyToTicket: async (id: string, message: string): Promise<TicketReply> => {
@@ -1256,7 +1272,10 @@ export const adminApi = {
       `/admin/tickets/${id}/replies`,
       { message }
     )
-    return response.data.data
+    const result = response.data.data
+    return 'data' in result
+      ? (result as unknown as { data: TicketReply }).data
+      : (result as unknown as TicketReply)
   },
 
   // Reports APIs
@@ -1759,7 +1778,7 @@ export interface AdminHeaderNotification {
   title: string
   time: string
   unread: boolean
-  type: 'user' | 'product' | 'order'
+  type: 'user' | 'product' | 'order' | 'ticket'
   link: string
 }
 

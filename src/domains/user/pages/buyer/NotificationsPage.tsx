@@ -80,7 +80,8 @@ export default function NotificationsPage() {
   const unreadCount = notificationsData?.unreadCount || 0
 
   const getTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
+    const timestamp = Number(dateString)
+    const date = isNaN(timestamp) ? new Date(dateString) : new Date(timestamp)
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
     const diffMins = Math.floor(diffMs / 60000)

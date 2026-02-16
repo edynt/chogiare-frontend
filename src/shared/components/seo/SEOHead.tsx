@@ -12,8 +12,8 @@ interface SEOHeadProps {
 
 export function SEOHead({
   title = 'Chogiare - Mua sắm trực tuyến giá rẻ',
-  description = 'Chogiare - Nền tảng mua sắm trực tuyến hàng đầu Việt Nam với hàng triệu sản phẩm chất lượng, giá cả hợp lý và giao hàng nhanh chóng.',
-  keywords = 'mua sắm online, thương mại điện tử, sản phẩm giá rẻ, giao hàng nhanh, Việt Nam',
+  description = 'Chogiare - Nền tảng mua sắm trực tuyến hàng đầu Việt Nam với hàng triệu sản phẩm chất lượng và giá cả hợp lý.',
+  keywords = 'mua sắm online, thương mại điện tử, sản phẩm giá rẻ, Việt Nam',
   image = '/og-image.jpg',
   url = 'https://chogiare.com',
   type: _type = 'website',
