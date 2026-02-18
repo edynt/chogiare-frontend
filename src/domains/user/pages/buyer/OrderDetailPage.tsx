@@ -255,7 +255,7 @@ export default function OrderDetailPage() {
   const buyerPhone = order.buyerEmail || 'N/A'
   const fullAddress = order.shippingAddress || ''
   const buyerNotes = order.notes || ''
-  const orderNumber = order.id
+  const orderNumber = order.orderNo || order.id
 
   const handleConfirmOrder = async () => {
     if (!orderId) return

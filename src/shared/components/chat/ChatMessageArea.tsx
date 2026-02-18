@@ -153,7 +153,7 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
       id: `temp-${Date.now()}`,
       conversationId: convId,
       senderId: user?.id || 0,
-      messageType: 'text',
+      messageType: 0,
       content,
       isRead: false,
       createdAt: new Date().toISOString(),
@@ -176,7 +176,7 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
         // Fallback to REST API
         await sendMessageMutation.mutateAsync({
           conversationId: conversationId,
-          data: { content, messageType: 'text' },
+          data: { content, messageType: 0 },
         })
       }
       // Remove optimistic message after success (real message will come via socket or query refresh)
@@ -192,7 +192,7 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
       try {
         await sendMessageMutation.mutateAsync({
           conversationId: conversationId,
-          data: { content, messageType: 'text' },
+          data: { content, messageType: 0 },
         })
         // Remove optimistic message after success
         setRealtimeMessages(prev =>

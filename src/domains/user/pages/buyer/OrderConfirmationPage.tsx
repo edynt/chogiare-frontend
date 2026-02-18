@@ -85,7 +85,7 @@ export default function OrderConfirmationPage() {
                 Cảm ơn bạn đã đặt hàng tại Chogiare
               </p>
             </div>
-            {order.id && (
+            {(order.orderNo || order.id) && (
               <div className="inline-block">
                 <Card className="bg-primary/5 border-primary/20">
                   <CardContent className="p-4">
@@ -93,7 +93,7 @@ export default function OrderConfirmationPage() {
                       Mã đơn hàng
                     </p>
                     <p className="text-2xl font-bold font-mono text-primary">
-                      {order.id}
+                      {order.orderNo || order.id}
                     </p>
                   </CardContent>
                 </Card>

@@ -776,7 +776,7 @@ export function SellerDashboardContent() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-2">
                                 <h3 className="text-base font-bold text-foreground">
-                                  #{order.id}
+                                  #{order.orderNo || order.id}
                                 </h3>
                                 <Badge
                                   className={cn(

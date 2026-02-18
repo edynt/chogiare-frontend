@@ -193,7 +193,7 @@ export const useChatSocket = (options: UseChatSocketOptions = {}) => {
     async (
       conversationId: number,
       content: string,
-      messageType: string = 'text'
+      messageType: number = 0 // 0=text, 1=image, 2=file
     ) => {
       if (!socketRef.current?.connected) {
         throw new Error('Socket not connected')

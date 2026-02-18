@@ -129,7 +129,7 @@ export function AdminOrders() {
 
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-semibold">#{order.id}</h3>
+                      <h3 className="font-semibold">#{order.orderNo || order.id}</h3>
                       {getStatusIcon(order.status)}
                       {getStatusBadge(order.status)}
                     </div>

@@ -305,7 +305,7 @@ export function BoostProductModal({
             Hủy
           </Button>
           <Button
-            onClick={handleBoost}
+            onClick={handleRequestBoost}
             disabled={
               !selectedPackage ||
               currentBalance < (selectedPackage?.price ?? 0) ||
@@ -313,22 +313,80 @@ export function BoostProductModal({
             }
             className="bg-orange-500 hover:bg-orange-600"
           >
-            {boostMutation.isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Đang xử lý...
-              </>
-            ) : (
-              <>
-                <TrendingUp className="mr-2 h-4 w-4" />
-                Đẩy sản phẩm
-                {selectedPackage &&
-                  ` - ${formatCurrency(selectedPackage.price)}`}
-              </>
-            )}
+            <TrendingUp className="mr-2 h-4 w-4" />
+            Đẩy sản phẩm
+            {selectedPackage &&
+              ` - ${formatCurrency(selectedPackage.price)}`}
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-orange-500" />
+              Xác nhận đẩy sản phẩm
+            </DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn đẩy sản phẩm này?
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedPackage && (
+            <div className="space-y-3 py-2">
+              <div className="rounded-lg border p-3 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Sản phẩm</span>
+                  <span className="font-medium text-right max-w-[200px] truncate">{productTitle}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Gói đẩy</span>
+                  <span className="font-medium">{selectedPackage.displayName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Thời hạn</span>
+                  <span className="font-medium">{selectedPackage.durationDays} ngày</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Chi phí</span>
+                  <span className="font-bold text-orange-600">{formatCurrency(selectedPackage.price)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Số dư sau</span>
+                  <span className="font-medium text-green-600">{formatCurrency(currentBalance - selectedPackage.price)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setShowConfirm(false)} disabled={boostMutation.isPending}>
+              Hủy
+            </Button>
+            <Button
+              onClick={handleConfirmBoost}
+              disabled={boostMutation.isPending}
+              className="bg-orange-500 hover:bg-orange-600"
+            >
+              {boostMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Xác nhận đẩy
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   )
 }

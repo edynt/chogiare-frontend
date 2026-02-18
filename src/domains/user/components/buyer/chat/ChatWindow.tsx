@@ -179,7 +179,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
     setNewMessage('') // Clear input immediately for better UX
 
     try {
-      await sendSocketMessage(parseInt(chatId), messageContent, 'text')
+      await sendSocketMessage(parseInt(chatId), messageContent, 0)
     } catch (error) {
       // Restore message if send failed
       setNewMessage(messageContent)

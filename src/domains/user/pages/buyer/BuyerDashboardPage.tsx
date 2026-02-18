@@ -149,7 +149,7 @@ export default function BuyerDashboardPage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <h3 className="font-semibold">
-                              Đơn hàng #{order.id.slice(0, 8)}
+                              Đơn hàng #{order.orderNo || order.id}
                             </h3>
                             <Badge
                               className={

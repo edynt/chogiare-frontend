@@ -60,7 +60,6 @@ import {
   Shield,
   Truck,
   MessageCircle,
-  Mail,
   Eye,
   Minus,
   Plus,
@@ -103,7 +102,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const [showBoostDialog, setShowBoostDialog] = useState(false)
   const [quoteQuantity, setQuoteQuantity] = useState<string>('')
   const [quoteMessage, setQuoteMessage] = useState<string>('')
-  const [quoteMethod, setQuoteMethod] = useState<'chat' | 'email'>('chat')
   const [reviewRating, setReviewRating] = useState<number>(5)
   const [reviewComment, setReviewComment] = useState<string>('')
 
@@ -1944,91 +1942,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            {/* Method Selection */}
-            <div className="space-y-2">
-              <Label>Chọn phương thức gửi yêu cầu *</Label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setQuoteMethod('chat')}
-                  className={`p-4 border-2 rounded-lg transition-all ${
-                    quoteMethod === 'chat'
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        quoteMethod === 'chat' ? 'bg-blue-500' : 'bg-gray-200'
-                      }`}
-                    >
-                      <MessageCircle
-                        className={`h-5 w-5 ${
-                          quoteMethod === 'chat'
-                            ? 'text-white'
-                            : 'text-gray-600'
-                        }`}
-                      />
-                    </div>
-                    <div className="text-left">
-                      <p
-                        className={`font-semibold ${
-                          quoteMethod === 'chat'
-                            ? 'text-blue-600'
-                            : 'text-gray-700'
-                        }`}
-                      >
-                        Qua Chat
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Phản hồi nhanh
-                      </p>
-                    </div>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setQuoteMethod('email')}
-                  className={`p-4 border-2 rounded-lg transition-all ${
-                    quoteMethod === 'email'
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        quoteMethod === 'email' ? 'bg-blue-500' : 'bg-gray-200'
-                      }`}
-                    >
-                      <Mail
-                        className={`h-5 w-5 ${
-                          quoteMethod === 'email'
-                            ? 'text-white'
-                            : 'text-gray-600'
-                        }`}
-                      />
-                    </div>
-                    <div className="text-left">
-                      <p
-                        className={`font-semibold ${
-                          quoteMethod === 'email'
-                            ? 'text-blue-600'
-                            : 'text-gray-700'
-                        }`}
-                      >
-                        Qua Email
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Gửi email trực tiếp
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="quote-quantity">Số lượng cần báo giá *</Label>
               <Input
@@ -2055,10 +1968,8 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
             </div>
             <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-800">
-                <strong>Lưu ý:</strong> Yêu cầu báo giá của bạn sẽ được gửi đến
-                người bán{' '}
-                {quoteMethod === 'chat' ? 'qua hệ thống chat' : 'qua email'}.
-                Người bán sẽ phản hồi trong thời gian sớm nhất.
+                <strong>Lưu ý:</strong> Yêu cầu báo giá sẽ được gửi đến người
+                bán qua chat. Người bán sẽ phản hồi trong thời gian sớm nhất.
               </p>
             </div>
           </div>
@@ -2069,7 +1980,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 setShowQuoteDialog(false)
                 setQuoteQuantity('')
                 setQuoteMessage('')
-                setQuoteMethod('chat')
               }}
             >
               Hủy
@@ -2083,44 +1993,18 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   return
                 }
 
-                const quoteMsg = `Xin chào, tôi muốn xin báo giá cho sản phẩm "${product.title}" với số lượng ${quoteQuantity}${quoteMessage ? `\n\nYêu cầu: ${quoteMessage}` : ''}`
+                const quoteMsg = `Chào bạn, mình quan tâm đến sản phẩm "${product.title}" và muốn hỏi giá cho số lượng ${quoteQuantity} sản phẩm.${quoteMessage ? `\n\n${quoteMessage}` : ''}\n\nBạn có thể báo giá giúp mình được không? Cảm ơn bạn!`
 
-                if (quoteMethod === 'chat') {
-                  // Open chat popup with quote request
-                  handleChatWithSeller(quoteMsg)
-                } else {
-                  // Send via email
-                  const emailSubject = encodeURIComponent(
-                    `Yêu cầu báo giá sản phẩm: ${product.title}`
-                  )
-                  const emailBody = encodeURIComponent(message)
-                  const sellerEmail = product.seller?.email || ''
-                  if (sellerEmail) {
-                    window.location.href = `mailto:${sellerEmail}?subject=${emailSubject}&body=${emailBody}`
-                  } else {
-                    alert('Không tìm thấy email của người bán')
-                    return
-                  }
-                }
+                handleChatWithSeller(quoteMsg)
 
                 setShowQuoteDialog(false)
                 setQuoteQuantity('')
                 setQuoteMessage('')
-                setQuoteMethod('chat')
               }}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              {quoteMethod === 'chat' ? (
-                <>
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Gửi qua Chat
-                </>
-              ) : (
-                <>
-                  <Mail className="h-4 w-4 mr-2" />
-                  Gửi qua Email
-                </>
-              )}
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Gửi qua Chat
             </Button>
           </DialogFooter>
         </DialogContent>
