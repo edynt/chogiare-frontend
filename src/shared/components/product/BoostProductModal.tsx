@@ -50,6 +50,7 @@ export function BoostProductModal({
   const [selectedPackage, setSelectedPackage] = useState<BoostPackage | null>(
     null
   )
+  const [showConfirm, setShowConfirm] = useState(false)
 
   const { data: packages, isLoading: packagesLoading, error: packagesError } = useBoostPackages(isOpen)
   const { data: balance, isLoading: balanceLoading } = useWalletBalance()
@@ -62,23 +63,29 @@ export function BoostProductModal({
   const currentBalance = balance?.balance ?? 0
   const isAlreadyBoosted = boostStatus?.isPromoted ?? false
 
-  const handleBoost = async () => {
+  // Show confirmation dialog before boosting
+  const handleRequestBoost = () => {
     if (!selectedPackage) {
       toast.error('Vui lòng chọn gói đẩy sản phẩm')
       return
     }
-
     if (currentBalance < selectedPackage.price) {
       toast.error('Số dư không đủ. Vui lòng nạp thêm tiền vào ví.')
       return
     }
+    setShowConfirm(true)
+  }
 
+  // Execute boost after user confirms
+  const handleConfirmBoost = async () => {
+    if (!selectedPackage) return
     try {
       await boostMutation.mutateAsync({
         productId,
         packageId: selectedPackage.id,
       })
       toast.success('Đẩy sản phẩm thành công!')
+      setShowConfirm(false)
       onClose()
     } catch (error: unknown) {
       const message =
@@ -86,6 +93,7 @@ export function BoostProductModal({
           ? error.message
           : 'Có lỗi xảy ra khi đẩy sản phẩm'
       toast.error(message)
+      setShowConfirm(false)
     }
   }
 

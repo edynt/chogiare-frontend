@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client'
 import { useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/constants/queryKeys'
 import { useAuthStore } from '@/stores/authStore'
+import { notificationsApi } from '@user/api/notifications'
 import { toast } from 'sonner'
 
 export interface NotificationPayload {
@@ -50,6 +51,8 @@ export const useNotificationSocket = (
             ? {
                 label: 'Xem',
                 onClick: () => {
+                  // Mark as read then navigate
+                  notificationsApi.markAsRead(notification.id).catch(() => {})
                   window.location.href = notification.actionUrl!
                 },
               }
