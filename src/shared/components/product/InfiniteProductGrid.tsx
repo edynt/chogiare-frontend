@@ -31,6 +31,16 @@ interface InfiniteProductGridProps {
    * when maxProducts is reached or no more pages.
    */
   viewAllLink?: string
+  /**
+   * When true, returns null instead of EmptyProducts when no products found.
+   * Useful for homepage sections that should be completely hidden when empty.
+   */
+  hideWhenEmpty?: boolean
+  /**
+   * Called when data finishes loading and no products are found.
+   * Use to hide the parent section (header + grid) entirely.
+   */
+  onEmpty?: () => void
 }
 
 export function InfiniteProductGrid({
@@ -40,6 +50,8 @@ export function InfiniteProductGrid({
   buyerMode = true,
   maxProducts,
   viewAllLink,
+  hideWhenEmpty,
+  onEmpty,
 }: InfiniteProductGridProps) {
   // Use buyer hook by default to only show active products
   const buyerQuery = useInfiniteBuyerProducts(filters)
@@ -61,6 +73,13 @@ export function InfiniteProductGrid({
   const allProducts: Product[] = data?.pages.flatMap(page => page.items) || []
   const totalLoaded = allProducts.length
   const reachedMaxProducts = maxProducts !== undefined && totalLoaded >= maxProducts
+
+  // Notify parent when data loaded but no products found
+  useEffect(() => {
+    if (!isLoading && allProducts.length === 0 && onEmpty) {
+      onEmpty()
+    }
+  }, [isLoading, allProducts.length, onEmpty])
 
   // Intersection Observer để detect khi scroll đến cuối
   useEffect(() => {
@@ -114,7 +133,7 @@ export function InfiniteProductGrid({
   }
 
   if (products.length === 0) {
-    return <EmptyProducts />
+    return hideWhenEmpty ? null : <EmptyProducts />
   }
 
   return (

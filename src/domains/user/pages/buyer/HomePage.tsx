@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
@@ -132,6 +132,8 @@ export default function HomePage() {
   const boostedProducts = allProducts
     .filter(p => p.stock > 0 && p.isPromoted)
     .slice(0, 30)
+
+  const [hideBoosted, setHideBoosted] = useState(false)
 
   const displayCategories = categoriesList.slice(0, 8)
 
@@ -289,7 +291,7 @@ export default function HomePage() {
           </LazySection>
 
           {/* 0. Sản phẩm đang được đẩy (Boosted Products) - Show first */}
-          {boostedProducts.length > 0 && (
+          {boostedProducts.length > 0 && !hideBoosted && (
             <LazySection fallback={<HomePageSectionSkeleton />}>
               <div>
                 <div className="flex items-center justify-between mb-6">
@@ -325,6 +327,8 @@ export default function HomePage() {
                   }}
                   maxProducts={30}
                   viewAllLink="/products?promoted=true"
+                  hideWhenEmpty
+                  onEmpty={() => setHideBoosted(true)}
                 />
               </div>
             </LazySection>
