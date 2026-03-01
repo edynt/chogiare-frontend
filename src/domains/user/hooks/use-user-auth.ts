@@ -1,0 +1,158 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useLocation } from 'react-router-dom'
+import { authApi } from '@shared/api/auth'
+import { useAuthStore } from '@/stores/authStore'
+import { apiClient } from '@shared/api/axios'
+
+/**
+ * User Authentication Hooks
+ * Dedicated hooks for user authentication - no conditional logic
+ * All hooks directly call user-specific API endpoints
+ * Uses cookie-based authentication (HttpOnly cookies)
+ */
+
+/**
+ * User Login Hook
+ * Authenticates regular user - tokens stored as HttpOnly cookies by backend
+ * Redirects to home or intended page on success
+ */
+export const useUserLogin = () => {
+  const { login, setError } = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: authApi.login,
+    onSuccess: data => {
+      // Tokens are stored as HttpOnly cookies by the backend
+      // We only store user info in the store
+      login(data.user)
+      queryClient.setQueryData(['auth', 'profile', 'user'], data.user)
+      apiClient.clearRefreshFailureFlags()
+    },
+    onError: (error: Error) => {
+      setError(error.message)
+    },
+  })
+}
+
+/**
+ * User Profile Hook
+ * Fetches user profile using cookie-based authentication (HttpOnly cookies)
+ * Only enabled on non-admin routes (excluding auth pages)
+ */
+export const useUserProfile = (options?: { enabled?: boolean }) => {
+  const location = useLocation()
+
+  // Don't fetch on auth pages
+  const isAuthPage = location.pathname.startsWith('/auth')
+
+  // Don't fetch on admin pages
+  const isAdminPage = location.pathname.startsWith('/admin')
+
+  // Fetch on user pages (backend will check HttpOnly cookies)
+  const shouldFetch = !isAuthPage && !isAdminPage
+
+  const enabled = options?.enabled !== undefined ? options.enabled : shouldFetch
+
+  return useQuery({
+    queryKey: ['auth', 'profile', 'user'],
+    queryFn: authApi.getProfile,
+    enabled,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
+  })
+}
+
+/**
+ * User Logout Hook
+ * Clears user session and redirects to /auth/login
+ * Always calls user-specific logout endpoint
+ */
+export const useUserLogout = () => {
+  const { logout } = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: authApi.logout,
+    onSuccess: () => {
+      logout()
+      queryClient.clear()
+    },
+    onError: (error: Error) => {
+      // Even if API fails, clear local state
+      logout()
+      queryClient.clear()
+      console.error('User logout failed:', error)
+    },
+  })
+}
+
+/**
+ * User Registration Hook
+ * Registers new user account
+ */
+export const useUserRegister = () => {
+  const { setError } = useAuthStore()
+
+  return useMutation({
+    mutationFn: authApi.register,
+    onSuccess: data => {
+      console.log('Registration successful:', data)
+    },
+    onError: (error: Error) => {
+      setError(error.message)
+    },
+  })
+}
+
+/**
+ * User Forgot Password Hook
+ * Sends password reset email to user
+ */
+export const useUserForgotPassword = () => {
+  return useMutation({
+    mutationFn: authApi.forgotPassword,
+  })
+}
+
+/**
+ * User Reset Password Hook
+ * Resets user password with token from email
+ */
+export const useUserResetPassword = () => {
+  return useMutation({
+    mutationFn: ({ token, password }: { token: string; password: string }) =>
+      authApi.resetPassword(token, password),
+  })
+}
+
+/**
+ * User Change Password Hook
+ * Changes password for authenticated user
+ */
+export const useUserChangePassword = () => {
+  return useMutation({
+    mutationFn: ({
+      currentPassword,
+      newPassword,
+    }: {
+      currentPassword: string
+      newPassword: string
+    }) => authApi.changePassword(currentPassword, newPassword),
+  })
+}
+
+/**
+ * User Update Profile Hook
+ * Updates user profile information
+ */
+export const useUserUpdateProfile = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: authApi.updateProfile,
+    onSuccess: data => {
+      queryClient.setQueryData(['auth', 'profile', 'user'], data)
+    },
+  })
+}

@@ -8,6 +8,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@admin': path.resolve(__dirname, './src/domains/admin'),
+      '@user': path.resolve(__dirname, './src/domains/user'),
+      '@shared': path.resolve(__dirname, './src/shared'),
     },
   },
   server: {
@@ -18,6 +21,13 @@ export default defineConfig({
     },
     watch: {
       usePolling: false,
+    },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   build: {

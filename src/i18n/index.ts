@@ -109,7 +109,6 @@ export interface Translation {
     productDetails: string
     specifications: string
     questions: string
-    shipping: string
     warranty: string
     returnPolicy: string
   }
@@ -256,9 +255,9 @@ export interface Translation {
     title: string
     orderSummary: string
     paymentMethod: string
-    shippingAddress: string
+    deliveryAddress: string
     billingAddress: string
-    sameAsShipping: string
+    sameAsDelivery: string
     placeOrder: string
     securePayment: string
     trust: {
@@ -318,7 +317,7 @@ export const translations: Record<Language, Translation> = {
       contact: 'Liên hệ',
       terms: 'Điều khoản',
       privacy: 'Bảo mật',
-      copyright: 'Bản quyền'
+      copyright: 'Bản quyền',
     },
     nav: {
       home: 'Trang chủ',
@@ -328,7 +327,7 @@ export const translations: Record<Language, Translation> = {
       chat: 'Tin nhắn',
       admin: 'Quản trị',
       dashboard: 'Bảng điều khiển',
-      manageProducts: 'Quản lý sản phẩm'
+      manageProducts: 'Quản lý sản phẩm',
     },
     home: {
       title: 'Chogiare',
@@ -340,35 +339,32 @@ export const translations: Record<Language, Translation> = {
         items: [
           {
             title: 'Giá tốt nhất',
-            description: 'So sánh giá từ nhiều người bán để tìm được mức giá tốt nhất'
+            description:
+              'So sánh giá từ nhiều người bán để tìm được mức giá tốt nhất',
           },
           {
             title: 'Chất lượng đảm bảo',
-            description: 'Tất cả sản phẩm đều được kiểm duyệt kỹ lưỡng'
+            description: 'Tất cả sản phẩm đều được kiểm duyệt kỹ lưỡng',
           },
-          {
-            title: 'Giao hàng nhanh',
-            description: 'Nhận hàng trong 24-48 giờ tại các thành phố lớn'
-          }
-        ]
+        ],
       },
       trust: {
         title: 'Tin tưởng và an toàn',
         items: [
           {
             title: 'Bảo mật tuyệt đối',
-            description: 'Thông tin cá nhân được mã hóa và bảo vệ'
+            description: 'Thông tin cá nhân được mã hóa và bảo vệ',
           },
           {
             title: 'Thanh toán an toàn',
-            description: 'Hỗ trợ nhiều phương thức thanh toán bảo mật'
+            description: 'Hỗ trợ nhiều phương thức thanh toán bảo mật',
           },
           {
             title: 'Hỗ trợ 24/7',
-            description: 'Đội ngũ chăm sóc khách hàng luôn sẵn sàng'
-          }
-        ]
-      }
+            description: 'Đội ngũ chăm sóc khách hàng luôn sẵn sàng',
+          },
+        ],
+      },
     },
     product: {
       title: 'Chi tiết sản phẩm',
@@ -392,35 +388,36 @@ export const translations: Record<Language, Translation> = {
       productDetails: 'Chi tiết sản phẩm',
       specifications: 'Thông số kỹ thuật',
       questions: 'Câu hỏi',
-      shipping: 'Vận chuyển',
       warranty: 'Bảo hành',
-      returnPolicy: 'Chính sách đổi trả'
+      returnPolicy: 'Chính sách đổi trả',
     },
     category: {
       title: 'Danh mục sản phẩm',
       subtitle: 'Khám phá hàng nghìn sản phẩm được phân loại rõ ràng',
-      description: 'Khám phá hàng nghìn sản phẩm được phân loại rõ ràng, dễ dàng tìm kiếm',
+      description:
+        'Khám phá hàng nghìn sản phẩm được phân loại rõ ràng, dễ dàng tìm kiếm',
       featured: 'Danh mục nổi bật',
       trending: 'Danh mục đang hot',
       all: 'Tất cả danh mục',
       searchPlaceholder: 'Tìm kiếm danh mục...',
       viewMode: {
         grid: 'Lưới',
-        list: 'Danh sách'
+        list: 'Danh sách',
       },
       emptyState: {
         title: 'Không tìm thấy danh mục',
         description: 'Không có danh mục nào phù hợp với từ khóa tìm kiếm',
-        action: 'Xem tất cả danh mục'
+        action: 'Xem tất cả danh mục',
       },
       stats: {
         products: 'sản phẩm',
-        subcategories: 'danh mục con'
-      }
+        subcategories: 'danh mục con',
+      },
     },
     chat: {
       title: 'Tin nhắn',
-      subtitle: 'Liên hệ trực tiếp với người bán để được tư vấn và hỗ trợ tốt nhất',
+      subtitle:
+        'Liên hệ trực tiếp với người bán để được tư vấn và hỗ trợ tốt nhất',
       searchPlaceholder: 'Tìm kiếm cuộc trò chuyện...',
       selectChat: 'Chọn cuộc trò chuyện',
       typeMessage: 'Nhập tin nhắn...',
@@ -434,12 +431,13 @@ export const translations: Record<Language, Translation> = {
       trust: {
         security: 'Bảo mật tuyệt đối',
         fastResponse: 'Phản hồi nhanh',
-        support24: 'Hỗ trợ 24/7'
-      }
+        support24: 'Hỗ trợ 24/7',
+      },
     },
     admin: {
       title: 'Quản trị hệ thống',
-      subtitle: 'Quản lý toàn bộ hoạt động của nền tảng Chogiare - Nơi mua sắm giá tốt',
+      subtitle:
+        'Quản lý toàn bộ hoạt động của nền tảng Chogiare - Nơi mua sắm giá tốt',
       overview: 'Tổng quan',
       users: 'Người dùng',
       products: 'Sản phẩm',
@@ -452,7 +450,7 @@ export const translations: Record<Language, Translation> = {
         revenue: 'Doanh thu',
         activeUsers: 'đang hoạt động',
         newProducts: 'sản phẩm mới',
-        completedOrders: 'đã hoàn thành'
+        completedOrders: 'đã hoàn thành',
       },
       recentActivity: 'Hoạt động gần đây',
       quickActions: 'Thao tác nhanh',
@@ -468,7 +466,7 @@ export const translations: Record<Language, Translation> = {
       cancelledOrders: 'Đơn hàng hủy',
       security: 'Bảo mật',
       statistics: 'Thống kê',
-      generalSettings: 'Cấu hình chung'
+      generalSettings: 'Cấu hình chung',
     },
     auth: {
       login: {
@@ -479,7 +477,7 @@ export const translations: Record<Language, Translation> = {
         rememberMe: 'Ghi nhớ đăng nhập',
         forgotPassword: 'Quên mật khẩu?',
         noAccount: 'Chưa có tài khoản?',
-        signUp: 'Đăng ký ngay'
+        signUp: 'Đăng ký ngay',
       },
       register: {
         title: 'Đăng ký',
@@ -490,8 +488,8 @@ export const translations: Record<Language, Translation> = {
         confirmPassword: 'Xác nhận mật khẩu',
         agreeTerms: 'Tôi đồng ý với điều khoản sử dụng',
         haveAccount: 'Đã có tài khoản?',
-        signIn: 'Đăng nhập'
-      }
+        signIn: 'Đăng nhập',
+      },
     },
     productManagement: {
       title: 'Quản lý sản phẩm',
@@ -520,24 +518,24 @@ export const translations: Record<Language, Translation> = {
         total: 'Tổng số',
         active: 'Đang bán',
         sold: 'Đã bán',
-        outOfStock: 'Hết hàng'
-      }
+        outOfStock: 'Hết hàng',
+      },
     },
     payment: {
       title: 'Thanh toán',
       orderSummary: 'Tóm tắt đơn hàng',
       paymentMethod: 'Phương thức thanh toán',
-      shippingAddress: 'Địa chỉ giao hàng',
+      deliveryAddress: 'Địa chỉ giao hàng',
       billingAddress: 'Địa chỉ thanh toán',
-      sameAsShipping: 'Giống địa chỉ giao hàng',
+      sameAsDelivery: 'Giống địa chỉ giao hàng',
       placeOrder: 'Đặt hàng',
       securePayment: 'Thanh toán an toàn',
       trust: {
         secure: 'Bảo mật',
         encrypted: 'Mã hóa',
-        guaranteed: 'Đảm bảo'
-      }
-    }
+        guaranteed: 'Đảm bảo',
+      },
+    },
   },
   en: {
     common: {
@@ -587,7 +585,7 @@ export const translations: Record<Language, Translation> = {
       contact: 'Contact',
       terms: 'Terms',
       privacy: 'Privacy',
-      copyright: 'Copyright'
+      copyright: 'Copyright',
     },
     nav: {
       home: 'Home',
@@ -597,47 +595,49 @@ export const translations: Record<Language, Translation> = {
       chat: 'Messages',
       admin: 'Admin',
       dashboard: 'Dashboard',
-      manageProducts: 'Manage Products'
+      manageProducts: 'Manage Products',
     },
     home: {
       title: 'Chogiare',
       subtitle: 'Where to shop for good prices',
-      description: 'Discover thousands of quality products at reasonable prices',
+      description:
+        'Discover thousands of quality products at reasonable prices',
       cta: 'Start Shopping',
       features: {
         title: 'Why choose Chogiare?',
         items: [
           {
             title: 'Best Prices',
-            description: 'Compare prices from multiple sellers to find the best deals'
+            description:
+              'Compare prices from multiple sellers to find the best deals',
           },
           {
             title: 'Quality Guaranteed',
-            description: 'All products are carefully reviewed and verified'
+            description: 'All products are carefully reviewed and verified',
           },
           {
             title: 'Fast Delivery',
-            description: 'Receive items within 24-48 hours in major cities'
-          }
-        ]
+            description: 'Receive items within 24-48 hours in major cities',
+          },
+        ],
       },
       trust: {
         title: 'Trust and Security',
         items: [
           {
             title: 'Absolute Security',
-            description: 'Personal information is encrypted and protected'
+            description: 'Personal information is encrypted and protected',
           },
           {
             title: 'Secure Payment',
-            description: 'Support for multiple secure payment methods'
+            description: 'Support for multiple secure payment methods',
           },
           {
             title: '24/7 Support',
-            description: 'Customer service team is always ready to help'
-          }
-        ]
-      }
+            description: 'Customer service team is always ready to help',
+          },
+        ],
+      },
     },
     product: {
       title: 'Product Details',
@@ -661,31 +661,31 @@ export const translations: Record<Language, Translation> = {
       productDetails: 'Product Details',
       specifications: 'Specifications',
       questions: 'Questions',
-      shipping: 'Shipping',
       warranty: 'Warranty',
-      returnPolicy: 'Return Policy'
+      returnPolicy: 'Return Policy',
     },
     category: {
       title: 'Product Categories',
       subtitle: 'Discover thousands of clearly categorized products',
-      description: 'Discover thousands of clearly categorized products, easy to search',
+      description:
+        'Discover thousands of clearly categorized products, easy to search',
       featured: 'Featured Categories',
       trending: 'Trending Categories',
       all: 'All Categories',
       searchPlaceholder: 'Search categories...',
       viewMode: {
         grid: 'Grid',
-        list: 'List'
+        list: 'List',
       },
       emptyState: {
         title: 'No categories found',
         description: 'No categories match your search criteria',
-        action: 'View all categories'
+        action: 'View all categories',
       },
       stats: {
         products: 'products',
-        subcategories: 'subcategories'
-      }
+        subcategories: 'subcategories',
+      },
     },
     chat: {
       title: 'Messages',
@@ -703,12 +703,13 @@ export const translations: Record<Language, Translation> = {
       trust: {
         security: 'Absolute Security',
         fastResponse: 'Fast Response',
-        support24: '24/7 Support'
-      }
+        support24: '24/7 Support',
+      },
     },
     admin: {
       title: 'System Administration',
-      subtitle: 'Manage all activities of Chogiare platform - Where to shop for good prices',
+      subtitle:
+        'Manage all activities of Chogiare platform - Where to shop for good prices',
       overview: 'Overview',
       users: 'Users',
       products: 'Products',
@@ -721,7 +722,7 @@ export const translations: Record<Language, Translation> = {
         revenue: 'Revenue',
         activeUsers: 'active',
         newProducts: 'new products',
-        completedOrders: 'completed'
+        completedOrders: 'completed',
       },
       recentActivity: 'Recent Activity',
       quickActions: 'Quick Actions',
@@ -737,7 +738,7 @@ export const translations: Record<Language, Translation> = {
       cancelledOrders: 'Cancelled Orders',
       security: 'Security',
       statistics: 'Statistics',
-      generalSettings: 'General Settings'
+      generalSettings: 'General Settings',
     },
     auth: {
       login: {
@@ -747,8 +748,8 @@ export const translations: Record<Language, Translation> = {
         password: 'Password',
         rememberMe: 'Remember me',
         forgotPassword: 'Forgot password?',
-        noAccount: 'Don\'t have an account?',
-        signUp: 'Sign up now'
+        noAccount: "Don't have an account?",
+        signUp: 'Sign up now',
       },
       register: {
         title: 'Register',
@@ -759,8 +760,8 @@ export const translations: Record<Language, Translation> = {
         confirmPassword: 'Confirm Password',
         agreeTerms: 'I agree to the terms of service',
         haveAccount: 'Already have an account?',
-        signIn: 'Sign in'
-      }
+        signIn: 'Sign in',
+      },
     },
     productManagement: {
       title: 'Product Management',
@@ -789,41 +790,41 @@ export const translations: Record<Language, Translation> = {
         total: 'Total',
         active: 'Active',
         sold: 'Sold',
-        outOfStock: 'Out of Stock'
-      }
+        outOfStock: 'Out of Stock',
+      },
     },
     payment: {
       title: 'Payment',
       orderSummary: 'Order Summary',
       paymentMethod: 'Payment Method',
-      shippingAddress: 'Shipping Address',
+      deliveryAddress: 'Delivery Address',
       billingAddress: 'Billing Address',
-      sameAsShipping: 'Same as shipping address',
+      sameAsDelivery: 'Same as delivery address',
       placeOrder: 'Place Order',
       securePayment: 'Secure Payment',
       trust: {
         secure: 'Secure',
         encrypted: 'Encrypted',
-        guaranteed: 'Guaranteed'
-      }
-    }
-  }
+        guaranteed: 'Guaranteed',
+      },
+    },
+  },
 }
 
 export const getTranslation = (language: Language, key: string): string => {
   const keys = key.split('.')
   let value: any = translations[language]
-  
+
   for (const k of keys) {
     value = value?.[k]
   }
-  
+
   return typeof value === 'string' ? value : key
 }
 
 export const useTranslation = (language: Language) => {
   return {
     t: (key: string) => getTranslation(language, key),
-    language
+    language,
   }
 }

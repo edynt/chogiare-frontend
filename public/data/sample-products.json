@@ -10,7 +10,7 @@
       "productCount": 45
     },
     {
-      "id": "cat-2", 
+      "id": "cat-2",
       "name": "Thời trang",
       "slug": "thoi-trang",
       "description": "Quần áo, giày dép, phụ kiện thời trang",
@@ -21,7 +21,7 @@
     {
       "id": "cat-3",
       "name": "Mỹ phẩm & Làm đẹp",
-      "slug": "my-pham-lam-dep", 
+      "slug": "my-pham-lam-dep",
       "description": "Mỹ phẩm, đồ trang điểm, chăm sóc da",
       "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop",
       "isActive": true,
@@ -669,7 +669,7 @@
       "createdAt": "2024-01-15T10:30:00Z"
     },
     {
-      "id": "user-2", 
+      "id": "user-2",
       "name": "Trần Thị B",
       "email": "tranthib@example.com",
       "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",

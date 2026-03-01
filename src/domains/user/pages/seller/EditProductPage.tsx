@@ -1,0 +1,699 @@
+import { useState, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { productUpdateSchema, type ProductUpdateFormData } from '@/lib/schemas'
+import { Header } from '@shared/components/layout/Header'
+import { Footer } from '@shared/components/layout/Footer'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card'
+import { Button } from '@shared/components/ui/button'
+import { Input } from '@shared/components/ui/input'
+import { Label } from '@shared/components/ui/label'
+import { Textarea } from '@shared/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@shared/components/ui/select'
+import { Checkbox } from '@shared/components/ui/checkbox'
+import { Badge } from '@shared/components/ui/badge'
+import { useProduct, useUpdateProduct } from '@/hooks/useProducts'
+import { useCategories } from '@/hooks/useProducts'
+import { useNotification } from '@shared/components/notification-provider'
+import { useLoading } from '@/hooks/useLoading'
+import { useUploadProductImages } from '@/hooks/useUpload'
+import {
+  Edit,
+  Package,
+  DollarSign,
+  Tag,
+  Image as ImageIcon,
+  Save,
+  ArrowLeft,
+  Trash2,
+} from 'lucide-react'
+import {
+  ImageUploadWithReorder,
+  type ImageItem,
+} from '@shared/components/ui/image-upload-with-reorder'
+import type {
+  Product,
+  ProductCondition,
+  ProductStatus,
+  ProductBadge,
+} from '@/types'
+
+// Using Zod schema from lib/schemas.ts
+
+export default function EditProductPage() {
+  const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
+  const { notify } = useNotification()
+  const { data: product, isLoading: isLoadingProduct } = useProduct(id || '')
+  const updateProductMutation = useUpdateProduct()
+  const uploadImagesMutation = useUploadProductImages()
+  const { data: categories } = useCategories()
+  const { isLoading, execute } = useLoading({
+    delay: 1000,
+    onSuccess: () => {
+      notify({
+        type: 'success',
+        title: 'Thành công',
+        message: 'Sản phẩm đã được cập nhật thành công!',
+      })
+      navigate('/seller/products')
+    },
+    onError: (error: Error) => {
+      notify({
+        type: 'error',
+        title: 'Lỗi',
+        message: error.message,
+      })
+    },
+  })
+
+  // Unified image state - supports both existing URLs and new uploads
+  const [images, setImages] = useState<ImageItem[]>([])
+  const [selectedBadges, setSelectedBadges] = useState<string[]>([])
+  const [isWarranty, setIsWarranty] = useState(false)
+  const [warrantyInfo, setWarrantyInfo] = useState('')
+  const [isReturnable, setIsReturnable] = useState(false)
+  const [returnPolicy, setReturnPolicy] = useState('')
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<ProductUpdateFormData>({
+    resolver: zodResolver(productUpdateSchema),
+    defaultValues: {
+      condition: undefined,
+      status: undefined,
+    },
+  })
+
+  // Watch form values for Select components
+  const watchedCondition = watch('condition')
+  const watchedStatus = watch('status')
+  const watchedCategoryId = watch('categoryId')
+
+  const availableBadges = ['NEW', 'FEATURED', 'PROMO', 'HOT', 'SALE']
+  const conditions: { value: ProductCondition; label: string }[] = [
+    { value: 'new', label: 'Mới 100%' },
+    { value: 'like_new', label: 'Như mới' },
+    { value: 'good', label: 'Tốt' },
+    { value: 'fair', label: 'Khá' },
+    { value: 'poor', label: 'Cũ' },
+  ]
+
+  const statuses: { value: ProductStatus; label: string }[] = [
+    { value: 'draft', label: 'Nháp' },
+    { value: 'active', label: 'Đang bán' },
+    { value: 'out_of_stock', label: 'Bán hết' },
+  ]
+
+  // Load product data when available
+  useEffect(() => {
+    if (product) {
+      // Parse categoryId safely to avoid NaN
+      let categoryId: number | undefined
+      if (product.categoryId !== undefined && product.categoryId !== null) {
+        const parsed =
+          typeof product.categoryId === 'string'
+            ? parseInt(product.categoryId, 10)
+            : product.categoryId
+        categoryId = Number.isNaN(parsed) ? undefined : parsed
+      }
+
+      // Convert numeric condition to string (API returns 0=new, 1=like_new, 2=good, 3=fair, 4=poor)
+      const conditionMap: Record<number, string> = {
+        0: 'new', 1: 'like_new', 2: 'good', 3: 'fair', 4: 'poor',
+      }
+      const condition = conditionMap[Number(product.condition)] || 'new'
+
+      // Convert numeric status to string (API returns 0=draft, 1=active, 2=out_of_stock)
+      const statusMap: Record<number, string> = {
+        0: 'draft', 1: 'active', 2: 'out_of_stock',
+      }
+      const status = statusMap[Number(product.status)] || 'draft'
+
+      reset({
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        categoryId,
+        condition: condition as ProductCondition,
+        location: product.location,
+        stock: product.stock,
+        tags: (product.tags || []).join(', '),
+        status: status as ProductStatus,
+      })
+
+      // Convert existing images to ImageItem format for unified handling
+      const existingImages: ImageItem[] = Array.isArray(product.images)
+        ? product.images.map((img: any, index: number) => {
+            const url = typeof img === 'string' ? img : img.imageUrl || img.url
+            return {
+              id: `existing-${index}-${Date.now()}`,
+              url,
+              isExisting: true,
+            }
+          })
+        : []
+      setImages(existingImages)
+      setSelectedBadges(product.badges || [])
+
+      // Load warranty and return policy data
+      if (product.warranty) {
+        setIsWarranty(true)
+        setWarrantyInfo(product.warranty)
+      }
+      if (product.returnPolicy) {
+        setIsReturnable(true)
+        setReturnPolicy(product.returnPolicy)
+      }
+    }
+  }, [product, reset])
+
+  const handleBadgeToggle = (badge: string) => {
+    setSelectedBadges(prev =>
+      prev.includes(badge) ? prev.filter(b => b !== badge) : [...prev, badge]
+    )
+  }
+
+  const onSubmit = (data: ProductUpdateFormData) => {
+    if (!id) return
+
+    execute(async () => {
+      // Separate existing images from new uploads while preserving order
+      const existingImages = images.filter(img => img.isExisting)
+      const newImages = images.filter(img => !img.isExisting && img.file)
+
+      // Upload new images if any
+      let uploadedUrls: string[] = []
+      if (newImages.length > 0) {
+        const filesToUpload = newImages
+          .map(img => img.file)
+          .filter((f): f is File => f !== undefined)
+        const uploadResults = await uploadImagesMutation.mutateAsync({
+          files: filesToUpload,
+        })
+        uploadedUrls = uploadResults.map(result => result.url)
+      }
+
+      // Build final image URLs array preserving the reordered sequence
+      const allImageUrls: string[] = []
+      let uploadIndex = 0
+      for (const img of images) {
+        if (img.isExisting) {
+          allImageUrls.push(img.url)
+        } else if (img.file) {
+          // Use the uploaded URL for new images
+          if (uploadIndex < uploadedUrls.length) {
+            allImageUrls.push(uploadedUrls[uploadIndex])
+            uploadIndex++
+          }
+        }
+      }
+
+      const productData: Partial<Product> = {
+        title: data.title,
+        description: data.description,
+        categoryId: data.categoryId
+          ? typeof data.categoryId === 'string'
+            ? parseInt(data.categoryId, 10)
+            : data.categoryId
+          : undefined,
+        price: data.price,
+        originalPrice: data.originalPrice,
+        condition: data.condition,
+        location: data.location,
+        stock: data.stock,
+        status: data.status,
+        tags: data.tags
+          ? data.tags.split(',').map(tag => tag.trim())
+          : undefined,
+        badges:
+          selectedBadges.length > 0
+            ? (selectedBadges as ProductBadge[])
+            : undefined,
+        images: allImageUrls as any,
+        warranty: isWarranty && warrantyInfo ? warrantyInfo : null,
+        returnPolicy: isReturnable && returnPolicy ? returnPolicy : null,
+      }
+
+      await new Promise((resolve, reject) => {
+        updateProductMutation.mutate(
+          { id, data: productData },
+          {
+            onSuccess: () => resolve(undefined),
+            onError: (error: Error) => reject(error),
+          }
+        )
+      })
+    })
+  }
+
+  if (isLoadingProduct) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="animate-pulse space-y-8">
+              <div className="h-8 bg-muted rounded w-1/3" />
+              <div className="h-64 bg-muted rounded" />
+              <div className="h-64 bg-muted rounded" />
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-2xl font-bold mb-4">Không tìm thấy sản phẩm</h1>
+            <Button onClick={() => navigate('/seller/products')}>
+              Quay lại danh sách
+            </Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <Button
+              variant="ghost"
+              onClick={() => navigate(-1)}
+              className="mb-4"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Quay lại
+            </Button>
+            <div className="flex items-center gap-2 mb-2">
+              <Edit className="h-8 w-8 text-primary" />
+              <h1 className="text-3xl font-bold">Chỉnh sửa sản phẩm</h1>
+            </div>
+            <p className="text-muted-foreground text-lg">
+              Cập nhật thông tin sản phẩm "{product.title}"
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            {/* Basic Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5" />
+                  Thông tin cơ bản
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <Label htmlFor="title">Tên sản phẩm *</Label>
+                  <Input
+                    id="title"
+                    placeholder="Nhập tên sản phẩm..."
+                    {...register('title')}
+                    className={errors.title ? 'border-destructive' : ''}
+                  />
+                  {errors.title && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.title.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Mô tả sản phẩm *</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Mô tả chi tiết về sản phẩm..."
+                    rows={4}
+                    {...register('description')}
+                    className={errors.description ? 'border-destructive' : ''}
+                  />
+                  {errors.description && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.description.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="categoryId">Danh mục *</Label>
+                    <Select
+                      key={`category-${watchedCategoryId}`}
+                      value={
+                        watchedCategoryId !== undefined &&
+                        watchedCategoryId !== null &&
+                        !Number.isNaN(watchedCategoryId)
+                          ? String(watchedCategoryId)
+                          : undefined
+                      }
+                      onValueChange={value => {
+                        const parsed = parseInt(value, 10)
+                        if (!Number.isNaN(parsed)) {
+                          setValue('categoryId', parsed)
+                        }
+                      }}
+                    >
+                      <SelectTrigger
+                        className={
+                          errors.categoryId ? 'border-destructive' : ''
+                        }
+                      >
+                        <SelectValue placeholder="Chọn danh mục" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories?.map(category => (
+                          <SelectItem
+                            key={category.id}
+                            value={String(category.id)}
+                          >
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.categoryId && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.categoryId.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="condition">Tình trạng *</Label>
+                    <Select
+                      key={`condition-${watchedCondition}`}
+                      value={watchedCondition || undefined}
+                      onValueChange={value =>
+                        setValue('condition', value as ProductCondition)
+                      }
+                    >
+                      <SelectTrigger
+                        className={errors.condition ? 'border-destructive' : ''}
+                      >
+                        <SelectValue placeholder="Chọn tình trạng" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {conditions.map(condition => (
+                          <SelectItem
+                            key={condition.value}
+                            value={condition.value}
+                          >
+                            {condition.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.condition && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.condition.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="status">Trạng thái *</Label>
+                    <Select
+                      key={`status-${watchedStatus}`}
+                      value={watchedStatus || undefined}
+                      onValueChange={value =>
+                        setValue('status', value as ProductStatus)
+                      }
+                    >
+                      <SelectTrigger
+                        className={errors.status ? 'border-destructive' : ''}
+                      >
+                        <SelectValue placeholder="Chọn trạng thái" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {statuses.map(status => (
+                          <SelectItem key={status.value} value={status.value}>
+                            {status.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.status && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.status.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Pricing */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <DollarSign className="h-5 w-5" />
+                  Giá cả
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="price">Giá bán * (VNĐ)</Label>
+                    <Input
+                      id="price"
+                      type="text"
+                      inputMode="decimal"
+                      pattern="[0-9]*\.?[0-9]*"
+                      placeholder="0"
+                      {...register('price')}
+                      className={errors.price ? 'border-destructive' : ''}
+                    />
+                    {errors.price && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.price.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="originalPrice">Giá gốc (VNĐ)</Label>
+                    <Input
+                      id="originalPrice"
+                      type="text"
+                      inputMode="decimal"
+                      pattern="[0-9]*\.?[0-9]*"
+                      placeholder="0"
+                      {...register('originalPrice')}
+                    />
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Để trống nếu không có giá gốc
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="location">Địa điểm *</Label>
+                    <Input
+                      id="location"
+                      placeholder="Ví dụ: Hà Nội, TP.HCM..."
+                      {...register('location')}
+                      className={errors.location ? 'border-destructive' : ''}
+                    />
+                    {errors.location && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.location.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Images with Drag & Drop Reorder */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ImageIcon className="h-5 w-5" />
+                  Hình ảnh sản phẩm
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ImageUploadWithReorder
+                  images={images}
+                  onImagesChange={setImages}
+                  maxImages={10}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Guarantee Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Thông tin đảm bảo</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isWarranty"
+                    checked={isWarranty}
+                    onCheckedChange={checked =>
+                      setIsWarranty(checked as boolean)
+                    }
+                  />
+                  <Label htmlFor="isWarranty">Bảo hành</Label>
+                </div>
+                {isWarranty && (
+                  <div>
+                    <Label htmlFor="warrantyInfo">Thông tin bảo hành</Label>
+                    <Input
+                      id="warrantyInfo"
+                      placeholder="VD: Bảo hành 12 tháng, đổi mới trong 7 ngày..."
+                      value={warrantyInfo}
+                      onChange={e => setWarrantyInfo(e.target.value)}
+                    />
+                  </div>
+                )}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isReturnable"
+                    checked={isReturnable}
+                    onCheckedChange={checked =>
+                      setIsReturnable(checked as boolean)
+                    }
+                  />
+                  <Label htmlFor="isReturnable">Đổi trả</Label>
+                </div>
+                {isReturnable && (
+                  <div>
+                    <Label htmlFor="returnPolicy">Chính sách đổi trả</Label>
+                    <Textarea
+                      id="returnPolicy"
+                      placeholder="Chính sách đổi trả chi tiết"
+                      rows={3}
+                      value={returnPolicy}
+                      onChange={e => setReturnPolicy(e.target.value)}
+                    />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Tags and Badges */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Tag className="h-5 w-5" />
+                  Tags và Badges
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="tags">Tags (phân cách bằng dấu phẩy)</Label>
+                  <Input
+                    id="tags"
+                    placeholder="Ví dụ: smartphone, android, camera"
+                    {...register('tags')}
+                  />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Giúp khách hàng dễ dàng tìm thấy sản phẩm của bạn
+                  </p>
+                </div>
+
+                <div>
+                  <Label>Badges</Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {availableBadges.map(badge => (
+                      <div key={badge} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={badge}
+                          checked={selectedBadges.includes(badge)}
+                          onCheckedChange={() => handleBadgeToggle(badge)}
+                        />
+                        <Label htmlFor={badge} className="text-sm">
+                          <Badge variant="outline">{badge}</Badge>
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Actions */}
+            <div className="flex justify-between">
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => {
+                  // TODO: Implement delete functionality
+                  notify({
+                    type: 'warning',
+                    title: 'Chức năng chưa hoàn thiện',
+                    message: 'Chức năng xóa sản phẩm sẽ được thêm sau.',
+                  })
+                }}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Xóa sản phẩm
+              </Button>
+
+              <div className="flex gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate(-1)}
+                >
+                  Hủy
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isLoading || updateProductMutation.isPending}
+                >
+                  {isLoading || updateProductMutation.isPending ? (
+                    <>
+                      <Save className="h-4 w-4 mr-2 animate-spin" />
+                      Đang lưu...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Cập nhật sản phẩm
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  )
+}

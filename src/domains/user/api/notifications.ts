@@ -1,0 +1,91 @@
+import { apiClient } from '@shared/api/axios'
+import type { ApiResponse } from '@/types'
+
+const NOTIFICATION_TYPE_TO_NUMBER: Record<string, number> = {
+  order: 0,
+  product: 1,
+  payment: 2,
+  system: 3,
+  promotion: 4,
+  message: 5,
+}
+
+export interface Notification {
+  id: string
+  type: 'order' | 'product' | 'payment' | 'system' | 'promotion' | 'message'
+  title: string
+  message: string
+  isRead: boolean
+  createdAt: string
+  actionUrl?: string
+  metadata?: Record<string, unknown>
+}
+
+export interface NotificationListResponse {
+  items: Notification[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+  unreadCount: number
+}
+
+export interface QueryNotificationParams {
+  page?: number
+  pageSize?: number
+  type?: 'order' | 'product' | 'payment' | 'system' | 'promotion' | 'message'
+  isRead?: boolean
+}
+
+export interface MarkAsReadResponse {
+  success: boolean
+  unreadCount: number
+}
+
+export const notificationsApi = {
+  getNotifications: async (
+    params?: QueryNotificationParams
+  ): Promise<NotificationListResponse> => {
+    const response = await apiClient.get<ApiResponse<NotificationListResponse>>(
+      '/notifications',
+      {
+        params: {
+          page: params?.page || 1,
+          pageSize: params?.pageSize || 10,
+          type: params?.type ? NOTIFICATION_TYPE_TO_NUMBER[params.type] : undefined,
+          isRead: params?.isRead,
+        },
+      }
+    )
+    return response.data.data
+  },
+
+  getUnreadCount: async (): Promise<number> => {
+    try {
+      const response = await apiClient.get<
+        ApiResponse<{ unreadCount: number }>
+      >('/notifications/unread-count')
+      return response.data.data?.unreadCount ?? 0
+    } catch {
+      return 0
+    }
+  },
+
+  markAsRead: async (id: string): Promise<MarkAsReadResponse> => {
+    const response = await apiClient.post<ApiResponse<MarkAsReadResponse>>(
+      `/notifications/${id}/read`
+    )
+    return response.data.data
+  },
+
+  markAllAsRead: async (): Promise<MarkAsReadResponse> => {
+    const response = await apiClient.post<ApiResponse<MarkAsReadResponse>>(
+      '/notifications/read-all'
+    )
+    return response.data.data
+  },
+
+  deleteNotification: async (id: string): Promise<void> => {
+    await apiClient.delete(`/notifications/${id}`)
+  },
+}

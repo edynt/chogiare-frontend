@@ -10,26 +10,30 @@ export function useLoading(options: UseLoadingOptions = {}) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const execute = useCallback(async (asyncFn: () => Promise<void>) => {
-    setIsLoading(true)
-    setError(null)
+  const execute = useCallback(
+    async (asyncFn: () => Promise<void>) => {
+      setIsLoading(true)
+      setError(null)
 
-    try {
-      // Add minimum delay for better UX
-      if (options.delay) {
-        await new Promise(resolve => setTimeout(resolve, options.delay))
+      try {
+        // Add minimum delay for better UX
+        if (options.delay) {
+          await new Promise(resolve => setTimeout(resolve, options.delay))
+        }
+
+        await asyncFn()
+        options.onSuccess?.()
+      } catch (err) {
+        const error =
+          err instanceof Error ? err : new Error('An error occurred')
+        setError(error)
+        options.onError?.(error)
+      } finally {
+        setIsLoading(false)
       }
-
-      await asyncFn()
-      options.onSuccess?.()
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('An error occurred')
-      setError(error)
-      options.onError?.(error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [options])
+    },
+    [options]
+  )
 
   const reset = useCallback(() => {
     setIsLoading(false)
@@ -40,6 +44,6 @@ export function useLoading(options: UseLoadingOptions = {}) {
     isLoading,
     error,
     execute,
-    reset
+    reset,
   }
 }

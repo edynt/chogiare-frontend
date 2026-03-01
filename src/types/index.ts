@@ -1,32 +1,77 @@
+import type {
+  ProductConditionType,
+  ProductStatusType,
+  ProductBadgeType,
+  OrderStatusType,
+  PaymentStatusType,
+  PaymentMethodType,
+  MessageTypeValue,
+} from '@/constants/status.constants'
+
 export interface User {
   id: string
   name: string
   email: string
   phone?: string
   avatar?: string
+  gender?: string
+  dateOfBirth?: string
+  address?: string
+  country?: string
+  language?: number // 0=vi, 1=en
+  showEmail?: boolean
+  showPhone?: boolean
+  isVerified?: boolean
   roles: UserRole[]
+  roleIds?: number[] // Numeric role IDs: 1=admin, 2=user
   postCount: number
-  storeInfo?: StoreInfo
+  isSeller?: boolean
+  sellerName?: string
+  sellerSlug?: string
+  sellerLogo?: string
+  sellerBanner?: string
+  sellerDescription?: string
+  sellerAddress?: string
+  sellerPhone?: string
+  sellerEmail?: string
+  isSellerVerified?: boolean
+  sellerRating?: number
+  sellerReviewCount?: number
   createdAt: string
   updatedAt: string
 }
 
-export type UserRole = 'buyer' | 'seller' | 'admin'
+// String role names
+export type UserRole = 'admin' | 'user'
 
-export interface StoreInfo {
-  id: string
-  name: string
-  description?: string
-  logo?: string
-  banner?: string
-  address?: string
-  phone?: string
-  email?: string
-  isVerified: boolean
-  rating: number
-  reviewCount: number
-  createdAt: string
-}
+/**
+ * Centralized Role Constants
+ * Must match backend role definitions
+ */
+export const ROLES = {
+  ADMIN: {
+    id: 1,
+    name: 'admin' as const,
+    description: 'Administrator with full system access',
+  },
+  USER: {
+    id: 2,
+    name: 'user' as const,
+    description: 'Regular user',
+  },
+} as const
+
+// Export role IDs for easy access
+export const ROLE_IDS = {
+  ADMIN: ROLES.ADMIN.id,
+  USER: ROLES.USER.id,
+} as const
+
+// Export role names for easy access
+export const ROLE_NAMES = {
+  ADMIN: ROLES.ADMIN.name,
+  USER: ROLES.USER.name,
+} as const
 
 export interface Category {
   id: string
@@ -47,18 +92,30 @@ export interface Product {
   description: string
   price: number
   originalPrice?: number
-  categoryId: string
+  categoryId: string | number
   category?: Category
   images: string[]
-  condition: ProductCondition
+  condition: ProductConditionType // numeric: 0=new, 1=like_new, 2=good, 3=fair, 4=poor
   tags: string[]
   location: string
   stock: number
+  minStock?: number
+  maxStock?: number
+  costPrice?: number
+  sellingPrice?: number
+  sku?: string
+  barcode?: string
+  inventoryInfo?: {
+    warehouseLocation?: string
+    supplier?: string
+    [key: string]: unknown
+  }
   sellerId: string
   seller?: User
-  store?: StoreInfo
-  status: ProductStatus
-  badges: ProductBadge[]
+  status: ProductStatusType // numeric: 0=draft, 1=active, 2=out_of_stock
+  badges: ProductBadgeType[] // numeric array: 0=NEW, 1=FEATURED, 2=PROMO, 3=HOT, 4=SALE
+  warranty?: string
+  returnPolicy?: string
   rating: number
   reviewCount: number
   viewCount: number
@@ -68,9 +125,10 @@ export interface Product {
   updatedAt: string
 }
 
-export type ProductCondition = 'new' | 'like_new' | 'good' | 'fair' | 'poor'
-export type ProductStatus = 'draft' | 'active' | 'sold' | 'archived' | 'suspended'
-export type ProductBadge = 'NEW' | 'FEATURED' | 'PROMO' | 'HOT' | 'SALE'
+// Re-export types for backward compatibility
+export type ProductCondition = ProductConditionType
+export type ProductStatus = ProductStatusType
+export type ProductBadge = ProductBadgeType
 
 export interface CartItem {
   id: string
@@ -78,41 +136,63 @@ export interface CartItem {
   productId: string
   sellerId?: string
   sellerName?: string
-  storeId?: string
-  storeName?: string
   quantity: number
   price: number
   productName: string
   productImage: string
   productPrice: number
   productStock: number
-  productStatus: string
+  productStatus: ProductStatusType
   createdAt: string
   updatedAt: string
 }
 
 export interface Order {
   id: string
+  orderNo?: string
   buyerId: string
   buyer?: User
   sellerId: string
   seller?: User
-  productId: string
+  productId?: string
   product?: Product
-  quantity: number
-  totalAmount: number
-  status: OrderStatus
-  paymentMethod: PaymentMethod
-  paymentStatus: PaymentStatus
-  shippingAddress: Address
+  items?: OrderItem[]
+  quantity?: number
+  subtotal: number
+  tax: number
+  shipping: number
+  discount: number
+  total: number
+  totalAmount?: number
+  currency: string
+  status: OrderStatusType // numeric: 0=pending, 1=confirmed, 2=preparing, 3=ready_for_pickup, 4=completed, 5=cancelled, 6=refunded
+  paymentMethod: PaymentMethodType | null // numeric: 0=bank_transfer
+  paymentStatus: PaymentStatusType // numeric: 0=pending, 1=completed, 2=failed, 3=refunded
+  shippingAddressId?: number
+  billingAddressId?: number
+  deliveryAddress?: Address
   notes?: string
+  sellerNotes?: string
+  paymentImage?: string
   createdAt: string
   updatedAt: string
 }
 
-export type OrderStatus = 'pending' | 'confirmed' | 'ready_for_pickup' | 'completed' | 'cancelled' | 'refunded'
-export type PaymentMethod = 'momo' | 'zalopay' | 'stripe' | 'paypal' | 'bank_transfer'
-export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded'
+export interface OrderItem {
+  id: string
+  orderId: string
+  productId: string
+  productName: string
+  productImage?: string
+  price: number
+  quantity: number
+  subtotal: number
+}
+
+// Re-export types for backward compatibility
+export type OrderStatus = OrderStatusType
+export type PaymentMethod = PaymentMethodType
+export type PaymentStatus = PaymentStatusType
 
 export interface Address {
   id: string
@@ -138,7 +218,6 @@ export interface Review {
   seller?: User
   rating: number
   comment?: string
-  images?: string[]
   isVerified: boolean
   createdAt: string
 }
@@ -149,7 +228,8 @@ export interface ChatMessage {
   senderId: string
   sender?: User
   content: string
-  type: 'text' | 'image' | 'file'
+  messageType: MessageTypeValue // numeric: 0=text, 1=image, 2=file
+  type?: MessageTypeValue // alias for backward compatibility
   attachments?: string[]
   isRead: boolean
   createdAt: string
@@ -157,6 +237,7 @@ export interface ChatMessage {
 
 export interface Conversation {
   id: string
+  type: number // 0=direct, 1=group
   participants: User[]
   lastMessage?: ChatMessage
   unreadCount: number
@@ -166,13 +247,15 @@ export interface Conversation {
 
 export interface SearchFilters {
   query?: string | undefined
-  categoryId?: string | undefined
+  categoryId?: string | number | undefined
   minPrice?: number | undefined
   maxPrice?: number | undefined
-  condition?: ProductCondition | undefined
+  condition?: ProductConditionType | undefined
   location?: string | undefined
   sellerId?: string | undefined
-  badges?: ProductBadge[] | undefined
+  status?: ProductStatusType | undefined
+  search?: string | undefined
+  badges?: ProductBadgeType[] | undefined
   rating?: number | undefined
   minRating?: number | undefined
   featured?: boolean | undefined
@@ -180,8 +263,10 @@ export interface SearchFilters {
   sortBy?: string | undefined
   sortOrder?: 'asc' | 'desc' | undefined
   page?: number | undefined
+  pageSize?: number | undefined
   limit?: number | undefined
   offset?: number | undefined
+  cursor?: number | undefined
 }
 
 export interface PaginatedResponse<T> {
@@ -190,6 +275,7 @@ export interface PaginatedResponse<T> {
   page: number
   pageSize: number
   totalPages: number
+  nextCursor?: number | null
 }
 
 export interface ApiResponse<T> {
@@ -205,17 +291,21 @@ export interface AuthTokens {
   expiresIn: number
 }
 
+export interface AdminTokens {
+  adminAccessToken: string
+  adminRefreshToken: string
+  expiresIn: number
+}
+
 export interface LoginCredentials {
   email: string
   password: string
 }
 
 export interface RegisterData {
-  name: string
+  fullName: string
   email: string
   password: string
-  phone?: string
-  roles: UserRole[]
 }
 
 export interface DemoData {
@@ -223,10 +313,11 @@ export interface DemoData {
   categories: Category[]
   users: User[]
   orders: Order[]
+  moderationProducts?: unknown[]
 }
 
 export interface PaymentData {
-  method: PaymentMethod
+  method: PaymentMethodType
   amount: number
   currency: string
   orderId: string
@@ -238,4 +329,30 @@ export interface PaymentResult {
   transactionId?: string
   redirectUrl?: string
   error?: string
+}
+
+export interface Notification {
+  id: string
+  userId: string
+  type: number // 0=order, 1=product, 2=payment, 3=system, 4=promotion, 5=message
+  title: string
+  message: string
+  actionUrl?: string
+  isRead: boolean
+  createdAt: string
+}
+
+export interface Transaction {
+  id: string
+  userId: string
+  type: number // 0=deposit, 1=sale, 2=refund, 3=commission, 4=bonus, 5=subscription_purchase, 6=boost
+  amount: number
+  currency: string
+  status: string
+  paymentMethod?: PaymentMethodType
+  reference?: string
+  description?: string
+  orderId?: string
+  createdAt: string
+  updatedAt: string
 }

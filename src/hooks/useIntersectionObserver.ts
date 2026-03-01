@@ -23,7 +23,7 @@ export function useIntersectionObserver({
       ([entry]) => {
         const isElementIntersecting = entry.isIntersecting
         setIsIntersecting(isElementIntersecting)
-        
+
         if (isElementIntersecting && !hasIntersected) {
           setHasIntersected(true)
         }
@@ -41,6 +41,8 @@ export function useIntersectionObserver({
     }
   }, [threshold, rootMargin, hasIntersected])
 
-  return { ref, isIntersecting: freezeOnceVisible ? hasIntersected : isIntersecting }
+  return {
+    ref,
+    isIntersecting: freezeOnceVisible ? hasIntersected : isIntersecting,
+  }
 }
-

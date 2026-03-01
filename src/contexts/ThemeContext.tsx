@@ -20,15 +20,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem('chogiare-theme', theme)
-    
+
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
       setActualTheme(mediaQuery.matches ? 'dark' : 'light')
-      
+
       const handleChange = (e: MediaQueryListEvent) => {
         setActualTheme(e.matches ? 'dark' : 'light')
       }
-      
+
       mediaQuery.addEventListener('change', handleChange)
       return () => mediaQuery.removeEventListener('change', handleChange)
     } else {

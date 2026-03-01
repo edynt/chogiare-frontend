@@ -1,224 +1,281 @@
 # Chogiare Frontend
 
-A modern React + TypeScript frontend for the Chogiare marketplace platform, built with strict TypeScript, Redux Toolkit, TanStack Query, and shadcn/ui components.
+A modern React 19 + TypeScript marketplace platform frontend for buying, selling, and managing products with real-time features, admin dashboard, and comprehensive seller tools.
 
-## 🚀 Features
+**Tech Stack**: React 19 | TypeScript 5.9 (strict) | Vite | TanStack Query | Zustand | Tailwind CSS | shadcn/ui | MSW | Vitest
 
-- **Modern Tech Stack**: React 19, TypeScript (strict mode), Vite
-- **State Management**: Redux Toolkit with Redux Thunk
-- **Data Fetching**: TanStack Query (React Query) for server state
-- **UI Components**: shadcn/ui primitives with Tailwind CSS
-- **Form Handling**: React Hook Form with Yup validation
-- **HTTP Client**: Axios with concurrency-safe token refresh
-- **Mocking**: MSW (Mock Service Worker) for development
-- **Testing**: Vitest + React Testing Library
-- **Code Quality**: ESLint + Prettier with strict TypeScript rules
-- **Accessibility**: ARIA attributes, keyboard navigation, screen reader support
-- **Performance**: Code splitting, lazy loading, image optimization
+## Quick Start
 
-## 📋 Prerequisites
+### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
-## 🛠️ Installation
+### Installation
 
-1. Clone the repository:
 ```bash
+# Clone and install
 git clone <repository-url>
 cd chogiare-fe
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
 
-3. Start the development server:
-```bash
+# Start dev server
 npm run dev
 ```
 
-The application will be available at `http://localhost:3000`
+App runs at `http://localhost:3000`
 
-## 📜 Available Scripts
+## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint errors
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check code formatting
-- `npm run typecheck` - Run TypeScript type checking
-- `npm run test` - Run tests
-- `npm run test:ui` - Run tests with UI
-- `npm run test:coverage` - Run tests with coverage
-
-## 🏗️ Project Structure
-
-```
-src/
-├── api/                 # API client and endpoints
-├── components/          # Reusable UI components
-│   ├── ui/             # shadcn/ui primitives
-│   ├── auth/           # Authentication components
-│   ├── demo/           # Demo data loader
-│   ├── home/           # Home page components
-│   ├── layout/         # Layout components
-│   ├── product/        # Product-related components
-│   ├── seller/         # Seller dashboard components
-│   └── profile/        # Profile components
-├── hooks/              # Custom React hooks
-├── lib/                # Utility functions
-├── mocks/              # MSW handlers and mock data
-├── pages/              # Page components
-├── store/              # Redux store and slices
-├── test/               # Test files
-├── types/              # TypeScript type definitions
-└── utils/              # Utility functions
+```bash
+npm run dev              # Start development server
+npm run build           # Production build
+npm run preview         # Preview production build
+npm run lint            # Check linting
+npm run lint:fix        # Fix linting issues
+npm run format          # Format code with Prettier
+npm run typecheck       # TypeScript type checking
+npm run test            # Run tests with Vitest
+npm run test:ui         # Interactive test UI
+npm run test:coverage   # Test coverage report
+npm run seed            # Seed database
 ```
 
-## 🎨 UI Components
+## Documentation
 
-The project uses shadcn/ui primitives for consistent, accessible components:
+Complete documentation is in the `docs/` folder:
 
-- **Button** - Various button variants and sizes
-- **Card** - Content containers with header, content, footer
-- **Input** - Form input fields
-- **Badge** - Status indicators and labels
-- **Avatar** - User profile images
-- **Tabs** - Tabbed content navigation
-- **Textarea** - Multi-line text input
+- **[docs/project-overview-pdr.md](docs/project-overview-pdr.md)** - Project vision, requirements, roadmap
+- **[docs/codebase-summary.md](docs/codebase-summary.md)** - Codebase structure, modules, tech stack details
+- **[docs/code-standards.md](docs/code-standards.md)** - Code patterns, naming, best practices, testing guidelines
+- **[docs/system-architecture.md](docs/system-architecture.md)** - Architecture layers, data flow, design patterns
 
-## 🔐 Authentication
+## Project Features
 
-The app includes a complete authentication system with:
+### User Roles
 
-- Login/Register forms with validation
-- Password reset functionality
-- OAuth integration (Google, Facebook) - mocked
-- Protected routes and role-based access
-- Token management with automatic refresh
+- **Buyers**: Browse, search, purchase, track orders, review products
+- **Sellers**: Manage products, inventory, orders, customers, revenue
+- **Admins**: Platform oversight, user management, content moderation
 
-## 📊 State Management
+### Core Capabilities
 
-- **Redux Toolkit**: Global state management
-- **TanStack Query**: Server state and caching
-- **React Hook Form**: Form state management
+#### Authentication & Authorization
 
-### Redux Slices
+- Email/password login with verification
+- OAuth integration support
+- JWT token refresh (concurrency-safe)
+- Role-based access control
+- Protected routes per role
 
-- `authSlice` - Authentication state
-- `userSlice` - User profile and settings
-- `productSlice` - Product data and filters
-- `cartSlice` - Shopping cart state
-- `sellerSlice` - Seller dashboard data
-- `uiSlice` - UI state (modals, notifications, theme)
+#### Product Management
 
-## 🌐 API Integration
+- Browse with pagination/infinite scroll
+- Search and advanced filtering
+- Product details with reviews and images
+- Bulk import (CSV/Excel)
+- Stock management
 
-- **Axios**: HTTP client with interceptors
-- **MSW**: Mock Service Worker for development
-- **Concurrency-safe token refresh**: Prevents race conditions
-- **Error handling**: Centralized error management
+#### Shopping & Orders
 
-## 🧪 Testing
+- Cart with persistence
+- Checkout flow with address management
+- Order tracking with status timeline
+- Order history and invoices
+- Returns and refunds
 
-The project uses Vitest and React Testing Library for testing:
+#### Seller Dashboard
 
-- Unit tests for components
-- Integration tests for user flows
-- Mock API responses with MSW
-- Coverage reporting
+- Product CRUD operations
+- Customer management
+- Revenue reports with charts
+- Order fulfillment
+- Notification management
 
-## 🎯 Demo Data
+#### Admin Panel
 
-The app includes a comprehensive demo data loader that supports:
+- Platform metrics and analytics
+- User management (suspend, verify, ban)
+- Content moderation (products, reviews)
+- Order dispute resolution
+- System settings and reporting
 
-- **CSV upload**: Parse product data from CSV files
-- **JSON input**: Direct JSON data input
-- **Markdown tables**: Parse markdown table format
-- **Preview functionality**: See parsed data before seeding
-- **Sample data**: Pre-loaded demo data for testing
+#### Additional Features
 
-## ♿ Accessibility
+- Real-time chat (mocked)
+- Notification system
+- Wallet/payment integration
+- Review and rating system
+- Performance optimization
 
-- Semantic HTML structure
-- ARIA attributes and labels
-- Keyboard navigation support
-- Screen reader compatibility
-- Focus management
-- Color contrast compliance
+## Architecture
 
-## 🚀 Performance
+Layered architecture with clear separation:
 
-- **Code splitting**: Route-based lazy loading
-- **Image optimization**: Lazy loading with placeholders
-- **Bundle optimization**: Tree shaking and chunk splitting
-- **Caching**: React Query caching strategies
-- **Preloading**: Critical resource preloading
+```
+Components (Pages, Features)
+  ↓
+Custom Hooks (Business Logic)
+  ↓
+State Management (Zustand, TanStack Query, React Hook Form)
+  ↓
+API Client (Axios with Interceptors)
+  ↓
+Backend API
+```
 
-## 🔧 Configuration
+**State Management**:
+
+- Zustand for client state (auth, cart, filters)
+- TanStack Query for server state (caching, invalidation)
+- React Hook Form for form state (validation, submission)
+
+**HTTP Client**:
+
+- Singleton Axios instance
+- Concurrency-safe token refresh
+- Automatic token injection
+- Request/response interceptors
+- Error handling with auto-redirect to login
+
+## Code Quality
 
 ### TypeScript
 
-Strict TypeScript configuration with:
-- `noImplicitAny: true`
-- `strict: true`
-- `exactOptionalPropertyTypes: true`
-- `noUncheckedIndexedAccess: true`
+- Strict mode: `true`
+- `noImplicitAny`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`
+- Full type coverage, no `any` allowed
 
-### ESLint
+### Testing
 
-Strict linting rules:
-- TypeScript-specific rules
-- React and React Hooks rules
-- Accessibility rules
-- Prettier integration
+- Vitest + React Testing Library
+- MSW for API mocking
+- Minimum 80% coverage for critical paths
+- Unit, integration, component tests
 
-### Tailwind CSS
+### Linting & Formatting
 
-Custom design system with:
-- CSS variables for theming
-- Dark mode support
-- Responsive design utilities
-- Custom component variants
+- ESLint with TypeScript/React/A11y rules
+- Prettier for consistent formatting
+- Pre-commit hooks (auto-fix)
 
-## 📱 Responsive Design
+## Directory Structure
 
-The app is fully responsive with:
-- Mobile-first approach
-- Breakpoint-based layouts
-- Touch-friendly interactions
-- Optimized for all screen sizes
+```
+src/
+├── api/                 # Endpoints + HTTP client
+├── components/          # UI components (pages, features, ui, layout)
+├── stores/             # Zustand state stores
+├── hooks/              # Custom React hooks (useAuth, useProducts, etc)
+├── pages/              # Page components (lazy loaded)
+├── types/              # TypeScript definitions
+├── lib/                # Utility libraries (schemas, helpers)
+├── mocks/              # MSW handlers + mock data
+├── contexts/           # React contexts
+├── constants/          # App constants, query keys
+├── i18n/               # Internationalization
+└── test/               # Test setup + configuration
+```
 
-## 🌙 Theme Support
+## Key Technologies
 
-- Light/Dark mode toggle
-- System preference detection
-- Persistent theme storage
-- Smooth theme transitions
+| Category  | Tech                                           |
+| --------- | ---------------------------------------------- |
+| Framework | React 19, React Router 7                       |
+| Language  | TypeScript 5.9                                 |
+| Build     | Vite 7.1                                       |
+| State     | Zustand 5, TanStack Query 5, React Hook Form 7 |
+| UI        | shadcn/ui, Tailwind CSS 3.4, Lucide Icons      |
+| HTTP      | Axios 1.12                                     |
+| Forms     | Zod validation                                 |
+| Data      | PapaParse, xlsx                                |
+| Testing   | Vitest 3.2, React Testing Library 16.3         |
+| Quality   | ESLint, Prettier, TypeScript strict mode       |
 
-## 🤝 Contributing
+## Performance Optimizations
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
+- **Code Splitting**: Route-based lazy loading with Suspense
+- **Caching**: TanStack Query with configurable staleTime/gcTime
+- **Images**: Lazy loading with placeholders
+- **Components**: React.memo for expensive components
+- **Hooks**: useCallback, useMemo for computation optimization
 
-## 📄 License
+**Targets**:
 
-This project is licensed under the MIT License.
+- LCP < 2.5s | FID < 100ms | CLS < 0.1
+- Main bundle < 200KB gzipped
+- Lighthouse score > 90
 
-## 🆘 Support
+## Accessibility
 
-For support and questions:
-- Create an issue in the repository
-- Check the documentation
-- Review the code examples
+- WCAG 2.1 Level AA compliance
+- Semantic HTML structure
+- ARIA labels and attributes
+- Keyboard navigation throughout
+- Screen reader support
+- Focus management
+
+## Security
+
+- JWT tokens with automatic refresh
+- XSS protection via React escaping
+- Input validation with Zod
+- CORS/CSP headers
+- Protected routes with role checks
+
+## Development Workflow
+
+1. **Feature Branch**: Create from `develop` (feature/_, fix/_, etc)
+2. **Code Changes**: Follow [code standards](docs/code-standards.md)
+3. **Tests**: Write tests, ensure coverage
+4. **Quality**: `npm run lint:fix && npm run format && npm run typecheck`
+5. **Pull Request**: Create PR to `develop`
+6. **Review**: Code review + CI checks required
+7. **Merge**: Merge after approval
+8. **Release**: Release from `main` branch
+
+## Configuration
+
+- **API URL**: `VITE_API_URL` environment variable (default: `/api`)
+- **Build Output**: `dist/` folder
+- **Public Assets**: `public/` folder
+- **TypeScript Paths**: `@/` alias for `src/`
+
+## Browser Support
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+- Mobile browsers (iOS Safari, Chrome Android)
+
+## Contributing
+
+1. Read [code standards](docs/code-standards.md)
+2. Create feature branch from `develop`
+3. Follow commit message format: `type(scope): description`
+4. Run linting, tests, typecheck before committing
+5. Submit PR with description
+6. Wait for code review and CI checks
+7. Merge after approval
+
+## Environment Variables
+
+```bash
+VITE_API_URL=http://localhost:3001/api    # Backend API endpoint
+```
+
+## Support
+
+- Check documentation in `docs/`
+- Review code examples in components
+- See test files for usage patterns
+- Check GitHub issues for known problems
+
+## License
+
+MIT
 
 ---
 
-Built with ❤️ using React, TypeScript, and modern web technologies.
+**Status**: Active Development | **Phase**: Stable Beta | **Last Updated**: December 20, 2025

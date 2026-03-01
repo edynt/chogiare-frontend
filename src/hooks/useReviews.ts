@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { reviewsApi } from '@/api/reviews'
-import type { UpdateReviewRequest } from '@/api/reviews'
+import { reviewsApi } from '@user/api/reviews'
+import type { UpdateReviewRequest } from '@user/api/reviews'
 
 export const useReviews = (filters?: { page?: number; pageSize?: number }) => {
   return useQuery({
@@ -10,7 +10,10 @@ export const useReviews = (filters?: { page?: number; pageSize?: number }) => {
   })
 }
 
-export const useProductReviews = (productId: string, filters?: { page?: number; pageSize?: number }) => {
+export const useProductReviews = (
+  productId: string,
+  filters?: { page?: number; pageSize?: number }
+) => {
   return useQuery({
     queryKey: ['reviews', 'product', productId, filters],
     queryFn: () => reviewsApi.getProductReviews(productId, filters),
@@ -19,7 +22,10 @@ export const useProductReviews = (productId: string, filters?: { page?: number; 
   })
 }
 
-export const useUserReviews = (filters?: { page?: number; pageSize?: number }) => {
+export const useUserReviews = (filters?: {
+  page?: number
+  pageSize?: number
+}) => {
   return useQuery({
     queryKey: ['reviews', 'user', filters],
     queryFn: () => reviewsApi.getUserReviews(filters),
@@ -27,11 +33,14 @@ export const useUserReviews = (filters?: { page?: number; pageSize?: number }) =
   })
 }
 
-export const useStoreReviews = (storeId: string, filters?: { page?: number; pageSize?: number }) => {
+export const useSellerReviews = (
+  sellerId: string,
+  filters?: { page?: number; pageSize?: number }
+) => {
   return useQuery({
-    queryKey: ['reviews', 'store', storeId, filters],
-    queryFn: () => reviewsApi.getStoreReviews(storeId, filters),
-    enabled: !!storeId,
+    queryKey: ['reviews', 'seller', sellerId, filters],
+    queryFn: () => reviewsApi.getSellerReviews(sellerId, filters),
+    enabled: !!sellerId,
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }
@@ -52,8 +61,12 @@ export const useCreateReview = () => {
     mutationFn: reviewsApi.createReview,
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['reviews'] })
-      queryClient.invalidateQueries({ queryKey: ['reviews', 'product', variables.productId] })
-      queryClient.invalidateQueries({ queryKey: ['products', variables.productId] })
+      queryClient.invalidateQueries({
+        queryKey: ['reviews', 'product', variables.productId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['products', variables.productId],
+      })
     },
   })
 }
@@ -83,18 +96,6 @@ export const useDeleteReview = () => {
   })
 }
 
-export const useMarkReviewHelpful = () => {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: reviewsApi.markHelpful,
-    onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: ['reviews'] })
-      queryClient.invalidateQueries({ queryKey: ['reviews', id] })
-    },
-  })
-}
-
 export const useReviewStats = () => {
   return useQuery({
     queryKey: ['reviews', 'stats'],
@@ -112,11 +113,11 @@ export const useProductReviewStats = (productId: string) => {
   })
 }
 
-export const useStoreReviewStats = (storeId: string) => {
+export const useSellerReviewStats = (sellerId: string) => {
   return useQuery({
-    queryKey: ['reviews', 'stats', 'store', storeId],
-    queryFn: () => reviewsApi.getStoreReviewStats(storeId),
-    enabled: !!storeId,
+    queryKey: ['reviews', 'stats', 'seller', sellerId],
+    queryFn: () => reviewsApi.getSellerReviewStats(sellerId),
+    enabled: !!sellerId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }

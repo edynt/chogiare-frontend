@@ -1,6 +1,18 @@
+/**
+ * @deprecated This file is deprecated. The Store model has been removed from the backend.
+ * Seller information is now part of the User model.
+ * Please use the seller hooks from './useSeller.ts' instead.
+ *
+ * Migration guide:
+ * - useStores -> useSellerProducts (for products)
+ * - useStore -> useSellerProduct (for single product)
+ * - useUserStore -> Use user auth context for seller info
+ * - useStoreStats -> useSellerDashboardStats
+ */
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { storesApi } from '@/api/stores'
-import type { UpdateStoreRequest } from '@/api/stores'
+import { storesApi } from '@user/api/stores'
+import type { UpdateStoreRequest } from '@user/api/stores'
 
 export const useStores = (filters?: { page?: number; pageSize?: number }) => {
   return useQuery({
@@ -27,7 +39,10 @@ export const useUserStore = () => {
   })
 }
 
-export const useSearchStores = (query: string, filters?: { page?: number; pageSize?: number }) => {
+export const useSearchStores = (
+  query: string,
+  filters?: { page?: number; pageSize?: number }
+) => {
   return useQuery({
     queryKey: ['stores', 'search', query, filters],
     queryFn: () => storesApi.searchStores(query, filters),
@@ -96,5 +111,29 @@ export const useStoreStatsById = (storeId: string) => {
     queryFn: () => storesApi.getStoreStatsById(storeId),
     enabled: !!storeId,
     staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+export const useDashboardStats = () => {
+  return useQuery({
+    queryKey: ['stores', 'dashboard', 'stats'],
+    queryFn: storesApi.getDashboardStats,
+    staleTime: 1 * 60 * 1000, // 1 minute
+  })
+}
+
+export const useLowStockProducts = (limit?: number) => {
+  return useQuery({
+    queryKey: ['stores', 'dashboard', 'low-stock', limit],
+    queryFn: () => storesApi.getLowStockProducts(limit),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const usePromotedProducts = () => {
+  return useQuery({
+    queryKey: ['stores', 'dashboard', 'promoted'],
+    queryFn: storesApi.getPromotedProducts,
+    staleTime: 1 * 60 * 1000, // 1 minute
   })
 }

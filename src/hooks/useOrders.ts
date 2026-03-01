@@ -1,6 +1,11 @@
-import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query'
-import { ordersApi } from '@/api/orders'
-import type { UpdateOrderRequest } from '@/api/orders'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useInfiniteQuery,
+} from '@tanstack/react-query'
+import { ordersApi } from '@user/api/orders'
+import type { UpdateOrderRequest } from '@user/api/orders'
 
 export const useOrders = (filters?: { page?: number; pageSize?: number }) => {
   return useQuery({
@@ -19,7 +24,10 @@ export const useOrder = (id: string) => {
   })
 }
 
-export const useUserOrders = (filters?: { page?: number; pageSize?: number }) => {
+export const useUserOrders = (filters?: {
+  page?: number
+  pageSize?: number
+}) => {
   return useQuery({
     queryKey: ['orders', 'user', filters],
     queryFn: () => ordersApi.getUserOrders(filters),
@@ -27,20 +35,29 @@ export const useUserOrders = (filters?: { page?: number; pageSize?: number }) =>
   })
 }
 
-export const useStoreOrders = (storeId: string, filters?: { page?: number; pageSize?: number }) => {
+export const useStoreOrders = (
+  sellerId: string,
+  filters?: { page?: number; pageSize?: number }
+) => {
   return useQuery({
-    queryKey: ['orders', 'store', storeId, filters],
-    queryFn: () => ordersApi.getStoreOrders(storeId, filters),
-    enabled: !!storeId,
+    queryKey: ['orders', 'seller', sellerId, filters],
+    queryFn: () => ordersApi.getSellerOrdersById(sellerId, filters),
+    enabled: !!sellerId,
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }
 
-export const useInfiniteStoreOrders = (storeId: string, pageSize: number = 20) => {
+export const useInfiniteStoreOrders = (
+  sellerId: string,
+  pageSize: number = 20
+) => {
   return useInfiniteQuery({
-    queryKey: ['orders', 'store', 'infinite', storeId],
+    queryKey: ['orders', 'seller', 'infinite', sellerId],
     queryFn: ({ pageParam = 1 }) => {
-      return ordersApi.getStoreOrders(storeId, { page: pageParam, pageSize })
+      return ordersApi.getSellerOrdersById(sellerId, {
+        page: pageParam,
+        pageSize,
+      })
     },
     getNextPageParam: (lastPage, allPages) => {
       const currentPage = allPages.length
@@ -48,7 +65,7 @@ export const useInfiniteStoreOrders = (storeId: string, pageSize: number = 20) =
       return currentPage < totalPages ? currentPage + 1 : undefined
     },
     initialPageParam: 1,
-    enabled: !!storeId,
+    enabled: !!sellerId,
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }
@@ -66,6 +83,42 @@ export const useInfiniteUserOrders = (pageSize: number = 20) => {
     },
     initialPageParam: 1,
     staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const useSellerOrders = (filters?: {
+  page?: number
+  pageSize?: number
+  status?: string
+  paymentStatus?: string
+}) => {
+  return useQuery({
+    queryKey: ['orders', 'seller', filters],
+    queryFn: () => ordersApi.getSellerOrders(filters),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const useInfiniteSellerOrders = (pageSize: number = 20) => {
+  return useInfiniteQuery({
+    queryKey: ['orders', 'seller', 'infinite'],
+    queryFn: async ({ pageParam = 1 }) => {
+      console.log('[useInfiniteSellerOrders] Fetching page:', pageParam)
+      const result = await ordersApi.getSellerOrders({
+        page: pageParam,
+        pageSize,
+      })
+      console.log('[useInfiniteSellerOrders] Result:', result)
+      return result
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      const currentPage = allPages.length
+      const totalPages = lastPage?.totalPages || 1
+      return currentPage < totalPages ? currentPage + 1 : undefined
+    },
+    initialPageParam: 1,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    retry: 1,
   })
 }
 
@@ -111,8 +164,16 @@ export const useUpdateOrderPaymentStatus = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, paymentStatus }: { id: string; paymentStatus: string }) =>
-      ordersApi.updateOrderPaymentStatus(id, paymentStatus),
+    mutationFn: ({
+      id,
+      paymentStatus,
+      paymentProofUrl,
+    }: {
+      id: string
+      paymentStatus: string
+      paymentProofUrl?: string
+    }) =>
+      ordersApi.updateOrderPaymentStatus(id, paymentStatus, paymentProofUrl),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       queryClient.invalidateQueries({ queryKey: ['orders', id] })
@@ -139,11 +200,11 @@ export const useOrderStats = () => {
   })
 }
 
-export const useStoreOrderStats = (storeId: string) => {
+export const useStoreOrderStats = (sellerId: string) => {
   return useQuery({
-    queryKey: ['orders', 'stats', 'store', storeId],
-    queryFn: () => ordersApi.getStoreOrderStats(storeId),
-    enabled: !!storeId,
+    queryKey: ['orders', 'stats', 'seller', sellerId],
+    queryFn: () => ordersApi.getSellerOrderStats(sellerId),
+    enabled: !!sellerId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
@@ -165,6 +226,34 @@ export const useConfirmOrder = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       queryClient.invalidateQueries({ queryKey: ['orders', id] })
+    },
+  })
+}
+
+/**
+ * Hook to upload payment proof image for an order
+ * Supports progress tracking during upload
+ */
+export const useUploadPaymentImage = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      orderId,
+      file,
+      onProgress,
+    }: {
+      orderId: string
+      file: File
+      onProgress?: (progress: {
+        loaded: number
+        total: number
+        percentage: number
+      }) => void
+    }) => ordersApi.uploadPaymentImage(orderId, file, onProgress),
+    onSuccess: (_, { orderId }) => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+      queryClient.invalidateQueries({ queryKey: ['orders', orderId] })
     },
   })
 }

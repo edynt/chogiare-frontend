@@ -1,22 +1,26 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { uploadApi, type UploadProgress } from '@/api/upload'
-import { useAuthStore } from '@/stores/authStore'
+import { uploadApi, type UploadProgress } from '@shared/api/upload'
 
 export const useUploadFile = () => {
   return useMutation({
-    mutationFn: ({ file, onProgress }: { file: File; onProgress?: (progress: UploadProgress) => void }) =>
-      uploadApi.uploadFile(file, onProgress),
+    mutationFn: ({
+      file,
+      onProgress,
+    }: {
+      file: File
+      onProgress?: (progress: UploadProgress) => void
+    }) => uploadApi.uploadFile(file, onProgress),
   })
 }
 
 export const useUploadFiles = () => {
   return useMutation({
-    mutationFn: ({ 
-      files, 
-      onProgress 
-    }: { 
-      files: File[]; 
-      onProgress?: (fileIndex: number, progress: UploadProgress) => void 
+    mutationFn: ({
+      files,
+      onProgress,
+    }: {
+      files: File[]
+      onProgress?: (fileIndex: number, progress: UploadProgress) => void
     }) => uploadApi.uploadFiles(files, onProgress),
   })
 }
@@ -25,17 +29,19 @@ export const useUploadProductImages = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ 
-      productId, 
-      files, 
-      onProgress 
-    }: { 
-      productId: string; 
-      files: File[]; 
-      onProgress?: (fileIndex: number, progress: UploadProgress) => void 
-    }) => uploadApi.uploadProductImages(productId, files, onProgress),
+    mutationFn: ({
+      files,
+      productId,
+      onProgress,
+    }: {
+      files: File[]
+      productId?: string
+      onProgress?: (fileIndex: number, progress: UploadProgress) => void
+    }) => uploadApi.uploadProductImages(files, productId, onProgress),
     onSuccess: (_, { productId }) => {
-      queryClient.invalidateQueries({ queryKey: ['products', productId] })
+      if (productId) {
+        queryClient.invalidateQueries({ queryKey: ['products', productId] })
+      }
       queryClient.invalidateQueries({ queryKey: ['products'] })
     },
   })
@@ -45,17 +51,15 @@ export const useUploadStoreImage = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ 
-      storeId, 
-      file, 
-      type, 
-      onProgress 
-    }: { 
-      storeId: string; 
-      file: File; 
-      type: 'logo' | 'banner'; 
-      onProgress?: (progress: UploadProgress) => void 
-    }) => uploadApi.uploadStoreImage(storeId, file, type, onProgress),
+    mutationFn: ({
+      storeId,
+      file,
+      onProgress,
+    }: {
+      storeId: string
+      file: File
+      onProgress?: (progress: UploadProgress) => void
+    }) => uploadApi.uploadStoreImage(storeId, file, onProgress),
     onSuccess: (_, { storeId }) => {
       queryClient.invalidateQueries({ queryKey: ['stores', storeId] })
       queryClient.invalidateQueries({ queryKey: ['stores'] })
@@ -64,19 +68,17 @@ export const useUploadStoreImage = () => {
 }
 
 export const useUploadAvatar = () => {
-  const { setUser } = useAuthStore()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ 
-      file, 
-      onProgress 
-    }: { 
-      file: File; 
-      onProgress?: (progress: UploadProgress) => void 
+    mutationFn: ({
+      file,
+      onProgress,
+    }: {
+      file: File
+      onProgress?: (progress: UploadProgress) => void
     }) => uploadApi.uploadAvatar(file, onProgress),
-    onSuccess: (data) => {
-      // Update user profile with new avatar
+    onSuccess: () => {
       // Update user profile with new avatar
       // This would need to be implemented with proper user update logic
       queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] })

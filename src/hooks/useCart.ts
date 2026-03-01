@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { cartApi } from '@/api/cart'
+import { cartApi } from '@user/api/cart'
 import { useCartStore } from '@/stores/cartStore'
-import type { UpdateCartItemQuantityRequest } from '@/api/cart'
+import type { UpdateCartItemQuantityRequest } from '@user/api/cart'
 
 export const useCart = () => {
   return useQuery({
@@ -12,16 +12,26 @@ export const useCart = () => {
 }
 
 export const useAddToCart = () => {
-  const { addItem } = useCartStore()
+  const queryClient = useQueryClient()
 
-  return {
-    mutateAsync: async ({ productId, quantity }: { productId: string; quantity: number }) => {
-      // For now, we'll simulate the API call and update the store directly
-      // In a real app, you would call the API first, then update the store
-      return { productId, quantity }
+  return useMutation({
+    mutationFn: ({
+      productId,
+      quantity,
+    }: {
+      productId: string | number
+      quantity: number
+    }) =>
+      cartApi.addItem({
+        productId:
+          typeof productId === 'string' ? parseInt(productId, 10) : productId,
+        quantity,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] })
+      queryClient.invalidateQueries({ queryKey: ['cart', 'stats'] })
     },
-    isPending: false,
-  }
+  })
 }
 
 export const useUpdateCartItem = () => {
@@ -29,9 +39,14 @@ export const useUpdateCartItem = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ itemId, data }: { itemId: string; data: UpdateCartItemQuantityRequest }) =>
-      cartApi.updateItemQuantity(itemId, data),
-    onSuccess: (data) => {
+    mutationFn: ({
+      itemId,
+      data,
+    }: {
+      itemId: string
+      data: UpdateCartItemQuantityRequest
+    }) => cartApi.updateItemQuantity(itemId, data),
+    onSuccess: data => {
       updateQuantity(data.productId, data.quantity)
       queryClient.invalidateQueries({ queryKey: ['cart'] })
     },
