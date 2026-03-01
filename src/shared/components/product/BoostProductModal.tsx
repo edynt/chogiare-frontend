@@ -131,9 +131,19 @@ export function BoostProductModal({
                 <Wallet className="h-4 w-4 text-green-600" />
                 <span className="text-sm font-medium">Số dư ví</span>
               </div>
-              <span className="font-bold text-green-600">
-                {formatCurrency(currentBalance)}
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="font-bold text-green-600">
+                  {formatCurrency(currentBalance)}
+                </span>
+                {packageList.length > 0 && currentBalance < Math.min(...packageList.map(p => p.price)) && (
+                  <Button size="sm" asChild className="bg-green-600 hover:bg-green-700 h-7 text-xs">
+                    <Link to="/buyer/top-up">
+                      <Wallet className="mr-1 h-3 w-3" />
+                      Nạp tiền
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </div>
 
             {/* Already Boosted Warning */}
@@ -165,14 +175,14 @@ export function BoostProductModal({
                       return (
                         <div
                           key={pkg.id}
-                          onClick={() => canAfford && setSelectedPackage(pkg)}
+                          onClick={() => setSelectedPackage(pkg)}
                           className={cn(
                             'relative flex-shrink-0 w-[140px] cursor-pointer rounded-lg border-2 p-3 transition-all text-center',
                             isSelected
                               ? 'border-orange-500 bg-orange-50'
                               : canAfford
                                 ? 'border-border hover:border-orange-300 hover:bg-orange-50/50'
-                                : 'cursor-not-allowed border-border opacity-50'
+                                : 'border-border hover:border-orange-300/50 opacity-60 hover:opacity-80'
                           )}
                         >
                           {isSelected && (
@@ -286,14 +296,8 @@ export function BoostProductModal({
                   Số dư không đủ. Bạn cần thêm{' '}
                   <strong>
                     {formatCurrency(selectedPackage.price - currentBalance)}
-                  </strong>
-                  .{' '}
-                  <Link
-                    to="/buyer/top-up"
-                    className="font-medium underline hover:no-underline"
-                  >
-                    Nạp tiền ngay
-                  </Link>
+                  </strong>{' '}
+                  để sử dụng gói này.
                 </AlertDescription>
               </Alert>
             )}
@@ -304,20 +308,28 @@ export function BoostProductModal({
           <Button variant="outline" onClick={onClose}>
             Hủy
           </Button>
-          <Button
-            onClick={handleRequestBoost}
-            disabled={
-              !selectedPackage ||
-              currentBalance < (selectedPackage?.price ?? 0) ||
-              boostMutation.isPending
-            }
-            className="bg-orange-500 hover:bg-orange-600"
-          >
-            <TrendingUp className="mr-2 h-4 w-4" />
-            Đẩy sản phẩm
-            {selectedPackage &&
-              ` - ${formatCurrency(selectedPackage.price)}`}
-          </Button>
+          {selectedPackage && currentBalance < selectedPackage.price ? (
+            <Button asChild className="bg-green-600 hover:bg-green-700">
+              <Link to="/buyer/top-up">
+                <Wallet className="mr-2 h-4 w-4" />
+                Nạp tiền ngay
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              onClick={handleRequestBoost}
+              disabled={
+                !selectedPackage ||
+                boostMutation.isPending
+              }
+              className="bg-orange-500 hover:bg-orange-600"
+            >
+              <TrendingUp className="mr-2 h-4 w-4" />
+              Đẩy sản phẩm
+              {selectedPackage &&
+                ` - ${formatCurrency(selectedPackage.price)}`}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
 

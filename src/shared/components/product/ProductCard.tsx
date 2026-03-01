@@ -110,11 +110,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
   }
 
   const productBadges = getProductBadges()
+  const isPromoted = product.isPromoted
 
-  return (
+  const cardContent = (
     <Card
       className={cn(
-        'group card-hover flex flex-col h-full overflow-hidden border-border/50 bg-card',
+        'group card-hover flex flex-col h-full overflow-hidden bg-card',
+        isPromoted ? 'border-0' : 'border-border/50',
         className
       )}
     >
@@ -310,4 +312,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
       </Link>
     </Card>
   )
+
+  // Wrap promoted products in gradient border frame
+  if (isPromoted) {
+    return <div className="promoted-card-frame h-full">{cardContent}</div>
+  }
+
+  return cardContent
 }

@@ -90,6 +90,31 @@
   @apply bg-muted-foreground/30;
 }
 
+/* Promoted product card - gradient border frame */
+.promoted-card-frame {
+  @apply relative;
+  padding: 2px;
+  border-radius: calc(var(--radius) + 2px);
+  background: linear-gradient(135deg, #f97316, #ef4444, #ec4899, #f97316);
+  background-size: 300% 300%;
+  animation: promoted-shimmer 3s linear infinite;
+}
+
+.promoted-card-frame > * {
+  border-radius: var(--radius);
+}
+
+.promoted-card-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  filter: blur(8px);
+  opacity: 0.4;
+  z-index: -1;
+}
+
 /* Focus visible styles */
 .focus-visible {
   @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
