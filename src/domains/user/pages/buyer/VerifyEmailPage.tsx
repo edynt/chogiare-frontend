@@ -25,6 +25,7 @@ export default function VerifyEmailPage() {
   const email = location.state?.email || ''
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [isResending, setIsResending] = useState(false)
+  const [cooldown, setCooldown] = useState(60) // Start with cooldown since OTP was just sent
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   useEffect(() => {
@@ -32,6 +33,15 @@ export default function VerifyEmailPage() {
       navigate('/auth/register')
     }
   }, [email, navigate])
+
+  // Cooldown countdown timer
+  useEffect(() => {
+    if (cooldown <= 0) return
+    const timer = setInterval(() => {
+      setCooldown(prev => prev - 1)
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [cooldown])
 
   const handleOtpChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return
@@ -102,7 +112,7 @@ export default function VerifyEmailPage() {
   }
 
   const handleResend = async () => {
-    if (!email) return
+    if (!email || cooldown > 0) return
 
     setIsResending(true)
     try {
@@ -112,6 +122,7 @@ export default function VerifyEmailPage() {
         title: 'Đã gửi lại mã OTP',
         message: 'Vui lòng kiểm tra email của bạn',
       })
+      setCooldown(60)
       setOtp(['', '', '', '', '', ''])
       inputRefs.current[0]?.focus()
     } catch (error) {
@@ -186,7 +197,7 @@ export default function VerifyEmailPage() {
               <Button
                 variant="outline"
                 onClick={handleResend}
-                disabled={isResending || resendMutation.isPending}
+                disabled={isResending || resendMutation.isPending || cooldown > 0}
                 className="w-full"
               >
                 {isResending || resendMutation.isPending ? (
@@ -194,6 +205,8 @@ export default function VerifyEmailPage() {
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Đang gửi lại...
                   </>
+                ) : cooldown > 0 ? (
+                  `Gửi lại mã OTP (${cooldown}s)`
                 ) : (
                   'Gửi lại mã OTP'
                 )}

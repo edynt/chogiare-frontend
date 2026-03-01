@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 import { Toaster } from '@shared/components/ui/sonner'
 import { NotificationProvider } from '@shared/components/notification-provider'
 import { PerformanceOptimizer } from '@shared/components/seo/PerformanceOptimizer'
@@ -27,25 +28,29 @@ const queryClient = new QueryClient({
   },
 })
 
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <NotificationProvider>
-        <Router>
-          <PerformanceOptimizer>
-            <div className="min-h-screen bg-background">
-              <Routes>
-                {/* Admin routes - completely separate context */}
-                <Route path="/admin/*" element={<AdminApp />} />
+      <GoogleOAuthProvider clientId={googleClientId}>
+        <NotificationProvider>
+          <Router>
+            <PerformanceOptimizer>
+              <div className="min-h-screen bg-background">
+                <Routes>
+                  {/* Admin routes - completely separate context */}
+                  <Route path="/admin/*" element={<AdminApp />} />
 
-                {/* User routes - everything else */}
-                <Route path="/*" element={<UserApp />} />
-              </Routes>
-              <Toaster />
-            </div>
-          </PerformanceOptimizer>
-        </Router>
-      </NotificationProvider>
+                  {/* User routes - everything else */}
+                  <Route path="/*" element={<UserApp />} />
+                </Routes>
+                <Toaster />
+              </div>
+            </PerformanceOptimizer>
+          </Router>
+        </NotificationProvider>
+      </GoogleOAuthProvider>
     </QueryClientProvider>
   )
 }

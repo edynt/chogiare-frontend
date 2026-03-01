@@ -268,7 +268,7 @@ export default function OrderDetailPage() {
       toast.success('Đã xác nhận đơn hàng thành công')
       setShowConfirmDialog(false)
       setSellerNotes('')
-      navigate(-1)
+      refetch()
     } catch (error) {
       toast.error(
         getApiErrorMessage(error, 'Có lỗi xảy ra khi xác nhận đơn hàng')
@@ -288,7 +288,7 @@ export default function OrderDetailPage() {
       toast.success('Đã hủy đơn hàng')
       setShowCancelDialog(false)
       setCancelReason('')
-      navigate(-1)
+      refetch()
     } catch (error) {
       toast.error(getApiErrorMessage(error, 'Có lỗi xảy ra khi hủy đơn hàng'))
       console.error('Error cancelling order:', error)
@@ -305,7 +305,7 @@ export default function OrderDetailPage() {
       })
       toast.success('Đã bắt đầu chuẩn bị hàng')
       setShowStartPreparingDialog(false)
-      navigate(-1)
+      refetch()
     } catch (error) {
       toast.error(
         getApiErrorMessage(error, 'Có lỗi xảy ra khi cập nhật trạng thái')
@@ -324,7 +324,7 @@ export default function OrderDetailPage() {
       })
       toast.success('Đơn hàng đã sẵn sàng để lấy')
       setShowReadyDialog(false)
-      navigate(-1)
+      refetch()
     } catch (error) {
       toast.error(
         getApiErrorMessage(error, 'Có lỗi xảy ra khi cập nhật trạng thái')
@@ -343,7 +343,7 @@ export default function OrderDetailPage() {
       })
       toast.success('Đơn hàng đã hoàn thành')
       setShowCompleteDialog(false)
-      navigate(-1)
+      refetch()
     } catch (error) {
       toast.error(
         getApiErrorMessage(error, 'Có lỗi xảy ra khi cập nhật trạng thái')
