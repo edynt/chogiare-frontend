@@ -107,12 +107,13 @@ export default function SellerProductsPage() {
   }
 
   const getStatusBadge = (status: ProductStatus) => {
-    switch (status) {
-      case 'active':
+    const statusNum = typeof status === 'string' ? parseInt(String(status), 10) : status
+    switch (statusNum) {
+      case 1: // ACTIVE
         return <Badge variant="success">Đang bán</Badge>
-      case 'draft':
+      case 0: // DRAFT
         return <Badge variant="secondary">Nháp</Badge>
-      case 'out_of_stock':
+      case 2: // OUT_OF_STOCK
         return <Badge variant="destructive">Hết</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
@@ -120,25 +121,26 @@ export default function SellerProductsPage() {
   }
 
   const getStatusColor = (status: ProductStatus) => {
-    switch (status) {
-      case 'active':
+    const statusNum = typeof status === 'string' ? parseInt(String(status), 10) : status
+    switch (statusNum) {
+      case 1: // ACTIVE
         return 'text-success'
-      case 'draft':
+      case 0: // DRAFT
         return 'text-muted-foreground'
-      case 'out_of_stock':
+      case 2: // OUT_OF_STOCK
         return 'text-destructive'
       default:
         return 'text-muted-foreground'
     }
   }
 
-  // Calculate stats with proper null checks
+  // Calculate stats with proper null checks (status is numeric: 0=draft, 1=active, 2=out_of_stock)
   const stats = {
     total: productsData?.total || 0,
-    active: productsData?.items?.filter(p => p.status === 'active').length || 0,
-    draft: productsData?.items?.filter(p => p.status === 'draft').length || 0,
+    active: productsData?.items?.filter(p => Number(p.status) === 1).length || 0,
+    draft: productsData?.items?.filter(p => Number(p.status) === 0).length || 0,
     outOfStock:
-      productsData?.items?.filter(p => p.status === 'out_of_stock').length || 0,
+      productsData?.items?.filter(p => Number(p.status) === 2).length || 0,
     totalViews:
       productsData?.items?.reduce((sum, p) => sum + (p.viewCount || 0), 0) || 0,
     totalRevenue:

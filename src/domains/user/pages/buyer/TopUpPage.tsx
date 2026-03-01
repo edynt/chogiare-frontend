@@ -165,8 +165,8 @@ export default function TopUpPage() {
   const handleTopUp = async () => {
     const amount = selectedPreset || parseFloat(depositAmount)
 
-    if (!amount || amount < 10000) {
-      toast.error('Số tiền tối thiểu là 10,000 VNĐ')
+    if (!amount || amount < 2000) {
+      toast.error('Số tiền tối thiểu là 2,000 VNĐ')
       return
     }
 
@@ -178,8 +178,10 @@ export default function TopUpPage() {
       })
 
       if (depositMethod === 'bank_transfer') {
+        const depositData = result.data.data
         navigate(
-          `/payment-qr?amount=${amount}&transactionId=${result.data.data.transaction.id}`
+          `/payment-qr?amount=${amount}&transactionId=${depositData.transaction.id}`,
+          { state: { sepay: depositData.sepay } }
         )
         return
       }
@@ -454,10 +456,10 @@ export default function TopUpPage() {
                         }}
                         placeholder="Nhập số tiền muốn nạp"
                         className="text-lg"
-                        min="10000"
+                        min="2000"
                       />
                       <p className="text-sm text-muted-foreground mt-1">
-                        Số tiền tối thiểu: 10,000 VNĐ
+                        Số tiền tối thiểu: 2,000 VNĐ
                       </p>
                     </div>
 
@@ -490,7 +492,7 @@ export default function TopUpPage() {
                     </div>
 
                     {/* Transaction Summary */}
-                    {(selectedPreset || parseFloat(depositAmount) >= 10000) && (
+                    {(selectedPreset || parseFloat(depositAmount) >= 2000) && (
                       <Card className="bg-muted/50">
                         <CardContent className="p-4">
                           <h3 className="font-semibold mb-3">
@@ -533,7 +535,7 @@ export default function TopUpPage() {
                       disabled={
                         depositMutation.isPending ||
                         (!selectedPreset &&
-                          (!depositAmount || parseFloat(depositAmount) < 10000))
+                          (!depositAmount || parseFloat(depositAmount) < 2000))
                       }
                       className="w-full"
                       size="lg"

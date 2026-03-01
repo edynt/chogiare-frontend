@@ -39,6 +39,18 @@ export interface DepositRequest {
   description?: string
 }
 
+export interface SepayBankInfo {
+  bankName: string
+  accountNumber: string
+  accountName: string
+}
+
+export interface SepayQrData {
+  qrUrl: string
+  bankInfo: SepayBankInfo
+  transferContent: string
+}
+
 export interface DepositResponse {
   transaction: {
     id: number
@@ -52,6 +64,7 @@ export interface DepositResponse {
     previousBalance: number
     newBalance: number
   }
+  sepay?: SepayQrData
 }
 
 export interface QueryTransactionParams {

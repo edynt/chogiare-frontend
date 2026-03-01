@@ -249,7 +249,7 @@ export const categoriesApi = {
     const response =
       await apiClient.get<
         ApiResponse<Category[] | { items: Category[]; total: number }>
-      >('/categories')
+      >('/categories', { params: { pageSize: 200 } })
     const data = response.data.data
     if (Array.isArray(data)) {
       return data

@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
 import {
@@ -10,52 +10,40 @@ import {
   CardTitle,
 } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
-import { APP_NAME } from '@/constants/app.constants'
 import {
   CreditCard,
   Copy,
   CheckCircle,
   Info,
   ArrowLeft,
-  QrCode,
   Loader2,
+  CheckCircle2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { walletApi } from '@user/api/wallet'
+import type { SepayQrData } from '@user/api/wallet'
+import { queryKeys } from '@/constants/queryKeys'
+
+// Poll interval for checking transaction status (5 seconds)
+const POLL_INTERVAL = 5000
+// Stop polling after 30 minutes
+const POLL_TIMEOUT = 30 * 60 * 1000
 
 export default function PaymentQRPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const queryClient = useQueryClient()
-  const [copied, setCopied] = useState(false)
+  const [copiedField, setCopiedField] = useState<string | null>(null)
+  const [isConfirmed, setIsConfirmed] = useState(false)
+  const [isPolling, setIsPolling] = useState(true)
+  const [isTimedOut, setIsTimedOut] = useState(false)
 
   const amount = parseFloat(searchParams.get('amount') || '0')
   const transactionId = searchParams.get('transactionId') || ''
 
-  const confirmMutation = useMutation({
-    mutationFn: () => walletApi.confirmDeposit(Number(transactionId)),
-    onSuccess: result => {
-      const newBalance = result.data.balance.newBalance
-      toast.success(
-        `Nạp tiền thành công! Số dư mới: ${formatPrice(newBalance)}`
-      )
-      queryClient.invalidateQueries({ queryKey: ['wallet-balance'] })
-      queryClient.invalidateQueries({ queryKey: ['transactions'] })
-      navigate('/top-up')
-    },
-    onError: (error: unknown) => {
-      // Check for specific error codes
-      const errorResponse = (error as { response?: { data?: { error?: { code?: string; message?: string } } } })?.response?.data?.error
-      if (errorResponse?.code === 'PAYMENT_INVALID_TRANSACTION') {
-        if (errorResponse.message?.includes('not pending')) {
-          toast.error('Giao dịch này đã được xử lý trước đó. Vui lòng tạo giao dịch mới.')
-          navigate('/top-up')
-          return
-        }
-      }
-      toast.error('Có lỗi xảy ra khi xác nhận thanh toán. Vui lòng thử lại.')
-    },
-  })
+  // Get SePay data from navigation state (passed from TopUpPage)
+  const sepayData = (location.state as { sepay?: SepayQrData })?.sepay
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -64,23 +52,98 @@ export default function PaymentQRPage() {
     }).format(price)
   }
 
-  const bankInfo = {
-    bankName: 'Vietcombank',
-    accountNumber: '1234567890',
-    accountHolder: 'CONG TY TNHH CHO GIA RE',
-    branch: 'Chi nhánh Hà Nội',
-  }
+  // Poll transaction status to detect webhook confirmation
+  const pollStatus = useCallback(async () => {
+    if (!transactionId || isConfirmed) return
 
-  const copyToClipboard = (text: string, label: string) => {
+    try {
+      const transaction = await walletApi.getTransaction(Number(transactionId))
+      if (transaction.status === 'completed') {
+        setIsConfirmed(true)
+        setIsPolling(false)
+        queryClient.invalidateQueries({ queryKey: queryKeys.wallet.balance })
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.wallet.transactions(),
+        })
+        toast.success('Nạp tiền thành công! Giao dịch đã được xác nhận.')
+      }
+    } catch {
+      // Silently ignore poll errors
+    }
+  }, [transactionId, isConfirmed, queryClient])
+
+  useEffect(() => {
+    if (!isPolling || isConfirmed) return
+
+    const interval = setInterval(pollStatus, POLL_INTERVAL)
+
+    // Stop polling after timeout
+    const timeout = setTimeout(() => {
+      setIsPolling(false)
+      setIsTimedOut(true)
+    }, POLL_TIMEOUT)
+
+    return () => {
+      clearInterval(interval)
+      clearTimeout(timeout)
+    }
+  }, [isPolling, isConfirmed, pollStatus])
+
+  const copyToClipboard = (text: string, field: string, label: string) => {
     navigator.clipboard.writeText(text)
-    setCopied(true)
+    setCopiedField(field)
     toast.success(`Đã sao chép ${label}`)
-    setTimeout(() => setCopied(false), 2000)
+    setTimeout(() => setCopiedField(null), 2000)
   }
 
-  const generateQRData = () => {
-    // Generate QR data with payment information
-    return `970422|${bankInfo.accountNumber}|${amount.toFixed(0)}|${transactionId}|Nạp tiền ${APP_NAME}`
+  const CopyButton = ({
+    text,
+    field,
+    label,
+  }: {
+    text: string
+    field: string
+    label: string
+  }) => (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={() => copyToClipboard(text, field, label)}
+    >
+      {copiedField === field ? (
+        <CheckCircle className="h-4 w-4 text-green-600" />
+      ) : (
+        <Copy className="h-4 w-4" />
+      )}
+    </Button>
+  )
+
+  // Success state
+  if (isConfirmed) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto">
+            <Card className="text-center p-8">
+              <CardContent className="space-y-4">
+                <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
+                <h2 className="text-2xl font-bold text-green-700">
+                  Nạp tiền thành công!
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  Số tiền {formatPrice(amount)} đã được cộng vào ví của bạn.
+                </p>
+                <Button onClick={() => navigate('/top-up')} className="mt-4">
+                  Quay lại ví
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
   }
 
   return (
@@ -89,7 +152,11 @@ export default function PaymentQRPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto space-y-6">
           {/* Back Button */}
-          <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/top-up')}
+            className="mb-4"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Quay lại
           </Button>
@@ -110,26 +177,48 @@ export default function PaymentQRPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <QrCode className="h-5 w-5" />
+                <CreditCard className="h-5 w-5" />
                 Quét mã QR để thanh toán
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-center p-6 bg-white rounded-lg border-2 border-dashed border-primary/30">
                 <div className="text-center">
-                  <div className="w-64 h-64 bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-                    <div className="text-center">
-                      <QrCode className="h-32 w-32 mx-auto text-gray-400" />
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Mã QR sẽ được hiển thị ở đây
-                      </p>
+                  {sepayData?.qrUrl ? (
+                    <img
+                      src={sepayData.qrUrl}
+                      alt="QR thanh toán SePay"
+                      className="w-64 h-64 rounded-lg mx-auto"
+                    />
+                  ) : (
+                    <div className="w-64 h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
                     </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
+                  )}
+                  <p className="text-xs text-muted-foreground mt-2">
                     Mã giao dịch: {transactionId}
                   </p>
                 </div>
               </div>
+
+              {/* Waiting indicator */}
+              {isTimedOut ? (
+                <div className="flex items-center justify-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+                  <Info className="h-4 w-4" />
+                  <span>
+                    Hết thời gian chờ. Nếu bạn đã chuyển khoản, vui lòng liên
+                    hệ hỗ trợ với mã giao dịch {transactionId}.
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-2 text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>
+                    Đang chờ xác nhận thanh toán... Hệ thống sẽ tự động cập
+                    nhật khi nhận được tiền.
+                  </span>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -138,7 +227,7 @@ export default function PaymentQRPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
-                Thông tin tài khoản
+                Thông tin chuyển khoản
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -146,7 +235,9 @@ export default function PaymentQRPage() {
                 <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div>
                     <p className="text-sm text-muted-foreground">Ngân hàng</p>
-                    <p className="font-medium">{bankInfo.bankName}</p>
+                    <p className="font-medium">
+                      {sepayData?.bankInfo.bankName || 'Đang tải...'}
+                    </p>
                   </div>
                 </div>
 
@@ -155,21 +246,17 @@ export default function PaymentQRPage() {
                     <p className="text-sm text-muted-foreground">
                       Số tài khoản
                     </p>
-                    <p className="font-medium">{bankInfo.accountNumber}</p>
+                    <p className="font-medium font-mono">
+                      {sepayData?.bankInfo.accountNumber || 'Đang tải...'}
+                    </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      copyToClipboard(bankInfo.accountNumber, 'số tài khoản')
-                    }
-                  >
-                    {copied ? (
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </Button>
+                  {sepayData?.bankInfo.accountNumber && (
+                    <CopyButton
+                      text={sepayData.bankInfo.accountNumber}
+                      field="account"
+                      label="số tài khoản"
+                    />
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
@@ -177,43 +264,42 @@ export default function PaymentQRPage() {
                     <p className="text-sm text-muted-foreground">
                       Chủ tài khoản
                     </p>
-                    <p className="font-medium">{bankInfo.accountHolder}</p>
+                    <p className="font-medium">
+                      {sepayData?.bankInfo.accountName || 'Đang tải...'}
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20">
                   <div className="flex-1">
                     <p className="text-sm text-muted-foreground">
                       Nội dung chuyển khoản
                     </p>
-                    <p className="font-medium font-mono">{transactionId}</p>
+                    <p className="font-bold font-mono text-primary text-lg">
+                      {sepayData?.transferContent || `CGA${transactionId}`}
+                    </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      copyToClipboard(transactionId, 'nội dung chuyển khoản')
+                  <CopyButton
+                    text={
+                      sepayData?.transferContent || `CGA${transactionId}`
                     }
-                  >
-                    {copied ? (
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </Button>
+                    field="content"
+                    label="nội dung chuyển khoản"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  <div className="flex-1">
+                    <p className="text-sm text-muted-foreground">Số tiền</p>
+                    <p className="font-bold text-lg">{formatPrice(amount)}</p>
+                  </div>
+                  <CopyButton
+                    text={Math.round(amount).toString()}
+                    field="amount"
+                    label="số tiền"
+                  />
                 </div>
               </div>
-
-              <Button
-                className="w-full"
-                onClick={() => {
-                  const fullInfo = `${bankInfo.bankName}\nSố TK: ${bankInfo.accountNumber}\nChủ TK: ${bankInfo.accountHolder}\nNội dung: ${transactionId}`
-                  copyToClipboard(fullInfo, 'thông tin tài khoản')
-                }}
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Sao chép toàn bộ thông tin
-              </Button>
             </CardContent>
           </Card>
 
@@ -228,16 +314,18 @@ export default function PaymentQRPage() {
                   </h3>
                   <ol className="space-y-2 text-sm text-blue-800 list-decimal list-inside">
                     <li>Mở ứng dụng ngân hàng trên điện thoại</li>
-                    <li>Quét mã QR hoặc chuyển khoản theo thông tin trên</li>
                     <li>
-                      Nhập đúng nội dung chuyển khoản:{' '}
+                      Quét mã QR ở trên - thông tin sẽ được điền tự động
+                    </li>
+                    <li>
+                      Hoặc chuyển khoản thủ công với nội dung:{' '}
                       <span className="font-mono font-semibold">
-                        {transactionId}
+                        {sepayData?.transferContent || `CGA${transactionId}`}
                       </span>
                     </li>
                     <li>
-                      Sau khi chuyển khoản thành công, tiền sẽ được cộng vào tài
-                      khoản trong vòng 5-10 phút
+                      Sau khi chuyển khoản, hệ thống sẽ tự động xác nhận
+                      trong vài giây
                     </li>
                   </ol>
                 </div>
@@ -245,31 +333,14 @@ export default function PaymentQRPage() {
             </CardContent>
           </Card>
 
-          {/* Action Buttons */}
-          <div className="flex gap-4">
-            <Button
-              variant="outline"
-              onClick={() => navigate('/top-up')}
-              className="flex-1"
-              disabled={confirmMutation.isPending}
-            >
-              Quay lại
-            </Button>
-            <Button
-              onClick={() => confirmMutation.mutate()}
-              className="flex-1"
-              disabled={confirmMutation.isPending || !transactionId}
-            >
-              {confirmMutation.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Đang xử lý...
-                </>
-              ) : (
-                'Đã thanh toán'
-              )}
-            </Button>
-          </div>
+          {/* Back Button */}
+          <Button
+            variant="outline"
+            onClick={() => navigate('/top-up')}
+            className="w-full"
+          >
+            Quay lại ví
+          </Button>
         </div>
       </main>
       <Footer />

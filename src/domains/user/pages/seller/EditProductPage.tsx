@@ -135,17 +135,17 @@ export default function EditProductPage() {
         categoryId = Number.isNaN(parsed) ? undefined : parsed
       }
 
-      // Validate condition value
-      const validConditions = ['new', 'like_new', 'good', 'fair', 'poor']
-      const condition = validConditions.includes(product.condition)
-        ? product.condition
-        : 'new'
+      // Convert numeric condition to string (API returns 0=new, 1=like_new, 2=good, 3=fair, 4=poor)
+      const conditionMap: Record<number, string> = {
+        0: 'new', 1: 'like_new', 2: 'good', 3: 'fair', 4: 'poor',
+      }
+      const condition = conditionMap[Number(product.condition)] || 'new'
 
-      // Validate status value
-      const validStatuses = ['draft', 'active', 'out_of_stock']
-      const status = validStatuses.includes(product.status)
-        ? product.status
-        : 'draft'
+      // Convert numeric status to string (API returns 0=draft, 1=active, 2=out_of_stock)
+      const statusMap: Record<number, string> = {
+        0: 'draft', 1: 'active', 2: 'out_of_stock',
+      }
+      const status = statusMap[Number(product.status)] || 'draft'
 
       reset({
         title: product.title,
