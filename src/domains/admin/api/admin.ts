@@ -2027,11 +2027,6 @@ export interface BackupSettings {
 export interface CacheSettings {
   enabled: boolean
   driver: string
-  redisHost: string
-  redisPort: number
-  redisPassword: string
-  memcachedHost: string
-  memcachedPort: number
   ttl: number
   prefix: string
   pageCache: boolean
