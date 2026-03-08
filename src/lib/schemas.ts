@@ -59,16 +59,13 @@ export const resetPasswordSchema = z
 export const productSchema = z.object({
   title: z.string().min(1, 'Tên sản phẩm là bắt buộc'),
   description: z.string().optional(),
-  price: z.coerce
-    .number({ invalid_type_error: 'Giá phải là số hợp lệ' })
+  price: z
+    .number({ error: 'Giá phải là số hợp lệ' })
     .min(0, 'Giá phải lớn hơn hoặc bằng 0'),
-  originalPrice: z.preprocess(
-    val => (val === '' || val === null || val === undefined ? undefined : val),
-    z.coerce
-      .number({ invalid_type_error: 'Giá gốc phải là số hợp lệ' })
-      .min(0, 'Giá gốc phải lớn hơn hoặc bằng 0')
-      .optional()
-  ),
+  originalPrice: z
+    .number({ error: 'Giá gốc phải là số hợp lệ' })
+    .min(0, 'Giá gốc phải lớn hơn hoặc bằng 0')
+    .optional(),
   categoryId: z.number().min(1, 'Danh mục là bắt buộc'),
   condition: z.enum(['new', 'like_new', 'good', 'fair', 'poor']),
   location: z.string().optional(),

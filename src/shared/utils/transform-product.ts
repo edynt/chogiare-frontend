@@ -72,11 +72,11 @@ export function transformProducts<T>(products: T[]): T[] {
 /**
  * Transform a paginated response containing products.
  */
-export function transformPaginatedProducts<T>(
-  response: { items: T[]; [key: string]: unknown }
-): typeof response {
-  return {
-    ...response,
-    items: transformProducts(response.items),
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function transformPaginatedProducts<T>(response: T): T {
+  const result = { ...(response as any) }
+  if (Array.isArray(result.items)) {
+    result.items = transformProducts(result.items)
   }
+  return result as T
 }

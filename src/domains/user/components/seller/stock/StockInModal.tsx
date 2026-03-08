@@ -35,8 +35,8 @@ import {
 // Stock In Modal Schema
 const stockInModalSchema = z.object({
   quantity: z.number().min(1, 'Số lượng phải lớn hơn 0'),
-  costPrice: z.coerce
-    .number({ invalid_type_error: 'Giá nhập phải là số hợp lệ' })
+  costPrice: z
+    .number({ error: 'Giá nhập phải là số hợp lệ' })
     .min(0, 'Giá nhập không được âm')
     .optional(),
   supplier: z.string().min(1, 'Vui lòng nhập nhà cung cấp'),

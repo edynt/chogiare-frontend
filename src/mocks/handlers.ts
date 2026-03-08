@@ -1235,7 +1235,8 @@ export const handlers = [
     const priority = url.searchParams.get('priority')
     const search = url.searchParams.get('search')
 
-    let filteredProducts = [...(demoData.moderationProducts || [])]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let filteredProducts = [...(demoData.moderationProducts || [])] as any[]
 
     // Apply filters
     if (status) {
