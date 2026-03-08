@@ -98,7 +98,6 @@ export function SelectProductToBoostModal({
                 const isPromoted = product.isPromoted === true
                 const productImage =
                   product.images?.[0] ||
-                  product.image ||
                   'https://via.placeholder.com/64'
 
                 return (

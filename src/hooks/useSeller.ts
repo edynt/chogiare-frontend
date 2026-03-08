@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { sellerApi } from '@user/api/seller'
 import type { Product } from '@/types'
+import type { ProductStatusType } from '@/constants/status.constants'
 import type { CreateProductFormDataInput } from '@shared/utils/form-data'
 
 // Dashboard Stats Hook
@@ -17,7 +18,7 @@ export const useSellerProducts = (filters?: {
   page?: number
   pageSize?: number
   categoryId?: number
-  status?: string
+  status?: ProductStatusType
   search?: string
 }) => {
   return useQuery({

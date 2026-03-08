@@ -27,6 +27,7 @@ import {
   Filter,
 } from 'lucide-react'
 import { formatPrice, PLACEHOLDER_IMAGE } from '@/lib/utils'
+import type { ProductStatusType } from '@/constants/status.constants'
 import type { ProductStatus } from '@/types'
 
 export default function SellerProductsPage() {
@@ -49,7 +50,7 @@ export default function SellerProductsPage() {
     error,
   } = useMyProducts({
     query: appliedSearch || undefined,
-    status: appliedStatus !== 'all' ? appliedStatus : undefined,
+    status: appliedStatus !== 'all' ? (appliedStatus as ProductStatusType) : undefined,
     sortBy: appliedSortBy as 'createdAt' | 'price' | 'rating' | 'viewCount',
   })
 

@@ -5,7 +5,17 @@ export * from './useOrders'
 export * from './useReviews'
 /** @deprecated Use useSeller hooks instead */
 export * from './useStores'
-export * from './useSeller'
+// Export only unique hooks from useSeller (duplicates exist in useOrders, useProducts, useStores, useNotifications)
+export {
+  useSellerDashboardStats,
+  useSellerProduct,
+  useUpdateStock,
+  useSellerBoostedProducts,
+  useRemoveProductBoost,
+  useSellerOrder,
+  useRevenueStats,
+  useSellerNotifications,
+} from './useSeller'
 export * from './useSellerCustomers'
 export * from './useChat'
 export * from './useProducts'

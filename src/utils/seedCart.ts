@@ -13,7 +13,7 @@ export function seedFakeCartData(products: Product[]) {
 
   // Filter products that have seller/store info
   const validProducts = products.filter(
-    p => p.sellerId && (p.seller || p.store)
+    p => p.sellerId && p.seller
   )
 
   if (validProducts.length === 0) {

@@ -46,7 +46,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@shared/components/ui/alert-dialog'
-import { USER_STATUS } from '@/constants/status.constants'
 import {
   useAdminUser,
   useApproveUser,
@@ -250,7 +249,7 @@ export default function UserDetailPage() {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
-          {user.status === USER_STATUS.ACTIVE && (
+          {user.status === 'active' && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
@@ -287,7 +286,7 @@ export default function UserDetailPage() {
               </AlertDialogContent>
             </AlertDialog>
           )}
-          {user.status === USER_STATUS.INACTIVE && (
+          {user.status === 'inactive' && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button className="bg-green-600 hover:bg-green-700">
@@ -473,7 +472,7 @@ export default function UserDetailPage() {
       </div>
 
       {/* Seller-specific sections */}
-      {isSeller && user.stores && user.stores.length > 0 && (
+      {isSeller && (user as any).stores && (user as any).stores.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -483,7 +482,7 @@ export default function UserDetailPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {user.stores.map(store => (
+              {((user as any).stores as Array<{ id: string; name: string; slug: string; description?: string; status: string }>).map(store => (
                 <div
                   key={store.id}
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"

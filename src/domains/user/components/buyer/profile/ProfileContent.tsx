@@ -117,7 +117,7 @@ export function ProfileContent() {
         dateOfBirth: profile.dateOfBirth || '',
         address: profile.address || '',
         country: profile.country || 'Vietnam',
-        language: profile.language || 'vi',
+        language: String(profile.language || 'vi'),
       })
     }
   }, [profile, isEditingProfile])
@@ -209,7 +209,7 @@ export function ProfileContent() {
         dateOfBirth: profile.dateOfBirth || '',
         address: profile.address || '',
         country: profile.country || 'Vietnam',
-        language: profile.language || 'vi',
+        language: String(profile.language || 'vi'),
       })
     }
   }

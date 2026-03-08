@@ -213,7 +213,7 @@ export const handlers = [
         name: 'Default Seller',
         avatar: '/avatar.jpg',
       },
-      store: product.store || null,
+      store: null,
       location: product.location || 'Hồ Chí Minh',
       condition: product.condition || 'Mới',
       viewCount: product.viewCount || 0,
@@ -1239,7 +1239,7 @@ export const handlers = [
 
     // Apply filters
     if (status) {
-      filteredProducts = filteredProducts.filter(p => p.status === status)
+      filteredProducts = filteredProducts.filter(p => p.status === (status as any))
     }
 
     if (category) {
@@ -1247,7 +1247,7 @@ export const handlers = [
     }
 
     if (priority) {
-      filteredProducts = filteredProducts.filter(p => p.priority === priority)
+      filteredProducts = filteredProducts.filter(p => p.priority === (priority as any))
     }
 
     if (search) {

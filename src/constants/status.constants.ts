@@ -27,17 +27,17 @@ export const LANGUAGE_LABELS: Record<number, string> = {
 
 // ==================== PRODUCT CONDITION ====================
 export const PRODUCT_CONDITION = {
-  NEW: 0,
-  LIKE_NEW: 1,
-  GOOD: 2,
-  FAIR: 3,
-  POOR: 4,
+  NEW: 'new',
+  LIKE_NEW: 'like_new',
+  GOOD: 'good',
+  FAIR: 'fair',
+  POOR: 'poor',
 } as const
 
 export type ProductConditionType =
   (typeof PRODUCT_CONDITION)[keyof typeof PRODUCT_CONDITION]
 
-export const PRODUCT_CONDITION_LABELS: Record<number, string> = {
+export const PRODUCT_CONDITION_LABELS: Record<string, string> = {
   [PRODUCT_CONDITION.NEW]: 'Mới',
   [PRODUCT_CONDITION.LIKE_NEW]: 'Như mới',
   [PRODUCT_CONDITION.GOOD]: 'Tốt',
@@ -47,15 +47,15 @@ export const PRODUCT_CONDITION_LABELS: Record<number, string> = {
 
 // ==================== PRODUCT STATUS ====================
 export const PRODUCT_STATUS = {
-  DRAFT: 0,
-  ACTIVE: 1,
-  OUT_OF_STOCK: 2,
+  DRAFT: 'draft',
+  ACTIVE: 'active',
+  OUT_OF_STOCK: 'out_of_stock',
 } as const
 
 export type ProductStatusType =
   (typeof PRODUCT_STATUS)[keyof typeof PRODUCT_STATUS]
 
-export const PRODUCT_STATUS_LABELS: Record<number, string> = {
+export const PRODUCT_STATUS_LABELS: Record<string, string> = {
   [PRODUCT_STATUS.DRAFT]: 'Nháp',
   [PRODUCT_STATUS.ACTIVE]: 'Đang bán',
   [PRODUCT_STATUS.OUT_OF_STOCK]: 'Hết hàng',
@@ -63,17 +63,17 @@ export const PRODUCT_STATUS_LABELS: Record<number, string> = {
 
 // ==================== PRODUCT BADGE ====================
 export const PRODUCT_BADGE = {
-  NEW: 0,
-  FEATURED: 1,
-  PROMO: 2,
-  HOT: 3,
-  SALE: 4,
+  NEW: 'NEW',
+  FEATURED: 'FEATURED',
+  PROMO: 'PROMO',
+  HOT: 'HOT',
+  SALE: 'SALE',
 } as const
 
 export type ProductBadgeType =
   (typeof PRODUCT_BADGE)[keyof typeof PRODUCT_BADGE]
 
-export const PRODUCT_BADGE_LABELS: Record<number, string> = {
+export const PRODUCT_BADGE_LABELS: Record<string, string> = {
   [PRODUCT_BADGE.NEW]: 'Mới',
   [PRODUCT_BADGE.FEATURED]: 'Nổi bật',
   [PRODUCT_BADGE.PROMO]: 'Khuyến mãi',
@@ -293,8 +293,8 @@ export type StoreStatus = (typeof STORE_STATUS)[keyof typeof STORE_STATUS]
  * Get label for enum value
  */
 export function getEnumLabel(
-  labels: Record<number, string>,
-  value: number | undefined | null
+  labels: Record<string | number, string>,
+  value: string | number | undefined | null
 ): string {
   if (value === undefined || value === null) return ''
   return labels[value] ?? `Unknown (${value})`

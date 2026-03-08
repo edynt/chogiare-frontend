@@ -7,6 +7,11 @@ import type {
   ApiResponse,
   ProductStatus,
 } from '@/types'
+import {
+  transformProduct,
+  transformPaginatedProducts,
+  transformProducts,
+} from '@shared/utils/transform-product'
 
 export interface BoostPackage {
   id: number
@@ -16,6 +21,7 @@ export interface BoostPackage {
   durationDays: number
   price: number
   features: string[]
+  viewBoost?: number
 }
 
 export interface BoostProductResponse {
@@ -67,14 +73,14 @@ export const productsApi = {
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<Product>>
     >('/products', { params })
-    return response.data.data
+    return transformPaginatedProducts(response.data.data)
   },
 
   getProduct: async (id: string): Promise<Product> => {
     const response = await apiClient.get<ApiResponse<Product>>(
       `/products/${id}`
     )
-    return response.data.data
+    return transformProduct(response.data.data)
   },
 
   createProduct: async (data: {
@@ -99,7 +105,7 @@ export const productsApi = {
       '/products',
       data
     )
-    return response.data.data
+    return transformProduct(response.data.data)
   },
 
   updateProduct: async (
@@ -110,7 +116,7 @@ export const productsApi = {
       `/products/${id}`,
       data
     )
-    return response.data.data
+    return transformProduct(response.data.data)
   },
 
   deleteProduct: async (id: string): Promise<void> => {
@@ -125,7 +131,7 @@ export const productsApi = {
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<Product>>
     >('/products/search', { params: { query, ...filters } })
-    return response.data.data
+    return transformPaginatedProducts(response.data.data)
   },
 
   getProductsByCategory: async (
@@ -135,7 +141,7 @@ export const productsApi = {
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<Product>>
     >(`/categories/${categoryId}/products`, { params: filters })
-    return response.data.data
+    return transformPaginatedProducts(response.data.data)
   },
 
   getProductsBySeller: async (
@@ -145,7 +151,7 @@ export const productsApi = {
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<Product>>
     >(`/seller/${sellerId}/products`, { params: filters })
-    return response.data.data
+    return transformPaginatedProducts(response.data.data)
   },
 
   // Featured products
@@ -156,7 +162,7 @@ export const productsApi = {
         params: { limit },
       }
     )
-    return response.data.data
+    return transformProducts(response.data.data)
   },
 
   // My products (seller's products)
@@ -166,7 +172,7 @@ export const productsApi = {
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<Product>>
     >('/seller/products', { params: filters })
-    return response.data.data
+    return transformPaginatedProducts(response.data.data)
   },
 
   // Bulk operations
@@ -177,7 +183,7 @@ export const productsApi = {
       '/products/bulk',
       { updates }
     )
-    return response.data.data
+    return transformProducts(response.data.data)
   },
 
   // Product management
@@ -190,7 +196,7 @@ export const productsApi = {
       {},
       { params: { status } }
     )
-    return response.data.data
+    return transformProduct(response.data.data)
   },
 
   updateProductStock: async (id: string, stock: number): Promise<Product> => {
@@ -199,7 +205,7 @@ export const productsApi = {
       {},
       { params: { stock } }
     )
-    return response.data.data
+    return transformProduct(response.data.data)
   },
 
   // Analytics

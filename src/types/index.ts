@@ -18,7 +18,7 @@ export interface User {
   dateOfBirth?: string
   address?: string
   country?: string
-  language?: number // 0=vi, 1=en
+  language?: string | number
   showEmail?: boolean
   showPhone?: boolean
   isVerified?: boolean
@@ -42,7 +42,7 @@ export interface User {
 }
 
 // String role names
-export type UserRole = 'admin' | 'user'
+export type UserRole = 'admin' | 'user' | 'seller' | 'buyer'
 
 /**
  * Centralized Role Constants
@@ -95,7 +95,7 @@ export interface Product {
   categoryId: string | number
   category?: Category
   images: string[]
-  condition: ProductConditionType // numeric: 0=new, 1=like_new, 2=good, 3=fair, 4=poor
+  condition: ProductConditionType
   tags: string[]
   location: string
   stock: number
@@ -112,8 +112,8 @@ export interface Product {
   }
   sellerId: string
   seller?: User
-  status: ProductStatusType // numeric: 0=draft, 1=active, 2=out_of_stock
-  badges: ProductBadgeType[] // numeric array: 0=NEW, 1=FEATURED, 2=PROMO, 3=HOT, 4=SALE
+  status: ProductStatusType
+  badges: ProductBadgeType[]
   warranty?: string
   returnPolicy?: string
   rating: number
@@ -224,12 +224,12 @@ export interface Review {
 
 export interface ChatMessage {
   id: string
-  conversationId: string
-  senderId: string
+  conversationId: string | number
+  senderId: string | number
   sender?: User
   content: string
-  messageType: MessageTypeValue // numeric: 0=text, 1=image, 2=file
-  type?: MessageTypeValue // alias for backward compatibility
+  messageType: MessageTypeValue | string | number
+  type?: MessageTypeValue | string | number
   attachments?: string[]
   isRead: boolean
   createdAt: string

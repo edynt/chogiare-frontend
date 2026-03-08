@@ -326,6 +326,7 @@ const DEFAULT_SETTINGS: SystemSettings = {
     termsOfService: '/terms',
     privacyPolicy: '/privacy',
     refundPolicy: '/refund-policy',
+    shippingPolicy: '',
     cookiePolicy: '/cookies',
     gdprCompliance: true,
     cookieConsent: true,

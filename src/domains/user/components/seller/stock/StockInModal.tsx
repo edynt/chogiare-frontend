@@ -35,16 +35,9 @@ import {
 // Stock In Modal Schema
 const stockInModalSchema = z.object({
   quantity: z.number().min(1, 'Số lượng phải lớn hơn 0'),
-  costPrice: z
-    .union([
-      z
-        .string()
-        .regex(/^\d+(\.\d+)?$/, 'Giá nhập phải là số hợp lệ')
-        .transform(val => parseFloat(val)),
-      z.literal('').transform(() => 0),
-      z.number(),
-    ])
-    .refine(val => val >= 0, 'Giá nhập không được âm')
+  costPrice: z.coerce
+    .number({ invalid_type_error: 'Giá nhập phải là số hợp lệ' })
+    .min(0, 'Giá nhập không được âm')
     .optional(),
   supplier: z.string().min(1, 'Vui lòng nhập nhà cung cấp'),
   batchNumber: z.string().optional(),

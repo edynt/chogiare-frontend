@@ -8,6 +8,11 @@ import type {
 } from '@/types'
 import { constructProductFormData } from '@shared/utils/form-data'
 import type { CreateProductFormDataInput } from '@shared/utils/form-data'
+import {
+  transformProduct,
+  transformPaginatedProducts,
+  transformProducts,
+} from '@shared/utils/transform-product'
 
 /**
  * Seller API
@@ -69,6 +74,7 @@ export interface SellerCustomer {
 // Seller customer order (simplified order for customer history)
 export interface SellerCustomerOrder {
   id: string
+  orderNo?: string
   status: string
   paymentStatus: string
   total: number
@@ -126,7 +132,7 @@ export const sellerApi = {
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<Product>>
     >('/seller/products', { params })
-    return response.data.data
+    return transformPaginatedProducts(response.data.data)
   },
 
   // Get seller's boosted products from product_boosts table
@@ -145,7 +151,7 @@ export const sellerApi = {
     const response = await apiClient.get<ApiResponse<Product>>(
       `/seller/products/${id}`
     )
-    return response.data.data
+    return transformProduct(response.data.data)
   },
 
   /**
@@ -169,7 +175,7 @@ export const sellerApi = {
       }
     )
 
-    return response.data.data
+    return transformProduct(response.data.data)
   },
 
   /**
@@ -199,7 +205,7 @@ export const sellerApi = {
       '/seller/products',
       data
     )
-    return response.data.data
+    return transformProduct(response.data.data)
   },
 
   updateProduct: async (
@@ -210,7 +216,7 @@ export const sellerApi = {
       `/seller/products/${id}`,
       data
     )
-    return response.data.data
+    return transformProduct(response.data.data)
   },
 
   deleteProduct: async (id: string): Promise<void> => {
@@ -224,7 +230,7 @@ export const sellerApi = {
       '/seller/products/bulk',
       { updates }
     )
-    return response.data.data
+    return transformProducts(response.data.data)
   },
 
   // Stock Management
@@ -233,7 +239,7 @@ export const sellerApi = {
       `/seller/products/${productId}/stock`,
       { stock }
     )
-    return response.data.data
+    return transformProduct(response.data.data)
   },
 
   getLowStockProducts: async (threshold = 10): Promise<Product[]> => {
@@ -243,7 +249,7 @@ export const sellerApi = {
         params: { threshold },
       }
     )
-    return response.data.data
+    return transformProducts(response.data.data)
   },
 
   // Orders Management

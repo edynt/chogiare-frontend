@@ -178,7 +178,7 @@ export default function TopUpPage() {
       })
 
       if (depositMethod === 'bank_transfer') {
-        const depositData = result.data.data
+        const depositData = result.data
         navigate(
           `/payment-qr?amount=${amount}&transactionId=${depositData.transaction.id}`,
           { state: { sepay: depositData.sepay } }

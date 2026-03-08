@@ -313,6 +313,7 @@ describe('Seller API', () => {
     it('should call /seller/customers/stats endpoint', async () => {
       const mockData: CustomerStats = {
         totalCustomers: 10,
+        activeCustomers: 7,
         newCustomers: 2,
         returningCustomers: 8,
         topCustomers: [],

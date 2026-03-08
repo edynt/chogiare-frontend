@@ -524,7 +524,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={handleChatWithSeller}
+                          onClick={() => handleChatWithSeller()}
                         >
                           <MessageCircle className="h-4 w-4 mr-2" />
                           Chat
@@ -569,7 +569,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 {sellerIdForChat ? (
                   <Button
                     className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-6 shadow-lg hover:shadow-xl transition-all"
-                    onClick={handleChatWithSeller}
+                    onClick={() => handleChatWithSeller()}
                   >
                     <MessageCircle className="h-5 w-5 mr-2" />
                     Chat với người bán
@@ -1772,7 +1772,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                       <Button
                         variant="outline"
                         className="flex-1"
-                        onClick={handleChatWithSeller}
+                        onClick={() => handleChatWithSeller()}
                       >
                         <MessageCircle className="h-4 w-4 mr-2" />
                         Nhắn tin

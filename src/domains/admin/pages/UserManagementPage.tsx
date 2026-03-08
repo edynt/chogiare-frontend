@@ -44,7 +44,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@shared/components/ui/alert-dialog'
-import { USER_STATUS } from '@/constants/status.constants'
 import {
   useAdminUsers,
   useApproveUser,
@@ -448,7 +447,7 @@ export default function UserManagementPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
-                            {user.status === USER_STATUS.ACTIVE && (
+                            {user.status === 'active' && (
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <Button
@@ -484,7 +483,7 @@ export default function UserManagementPage() {
                                 </AlertDialogContent>
                               </AlertDialog>
                             )}
-                            {user.status === USER_STATUS.INACTIVE && (
+                            {user.status === 'inactive' && (
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <Button

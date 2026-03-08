@@ -18,8 +18,20 @@ import {
   Clock,
 } from 'lucide-react'
 
+type OrderItem = {
+  id: string
+  customer: string
+  product: string
+  amount: number
+  status: string
+  orderDate: string
+  completedDate: string | null
+  orderNo?: string
+  deliveryDate?: string
+}
+
 export function AdminOrders() {
-  const orders = [
+  const orders: OrderItem[] = [
     {
       id: '12345',
       customer: 'Nguyễn Văn A',

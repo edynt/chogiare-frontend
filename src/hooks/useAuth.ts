@@ -8,7 +8,7 @@ export const useLogin = (isAdmin = false) => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: isAdmin ? authApi.adminLogin : authApi.login,
+    mutationFn: (isAdmin ? authApi.adminLogin : authApi.login) as typeof authApi.login,
     onSuccess: data => {
       // Tokens are stored as HttpOnly cookies by the backend
       // We only store user info in the store

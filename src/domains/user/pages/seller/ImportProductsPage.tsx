@@ -291,7 +291,7 @@ export default function ImportProductsPage() {
             warranty: product.warranty,
             returnPolicy: product.returnPolicy,
             status: 'active' as const,
-            sellerId: '', // Will be set by backend
+            sellerId: undefined, // Will be set by backend
             rating: 0,
             reviewCount: 0,
             viewCount: 0,
