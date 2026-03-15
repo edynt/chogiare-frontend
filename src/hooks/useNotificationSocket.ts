@@ -80,9 +80,11 @@ export const useNotificationSocket = (
 
     // Create socket connection to /notifications namespace
     // Auth is handled via cookies (withCredentials: true)
+    let errorCount = 0
+
     const socket = io(`${SOCKET_URL}/notifications`, {
       withCredentials: true,
-      transports: ['websocket', 'polling'],
+      transports: ['websocket'], // Websocket only — polling causes infinite loops behind reverse proxies
       reconnection: true,
       reconnectionAttempts: 3,
       reconnectionDelay: 2000,
@@ -92,6 +94,7 @@ export const useNotificationSocket = (
     socketRef.current = socket
 
     socket.on('connect', () => {
+      errorCount = 0
       setIsConnected(true)
       console.log('[NotificationSocket] Connected')
     })
@@ -102,8 +105,19 @@ export const useNotificationSocket = (
     })
 
     socket.on('connect_error', error => {
-      console.error('[NotificationSocket] Connection error:', error.message)
+      errorCount++
+      console.error(
+        `[NotificationSocket] Connection error (${errorCount}/3):`,
+        error.message
+      )
       setIsConnected(false)
+      // Kill the socket if too many consecutive failures
+      if (errorCount >= 3) {
+        console.warn(
+          '[NotificationSocket] Too many errors, stopping reconnection'
+        )
+        socket.disconnect()
+      }
     })
 
     socket.on('new_notification', handleNewNotification)

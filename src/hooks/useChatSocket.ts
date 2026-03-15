@@ -30,9 +30,11 @@ const SOCKET_URL = (() => {
   return window.location.origin
 })()
 
-// Singleton socket instance
+// Singleton socket instance with error tracking to prevent infinite reconnection loops
 let socketInstance: Socket | null = null
 let socketRefCount = 0
+let consecutiveErrors = 0
+const MAX_CONSECUTIVE_ERRORS = 3
 
 const getOrCreateSocket = (): Socket => {
   if (!socketInstance) {
@@ -42,7 +44,7 @@ const getOrCreateSocket = (): Socket => {
     )
     socketInstance = io(`${SOCKET_URL}/chat`, {
       withCredentials: true,
-      transports: ['websocket', 'polling'], // Prefer websocket to avoid polling session issues
+      transports: ['websocket'], // Websocket only — polling causes infinite loops behind reverse proxies
       reconnection: true,
       reconnectionAttempts: 3,
       reconnectionDelay: 2000,
@@ -51,11 +53,21 @@ const getOrCreateSocket = (): Socket => {
     })
 
     socketInstance.on('connect', () => {
+      consecutiveErrors = 0 // Reset on successful connection
       console.log('[ChatSocket] Socket connected with id:', socketInstance?.id)
     })
 
     socketInstance.on('connect_error', error => {
-      console.error('[ChatSocket] Connection error:', error.message)
+      consecutiveErrors++
+      console.error(
+        `[ChatSocket] Connection error (${consecutiveErrors}/${MAX_CONSECUTIVE_ERRORS}):`,
+        error.message
+      )
+      // Kill the socket if too many consecutive failures to prevent infinite loop
+      if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS && socketInstance) {
+        console.warn('[ChatSocket] Too many errors, stopping reconnection')
+        socketInstance.disconnect()
+      }
     })
   }
   socketRefCount++
@@ -68,6 +80,7 @@ const releaseSocket = () => {
     socketInstance.disconnect()
     socketInstance = null
     socketRefCount = 0
+    consecutiveErrors = 0
   }
 }
 

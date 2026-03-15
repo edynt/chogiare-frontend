@@ -178,7 +178,10 @@ export default function TopUpPage() {
       })
 
       if (depositMethod === 'bank_transfer') {
-        const depositData = result.data
+        // Handle both direct and wrapped response (interceptor may double-nest data)
+        const responseData = result.data
+        const depositData =
+          responseData?.transaction ? responseData : responseData?.data
         navigate(
           `/payment-qr?amount=${amount}&transactionId=${depositData.transaction.id}`,
           { state: { sepay: depositData.sepay } }
