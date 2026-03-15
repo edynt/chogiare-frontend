@@ -251,8 +251,7 @@ export default function TopUpPage() {
               </Badge>
               {transaction.paymentMethod != null && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  {transaction.paymentMethod === 0 ||
-                  transaction.paymentMethod === 'bank_transfer' ||
+                  {transaction.paymentMethod === 'bank_transfer' ||
                   String(transaction.paymentMethod) === '0'
                     ? 'Chuyển khoản'
                     : transaction.paymentMethod}
