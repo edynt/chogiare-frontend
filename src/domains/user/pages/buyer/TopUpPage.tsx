@@ -41,7 +41,7 @@ import {
   useDeposit,
   useDepositPackages,
 } from '@/hooks/useWallet'
-import type { Transaction } from '@user/api/wallet'
+import type { Transaction, DepositResponse } from '@user/api/wallet'
 
 export default function TopUpPage() {
   const navigate = useNavigate()
@@ -179,9 +179,16 @@ export default function TopUpPage() {
 
       if (depositMethod === 'bank_transfer') {
         // Handle both direct and wrapped response (interceptor may double-nest data)
-        const responseData = result.data
-        const depositData =
-          responseData?.transaction ? responseData : responseData?.data
+        const responseData = result.data as DepositResponse & {
+          data?: DepositResponse
+        }
+        const depositData = responseData?.transaction
+          ? responseData
+          : responseData?.data
+        if (!depositData?.transaction) {
+          toast.error('Dữ liệu phản hồi không hợp lệ')
+          return
+        }
         navigate(
           `/payment-qr?amount=${amount}&transactionId=${depositData.transaction.id}`,
           { state: { sepay: depositData.sepay } }
@@ -194,7 +201,8 @@ export default function TopUpPage() {
       )
       setDepositAmount('')
       setSelectedPreset(null)
-    } catch {
+    } catch (error) {
+      console.error('[TopUp] Deposit error:', error)
       toast.error('Có lỗi xảy ra khi nạp tiền. Vui lòng thử lại.')
     }
   }
@@ -241,9 +249,13 @@ export default function TopUpPage() {
               >
                 {getStatusLabel(transaction.status)}
               </Badge>
-              {transaction.paymentMethod && (
+              {transaction.paymentMethod != null && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  {transaction.paymentMethod}
+                  {transaction.paymentMethod === 0 ||
+                  transaction.paymentMethod === 'bank_transfer' ||
+                  String(transaction.paymentMethod) === '0'
+                    ? 'Chuyển khoản'
+                    : transaction.paymentMethod}
                 </p>
               )}
             </div>
