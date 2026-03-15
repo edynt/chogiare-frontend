@@ -21,8 +21,14 @@ interface UseNotificationSocketOptions {
   showToast?: boolean
 }
 
-const SOCKET_URL =
-  import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3000'
+// Derive socket URL from API URL - use origin for relative paths (e.g. "/api")
+const SOCKET_URL = (() => {
+  const apiUrl = import.meta.env.VITE_API_URL || ''
+  if (apiUrl.startsWith('http')) {
+    return apiUrl.replace(/\/api\/?$/, '')
+  }
+  return window.location.origin
+})()
 
 export const useNotificationSocket = (
   options: UseNotificationSocketOptions = {}
