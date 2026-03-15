@@ -81,11 +81,12 @@ export const useNotificationSocket = (
     // Create socket connection to /notifications namespace
     // Auth is handled via cookies (withCredentials: true)
     const socket = io(`${SOCKET_URL}/notifications`, {
-      withCredentials: true, // Send cookies for auth
+      withCredentials: true,
       transports: ['websocket', 'polling'],
       reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
+      reconnectionAttempts: 3,
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 10000,
     })
 
     socketRef.current = socket

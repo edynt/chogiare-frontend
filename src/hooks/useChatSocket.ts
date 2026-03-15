@@ -42,21 +42,16 @@ const getOrCreateSocket = (): Socket => {
     )
     socketInstance = io(`${SOCKET_URL}/chat`, {
       withCredentials: true,
-      transports: ['polling', 'websocket'], // Start with polling to ensure cookies are sent
+      transports: ['websocket', 'polling'], // Prefer websocket to avoid polling session issues
       reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
+      reconnectionAttempts: 3,
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 10000,
       autoConnect: true,
-      // Cookies will be sent automatically via withCredentials
     })
 
-    // Debug listeners
     socketInstance.on('connect', () => {
       console.log('[ChatSocket] Socket connected with id:', socketInstance?.id)
-    })
-
-    socketInstance.on('new_message', payload => {
-      console.log('[ChatSocket] Received new_message event:', payload)
     })
 
     socketInstance.on('connect_error', error => {
