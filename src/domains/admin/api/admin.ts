@@ -1490,7 +1490,6 @@ export const adminApi = {
         seo: {} as SeoSettings,
         email: {} as EmailSettings,
         storage: {} as StorageSettings,
-        backup: {} as BackupSettings,
         cache: {} as CacheSettings,
         social: {} as SocialSettings,
         legal: {} as LegalSettings,
@@ -2005,25 +2004,6 @@ export interface StorageSettings {
   allowedFileTypes: string[]
 }
 
-export interface BackupSettings {
-  enabled: boolean
-  frequency: string
-  time: string
-  retention: number
-  includeDatabase: boolean
-  includeUploads: boolean
-  includeLogs: boolean
-  storageProvider: string
-  s3Bucket: string
-  googleDriveFolder: string
-  encryptBackup: boolean
-  notifyOnSuccess: boolean
-  notifyOnFailure: boolean
-  lastBackup: string | null
-  lastBackupSize: string | null
-  lastBackupStatus: string | null
-}
-
 export interface CacheSettings {
   enabled: boolean
   driver: string
@@ -2083,7 +2063,6 @@ export interface SystemSettings {
   seo: SeoSettings
   email: EmailSettings
   storage: StorageSettings
-  backup: BackupSettings
   cache: CacheSettings
   social: SocialSettings
   legal: LegalSettings

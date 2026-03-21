@@ -262,24 +262,6 @@ const DEFAULT_SETTINGS: SystemSettings = {
       'docx',
     ],
   },
-  backup: {
-    enabled: true,
-    frequency: 'daily',
-    time: '03:00',
-    retention: 30,
-    includeDatabase: true,
-    includeUploads: true,
-    includeLogs: false,
-    storageProvider: 'local',
-    s3Bucket: '',
-    googleDriveFolder: '',
-    encryptBackup: true,
-    notifyOnSuccess: false,
-    notifyOnFailure: true,
-    lastBackup: '2024-01-26T03:00:00Z',
-    lastBackupSize: '2.5 GB',
-    lastBackupStatus: 'success',
-  },
   cache: {
     enabled: true,
     driver: 'memory',
@@ -496,9 +478,6 @@ export default function SystemSettingsPage() {
     toast.success('Cache đã được xóa thành công!')
   }
 
-  const runBackup = () => {
-    toast.success('Backup đang được thực hiện...')
-  }
 
   const testEmail = () => {
     toast.success('Email test đã được gửi!')
@@ -513,7 +492,6 @@ export default function SystemSettingsPage() {
     { id: 'seo', label: 'SEO', icon: Search },
     { id: 'email', label: 'Email/SMTP', icon: Mail },
     { id: 'storage', label: 'Lưu trữ', icon: HardDrive },
-    { id: 'backup', label: 'Backup', icon: Cloud },
     { id: 'legal', label: 'Pháp lý', icon: FileText },
     { id: 'logs', label: 'Logs', icon: Database },
     { id: 'health', label: 'Sức khỏe', icon: Activity },
@@ -1886,153 +1864,6 @@ export default function SystemSettingsPage() {
                     />
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Backup Settings */}
-      {activeTab === 'backup' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Cloud className="h-5 w-5" />
-                Cài đặt Backup
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {renderSettingField(
-                'Tự động backup',
-                'Bật sao lưu tự động theo lịch',
-                <Switch
-                  checked={settings.backup.enabled}
-                  disabled={!isEditing}
-                />
-              )}
-              <div className="pt-4 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Tần suất</Label>
-                    <Select
-                      disabled={!isEditing}
-                      value={settings.backup.frequency}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="hourly">Mỗi giờ</SelectItem>
-                        <SelectItem value="daily">Mỗi ngày</SelectItem>
-                        <SelectItem value="weekly">Mỗi tuần</SelectItem>
-                        <SelectItem value="monthly">Mỗi tháng</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>Thời gian</Label>
-                    <Input
-                      type="time"
-                      value={settings.backup.time}
-                      disabled={!isEditing}
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label>Số bản backup lưu trữ</Label>
-                  <Input
-                    type="number"
-                    value={settings.backup.retention}
-                    disabled={!isEditing}
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-              <div className="pt-4 border-t mt-4">
-                {renderSettingField(
-                  'Backup Database',
-                  'Sao lưu cơ sở dữ liệu',
-                  <Switch
-                    checked={settings.backup.includeDatabase}
-                    disabled={!isEditing}
-                  />
-                )}
-                {renderSettingField(
-                  'Backup Uploads',
-                  'Sao lưu file upload',
-                  <Switch
-                    checked={settings.backup.includeUploads}
-                    disabled={!isEditing}
-                  />
-                )}
-                {renderSettingField(
-                  'Mã hóa backup',
-                  'Mã hóa file backup',
-                  <Switch
-                    checked={settings.backup.encryptBackup}
-                    disabled={!isEditing}
-                  />
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Database className="h-5 w-5" />
-                Trạng thái Backup
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-600" />
-                  <div>
-                    <p className="font-medium text-green-800">
-                      Backup thành công
-                    </p>
-                    <p className="text-sm text-green-600">
-                      Lần cuối: {formatDate(settings.backup.lastBackup)}
-                    </p>
-                    <p className="text-sm text-green-600">
-                      Kích thước: {settings.backup.lastBackupSize}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <Button onClick={runBackup} className="flex-1">
-                  <Download className="h-4 w-4 mr-2" />
-                  Backup ngay
-                </Button>
-                <Button variant="outline" className="flex-1">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Restore
-                </Button>
-              </div>
-
-              <div className="pt-4 border-t">
-                <h4 className="font-medium text-sm mb-3">Thông báo</h4>
-                {renderSettingField(
-                  'Khi thành công',
-                  'Gửi email khi backup thành công',
-                  <Switch
-                    checked={settings.backup.notifyOnSuccess}
-                    disabled={!isEditing}
-                  />
-                )}
-                {renderSettingField(
-                  'Khi thất bại',
-                  'Gửi email khi backup thất bại',
-                  <Switch
-                    checked={settings.backup.notifyOnFailure}
-                    disabled={!isEditing}
-                  />
-                )}
               </div>
             </CardContent>
           </Card>
