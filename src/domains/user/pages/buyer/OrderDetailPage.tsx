@@ -80,7 +80,7 @@ export default function OrderDetailPage() {
   const updatePaymentStatusMutation = useUpdateOrderPaymentStatus()
   const uploadPaymentImageMutation = useUploadPaymentImage()
 
-  if (isLoading) {
+  if (isLoading && !order) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
         <div className="text-center">

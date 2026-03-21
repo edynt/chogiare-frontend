@@ -169,7 +169,8 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
     refetch()
   }
 
-  if (isLoading) {
+  // Only show skeleton on initial load (no cached data yet)
+  if (isLoading && !product) {
     return <ProductDetailSkeleton />
   }
 
@@ -1251,17 +1252,22 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         <Tabs defaultValue="description" className="w-full mt-6">
           <TabsList
             className={`grid w-full`}
-            style={{ gridTemplateColumns: `repeat(${(isOwnProduct ? 3 : 5) + (canWriteReview ? 1 : 0)}, minmax(0, 1fr))` }}
+            style={{ gridTemplateColumns: `repeat(${
+              1 /* Mô tả */
+              + (product.reviewCount > 0 ? 1 : 0) /* Đánh giá */
+              + (canWriteReview ? 1 : 0) /* Viết đánh giá */
+              + (!isOwnProduct ? 1 : 0) /* FAQ */
+              + 1 /* Đảm bảo */
+            }, minmax(0, 1fr))` }}
           >
             <TabsTrigger value="description">Mô tả</TabsTrigger>
-            <TabsTrigger value="reviews">
-              Đánh giá ({product.reviewCount})
-            </TabsTrigger>
+            {product.reviewCount > 0 && (
+              <TabsTrigger value="reviews">
+                Đánh giá ({product.reviewCount})
+              </TabsTrigger>
+            )}
             {canWriteReview && (
               <TabsTrigger value="write-review">Viết đánh giá</TabsTrigger>
-            )}
-            {!isOwnProduct && (
-              <TabsTrigger value="seller">Thông tin người bán</TabsTrigger>
             )}
             {!isOwnProduct && <TabsTrigger value="faq">FAQ</TabsTrigger>}
             <TabsTrigger value="certificates">Đảm bảo</TabsTrigger>
@@ -1289,73 +1295,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               </CardContent>
             </Card>
 
-            {/* Selling Guide Section */}
-            <Card>
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <Lightbulb className="h-5 w-5 text-yellow-600" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">
-                      Cách nhập bán hàng hiệu quả
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Hướng dẫn và mẹo bán lại hiệu quả
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-6">
-                <div>
-                  <h4 className="font-semibold mb-3">Hướng dẫn nhập hàng:</h4>
-                  <ul className="space-y-2 list-disc list-inside text-sm text-muted-foreground">
-                    <li>
-                      Đặt hàng tối thiểu theo mua tối thiểu để được giá tốt nhất
-                    </li>
-                    <li>Kiểm tra số lượng tồn kho trước khi đặt hàng</li>
-                    <li>Chọn phương thức vận chuyển phù hợp với nhu cầu</li>
-                    <li>Thanh toán đúng hạn để được ưu đãi</li>
-                  </ul>
-                </div>
-                <Separator />
-                <div>
-                  <h4 className="font-semibold mb-3">Mẹo bán lại hiệu quả:</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="h-5 w-5 text-blue-600" />
-                        <h5 className="font-semibold">Định giá hợp lý</h5>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Nghiên cứu thị trường và đặt giá cạnh tranh nhưng vẫn
-                        đảm bảo lợi nhuận.
-                      </p>
-                    </div>
-                    <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <ImageIcon className="h-5 w-5 text-green-600" />
-                        <h5 className="font-semibold">Chụp ảnh đẹp</h5>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Chụp ảnh sản phẩm thật, nhiều góc độ để khách hàng tin
-                        tưởng hơn.
-                      </p>
-                    </div>
-                    <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <FileText className="h-5 w-5 text-purple-600" />
-                        <h5 className="font-semibold">Mô tả chi tiết</h5>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Viết mô tả rõ ràng, nêu bật ưu điểm và đặc điểm nổi bật
-                        của sản phẩm.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
 
           <TabsContent value="reviews" className="mt-4">
@@ -1488,63 +1427,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               </CardContent>
             </Card>
           </TabsContent>
-          )}
-
-          {/* Seller Tab - Hide for own products */}
-          {!isOwnProduct && (
-            <TabsContent value="seller" className="mt-4">
-              <Card>
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg">Thông tin người bán</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex items-center gap-4 mb-4">
-                    <Avatar className="h-16 w-16">
-                      <AvatarImage src={product.seller?.avatar} />
-                      <AvatarFallback>
-                        {product.seller?.name?.charAt(0) || 'S'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="text-lg font-semibold">
-                        {product.seller?.name || 'Người bán'}
-                      </h3>
-                      {product.seller?.isVerified && (
-                        <Badge className="bg-green-500 text-white mt-1">
-                          <Verified className="h-3 w-3 mr-1" />
-                          Đã xác thực
-                        </Badge>
-                      )}
-                      <div className="flex items-center gap-1 mt-1">
-                        {renderStars(product.rating || 0)}
-                        <span className="text-sm text-muted-foreground">
-                          ({product.rating?.toFixed(1) || '0.0'}/5)
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2 mt-4">
-                    {sellerIdForChat && (
-                      <Button
-                        variant="outline"
-                        className="flex-1"
-                        onClick={() => handleChatWithSeller()}
-                      >
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        Nhắn tin
-                      </Button>
-                    )}
-                    <Button variant="outline" className="flex-1" asChild>
-                      <Link to={`/shop/${sellerIdForChat || ''}`}>
-                        <Package className="h-4 w-4 mr-2" />
-                        Xem sản phẩm
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
           )}
 
           {/* FAQ Tab - Hide for own products since it's about chatting with seller */}

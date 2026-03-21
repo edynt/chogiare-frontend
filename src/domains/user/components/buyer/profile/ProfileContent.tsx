@@ -143,11 +143,11 @@ export function ProfileContent() {
     setSearchParams({ tab })
   }
 
-  if (isLoading) {
+  if (isLoading && !profile) {
     return <div>Loading...</div>
   }
 
-  if (!profile) {
+  if (!isLoading && !profile) {
     return <div>Profile not found</div>
   }
 

@@ -3,6 +3,7 @@ import {
   useQuery,
   useQueryClient,
   useInfiniteQuery,
+  keepPreviousData,
 } from '@tanstack/react-query'
 import { ordersApi } from '@user/api/orders'
 import type { UpdateOrderRequest } from '@user/api/orders'
@@ -12,6 +13,7 @@ export const useOrders = (filters?: { page?: number; pageSize?: number }) => {
     queryKey: ['orders', filters],
     queryFn: () => ordersApi.getOrders(filters),
     staleTime: 2 * 60 * 1000, // 2 minutes
+    placeholderData: keepPreviousData,
   })
 }
 
@@ -21,6 +23,7 @@ export const useOrder = (id: string) => {
     queryFn: () => ordersApi.getOrder(id),
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    placeholderData: keepPreviousData,
   })
 }
 

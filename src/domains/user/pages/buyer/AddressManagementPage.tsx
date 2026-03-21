@@ -176,7 +176,7 @@ export default function AddressManagementPage() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading && !addresses) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
