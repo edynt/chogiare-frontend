@@ -40,6 +40,8 @@ const OrderConfirmationPage = React.lazy(
   () => import('@user/pages/buyer/OrderConfirmationPage')
 )
 const CartPage = React.lazy(() => import('@user/pages/buyer/CartPage'))
+const TermsPage = React.lazy(() => import('@user/pages/buyer/TermsPage'))
+const PrivacyPage = React.lazy(() => import('@user/pages/buyer/PrivacyPage'))
 const AddressManagementPage = React.lazy(
   () => import('@user/pages/buyer/AddressManagementPage')
 )
@@ -117,6 +119,8 @@ export function UserApp() {
           <Route path="/products" element={<ProductListPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/shop/:id" element={<SellerDetailPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
 
           {/* Seller routes - Available to all authenticated users */}
           <Route
