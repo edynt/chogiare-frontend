@@ -31,12 +31,7 @@ import {
 import { Input } from '@shared/components/ui/input'
 import { Label } from '@shared/components/ui/label'
 import { Textarea } from '@shared/components/ui/textarea'
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from '@shared/components/ui/alert'
-import { useProduct, useProductReviews, useProducts, useProfile, useBoostStatus } from '@/hooks'
+import { useProduct, useProductReviews, useProducts, useProfile, useBoostStatus, usePriceHistory } from '@/hooks'
 import { useReviewEligibility, useCreateReview } from '@/hooks/useReviews'
 import { SimpleProductGrid } from '@shared/components/product/ProductGridWithPagination'
 import type { Review } from '@user/api/reviews'
@@ -48,7 +43,6 @@ import {
 import { LazySection } from './LazySection'
 import { BoostProductModal } from './BoostProductModal'
 import { formatCurrency, formatDate, PLACEHOLDER_IMAGE } from '@/lib/utils'
-import { SecurityWarning } from '@shared/components/ui/security-warning'
 import { SEOHead } from '@shared/components/seo/SEOHead'
 import { useCartStore } from '@/stores/cartStore'
 import { useChatStore } from '@/stores/chatStore'
@@ -81,7 +75,6 @@ import {
   Edit,
   Image as ImageIcon,
   DollarSign,
-  AlertCircle,
 } from 'lucide-react'
 
 interface ProductDetailsProps {
@@ -151,6 +144,9 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
     productIdToUse || '',
     isOwnProduct && !!product
   )
+
+  // Fetch real price history from API
+  const { data: priceHistoryData } = usePriceHistory(productIdToUse || '')
 
   // Initialize selling price (1.5x wholesale price as suggestion)
   React.useEffect(() => {
@@ -366,28 +362,18 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const totalProfit = totalRevenue - totalCost
   const profitMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0
 
-  // Mock price history (30 days)
-  const getPriceHistory = () => {
-    const history = []
-    const now = new Date()
-    for (let i = 29; i >= 0; i--) {
-      const date = new Date(now)
-      date.setDate(date.getDate() - i)
-      const variation = (i % 7) * 0.02 - 0.06
-      const price = product.price * (1 + variation)
-      history.push({ date, price })
-    }
-    return history
-  }
-
-  const priceHistory = getPriceHistory()
-  const lowestPrice = Math.min(...priceHistory.map(h => h.price))
-  const highestPrice = Math.max(...priceHistory.map(h => h.price))
-  const todayPrice = priceHistory[priceHistory.length - 1].price
-  const yesterdayPrice =
-    priceHistory[priceHistory.length - 2]?.price || todayPrice
-  const priceChange = todayPrice - yesterdayPrice
-  const priceChangePercent = (priceChange / yesterdayPrice) * 100
+  // Compute price history stats from real API data
+  const priceHistory = priceHistoryData?.history ?? []
+  const hasPriceHistory = priceHistory.length > 0
+  const allPrices = hasPriceHistory ? priceHistory.map(h => h.newPrice) : [product.price]
+  const lowestPrice = Math.min(...allPrices)
+  const highestPrice = Math.max(...allPrices)
+  const latestPrice = hasPriceHistory ? priceHistory[priceHistory.length - 1].newPrice : product.price
+  const previousPrice = priceHistory.length >= 2
+    ? priceHistory[priceHistory.length - 2].newPrice
+    : latestPrice
+  const priceChange = latestPrice - previousPrice
+  const priceChangePercent = previousPrice > 0 ? (priceChange / previousPrice) * 100 : 0
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -607,32 +593,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               </Card>
 
               <Separator className="my-4" />
-
-              {/* Security Warning */}
-              <SecurityWarning variant="scam" className="my-4" />
-
-              {/* Buyer Warning - Protect Seller */}
-              <Alert className="border-amber-500 bg-amber-50/50">
-                <AlertCircle className="h-5 w-5 text-amber-600" />
-                <AlertTitle className="text-amber-900 font-semibold mb-1">
-                  ⚠️ Lưu ý quan trọng cho người mua
-                </AlertTitle>
-                <AlertDescription className="text-amber-800 text-sm space-y-1">
-                  <p className="font-medium">
-                    Vui lòng chỉ đặt hàng hoặc liên hệ khi bạn thực sự có nhu
-                    cầu mua sản phẩm.
-                  </p>
-                  <ul className="list-disc list-inside space-y-1 ml-2">
-                    <li>
-                      Không spam tin nhắn hoặc đặt hàng giả để tội người bán
-                    </li>
-                    <li>Hãy tôn trọng thời gian và công sức của người bán</li>
-                    <li>
-                      Đặt hàng nghiêm túc giúp tạo môi trường mua bán lành mạnh
-                    </li>
-                  </ul>
-                </AlertDescription>
-              </Alert>
 
               {/* Actions */}
               <div className="space-y-3 py-2">
@@ -884,45 +844,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           </div>
         </div>
       </div>
-
-      {/* Wholesale Info Section - Lazy Load */}
-      <LazySection fallback={<ProductDetailSectionSkeleton />}>
-        <Card className="mt-6">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
-                <Package className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <CardTitle>💰 Giá và thông tin mua sỉ</CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Phần cực kỳ quan trọng trong app B2B – giúp bạn chốt đơn
-                  nhanh.
-                </p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold">Giá sỉ</span>
-                <span className="text-lg font-bold text-primary">
-                  {formatCurrency(currentTierPrice)}/sản phẩm
-                </span>
-              </div>
-            </div>
-            <div className="p-4 bg-muted rounded-lg">
-              <div className="flex items-center gap-3">
-                <Package className="h-5 w-5 text-orange-500" />
-                <p className="text-sm font-semibold">
-                  Số lượng tối thiểu (Mua tối thiểu): Tối thiểu {minOrderQty}{' '}
-                  sản phẩm / mã
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </LazySection>
 
       {/* Tier Pricing Matrix - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
@@ -1503,80 +1424,89 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 <div>
                   <CardTitle>Lịch sử giá</CardTitle>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Biến động giá 30 ngày qua
+                    Biến động giá
                   </p>
                 </div>
               </div>
-              <Badge
-                variant={priceChange < 0 ? 'default' : 'destructive'}
-                className={priceChange < 0 ? 'bg-green-500' : ''}
-              >
-                {priceChange < 0 ? (
-                  <TrendingDown className="h-3 w-3 mr-1" />
-                ) : (
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                )}
-                {Math.abs(priceChangePercent).toFixed(1)}%
-              </Badge>
+              {hasPriceHistory && priceHistory.length >= 2 && (
+                <Badge
+                  variant={priceChange < 0 ? 'default' : priceChange > 0 ? 'destructive' : 'secondary'}
+                  className={priceChange < 0 ? 'bg-green-500' : ''}
+                >
+                  {priceChange < 0 ? (
+                    <TrendingDown className="h-3 w-3 mr-1" />
+                  ) : priceChange > 0 ? (
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                  ) : null}
+                  {priceChange === 0 ? 'Không đổi' : `${Math.abs(priceChangePercent).toFixed(1)}%`}
+                </Badge>
+              )}
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="h-32 flex items-end gap-1">
-                {priceHistory.map((item, index) => {
-                  const height =
-                    ((item.price - lowestPrice) /
-                      (highestPrice - lowestPrice)) *
-                    100
-                  const isToday = index === priceHistory.length - 1
-                  return (
-                    <div
-                      key={index}
-                      className="flex-1 flex flex-col items-center"
-                      style={{ height: '100%' }}
-                    >
+            {!hasPriceHistory || priceHistory.length <= 1 ? (
+              <div className="text-center py-6">
+                <p className="text-2xl font-bold text-primary mb-1">
+                  {formatCurrency(product.price)}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Giá ổn định
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="h-32 flex items-end gap-1">
+                  {priceHistory.map((item, index) => {
+                    const range = highestPrice - lowestPrice
+                    const height = range > 0
+                      ? ((item.newPrice - lowestPrice) / range) * 100
+                      : 50
+                    const isLatest = index === priceHistory.length - 1
+                    return (
                       <div
-                        className={`w-full rounded-t ${
-                          isToday ? 'bg-primary' : 'bg-primary/60'
-                        }`}
-                        style={{ height: `${Math.max(5, height)}%` }}
-                      />
-                      {index % 7 === 0 && (
-                        <span className="text-xs text-muted-foreground mt-1">
-                          {isToday ? 'Hôm nay' : index + 1}
-                        </span>
-                      )}
-                    </div>
-                  )
-                })}
+                        key={item.id}
+                        className="flex-1 flex flex-col items-center group relative"
+                        style={{ height: '100%' }}
+                      >
+                        <div
+                          className={`w-full rounded-t transition-colors ${
+                            isLatest ? 'bg-primary' : 'bg-primary/60 hover:bg-primary/80'
+                          }`}
+                          style={{ height: `${Math.max(5, height)}%` }}
+                          title={`${formatCurrency(item.newPrice)} - ${new Date(Number(item.createdAt)).toLocaleDateString('vi-VN')}`}
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t">
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Giá thấp nhất
+                    </p>
+                    <p className="font-bold text-green-600">
+                      {formatCurrency(lowestPrice)}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Giá hiện tại
+                    </p>
+                    <p className="font-bold text-primary">
+                      {formatCurrency(product.price)}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Giá cao nhất
+                    </p>
+                    <p className="font-bold text-orange-600">
+                      {formatCurrency(highestPrice)}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-                <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Giá thấp nhất
-                  </p>
-                  <p className="font-bold text-green-600">
-                    {formatCurrency(lowestPrice)}
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Giá hiện tại
-                  </p>
-                  <p className="font-bold text-primary">
-                    {formatCurrency(product.price)}
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Giá cao nhất
-                  </p>
-                  <p className="font-bold text-orange-600">
-                    {formatCurrency(highestPrice)}
-                  </p>
-                </div>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </LazySection>

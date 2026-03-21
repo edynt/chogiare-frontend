@@ -226,6 +226,16 @@ export const useMyProducts = (
   })
 }
 
+// Price history hook
+export const usePriceHistory = (productId: string, days = 90) => {
+  return useQuery({
+    queryKey: queryKeys.products.priceHistory(productId, days),
+    queryFn: () => productsApi.getPriceHistory(productId, days),
+    enabled: !!productId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
 // Boost-related hooks
 export const useBoostPackages = (enabled = true) => {
   return useQuery({

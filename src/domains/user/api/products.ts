@@ -39,6 +39,19 @@ export interface BoostProductResponse {
   }
 }
 
+export interface PriceHistoryItem {
+  id: number
+  oldPrice: number
+  newPrice: number
+  createdAt: string
+}
+
+export interface PriceHistoryResponse {
+  productId: number
+  currentPrice: number
+  history: PriceHistoryItem[]
+}
+
 export interface BoostStatus {
   isPromoted: boolean
   boost: {
@@ -244,6 +257,17 @@ export const productsApi = {
   getBoostStatus: async (productId: string): Promise<BoostStatus> => {
     const response = await apiClient.get<ApiResponse<BoostStatus>>(
       `/products/${productId}/boost-status`
+    )
+    return response.data.data
+  },
+
+  getPriceHistory: async (
+    productId: string,
+    days = 90
+  ): Promise<PriceHistoryResponse> => {
+    const response = await apiClient.get<ApiResponse<PriceHistoryResponse>>(
+      `/products/${productId}/price-history`,
+      { params: { days } }
     )
     return response.data.data
   },
