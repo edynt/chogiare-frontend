@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
 import {
@@ -17,8 +17,8 @@ import {
 import { Badge } from '@shared/components/ui/badge'
 import { Slider } from '@shared/components/ui/slider'
 import { Checkbox } from '@shared/components/ui/checkbox'
-import { Search, Filter, X, MapPin } from 'lucide-react'
-import { cn, debounce } from '@/lib/utils'
+import { Search, Filter, X, MapPin, CheckCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import type { SearchFilters, ProductCondition, ProductBadge } from '@/types'
 
 interface ProductFiltersProps {
@@ -53,73 +53,32 @@ export function ProductFilters({
   })
 
   const [showFilters, setShowFilters] = useState(true)
-  const isUserInteraction = useRef(false)
-  const isInitialMount = useRef(true)
 
-  // Sync filters with initialFilters when they change (but preserve sort if showSort is false)
+  // Sync with external initialFilters only on mount
   useEffect(() => {
-    if (showSort) {
-      setFilters(prev => ({
-        ...prev,
-        ...initialFilters,
-      }))
-    } else {
-      // When sort is hidden, preserve sortBy and sortOrder from current state
-      const {
-        sortBy: _sortBy,
-        sortOrder: _sortOrder,
-        ...restInitialFilters
-      } = initialFilters
-      setFilters(prev => ({
-        ...prev,
-        ...restInitialFilters,
-        // Keep current sort values when sort is hidden
-        sortBy: prev.sortBy,
-        sortOrder: prev.sortOrder,
-      }))
-    }
-    // Reset the flag after syncing (but allow on first mount)
-    if (!isInitialMount.current) {
-      isUserInteraction.current = false
-    }
-  }, [initialFilters, showSort])
+    setFilters(prev => ({ ...prev, ...initialFilters }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  // Debounced search
-  const debouncedSearch = debounce((searchFilters: SearchFilters) => {
-    onSearch(searchFilters)
-  }, 500)
-
-  useEffect(() => {
-    // Call onSearch on initial mount or if this was a user interaction
-    if (isInitialMount.current || isUserInteraction.current) {
-      debouncedSearch(filters)
-      if (isInitialMount.current) {
-        isInitialMount.current = false
-      }
-    }
-  }, [filters, debouncedSearch])
-
+  // Local filter change — does NOT trigger API call
   const handleFilterChange = (key: keyof SearchFilters, value: unknown) => {
-    isUserInteraction.current = true
     setFilters(prev => ({
       ...prev,
       [key]: value,
-      page: 1, // Reset to first page when filters change
+      page: 1,
     }))
   }
 
   const handlePriceRangeChange = (value: number[]) => {
-    isUserInteraction.current = true
     setFilters(prev => ({
       ...prev,
-      minPrice: value[0],
-      maxPrice: value[1],
+      minPrice: Math.max(0, value[0]),
+      maxPrice: Math.max(0, value[1]),
       page: 1,
     }))
   }
 
   const handleBadgeToggle = (badge: ProductBadge) => {
-    isUserInteraction.current = true
     setFilters(prev => ({
       ...prev,
       badges: prev.badges?.includes(badge)
@@ -129,8 +88,13 @@ export function ProductFilters({
     }))
   }
 
+  // Apply filters — only called on button click
+  const applyFilters = () => {
+    onSearch(filters)
+  }
+
   const clearFilters = () => {
-    setFilters({
+    const cleared: SearchFilters = {
       query: '',
       categoryId: undefined,
       minPrice: 0,
@@ -143,7 +107,9 @@ export function ProductFilters({
       sortOrder: 'desc',
       page: 1,
       limit: 20,
-    })
+    }
+    setFilters(cleared)
+    onSearch(cleared)
   }
 
   const conditionOptions: { value: ProductCondition; label: string }[] = [
@@ -182,15 +148,22 @@ export function ProductFilters({
     <div className={cn('space-y-4', className)}>
       {/* Search Bar */}
       <div className="space-y-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Tìm kiếm sản phẩm..."
-            value={filters.query || ''}
-            onChange={e => handleFilterChange('query', e.target.value)}
-            className="pl-10"
-          />
-        </div>
+        <form
+          onSubmit={e => {
+            e.preventDefault()
+            applyFilters()
+          }}
+        >
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Tìm kiếm sản phẩm..."
+              value={filters.query || ''}
+              onChange={e => handleFilterChange('query', e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </form>
         <Button
           variant="outline"
           onClick={() => setShowFilters(!showFilters)}
@@ -248,20 +221,24 @@ export function ProductFilters({
               </Select>
             </div>
 
-            {/* Price Range */}
+            {/* Price Range — dual thumb slider, min >= 0 */}
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Khoảng giá: {filters.minPrice?.toLocaleString()} -{' '}
-                {filters.maxPrice?.toLocaleString()} VNĐ
+                Khoảng giá: {Math.max(0, filters.minPrice || 0).toLocaleString()} -{' '}
+                {Math.max(0, filters.maxPrice || 10000000).toLocaleString()} VNĐ
               </label>
               <Slider
-                value={[filters.minPrice || 0, filters.maxPrice || 10000000]}
+                value={[Math.max(0, filters.minPrice || 0), Math.max(0, filters.maxPrice || 10000000)]}
                 onValueChange={handlePriceRangeChange}
                 max={10000000}
                 min={0}
                 step={100000}
                 className="w-full"
               />
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span>0</span>
+                <span>10,000,000 VNĐ</span>
+              </div>
             </div>
 
             {/* Condition */}
@@ -394,6 +371,15 @@ export function ProductFilters({
                 </div>
               </div>
             )}
+
+            {/* Apply Button */}
+            <Button
+              className="w-full"
+              onClick={applyFilters}
+            >
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Áp dụng bộ lọc
+            </Button>
           </CardContent>
         </Card>
       )}
