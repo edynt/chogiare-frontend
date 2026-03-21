@@ -67,7 +67,6 @@ import {
   Package,
   ShoppingBag,
   ShoppingCart,
-  Table2,
   CheckCircle2,
   FileText,
   Send,
@@ -589,6 +588,25 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                       )}
                     </div>
                   </div>
+                  {/* Supplier quality stats */}
+                  <div className="grid grid-cols-4 gap-2 mt-3 pt-3 border-t">
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-blue-600">98%</p>
+                      <p className="text-xs text-muted-foreground">Phản hồi</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-cyan-600">1.2 ngày</p>
+                      <p className="text-xs text-muted-foreground">Giao hàng</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-yellow-600">4.8/5</p>
+                      <p className="text-xs text-muted-foreground">Uy tín</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-green-600">2.5%</p>
+                      <p className="text-xs text-muted-foreground">Hủy đơn</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -845,22 +863,21 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         </div>
       </div>
 
-      {/* Tier Pricing Matrix - Lazy Load */}
+      {/* Pricing & Profit Calculator - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Card className="mt-6 border-2">
           <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 pb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
-                  <Table2 className="h-6 w-6 text-white" />
+                  <Calculator className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <CardTitle className="text-xl">
-                    Bảng giá theo số lượng
+                    Bảng giá & Dự tính lợi nhuận
                   </CardTitle>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Càng mua nhiều, giá càng rẻ - Ưu đãi tốt nhất cho đơn hàng
-                    lớn
+                    Càng mua nhiều giá càng rẻ — tính toán lợi nhuận khi bán lại
                   </p>
                 </div>
               </div>
@@ -870,7 +887,8 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
               </Badge>
             </div>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 space-y-6">
+            {/* Tier Pricing Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {priceTiers.map((tier, index) => {
                 const isActive =
@@ -900,7 +918,6 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                         </Badge>
                       </div>
                     )}
-
                     {isBest && !isActive && (
                       <div className="absolute -top-3 -right-3">
                         <Badge className="bg-blue-500 text-white shadow-lg">
@@ -909,68 +926,38 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                         </Badge>
                       </div>
                     )}
-
                     <div className="space-y-3">
-                      {/* Quantity Range */}
                       <div className="text-center">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
                           <Package className="h-4 w-4 text-primary" />
                           <span className="font-bold text-lg text-primary">
                             {tier.minQuantity}
-                            {tier.maxQuantity
-                              ? ` - ${tier.maxQuantity}`
-                              : '+'}{' '}
-                            sản phẩm
+                            {tier.maxQuantity ? ` - ${tier.maxQuantity}` : '+'} sản phẩm
                           </span>
                         </div>
                       </div>
-
-                      {/* Price */}
                       <div className="text-center space-y-1">
                         <p className="text-xs text-muted-foreground">Đơn giá</p>
-                        <p
-                          className={`text-2xl font-bold ${
-                            isActive
-                              ? 'text-green-600'
-                              : isBest
-                                ? 'text-blue-600'
-                                : 'text-primary'
-                          }`}
-                        >
+                        <p className={`text-2xl font-bold ${isActive ? 'text-green-600' : isBest ? 'text-blue-600' : 'text-primary'}`}>
                           {formatCurrency(tier.price)}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          / sản phẩm
-                        </p>
+                        <p className="text-xs text-muted-foreground">/ sản phẩm</p>
                       </div>
-
-                      {/* Savings */}
                       <div className="pt-2 border-t space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">
-                            Tiết kiệm:
-                          </span>
-                          <span className="text-sm font-semibold text-green-600">
-                            {formatCurrency(savings)}
-                          </span>
+                          <span className="text-xs text-muted-foreground">Tiết kiệm:</span>
+                          <span className="text-sm font-semibold text-green-600">{formatCurrency(savings)}</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">
-                            Tỷ lệ:
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className="text-green-600 border-green-300"
-                          >
+                          <span className="text-xs text-muted-foreground">Tỷ lệ:</span>
+                          <Badge variant="outline" className="text-green-600 border-green-300">
                             -{savingsPercent.toFixed(1)}%
                           </Badge>
                         </div>
                       </div>
-
-                      {/* Example Total */}
                       <div className="pt-2 border-t">
                         <p className="text-xs text-muted-foreground text-center mb-1">
-                          Tổng tiền ({tier.minQuantity} sản phẩm):
+                          Tổng tiền ({tier.minQuantity} sp):
                         </p>
                         <p className="text-center font-semibold text-primary">
                           {formatCurrency(totalAtTier)}
@@ -984,427 +971,186 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
 
             {/* Current Selection Info */}
             {quantity > 0 && (
-              <div className="mt-6 p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+              <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                       <CheckCircle2 className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <p className="font-semibold">
-                        Bạn đang chọn: {quantity} sản phẩm
-                      </p>
+                      <p className="font-semibold">Bạn đang chọn: {quantity} sản phẩm</p>
                       <p className="text-sm text-muted-foreground">
-                        Áp dụng mức giá: {formatCurrency(currentTierPrice)}/sản
-                        phẩm
+                        Áp dụng mức giá: {formatCurrency(currentTierPrice)}/sản phẩm
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-muted-foreground">Tổng tiền</p>
-                    <p className="text-2xl font-bold text-primary">
-                      {formatCurrency(totalCost)}
-                    </p>
+                    <p className="text-2xl font-bold text-primary">{formatCurrency(totalCost)}</p>
                   </div>
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
-      </LazySection>
 
-      {/* Profit Calculator - Lazy Load */}
-      <LazySection fallback={<ProductDetailSectionSkeleton />}>
-        <Card className="mt-6 border-2">
-          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 pb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Calculator className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <CardTitle className="text-xl">Dự tính lợi nhuận</CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Tính toán lợi nhuận dự kiến khi bán lại sản phẩm
-                  </p>
-                </div>
-              </div>
-              <Badge variant="outline" className="bg-white">
-                <Lightbulb className="h-3 w-3 mr-1" />
-                Công cụ hỗ trợ
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Input Section */}
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="selling-price"
-                    className="text-sm font-semibold flex items-center gap-2"
-                  >
-                    <DollarSign className="h-4 w-4 text-primary" />
-                    Giá bán dự kiến (đơn vị)
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="selling-price"
-                      type="text"
-                      inputMode="decimal"
-                      pattern="[0-9]*\.?[0-9]*"
-                      value={sellingPrice || ''}
-                      onChange={e => {
-                        const value = e.target.value
-                        if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                          setSellingPrice(parseFloat(value) || 0)
-                        }
-                      }}
-                      placeholder="Nhập giá bán dự kiến"
-                      className="pl-10 text-lg"
-                    />
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Gợi ý: {formatCurrency(Math.round(currentTierPrice * 1.5))}{' '}
-                    (1.5x giá sỉ)
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="profit-quantity"
-                    className="text-sm font-semibold flex items-center gap-2"
-                  >
-                    <Package className="h-4 w-4 text-primary" />
-                    Số lượng bán
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="profit-quantity"
-                      type="number"
-                      value={quantity}
-                      onChange={e =>
-                        setQuantity(
-                          Math.max(
-                            minOrderQty,
-                            Number(e.target.value) || minOrderQty
-                          )
-                        )
-                      }
-                      placeholder="Số lượng"
-                      className="pl-10 text-lg"
-                      min={minOrderQty}
-                    />
-                    <Package className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Tối thiểu: {minOrderQty} sản phẩm
-                  </p>
-                </div>
-
-                {/* Quick Price Suggestions */}
-                <div className="p-4 bg-muted/50 rounded-lg border">
-                  <p className="text-xs font-semibold mb-2 text-muted-foreground">
-                    Gợi ý giá bán nhanh:
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {[1.2, 1.5, 1.8, 2.0].map(multiplier => {
-                      const suggestedPrice = Math.round(
-                        currentTierPrice * multiplier
-                      )
-                      return (
-                        <Button
-                          key={multiplier}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setSellingPrice(suggestedPrice)}
-                          className="text-xs"
-                        >
-                          {multiplier}x = {formatCurrency(suggestedPrice)}
-                        </Button>
-                      )
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Results Section */}
-              <div className="space-y-4">
-                {/* Summary Cards */}
-                <div className="grid grid-cols-2 gap-3">
-                  <Card className="border-blue-200 bg-blue-50/50">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <ShoppingBag className="h-4 w-4 text-blue-600" />
-                        <p className="text-xs text-muted-foreground">
-                          Tổng vốn
-                        </p>
-                      </div>
-                      <p className="text-xl font-bold text-blue-600">
-                        {formatCurrency(totalCost)}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {formatCurrency(currentTierPrice)} × {quantity}
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="border-purple-200 bg-purple-50/50">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="h-4 w-4 text-purple-600" />
-                        <p className="text-xs text-muted-foreground">
-                          Tổng doanh thu
-                        </p>
-                      </div>
-                      <p className="text-xl font-bold text-purple-600">
-                        {formatCurrency(totalRevenue)}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {formatCurrency(sellingPrice)} × {quantity}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Profit Highlight */}
-                <Card
-                  className={`border-2 ${
-                    totalProfit > 0
-                      ? 'border-green-400 bg-gradient-to-br from-green-50 to-emerald-50'
-                      : totalProfit < 0
-                        ? 'border-red-400 bg-gradient-to-br from-red-50 to-rose-50'
-                        : 'border-gray-300 bg-muted'
-                  }`}
-                >
-                  <CardContent className="p-6">
-                    <div className="text-center space-y-3">
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">
-                          Lợi nhuận dự kiến
-                        </p>
-                        <p
-                          className={`text-4xl font-bold ${
-                            totalProfit > 0
-                              ? 'text-green-600'
-                              : totalProfit < 0
-                                ? 'text-red-600'
-                                : 'text-gray-600'
-                          }`}
-                        >
-                          {formatCurrency(totalProfit)}
-                        </p>
-                      </div>
-
-                      <Separator />
-
-                      <div className="flex items-center justify-center gap-2">
-                        {totalProfit > 0 ? (
-                          <TrendingUp className="h-5 w-5 text-green-600" />
-                        ) : totalProfit < 0 ? (
-                          <TrendingDown className="h-5 w-5 text-red-600" />
-                        ) : null}
-                        <div className="text-center">
-                          <p className="text-xs text-muted-foreground">
-                            Tỷ suất lợi nhuận
-                          </p>
-                          <p
-                            className={`text-2xl font-bold ${
-                              profitMargin > 0
-                                ? 'text-green-600'
-                                : profitMargin < 0
-                                  ? 'text-red-600'
-                                  : 'text-gray-600'
-                            }`}
-                          >
-                            {profitMargin > 0 ? '+' : ''}
-                            {profitMargin.toFixed(1)}%
-                          </p>
-                        </div>
-                      </div>
-
-                      {totalProfit > 0 && (
-                        <div className="mt-3 p-3 bg-green-100 rounded-lg">
-                          <p className="text-xs font-semibold text-green-800">
-                            ✓ Lợi nhuận tích cực - Đây là mức giá hợp lý để bán
-                            lại
-                          </p>
-                        </div>
-                      )}
-                      {totalProfit <= 0 && sellingPrice > 0 && (
-                        <div className="mt-3 p-3 bg-yellow-100 rounded-lg">
-                          <p className="text-xs font-semibold text-yellow-800">
-                            ⚠ Cần điều chỉnh giá bán để có lợi nhuận
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Breakdown */}
-                <Card className="border">
-                  <CardContent className="p-4">
-                    <p className="text-xs font-semibold mb-3 text-muted-foreground">
-                      Chi tiết tính toán:
-                    </p>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          Đơn giá sỉ:
-                        </span>
-                        <span className="font-medium">
-                          {formatCurrency(currentTierPrice)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          Giá bán dự kiến:
-                        </span>
-                        <span className="font-medium">
-                          {formatCurrency(sellingPrice)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          Lợi nhuận/đơn vị:
-                        </span>
-                        <span
-                          className={`font-medium ${
-                            sellingPrice > currentTierPrice
-                              ? 'text-green-600'
-                              : 'text-red-600'
-                          }`}
-                        >
-                          {formatCurrency(sellingPrice - currentTierPrice)}
-                        </span>
-                      </div>
-                      <Separator className="my-2" />
-                      <div className="flex justify-between font-semibold">
-                        <span>Lợi nhuận tổng:</span>
-                        <span
-                          className={
-                            totalProfit > 0 ? 'text-green-600' : 'text-red-600'
+            {/* Profit Calculator */}
+            <Separator />
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-primary" />
+                Dự tính lợi nhuận
+              </h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Input Section */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="selling-price" className="text-sm font-semibold flex items-center gap-2">
+                      <DollarSign className="h-4 w-4 text-primary" />
+                      Giá bán dự kiến (đơn vị)
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="selling-price"
+                        type="text"
+                        inputMode="decimal"
+                        pattern="[0-9]*\.?[0-9]*"
+                        value={sellingPrice || ''}
+                        onChange={e => {
+                          const value = e.target.value
+                          if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                            setSellingPrice(parseFloat(value) || 0)
                           }
-                        >
-                          {formatCurrency(totalProfit)}
-                        </span>
+                        }}
+                        placeholder="Nhập giá bán dự kiến"
+                        className="pl-10 text-lg"
+                      />
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Gợi ý: {formatCurrency(Math.round(currentTierPrice * 1.5))} (1.5x giá sỉ)
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="profit-quantity" className="text-sm font-semibold flex items-center gap-2">
+                      <Package className="h-4 w-4 text-primary" />
+                      Số lượng bán
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="profit-quantity"
+                        type="number"
+                        value={quantity}
+                        onChange={e => setQuantity(Math.max(minOrderQty, Number(e.target.value) || minOrderQty))}
+                        placeholder="Số lượng"
+                        className="pl-10 text-lg"
+                        min={minOrderQty}
+                      />
+                      <Package className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <p className="text-xs text-muted-foreground">Tối thiểu: {minOrderQty} sản phẩm</p>
+                  </div>
+                  <div className="p-4 bg-muted/50 rounded-lg border">
+                    <p className="text-xs font-semibold mb-2 text-muted-foreground">Gợi ý giá bán nhanh:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[1.2, 1.5, 1.8, 2.0].map(multiplier => {
+                        const suggestedPrice = Math.round(currentTierPrice * multiplier)
+                        return (
+                          <Button key={multiplier} variant="outline" size="sm" onClick={() => setSellingPrice(suggestedPrice)} className="text-xs">
+                            {multiplier}x = {formatCurrency(suggestedPrice)}
+                          </Button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Results Section */}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Card className="border-blue-200 bg-blue-50/50">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <ShoppingBag className="h-4 w-4 text-blue-600" />
+                          <p className="text-xs text-muted-foreground">Tổng vốn</p>
+                        </div>
+                        <p className="text-xl font-bold text-blue-600">{formatCurrency(totalCost)}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{formatCurrency(currentTierPrice)} × {quantity}</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-purple-200 bg-purple-50/50">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <TrendingUp className="h-4 w-4 text-purple-600" />
+                          <p className="text-xs text-muted-foreground">Tổng doanh thu</p>
+                        </div>
+                        <p className="text-xl font-bold text-purple-600">{formatCurrency(totalRevenue)}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{formatCurrency(sellingPrice)} × {quantity}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Profit Highlight */}
+                  <Card className={`border-2 ${totalProfit > 0 ? 'border-green-400 bg-gradient-to-br from-green-50 to-emerald-50' : totalProfit < 0 ? 'border-red-400 bg-gradient-to-br from-red-50 to-rose-50' : 'border-gray-300 bg-muted'}`}>
+                    <CardContent className="p-6">
+                      <div className="text-center space-y-3">
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Lợi nhuận dự kiến</p>
+                          <p className={`text-4xl font-bold ${totalProfit > 0 ? 'text-green-600' : totalProfit < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                            {formatCurrency(totalProfit)}
+                          </p>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-center gap-2">
+                          {totalProfit > 0 ? <TrendingUp className="h-5 w-5 text-green-600" /> : totalProfit < 0 ? <TrendingDown className="h-5 w-5 text-red-600" /> : null}
+                          <div className="text-center">
+                            <p className="text-xs text-muted-foreground">Tỷ suất lợi nhuận</p>
+                            <p className={`text-2xl font-bold ${profitMargin > 0 ? 'text-green-600' : profitMargin < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                              {profitMargin > 0 ? '+' : ''}{profitMargin.toFixed(1)}%
+                            </p>
+                          </div>
+                        </div>
+                        {totalProfit > 0 && (
+                          <div className="mt-3 p-3 bg-green-100 rounded-lg">
+                            <p className="text-xs font-semibold text-green-800">✓ Lợi nhuận tích cực - Đây là mức giá hợp lý để bán lại</p>
+                          </div>
+                        )}
+                        {totalProfit <= 0 && sellingPrice > 0 && (
+                          <div className="mt-3 p-3 bg-yellow-100 rounded-lg">
+                            <p className="text-xs font-semibold text-yellow-800">⚠ Cần điều chỉnh giá bán để có lợi nhuận</p>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </LazySection>
+                    </CardContent>
+                  </Card>
 
-      {/* Supplier Quality Dashboard - Lazy Load */}
-      <LazySection fallback={<ProductDetailSectionSkeleton />}>
-        <Card className="mt-6">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                <Verified className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <CardTitle>Phân tích chất lượng nhà cung cấp</CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Thông tin uy tín và đáng tin cậy
-                </p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <MessageCircle className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-blue-600">98%</p>
-                      <p className="text-xs font-semibold">
-                        Tỉ lệ phản hồi chat
-                      </p>
-                      <p className="text-xs text-green-600 flex items-center gap-1">
-                        <TrendingUp className="h-3 w-3" />
-                        Phản hồi nhanh
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
-                      <Truck className="h-5 w-5 text-cyan-600" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-cyan-600">
-                        1.2 ngày
-                      </p>
-                      <p className="text-xs font-semibold">
-                        Thời gian giao hàng
-                      </p>
-                      <p className="text-xs text-green-600 flex items-center gap-1">
-                        <TrendingUp className="h-3 w-3" />
-                        Trung bình
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                      <Star className="h-5 w-5 text-yellow-600" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-yellow-600">
-                        4.8/5
-                      </p>
-                      <p className="text-xs font-semibold">Điểm uy tín</p>
-                      <p className="text-xs text-green-600 flex items-center gap-1">
-                        <TrendingUp className="h-3 w-3" />
-                        Rất tốt
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-green-600">2.5%</p>
-                      <p className="text-xs font-semibold">Tỉ lệ hủy đơn</p>
-                      <p className="text-xs text-green-600 flex items-center gap-1">
-                        <TrendingUp className="h-3 w-3" />
-                        Rất thấp
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="p-4 bg-green-50 rounded-lg border-2 border-green-200">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                  <CheckCircle2 className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="font-bold text-lg">Nhà cung cấp uy tín</p>
-                  <p className="text-sm text-muted-foreground">
-                    Đạt tiêu chuẩn chất lượng cao
-                  </p>
+                  {/* Breakdown */}
+                  <Card className="border">
+                    <CardContent className="p-4">
+                      <p className="text-xs font-semibold mb-3 text-muted-foreground">Chi tiết tính toán:</p>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Đơn giá sỉ:</span>
+                          <span className="font-medium">{formatCurrency(currentTierPrice)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Giá bán dự kiến:</span>
+                          <span className="font-medium">{formatCurrency(sellingPrice)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Lợi nhuận/đơn vị:</span>
+                          <span className={`font-medium ${sellingPrice > currentTierPrice ? 'text-green-600' : 'text-red-600'}`}>
+                            {formatCurrency(sellingPrice - currentTierPrice)}
+                          </span>
+                        </div>
+                        <Separator className="my-2" />
+                        <div className="flex justify-between font-semibold">
+                          <span>Lợi nhuận tổng:</span>
+                          <span className={totalProfit > 0 ? 'text-green-600' : 'text-red-600'}>
+                            {formatCurrency(totalProfit)}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
             </div>
@@ -1412,7 +1158,8 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         </Card>
       </LazySection>
 
-      {/* Price History - Lazy Load */}
+      {/* Price History - Only show when there are actual price changes */}
+      {hasPriceHistory && priceHistory.length >= 2 && (
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Card className="mt-6">
           <CardHeader>
@@ -1428,32 +1175,20 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   </p>
                 </div>
               </div>
-              {hasPriceHistory && priceHistory.length >= 2 && (
-                <Badge
-                  variant={priceChange < 0 ? 'default' : priceChange > 0 ? 'destructive' : 'secondary'}
-                  className={priceChange < 0 ? 'bg-green-500' : ''}
-                >
-                  {priceChange < 0 ? (
-                    <TrendingDown className="h-3 w-3 mr-1" />
-                  ) : priceChange > 0 ? (
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                  ) : null}
-                  {priceChange === 0 ? 'Không đổi' : `${Math.abs(priceChangePercent).toFixed(1)}%`}
-                </Badge>
-              )}
+              <Badge
+                variant={priceChange < 0 ? 'default' : priceChange > 0 ? 'destructive' : 'secondary'}
+                className={priceChange < 0 ? 'bg-green-500' : ''}
+              >
+                {priceChange < 0 ? (
+                  <TrendingDown className="h-3 w-3 mr-1" />
+                ) : priceChange > 0 ? (
+                  <TrendingUp className="h-3 w-3 mr-1" />
+                ) : null}
+                {priceChange === 0 ? 'Không đổi' : `${Math.abs(priceChangePercent).toFixed(1)}%`}
+              </Badge>
             </div>
           </CardHeader>
           <CardContent>
-            {!hasPriceHistory || priceHistory.length <= 1 ? (
-              <div className="text-center py-6">
-                <p className="text-2xl font-bold text-primary mb-1">
-                  {formatCurrency(product.price)}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Giá ổn định
-                </p>
-              </div>
-            ) : (
               <div className="space-y-4">
                 <div className="h-32 flex items-end gap-1">
                   {priceHistory.map((item, index) => {
@@ -1506,10 +1241,10 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   </div>
                 </div>
               </div>
-            )}
           </CardContent>
         </Card>
       </LazySection>
+      )}
 
       {/* Product Details Tabs - Lazy Load */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
@@ -1924,31 +1659,12 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
         </Tabs>
       </LazySection>
 
-      {/* Best Selling Products Section - Lazy Load */}
+      {/* Best Selling Products Section - Lazy Load, hidden when no data */}
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
-        <Card className="mt-6">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <CardTitle>🔥 Sản phẩm bán chạy dành cho shop</CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Gợi ý theo ngành hàng, vốn nhập, mùa vụ
-                </p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <BestSellingProducts
-              productId={product.id}
-              categoryId={String(
-                product.categoryId || product.category?.id || ''
-              )}
-            />
-          </CardContent>
-        </Card>
+        <BestSellingProductsSection
+          productId={product.id}
+          categoryId={String(product.categoryId || product.category?.id || '')}
+        />
       </LazySection>
 
       {/* Request Quote Dialog */}
@@ -2046,7 +1762,8 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
 }
 
 // Best Selling Products Component
-function BestSellingProducts({
+/** Renders best selling products section with card, or null if no data */
+function BestSellingProductsSection({
   productId,
   categoryId,
 }: {
@@ -2069,16 +1786,26 @@ function BestSellingProducts({
     })
     .slice(0, 8)
 
-  if (bestSelling.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <Package className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-        <p className="text-muted-foreground">
-          Chưa có sản phẩm bán chạy trong danh mục này
-        </p>
-      </div>
-    )
-  }
+  if (bestSelling.length === 0) return null
 
-  return <SimpleProductGrid products={bestSelling} />
+  return (
+    <Card className="mt-6">
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
+            <TrendingUp className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <CardTitle>Sản phẩm bán chạy dành cho shop</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Gợi ý theo ngành hàng, vốn nhập, mùa vụ
+            </p>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <SimpleProductGrid products={bestSelling} />
+      </CardContent>
+    </Card>
+  )
 }
