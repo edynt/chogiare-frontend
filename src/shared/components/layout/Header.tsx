@@ -326,7 +326,7 @@ export function Header() {
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
-                          {user?.name}
+                          {user?.name || 'Người dùng'}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
                           {user?.email}
@@ -548,7 +548,7 @@ export function Header() {
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold truncate">
-                          {user?.name}
+                          {user?.name || 'Người dùng'}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
                           {user?.email}

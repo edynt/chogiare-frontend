@@ -343,8 +343,6 @@ const DEFAULT_SETTINGS: SystemSettings = {
 export default function SystemSettingsPage() {
   const [activeTab, setActiveTab] = useState('general')
   const [isEditing, setIsEditing] = useState(false)
-  const [showApiKey, setShowApiKey] = useState<string | null>(null)
-  const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
   // Fetch settings from API
   const {
@@ -367,52 +365,6 @@ export default function SystemSettingsPage() {
 
   const isSaving = updateSettingsMutation.isPending
 
-  const apiKeys = [
-    {
-      id: '1',
-      name: 'Payment Gateway API',
-      key: 'pk_live_51HqK2LGxxxxxxxxxxxxxxxxxxx',
-      type: 'payment',
-      status: 'active',
-      createdAt: '2024-01-15T10:30:00Z',
-      lastUsed: '2024-01-26T14:20:00Z',
-      permissions: ['payment', 'refund'],
-      rateLimit: 1000,
-    },
-    {
-      id: '2',
-      name: 'SMS Service API',
-      key: 'sk_live_51HqK2LGyyyyyyyyyyyyyyyyyyyy',
-      type: 'sms',
-      status: 'active',
-      createdAt: '2024-01-10T14:20:00Z',
-      lastUsed: '2024-01-25T09:15:00Z',
-      permissions: ['sms', 'notification'],
-      rateLimit: 500,
-    },
-    {
-      id: '3',
-      name: 'Email Service API',
-      key: 'ek_live_51HqK2LGzzzzzzzzzzzzzzzzzzzz',
-      type: 'email',
-      status: 'inactive',
-      createdAt: '2024-01-05T09:15:00Z',
-      lastUsed: '2024-01-20T16:45:00Z',
-      permissions: ['email', 'notification'],
-      rateLimit: 1000,
-    },
-    {
-      id: '4',
-      name: 'Mobile App API',
-      key: 'mk_live_51HqK2LGaaaaaaaaaaaaaaaaaa',
-      type: 'mobile',
-      status: 'active',
-      createdAt: '2024-01-20T11:00:00Z',
-      lastUsed: '2024-01-26T16:30:00Z',
-      permissions: ['read', 'write', 'delete'],
-      rateLimit: 2000,
-    },
-  ]
 
   const systemLogs = [
     {
@@ -539,12 +491,6 @@ export default function SystemSettingsPage() {
     toast.success('Đã làm mới dữ liệu!')
   }
 
-  const copyToClipboard = (text: string, keyId: string) => {
-    navigator.clipboard.writeText(text)
-    setCopiedKey(keyId)
-    setTimeout(() => setCopiedKey(null), 2000)
-    toast.success('Đã copy vào clipboard!')
-  }
 
   const clearCache = () => {
     toast.success('Cache đã được xóa thành công!')
@@ -569,7 +515,6 @@ export default function SystemSettingsPage() {
     { id: 'storage', label: 'Lưu trữ', icon: HardDrive },
     { id: 'backup', label: 'Backup', icon: Cloud },
     { id: 'legal', label: 'Pháp lý', icon: FileText },
-    { id: 'api', label: 'API Keys', icon: Key },
     { id: 'logs', label: 'Logs', icon: Database },
     { id: 'health', label: 'Sức khỏe', icon: Activity },
   ]
@@ -2214,107 +2159,6 @@ export default function SystemSettingsPage() {
             </CardContent>
           </Card>
         </div>
-      )}
-
-      {/* API Keys */}
-      {activeTab === 'api' && (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Key className="h-5 w-5" />
-                API Keys
-              </CardTitle>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Tạo API Key mới
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {apiKeys.map(apiKey => (
-                <div
-                  key={apiKey.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Key className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{apiKey.name}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <code className="text-sm text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
-                          {showApiKey === apiKey.id
-                            ? apiKey.key
-                            : apiKey.key.substring(0, 12) + '...'}
-                        </code>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() =>
-                            setShowApiKey(
-                              showApiKey === apiKey.id ? null : apiKey.id
-                            )
-                          }
-                        >
-                          {showApiKey === apiKey.id ? (
-                            <EyeOff className="h-3 w-3" />
-                          ) : (
-                            <Eye className="h-3 w-3" />
-                          )}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => copyToClipboard(apiKey.key, apiKey.id)}
-                        >
-                          {copiedKey === apiKey.id ? (
-                            <Check className="h-3 w-3 text-green-600" />
-                          ) : (
-                            <Copy className="h-3 w-3" />
-                          )}
-                        </Button>
-                      </div>
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge variant="outline" className="text-xs">
-                          {apiKey.type}
-                        </Badge>
-                        <Badge
-                          className={
-                            apiKey.status === 'active'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }
-                        >
-                          {apiKey.status}
-                        </Badge>
-                        <span className="text-xs text-gray-500">
-                          Rate limit: {apiKey.rateLimit}/phút
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-gray-500">Lần cuối sử dụng</p>
-                    <p className="text-sm">{formatDate(apiKey.lastUsed)}</p>
-                    <div className="flex items-center gap-1 mt-2">
-                      <Button variant="ghost" size="icon">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon">
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
       )}
 
       {/* System Logs */}

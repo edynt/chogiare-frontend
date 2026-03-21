@@ -164,34 +164,32 @@ export const authApi = {
           isVerified: boolean
           status: boolean
           language: string
-          userInfo: {
-            fullName: string | null
-            avatarUrl: string | null
-            gender: string | null
-            dateOfBirth: string | null
-            phoneNumber: string | null
-            address: string | null
-            country: string | null
-            showEmail: boolean
-            showPhone: boolean
-          } | null
+          fullName: string | null
+          avatarUrl: string | null
+          gender: string | null
+          dateOfBirth: string | null
+          phoneNumber: string | null
+          address: string | null
+          country: string | null
+          showEmail: boolean
+          showPhone: boolean
           roles: string[]
         }>
       >('/auth/profile')
       const data = response.data.data
       return {
         id: data.id.toString(),
-        name: data.userInfo?.fullName || '',
+        name: data.fullName || '',
         email: data.email,
-        phone: data.userInfo?.phoneNumber || undefined,
-        avatar: data.userInfo?.avatarUrl || undefined,
-        gender: data.userInfo?.gender || undefined,
-        dateOfBirth: data.userInfo?.dateOfBirth || undefined,
-        address: data.userInfo?.address || undefined,
-        country: data.userInfo?.country || undefined,
+        phone: data.phoneNumber || undefined,
+        avatar: data.avatarUrl || undefined,
+        gender: data.gender || undefined,
+        dateOfBirth: data.dateOfBirth || undefined,
+        address: data.address || undefined,
+        country: data.country || undefined,
         language: data.language,
-        showEmail: data.userInfo?.showEmail ?? false,
-        showPhone: data.userInfo?.showPhone ?? false,
+        showEmail: data.showEmail ?? false,
+        showPhone: data.showPhone ?? false,
         isVerified: data.isVerified,
         roles: data.roles as UserRole[],
         postCount: 0,
@@ -210,34 +208,32 @@ export const authApi = {
           isVerified: boolean
           status: boolean
           language: string
-          userInfo: {
-            fullName: string | null
-            avatarUrl: string | null
-            gender: string | null
-            dateOfBirth: string | null
-            phoneNumber: string | null
-            address: string | null
-            country: string | null
-            showEmail: boolean
-            showPhone: boolean
-          } | null
+          fullName: string | null
+          avatarUrl: string | null
+          gender: string | null
+          dateOfBirth: string | null
+          phoneNumber: string | null
+          address: string | null
+          country: string | null
+          showEmail: boolean
+          showPhone: boolean
           roles: string[]
         }>
       >('/auth/admin/profile')
       const data = response.data.data
       return {
         id: data.id.toString(),
-        name: data.userInfo?.fullName || '',
+        name: data.fullName || '',
         email: data.email,
-        phone: data.userInfo?.phoneNumber || undefined,
-        avatar: data.userInfo?.avatarUrl || undefined,
-        gender: data.userInfo?.gender || undefined,
-        dateOfBirth: data.userInfo?.dateOfBirth || undefined,
-        address: data.userInfo?.address || undefined,
-        country: data.userInfo?.country || undefined,
+        phone: data.phoneNumber || undefined,
+        avatar: data.avatarUrl || undefined,
+        gender: data.gender || undefined,
+        dateOfBirth: data.dateOfBirth || undefined,
+        address: data.address || undefined,
+        country: data.country || undefined,
         language: data.language,
-        showEmail: data.userInfo?.showEmail ?? false,
-        showPhone: data.userInfo?.showPhone ?? false,
+        showEmail: data.showEmail ?? false,
+        showPhone: data.showPhone ?? false,
         isVerified: data.isVerified,
         roles: data.roles as UserRole[],
         postCount: 0,

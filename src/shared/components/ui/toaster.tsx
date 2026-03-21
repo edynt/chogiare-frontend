@@ -15,13 +15,12 @@ interface ToasterProps {
 
 export function Toaster({ notifications, onRemove }: ToasterProps) {
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2 w-full max-w-sm">
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 space-y-2 w-full max-w-sm">
       {notifications.map(notification => (
         <div
           key={notification.id}
           className={cn(
-            'flex items-center gap-3 rounded-lg border p-4 shadow-lg',
-            'bg-background text-foreground',
+            'flex items-center gap-3 rounded-xl border px-4 py-3 shadow-2xl animate-in slide-in-from-top-2 fade-in duration-300',
             {
               'border-green-500 bg-green-50 text-green-900 dark:bg-green-950 dark:text-green-100':
                 notification.type === 'success',
@@ -42,7 +41,7 @@ export function Toaster({ notifications, onRemove }: ToasterProps) {
           </div>
           <button
             onClick={() => onRemove(notification.id)}
-            className="ml-2 rounded-full p-1 hover:bg-black/10 dark:hover:bg-white/10 hover:text-white dark:hover:text-white transition-colors"
+            className="ml-2 rounded-full p-1 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
           >
             <span className="sr-only">Close</span>
             <svg
