@@ -37,6 +37,7 @@ import {
   AlertTitle,
 } from '@shared/components/ui/alert'
 import { useProduct, useProductReviews, useProducts, useProfile, useBoostStatus } from '@/hooks'
+import { useReviewEligibility, useCreateReview } from '@/hooks/useReviews'
 import { SimpleProductGrid } from '@shared/components/product/ProductGridWithPagination'
 import type { Review } from '@user/api/reviews'
 import { ErrorMessage } from '@shared/components/ui/error-boundary'
@@ -118,6 +119,14 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
     page: 1,
     pageSize: 5,
   })
+  const { data: eligibility } = useReviewEligibility(
+    productIdToUse || '',
+    isAuthenticated,
+  )
+  const createReviewMutation = useCreateReview()
+
+  // Whether to show the "Viết đánh giá" tab
+  const canWriteReview = isAuthenticated && eligibility?.canReview === true
 
   // Get seller ID - prefer sellerId, fallback to seller.id
   // Computed early to determine hook enablement (must be before conditional returns)
@@ -1576,13 +1585,16 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
       <LazySection fallback={<ProductDetailSectionSkeleton />}>
         <Tabs defaultValue="description" className="w-full mt-6">
           <TabsList
-            className={`grid w-full ${isOwnProduct ? 'grid-cols-4' : 'grid-cols-6'}`}
+            className={`grid w-full`}
+            style={{ gridTemplateColumns: `repeat(${(isOwnProduct ? 3 : 5) + (canWriteReview ? 1 : 0)}, minmax(0, 1fr))` }}
           >
             <TabsTrigger value="description">Mô tả</TabsTrigger>
             <TabsTrigger value="reviews">
               Đánh giá ({product.reviewCount})
             </TabsTrigger>
-            <TabsTrigger value="write-review">Viết đánh giá</TabsTrigger>
+            {canWriteReview && (
+              <TabsTrigger value="write-review">Viết đánh giá</TabsTrigger>
+            )}
             {!isOwnProduct && (
               <TabsTrigger value="seller">Thông tin người bán</TabsTrigger>
             )}
@@ -1730,6 +1742,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
             </Card>
           </TabsContent>
 
+          {canWriteReview && (
           <TabsContent value="write-review" className="mt-4">
             <Card>
               <CardHeader className="pb-4">
@@ -1780,23 +1793,37 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                 </div>
                 <Button
                   className="w-full"
+                  disabled={createReviewMutation.isPending || !reviewComment.trim()}
                   onClick={() => {
-                    if (!reviewComment.trim()) {
-                      alert('Vui lòng nhập đánh giá')
-                      return
-                    }
-                    // Handle submit review
-                    alert('Đã gửi đánh giá thành công!')
-                    setReviewComment('')
-                    setReviewRating(5)
+                    if (!reviewComment.trim()) return
+                    createReviewMutation.mutate(
+                      {
+                        productId: Number(productIdToUse),
+                        orderId: eligibility?.orderId,
+                        rating: reviewRating,
+                        comment: reviewComment,
+                        isVerified: true,
+                      },
+                      {
+                        onSuccess: () => {
+                          toast.success('Đánh giá thành công! Cảm ơn bạn đã chia sẻ.')
+                          setReviewComment('')
+                          setReviewRating(5)
+                        },
+                        onError: () => {
+                          toast.error('Không thể gửi đánh giá. Vui lòng thử lại.')
+                        },
+                      },
+                    )
                   }}
                 >
                   <Send className="h-4 w-4 mr-2" />
-                  Gửi đánh giá
+                  {createReviewMutation.isPending ? 'Đang gửi...' : 'Gửi đánh giá'}
                 </Button>
               </CardContent>
             </Card>
           </TabsContent>
+          )}
 
           {/* Seller Tab - Hide for own products */}
           {!isOwnProduct && (

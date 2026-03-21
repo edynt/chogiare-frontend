@@ -394,7 +394,7 @@ export default function ReportsAnalyticsPage() {
       </div>
 
       {/* Top Products */}
-      <Card>
+      <Card className="mt-4">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Package className="h-5 w-5" />
