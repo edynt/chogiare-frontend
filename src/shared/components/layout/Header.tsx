@@ -67,8 +67,12 @@ export function Header() {
     navigate('/')
   }
 
-  const { data: notificationsData } = useNotifications({ page: 1, pageSize: 5 })
-  const { data: unreadCount = 0 } = useUnreadNotificationCount()
+  // Only fetch notifications when authenticated to avoid 401 redirects for guests
+  const { data: notificationsData } = useNotifications(
+    { page: 1, pageSize: 5 },
+    { enabled: isAuthenticated },
+  )
+  const { data: unreadCount = 0 } = useUnreadNotificationCount({ enabled: isAuthenticated })
   const markAsReadMutation = useMarkNotificationAsRead()
   const markAllAsReadMutation = useMarkAllNotificationsAsRead()
 

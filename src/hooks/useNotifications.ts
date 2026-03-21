@@ -5,7 +5,7 @@ import type { QueryNotificationParams } from '@user/api/notifications'
 import type { CreateNotificationRequest } from '@admin/api/notifications'
 import { queryKeys } from '@/constants/queryKeys'
 
-export const useNotifications = (params?: QueryNotificationParams) => {
+export const useNotifications = (params?: QueryNotificationParams, options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: queryKeys.notifications.all(params),
     queryFn: async () => {
@@ -22,13 +22,14 @@ export const useNotifications = (params?: QueryNotificationParams) => {
         }
       }
     },
+    enabled: options?.enabled,
     staleTime: 30 * 1000,
     refetchInterval: 30 * 1000,
     retry: 1,
   })
 }
 
-export const useUnreadNotificationCount = () => {
+export const useUnreadNotificationCount = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: queryKeys.notifications.unreadCount,
     queryFn: async () => {
@@ -38,6 +39,7 @@ export const useUnreadNotificationCount = () => {
         return 0
       }
     },
+    enabled: options?.enabled,
     staleTime: 30 * 1000,
     refetchInterval: 30 * 1000,
     retry: 1,

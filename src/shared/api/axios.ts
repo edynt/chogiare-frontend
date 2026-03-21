@@ -191,6 +191,8 @@ class ApiClient {
         const requestUrl = originalRequest?.url || ''
 
         // Skip token refresh for auth endpoints (login, register, etc.)
+        // Skip token refresh for auth endpoints and profile check
+        // Profile is included so unauthenticated users on public pages aren't redirected
         const authEndpoints = [
           '/auth/login',
           '/auth/register',
@@ -204,6 +206,8 @@ class ApiClient {
           '/auth/refresh',
           '/auth/admin/login',
           '/auth/admin/refresh',
+          '/auth/profile',
+          '/auth/admin/profile',
         ]
         const isAuthEndpoint = authEndpoints.some(endpoint =>
           requestUrl.includes(endpoint)

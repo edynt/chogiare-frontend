@@ -23,11 +23,11 @@ export function ChatPopup() {
     setPendingSellerId,
   } = useChatStore()
 
-  // Fetch conversations to get unread count
-  const { data: conversationsData } = useConversations({
-    page: 1,
-    pageSize: 50,
-  })
+  // Fetch conversations to get unread count (only when authenticated)
+  const { data: conversationsData } = useConversations(
+    { page: 1, pageSize: 50 },
+    { enabled: isAuthenticated },
+  )
 
   // Create conversation mutation
   const createConversation = useCreateConversation()

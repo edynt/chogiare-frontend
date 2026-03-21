@@ -20,18 +20,27 @@ import {
  * All endpoints require seller role authentication
  */
 
-// Dashboard stats
+// Dashboard stat card shape returned by backend
+export interface DashboardStatCard {
+  value: number
+  change: number
+  changeType: 'positive' | 'negative'
+  subtitle: string
+}
+
+// Dashboard stats - matches backend DashboardStats shape
 export interface SellerDashboardStats {
-  totalProducts: number
-  activeProducts: number
-  soldProducts: number
-  totalRevenue: number
+  totalProducts: DashboardStatCard
+  revenue: DashboardStatCard
+  orders: DashboardStatCard
+  views: DashboardStatCard
   totalOrders: number
   pendingOrders: number
   completedOrders: number
   totalCustomers: number
+  activeProducts: number
+  soldProducts: number
   lowStockProducts: number
-  outOfStockProducts: number
 }
 
 // Revenue stats

@@ -262,26 +262,26 @@ export function SellerDashboardContent() {
     ? [
         {
           title: 'Tổng sản phẩm',
-          value: dashboardStats.totalProducts.toString(),
+          value: dashboardStats.totalProducts.value.toString(),
           icon: Package,
-          change: null as string | null,
-          changeType: null as string | null,
-          subtitle: `Đang bán: ${dashboardStats.activeProducts}`,
+          change: dashboardStats.totalProducts.change !== 0 ? `${Math.abs(dashboardStats.totalProducts.change).toFixed(0)}%` : null as string | null,
+          changeType: dashboardStats.totalProducts.changeType as string | null,
+          subtitle: dashboardStats.totalProducts.subtitle,
         },
         {
           title: 'Doanh thu tháng',
-          value: formatCurrency(dashboardStats.totalRevenue),
+          value: formatCurrency(dashboardStats.revenue.value),
           icon: DollarSign,
-          change: null as string | null,
-          changeType: null as string | null,
+          change: dashboardStats.revenue.change !== 0 ? `${Math.abs(dashboardStats.revenue.change).toFixed(0)}%` : null as string | null,
+          changeType: dashboardStats.revenue.changeType as string | null,
           subtitle: `Đơn hoàn thành: ${dashboardStats.completedOrders}`,
         },
         {
           title: 'Đơn hàng',
-          value: formatNumber(dashboardStats.totalOrders),
+          value: formatNumber(dashboardStats.orders.value),
           icon: ShoppingCart,
-          change: null as string | null,
-          changeType: null as string | null,
+          change: dashboardStats.orders.change !== 0 ? `${Math.abs(dashboardStats.orders.change).toFixed(0)}%` : null as string | null,
+          changeType: dashboardStats.orders.changeType as string | null,
           subtitle: `Chờ xử lý: ${dashboardStats.pendingOrders}`,
         },
         {
@@ -290,7 +290,7 @@ export function SellerDashboardContent() {
           icon: Eye,
           change: null as string | null,
           changeType: null as string | null,
-          subtitle: `Sản phẩm sắp hết: ${dashboardStats.lowStockProducts}`,
+          subtitle: `Sản phẩm sắp hết: ${dashboardStats.lowStockProducts ?? 0}`,
         },
       ]
     : []

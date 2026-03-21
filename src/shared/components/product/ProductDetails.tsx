@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
 import {
   Card,
   CardContent,
@@ -89,6 +89,8 @@ interface ProductDetailsProps {
 
 export function ProductDetails({ productId, className }: ProductDetailsProps) {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const location = useLocation()
   const productIdToUse = productId || id
   const { addItem } = useCartStore()
   const { openChatWithSeller } = useChatStore()
@@ -196,13 +198,17 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
       ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
       : 0
 
+  // Redirect to login with return URL so user comes back after login
+  const requireAuth = (action: string): boolean => {
+    if (isAuthenticated) return true
+    toast.error(`Vui lòng đăng nhập để ${action}`)
+    navigate('/auth/login', { state: { from: location } })
+    return false
+  }
+
   // Handle opening chat with seller
   const handleChatWithSeller = (message?: string) => {
-    if (!isAuthenticated) {
-      toast.error('Vui lòng đăng nhập để chat với người bán')
-      window.location.href = '/auth/login'
-      return
-    }
+    if (!requireAuth('chat với người bán')) return
     if (!sellerIdForChat) {
       toast.error('Không thể xác định người bán')
       return
@@ -589,6 +595,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   <Button
                     className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all"
                     onClick={() => {
+                      if (!requireAuth('thêm sản phẩm vào giỏ hàng')) return
                       addItem(product, quantity)
                       toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`)
                     }}
@@ -598,14 +605,13 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   </Button>
                   <Button
                     className="bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all"
-                    asChild
+                    onClick={() => {
+                      if (!requireAuth('đặt hàng')) return
+                      navigate(`/checkout?productId=${product.id}&quantity=${quantity}`)
+                    }}
                   >
-                    <Link
-                      to={`/checkout?productId=${product.id}&quantity=${quantity}`}
-                    >
-                      <ShoppingBag className="h-4 w-4 mr-2" />
-                      Đặt hàng
-                    </Link>
+                    <ShoppingBag className="h-4 w-4 mr-2" />
+                    Đặt hàng
                   </Button>
                 </div>
 
@@ -614,7 +620,10 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
                   <Button
                     variant="outline"
                     className="border-2 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
-                    onClick={() => setShowQuoteDialog(true)}
+                    onClick={() => {
+                      if (!requireAuth('xin báo giá')) return
+                      setShowQuoteDialog(true)
+                    }}
                   >
                     <FileText className="h-4 w-4 mr-2" />
                     Xin báo giá
