@@ -48,6 +48,7 @@ import { LazySection } from './LazySection'
 import { BoostProductModal } from './BoostProductModal'
 import { formatCurrency, formatDate, PLACEHOLDER_IMAGE } from '@/lib/utils'
 import { SecurityWarning } from '@shared/components/ui/security-warning'
+import { SEOHead } from '@shared/components/seo/SEOHead'
 import { useCartStore } from '@/stores/cartStore'
 import { useChatStore } from '@/stores/chatStore'
 import { useAuthStore } from '@/stores/authStore'
@@ -198,6 +199,50 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
       ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
       : 0
 
+  // Build Schema.org Product structured data for SEO
+  const productImage = product.images?.[0] || ''
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    description: product.description?.slice(0, 200) || '',
+    image: product.images || [],
+    sku: product.sku || product.id,
+    brand: {
+      '@type': 'Organization',
+      name: product.seller?.name || 'Chợ Giá Rẻ',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `https://chogiare.com/products/${product.id}`,
+      priceCurrency: 'VND',
+      price: product.price,
+      availability:
+        product.stock > 0
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
+      itemCondition:
+        product.condition === 1
+          ? 'https://schema.org/NewCondition'
+          : 'https://schema.org/UsedCondition',
+      seller: {
+        '@type': 'Organization',
+        name: product.seller?.name || '',
+      },
+    },
+    ...(product.rating > 0 && product.reviewCount > 0
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: product.rating,
+            reviewCount: product.reviewCount,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
+  }
+
   // Redirect to login with return URL so user comes back after login
   const requireAuth = (action: string): boolean => {
     if (isAuthenticated) return true
@@ -337,6 +382,17 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
 
   return (
     <div className={`space-y-6 ${className}`}>
+      {/* SEO: Dynamic meta tags and Product structured data */}
+      <SEOHead
+        title={product.title}
+        description={product.description?.slice(0, 160) || `${product.title} - Mua ngay tại Chợ Giá Rẻ`}
+        keywords={[product.title, product.category?.name, ...(product.tags || [])].filter(Boolean).join(', ')}
+        image={productImage}
+        url={`https://chogiare.com/products/${product.id}`}
+        type="product"
+        structuredData={productJsonLd}
+      />
+
       {/* Product Header - Load immediately */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Product Images */}

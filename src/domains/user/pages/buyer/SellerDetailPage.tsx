@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
 import { Button } from '@shared/components/ui/button'
@@ -18,10 +18,12 @@ import {
   Store,
 } from 'lucide-react'
 import { Skeleton } from '@shared/components/ui/skeleton'
+import { SEOHead } from '@shared/components/seo/SEOHead'
 
 export default function SellerDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const [selectedFilter, setSelectedFilter] = useState('Tất cả')
   const { openChatWithSeller } = useChatStore()
   const { isAuthenticated } = useAuthStore()
@@ -30,7 +32,7 @@ export default function SellerDetailPage() {
   const handleChatWithSeller = () => {
     if (!isAuthenticated) {
       toast.error('Vui lòng đăng nhập để chat với người bán')
-      navigate('/auth/login')
+      navigate('/auth/login', { state: { from: location } })
       return
     }
     if (!id) {
@@ -135,6 +137,13 @@ export default function SellerDetailPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={seller ? `${seller.name} - Shop trên Chợ Giá Rẻ` : 'Shop trên Chợ Giá Rẻ'}
+        description={seller?.description || `Xem sản phẩm từ ${seller?.name || 'người bán'} trên Chợ Giá Rẻ`}
+        keywords={`${seller?.name || ''}, shop, người bán, chợ giá rẻ`}
+        image={seller?.logoUrl || undefined}
+        url={`https://chogiare.com/shop/${id}`}
+      />
       <Header />
 
       {/* Seller Header - Compact */}

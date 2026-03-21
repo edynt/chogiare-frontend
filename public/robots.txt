@@ -1,23 +1,26 @@
 User-agent: *
 Allow: /
+Allow: /products
+Allow: /products/*
+Allow: /shop/*
 
-# Sitemap
-Sitemap: https://chogiare.com/sitemap.xml
+# Disallow private/admin pages
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /seller/
+Disallow: /checkout
+Disallow: /cart
+Disallow: /orders
+Disallow: /profile
+Disallow: /notifications
+Disallow: /chat
+Disallow: /top-up
+Disallow: /payment-qr
+Disallow: /addresses
 
 # Crawl-delay
 Crawl-delay: 1
 
-# Disallow admin pages
-Disallow: /admin/
-Disallow: /api/
-Disallow: /_next/
-Disallow: /static/
-
-# Allow important pages
-Allow: /
-Allow: /products
-Allow: /about
-Allow: /contact
-Allow: /faq
-Allow: /terms
-Allow: /privacy
+# Sitemap
+Sitemap: https://chogiare.com/sitemap.xml
