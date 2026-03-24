@@ -12,6 +12,8 @@ export const queryKeys = {
       ['products', 'search', query, filters] as const,
     seller: (filters?: unknown) => ['seller', 'products', filters] as const,
     my: (filters?: unknown) => ['products', 'my', filters] as const,
+    priceHistory: (id: number | string, days?: number) =>
+      ['products', id, 'price-history', days] as const,
   },
   categories: {
     all: ['categories'] as const,

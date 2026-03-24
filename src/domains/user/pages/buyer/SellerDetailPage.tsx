@@ -107,8 +107,8 @@ export default function SellerDetailPage() {
 
   const filters = ['Tất cả', 'Bán chạy', 'Giá thấp', 'Giá cao', 'Mới nhất']
 
-  // Loading state
-  if (isLoading) {
+  // Loading state - only show skeleton on initial load
+  if (isLoading && !productsData) {
     return (
       <div className="min-h-screen bg-background">
         <Header />

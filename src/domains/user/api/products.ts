@@ -39,6 +39,19 @@ export interface BoostProductResponse {
   }
 }
 
+export interface PriceHistoryItem {
+  id: number
+  oldPrice: number
+  newPrice: number
+  createdAt: string
+}
+
+export interface PriceHistoryResponse {
+  productId: number
+  currentPrice: number
+  history: PriceHistoryItem[]
+}
+
 export interface BoostStatus {
   isPromoted: boolean
   boost: {
@@ -69,6 +82,13 @@ export const productsApi = {
     if (filters.query !== undefined) params.search = filters.query
     if (filters.featured !== undefined) params.isFeatured = filters.featured
     if (filters.promoted !== undefined) params.isPromoted = filters.promoted
+    if (filters.minPrice !== undefined && filters.minPrice > 0) params.minPrice = filters.minPrice
+    if (filters.maxPrice !== undefined && filters.maxPrice < 10000000) params.maxPrice = filters.maxPrice
+    if (filters.condition !== undefined) params.condition = filters.condition
+    if (filters.location !== undefined && filters.location !== '') params.location = filters.location
+    if (filters.sortBy !== undefined) params.sortBy = filters.sortBy
+    if (filters.sortOrder !== undefined) params.sortOrder = filters.sortOrder
+    if (filters.rating !== undefined && filters.rating > 0) params.rating = filters.rating
 
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<Product>>
@@ -244,6 +264,17 @@ export const productsApi = {
   getBoostStatus: async (productId: string): Promise<BoostStatus> => {
     const response = await apiClient.get<ApiResponse<BoostStatus>>(
       `/products/${productId}/boost-status`
+    )
+    return response.data.data
+  },
+
+  getPriceHistory: async (
+    productId: string,
+    days = 90
+  ): Promise<PriceHistoryResponse> => {
+    const response = await apiClient.get<ApiResponse<PriceHistoryResponse>>(
+      `/products/${productId}/price-history`,
+      { params: { days } }
     )
     return response.data.data
   },

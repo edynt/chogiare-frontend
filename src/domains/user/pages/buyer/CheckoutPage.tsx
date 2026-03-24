@@ -310,29 +310,6 @@ export default function CheckoutPage() {
                 </div>
               </Alert>
 
-              {/* Buyer Warning - Protect Seller */}
-              <Alert className="border-amber-500 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800">
-                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                <AlertTitle className="text-amber-900 dark:text-amber-100 font-semibold mb-1">
-                  ⚠️ Lưu ý quan trọng cho người mua
-                </AlertTitle>
-                <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm space-y-1">
-                  <p className="font-medium">
-                    Vui lòng chỉ đặt hàng khi bạn thực sự có nhu cầu mua sản
-                    phẩm.
-                  </p>
-                  <ul className="list-disc list-inside space-y-1 ml-2">
-                    <li>
-                      Không spam tin nhắn hoặc đặt hàng giả để tội người bán
-                    </li>
-                    <li>Hãy tôn trọng thời gian và công sức của người bán</li>
-                    <li>
-                      Đặt hàng nghiêm túc giúp tạo môi trường mua bán lành mạnh
-                    </li>
-                  </ul>
-                </AlertDescription>
-              </Alert>
-
               {/* Shipping Address */}
               <Card className="border-2 shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent border-b">

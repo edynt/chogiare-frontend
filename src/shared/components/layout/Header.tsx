@@ -35,9 +35,10 @@ import {
   X,
   Wallet,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useCartStore } from '@/stores/cartStore'
+import { useChatStore } from '@/stores/chatStore'
 import { APP_NAME } from '@/constants/app.constants'
 import {
   useNotifications,
@@ -50,6 +51,7 @@ import { useUserLogout } from '@user/hooks/use-user-auth'
 export function Header() {
   const { isAuthenticated, user } = useAuthStore()
   const { totalItems } = useCartStore()
+  const { totalUnreadCount: chatUnreadCount } = useChatStore()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -77,6 +79,13 @@ export function Header() {
   const markAllAsReadMutation = useMarkAllNotificationsAsRead()
 
   const notifications = notificationsData?.items || []
+
+  // Update browser tab title with total unread count (chat + notifications)
+  const totalBadgeCount = chatUnreadCount + unreadCount
+  useEffect(() => {
+    const baseTitle = document.title.replace(/^\(\d+\)\s*/, '')
+    document.title = totalBadgeCount > 0 ? `(${totalBadgeCount}) ${baseTitle}` : baseTitle
+  }, [totalBadgeCount])
 
   const handleNotificationClick = (notification: { id: string; isRead: boolean; actionUrl?: string }) => {
     if (!notification.isRead) {
@@ -166,9 +175,17 @@ export function Header() {
                 variant="ghost"
                 size="icon"
                 aria-label="Chat"
-                className="hover:scale-110 hover:bg-blue-100 dark:hover:bg-blue-900 transition-all duration-200"
+                className="relative hover:scale-110 hover:bg-blue-100 dark:hover:bg-blue-900 transition-all duration-200"
               >
                 <MessageCircle className="h-4 w-4" />
+                {chatUnreadCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-bold animate-pulse"
+                  >
+                    {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
+                  </Badge>
+                )}
               </Button>
             </Link>
 
@@ -581,10 +598,18 @@ export function Header() {
                   <Link
                     to="/chat"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors relative"
                   >
                     <MessageCircle className="h-5 w-5" />
                     <span>Tin nhắn</span>
+                    {chatUnreadCount > 0 && (
+                      <Badge
+                        variant="destructive"
+                        className="ml-auto h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-bold"
+                      >
+                        {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
+                      </Badge>
+                    )}
                   </Link>
 
                   <Link

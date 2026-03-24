@@ -35,7 +35,7 @@ export default function OrderConfirmationPage() {
   const isError = orderQuery.isError
   const error = orderQuery.error as Error | null
 
-  if (isLoading) {
+  if (isLoading && !order) {
     return (
       <div className="min-h-screen bg-background">
         <Header />

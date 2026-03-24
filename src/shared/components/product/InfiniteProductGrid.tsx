@@ -159,18 +159,18 @@ export function InfiniteProductGrid({
           </div>
         )}
         {(reachedMaxProducts || !hasNextPage) && products.length > 0 && (
-          viewAllLink ? (
+          viewAllLink && products.length >= 10 ? (
             <Link
               to={viewAllLink}
               className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
             >
               Xem tất cả sản phẩm <ArrowRight className="h-4 w-4" />
             </Link>
-          ) : (
+          ) : !viewAllLink ? (
             <p className="text-sm text-muted-foreground">
               Đã hiển thị tất cả sản phẩm
             </p>
-          )
+          ) : null
         )}
       </div>
     </div>

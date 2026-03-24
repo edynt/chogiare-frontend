@@ -54,18 +54,26 @@ export const useReview = (id: string) => {
   })
 }
 
+export const useReviewEligibility = (productId: string, enabled = true) => {
+  return useQuery({
+    queryKey: ['reviews', 'eligibility', productId],
+    queryFn: () => reviewsApi.checkEligibility(productId),
+    enabled: !!productId && enabled,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
 export const useCreateReview = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: reviewsApi.createReview,
     onSuccess: (_, variables) => {
+      // Invalidate all review queries (includes eligibility, product reviews, etc.)
       queryClient.invalidateQueries({ queryKey: ['reviews'] })
+      // Invalidate product query to refresh reviewCount
       queryClient.invalidateQueries({
-        queryKey: ['reviews', 'product', variables.productId],
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['products', variables.productId],
+        queryKey: ['products'],
       })
     },
   })

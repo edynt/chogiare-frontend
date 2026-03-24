@@ -4,13 +4,13 @@ type ToasterProps = React.ComponentProps<typeof Sonner>
 
 /**
  * App-wide toast notification component.
- * Position: top-center for maximum visibility.
+ * Position: top-right to avoid blocking content.
  * Uses richColors for auto success/error/warning styling.
  */
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
-      position="top-center"
+      position="top-right"
       richColors
       expand
       closeButton

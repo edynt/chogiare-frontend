@@ -3,6 +3,7 @@ import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
+  keepPreviousData,
 } from '@tanstack/react-query'
 import { productsApi, getCategories } from '@user/api/products'
 import { queryKeys } from '@/constants/queryKeys'
@@ -14,6 +15,7 @@ export const useProducts = (filters: SearchFilters = {}) => {
     queryKey: ['products', filters],
     queryFn: () => productsApi.getProducts(filters),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    placeholderData: keepPreviousData,
   })
 }
 
@@ -27,6 +29,7 @@ export const useBuyerProducts = (filters: SearchFilters = {}) => {
     queryKey: ['products', 'buyer', buyerFilters],
     queryFn: () => productsApi.getProducts(buyerFilters),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    placeholderData: keepPreviousData,
   })
 }
 
@@ -107,6 +110,7 @@ export const useProduct = (id: string) => {
     queryKey: ['product', id],
     queryFn: () => productsApi.getProduct(id),
     enabled: !!id,
+    placeholderData: keepPreviousData,
   })
 }
 
@@ -201,6 +205,7 @@ export const useSellerProducts = (
     queryKey: ['seller', 'products', filters],
     queryFn: () => sellerApi.getMyProducts(filters),
     staleTime: 2 * 60 * 1000, // 2 minutes
+    placeholderData: keepPreviousData,
   })
 }
 
@@ -223,6 +228,16 @@ export const useMyProducts = (
     queryKey: ['products', 'my', filters],
     queryFn: () => sellerApi.getMyProducts(filters),
     staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+// Price history hook
+export const usePriceHistory = (productId: string, days = 90) => {
+  return useQuery({
+    queryKey: queryKeys.products.priceHistory(productId, days),
+    queryFn: () => productsApi.getPriceHistory(productId, days),
+    enabled: !!productId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
 

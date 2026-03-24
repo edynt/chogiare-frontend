@@ -34,6 +34,12 @@ export interface ReviewStats {
   verifiedReviews: number
 }
 
+export interface ReviewEligibility {
+  canReview: boolean
+  reason?: 'no_purchase' | 'already_reviewed'
+  orderId?: number
+}
+
 export interface CreateReviewRequest {
   productId: number
   orderId?: number
@@ -180,6 +186,13 @@ export const reviewsApi = {
 
   deleteReview: async (id: string): Promise<void> => {
     await apiClient.delete(`/reviews/${id}`)
+  },
+
+  checkEligibility: async (productId: string): Promise<ReviewEligibility> => {
+    const response = await apiClient.get<ApiResponse<ReviewEligibility>>(
+      `/reviews/eligibility/${productId}`
+    )
+    return response.data.data
   },
 
   // Statistics

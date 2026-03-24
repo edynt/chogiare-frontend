@@ -111,8 +111,8 @@ export function ProductGridWithPagination({
         />
       )}
 
-      {/* Loading State */}
-      {isLoading && (
+      {/* Loading State - only show full spinner on initial load */}
+      {isLoading && products.length === 0 && (
         <div className="flex items-center justify-center py-12">
           <LoadingSpinner size="lg" />
         </div>
@@ -121,8 +121,8 @@ export function ProductGridWithPagination({
       {/* Empty State */}
       {!isLoading && products.length === 0 && <EmptyProducts />}
 
-      {/* Products Grid */}
-      {!isLoading && products.length > 0 && (
+      {/* Products Grid - keep visible during background refetch */}
+      {products.length > 0 && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product: Product) => (
@@ -169,7 +169,8 @@ export function SimpleProductGrid({
     )
   }
 
-  if (isLoading) {
+  // Only show spinner on initial load when no products cached
+  if (isLoading && products.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
         <LoadingSpinner size="lg" />
@@ -177,7 +178,7 @@ export function SimpleProductGrid({
     )
   }
 
-  if (products.length === 0) {
+  if (!isLoading && products.length === 0) {
     return <EmptyProducts />
   }
 

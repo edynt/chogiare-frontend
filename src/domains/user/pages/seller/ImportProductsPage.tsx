@@ -58,6 +58,29 @@ interface ParsedProduct {
   returnPolicy?: string
 }
 
+// Vietnamese ↔ English column mapping for import/export
+const viToEnMap: Record<string, string> = {
+  'Tên sản phẩm': 'title',
+  'Mô tả': 'description',
+  'Giá bán': 'price',
+  'Giá gốc': 'originalPrice',
+  'Giá vốn': 'costPrice',
+  'Giá bán lẻ': 'sellingPrice',
+  'Số lượng': 'stock',
+  'Tồn kho tối thiểu': 'minStock',
+  'Tồn kho tối đa': 'maxStock',
+  'Mã danh mục': 'categoryId',
+  'Tình trạng': 'condition',
+  'Địa điểm': 'location',
+  'Mã SKU': 'sku',
+  'Mã vạch': 'barcode',
+  'Từ khóa': 'tags',
+  'Nhãn': 'badges',
+  'Hình ảnh': 'images',
+  'Bảo hành': 'warranty',
+  'Chính sách đổi trả': 'returnPolicy',
+}
+
 export default function ImportProductsPage() {
   const navigate = useNavigate()
   const { notify } = useNotification()
@@ -82,43 +105,58 @@ export default function ImportProductsPage() {
           const data = e.target?.result
           const workbook = XLSX.read(data, { type: 'binary' })
 
-          // Get first sheet
-          const firstSheetName = workbook.SheetNames[0]
-          const worksheet = workbook.Sheets[firstSheetName]
+          // Find the data sheet — skip instruction sheets, prefer "Sản phẩm"
+          let worksheet = null
+          for (const name of workbook.SheetNames) {
+            if (name === 'Sản phẩm' || name === 'Products') {
+              worksheet = workbook.Sheets[name]
+              break
+            }
+          }
+          // Fallback to first sheet
+          if (!worksheet) {
+            worksheet = workbook.Sheets[workbook.SheetNames[0]]
+          }
 
-          // Convert to JSON
-          const jsonData = XLSX.utils.sheet_to_json(worksheet) as Record<
-            string,
-            unknown
-          >[]
+          // Convert to JSON (raw column headers)
+          const rawData = XLSX.utils.sheet_to_json(worksheet) as Record<string, unknown>[]
+
+          // Map Vietnamese headers to English field names
+          const mapRow = (row: Record<string, unknown>): Record<string, unknown> => {
+            const mapped: Record<string, unknown> = {}
+            for (const [key, value] of Object.entries(row)) {
+              const englishKey = viToEnMap[key] || key
+              mapped[englishKey] = value
+            }
+            return mapped
+          }
+
+          const jsonData = rawData.map(mapRow)
 
           const products: ParsedProduct[] = []
           const parseErrors: string[] = []
 
+          const parseNumber = (value: unknown): number | undefined => {
+            if (value === undefined || value === null || value === '') return undefined
+            if (typeof value === 'number') return value
+            const parsed = parseFloat(String(value))
+            return isNaN(parsed) ? undefined : parsed
+          }
+
+          const parseInteger = (value: unknown, defaultVal?: number): number | undefined => {
+            if (value === undefined || value === null || value === '') return defaultVal
+            if (typeof value === 'number') return Math.floor(value)
+            const parsed = parseInt(String(value), 10)
+            return isNaN(parsed) ? defaultVal : parsed
+          }
+
+          const parseStringArray = (value: unknown): string[] => {
+            if (!value) return []
+            return String(value).split(',').map((item: string) => item.trim()).filter(Boolean)
+          }
+
           jsonData.forEach((row, index) => {
             try {
-              const parseNumber = (value: unknown): number | undefined => {
-                if (value === undefined || value === null || value === '') return undefined
-                if (typeof value === 'number') return value
-                const parsed = parseFloat(String(value))
-                return isNaN(parsed) ? undefined : parsed
-              }
-
-              const parseInteger = (value: unknown, defaultVal?: number): number | undefined => {
-                if (value === undefined || value === null || value === '') return defaultVal
-                if (typeof value === 'number') return Math.floor(value)
-                const parsed = parseInt(String(value), 10)
-                return isNaN(parsed) ? defaultVal : parsed
-              }
-
-              const parseStringArray = (value: unknown): string[] => {
-                if (!value) return []
-                return String(value)
-                  .split(',')
-                  .map((item: string) => item.trim())
-                  .filter(Boolean)
-              }
-
               const product: ParsedProduct = {
                 title: (row.title as string) || (row.name as string) || '',
                 description: (row.description as string) || '',
@@ -132,11 +170,7 @@ export default function ImportProductsPage() {
                 categoryId: String(row.categoryId || '1'),
                 images: parseStringArray(row.images),
                 condition: ((row.condition as string) || 'new') as
-                  | 'new'
-                  | 'like_new'
-                  | 'good'
-                  | 'fair'
-                  | 'poor',
+                  | 'new' | 'like_new' | 'good' | 'fair' | 'poor',
                 tags: parseStringArray(row.tags),
                 badges: parseStringArray(row.badges),
                 location: (row.location as string) || 'Hà Nội',
@@ -146,19 +180,14 @@ export default function ImportProductsPage() {
                 returnPolicy: row.returnPolicy ? String(row.returnPolicy) : undefined,
               }
 
-              // Validate required fields
               if (!product.title || product.price <= 0) {
-                parseErrors.push(
-                  `Dòng ${index + 2}: Thiếu tên sản phẩm hoặc giá không hợp lệ`
-                )
+                parseErrors.push(`Dòng ${index + 2}: Thiếu tên sản phẩm hoặc giá không hợp lệ`)
                 return
               }
 
               products.push(product)
             } catch (error) {
-              parseErrors.push(
-                `Dòng ${index + 2}: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`
-              )
+              parseErrors.push(`Dòng ${index + 2}: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`)
             }
           })
 
@@ -167,21 +196,13 @@ export default function ImportProductsPage() {
           }
 
           if (products.length === 0) {
-            reject(
-              new Error(
-                'Không tìm thấy sản phẩm nào trong file. Vui lòng kiểm tra lại file Excel.'
-              )
-            )
+            reject(new Error('Không tìm thấy sản phẩm nào trong file. Vui lòng kiểm tra lại file Excel.'))
             return
           }
 
           resolve(products)
         } catch (error) {
-          reject(
-            new Error(
-              `Lỗi đọc file Excel: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`
-            )
-          )
+          reject(new Error(`Lỗi đọc file Excel: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`))
         }
       }
 
@@ -265,38 +286,33 @@ export default function ImportProductsPage() {
         const product = parsedProducts[i]
 
         try {
-          // Convert to Product type with all supported fields
-          const productData = {
+          // Only send fields the backend CreateProductDto accepts
+          const productData: Record<string, unknown> = {
             title: product.title,
-            description: product.description,
             price: product.price,
-            originalPrice: product.originalPrice,
-            costPrice: product.costPrice,
-            sellingPrice: product.sellingPrice,
             stock: product.stock,
-            minStock: product.minStock,
-            maxStock: product.maxStock,
             categoryId:
               typeof product.categoryId === 'string'
                 ? parseInt(product.categoryId, 10)
                 : product.categoryId,
-            images:
-              product.images.length > 0 ? product.images : [PLACEHOLDER_IMAGE],
-            condition: product.condition,
-            tags: product.tags,
-            badges: product.badges,
-            location: product.location,
-            sku: product.sku,
-            barcode: product.barcode,
-            warranty: product.warranty,
-            returnPolicy: product.returnPolicy,
-            status: 'active' as const,
-            sellerId: undefined, // Will be set by backend
-            rating: 0,
-            reviewCount: 0,
-            viewCount: 0,
-            isFeatured: false,
-            isPromoted: false,
+            condition: product.condition || 'new',
+            status: 'active',
+          }
+          // Optional fields — only include if defined
+          if (product.description) productData.description = product.description
+          if (product.originalPrice) productData.originalPrice = product.originalPrice
+          if (product.costPrice) productData.costPrice = product.costPrice
+          if (product.sellingPrice) productData.sellingPrice = product.sellingPrice
+          if (product.minStock) productData.minStock = product.minStock
+          if (product.maxStock) productData.maxStock = product.maxStock
+          if (product.location) productData.location = product.location
+          if (product.sku) productData.sku = product.sku
+          if (product.barcode) productData.barcode = product.barcode
+          if (product.warranty) productData.warranty = product.warranty
+          if (product.returnPolicy) productData.returnPolicy = product.returnPolicy
+          if (product.tags && product.tags.length > 0) productData.tags = product.tags
+          if (product.images && product.images.length > 0) {
+            productData.images = product.images
           }
 
           await createProduct.mutateAsync(productData)
@@ -349,142 +365,59 @@ export default function ImportProductsPage() {
   }
 
   const downloadTemplate = () => {
-    // Create template data with all supported fields
+    // Single sheet with Vietnamese headers — condition defaults to 'new', badges removed
     const templateData = [
       {
-        title: 'iPhone 14 Pro Max 256GB',
-        description: 'Điện thoại iPhone 14 Pro Max 256GB, màu Deep Purple, còn bảo hành chính hãng 10 tháng',
-        price: 25000000,
-        originalPrice: 28000000,
-        costPrice: 22000000,
-        sellingPrice: 25000000,
-        stock: 10,
-        minStock: 2,
-        maxStock: 50,
-        categoryId: '1',
-        condition: 'like_new',
-        location: 'Hà Nội',
-        sku: 'IP14PM-256-PUR',
-        barcode: '1234567890123',
-        tags: 'smartphone,iphone,apple',
-        badges: 'Chính hãng,Bảo hành',
-        images: 'https://example.com/iphone14-1.jpg,https://example.com/iphone14-2.jpg',
-        warranty: 'Bảo hành 10 tháng chính hãng Apple',
-        returnPolicy: 'Đổi trả trong 7 ngày nếu lỗi từ nhà sản xuất',
+        'Tên sản phẩm': 'iPhone 14 Pro Max 256GB',
+        'Mô tả': 'Điện thoại iPhone 14 Pro Max 256GB, màu Deep Purple',
+        'Giá bán': 25000000,
+        'Giá gốc': 28000000,
+        'Giá vốn': 22000000,
+        'Giá bán lẻ': 25000000,
+        'Số lượng': 10,
+        'Tồn kho tối thiểu': 2,
+        'Tồn kho tối đa': 50,
+        'Mã danh mục': '1',
+        'Địa điểm': 'Hà Nội',
+        'Mã SKU': 'IP14PM-256-PUR',
+        'Mã vạch': '1234567890123',
+        'Từ khóa': 'smartphone,iphone,apple',
+        'Hình ảnh': '',
+        'Bảo hành': 'Bảo hành 10 tháng chính hãng Apple',
+        'Chính sách đổi trả': 'Đổi trả trong 7 ngày nếu lỗi',
       },
       {
-        title: 'Samsung Galaxy S23 Ultra 512GB',
-        description: 'Điện thoại Samsung Galaxy S23 Ultra 512GB, màu Phantom Black, fullbox',
-        price: 22000000,
-        originalPrice: 25000000,
-        costPrice: 19000000,
-        sellingPrice: 22000000,
-        stock: 8,
-        minStock: 1,
-        maxStock: 30,
-        categoryId: '1',
-        condition: 'new',
-        location: 'TP.HCM',
-        sku: 'SS-S23U-512-BLK',
-        barcode: '9876543210987',
-        tags: 'smartphone,samsung,android',
-        badges: 'Mới 100%,Fullbox',
-        images: 'https://example.com/s23ultra-1.jpg',
-        warranty: 'Bảo hành 12 tháng chính hãng',
-        returnPolicy: 'Đổi trả trong 30 ngày',
-      },
-      {
-        title: 'MacBook Pro M3 14 inch',
-        description: 'MacBook Pro M3 14 inch, 16GB RAM, 512GB SSD, màu Space Gray',
-        price: 45000000,
-        originalPrice: 49000000,
-        costPrice: 40000000,
-        sellingPrice: 45000000,
-        stock: 5,
-        minStock: 1,
-        maxStock: 20,
-        categoryId: '2',
-        condition: 'new',
-        location: 'Đà Nẵng',
-        sku: 'MBP-M3-14-512',
-        barcode: '5555666677778',
-        tags: 'laptop,macbook,apple',
-        badges: 'Chính hãng,Freeship',
-        images: 'https://example.com/macbook-1.jpg,https://example.com/macbook-2.jpg',
-        warranty: 'Bảo hành 12 tháng Apple Care',
-        returnPolicy: 'Đổi trả trong 15 ngày',
+        'Tên sản phẩm': 'Samsung Galaxy S23 Ultra 512GB',
+        'Mô tả': 'Samsung Galaxy S23 Ultra 512GB, Phantom Black, fullbox',
+        'Giá bán': 22000000,
+        'Giá gốc': 25000000,
+        'Giá vốn': 19000000,
+        'Giá bán lẻ': 22000000,
+        'Số lượng': 8,
+        'Tồn kho tối thiểu': 1,
+        'Tồn kho tối đa': 30,
+        'Mã danh mục': '1',
+        'Địa điểm': 'TP.HCM',
+        'Mã SKU': 'SS-S23U-512-BLK',
+        'Mã vạch': '9876543210987',
+        'Từ khóa': 'smartphone,samsung,android',
+        'Hình ảnh': '',
+        'Bảo hành': 'Bảo hành 12 tháng chính hãng',
+        'Chính sách đổi trả': 'Đổi trả trong 30 ngày',
       },
     ]
 
-    // Create workbook with instructions sheet
     const wb = XLSX.utils.book_new()
-
-    // Instructions sheet
-    const instructionsData = [
-      ['HƯỚNG DẪN IMPORT SẢN PHẨM'],
-      [''],
-      ['CÁC TRƯỜNG BẮT BUỘC:'],
-      ['- title: Tên sản phẩm (bắt buộc)'],
-      ['- price: Giá bán (bắt buộc, số nguyên)'],
-      ['- stock: Số lượng tồn kho (bắt buộc, số nguyên)'],
-      ['- categoryId: ID danh mục (bắt buộc)'],
-      ['- condition: Tình trạng sản phẩm (bắt buộc: new, like_new, good, fair, poor)'],
-      [''],
-      ['CÁC TRƯỜNG TÙY CHỌN:'],
-      ['- description: Mô tả sản phẩm'],
-      ['- originalPrice: Giá gốc (để hiển thị giảm giá)'],
-      ['- costPrice: Giá vốn'],
-      ['- sellingPrice: Giá bán (có thể khác với price)'],
-      ['- minStock: Số lượng tối thiểu cảnh báo hết hàng'],
-      ['- maxStock: Số lượng tối đa có thể nhập'],
-      ['- location: Địa điểm (mặc định: Hà Nội)'],
-      ['- sku: Mã sản phẩm (Stock Keeping Unit)'],
-      ['- barcode: Mã vạch sản phẩm'],
-      ['- tags: Thẻ từ khóa (phân cách bằng dấu phẩy)'],
-      ['- badges: Nhãn sản phẩm (phân cách bằng dấu phẩy)'],
-      ['- images: URL hình ảnh (phân cách bằng dấu phẩy)'],
-      ['- warranty: Thông tin bảo hành'],
-      ['- returnPolicy: Chính sách đổi trả'],
-      [''],
-      ['GIÁ TRỊ CONDITION:'],
-      ['- new: Mới 100%'],
-      ['- like_new: Như mới (99%)'],
-      ['- good: Tốt (90-95%)'],
-      ['- fair: Khá (80-90%)'],
-      ['- poor: Trung bình (<80%)'],
-    ]
-    const wsInstructions = XLSX.utils.aoa_to_sheet(instructionsData)
-    XLSX.utils.book_append_sheet(wb, wsInstructions, 'Hướng dẫn')
-
-    // Products template sheet
     const ws = XLSX.utils.json_to_sheet(templateData)
 
-    // Set column widths for better readability
     ws['!cols'] = [
-      { wch: 35 }, // title
-      { wch: 60 }, // description
-      { wch: 12 }, // price
-      { wch: 12 }, // originalPrice
-      { wch: 12 }, // costPrice
-      { wch: 12 }, // sellingPrice
-      { wch: 8 },  // stock
-      { wch: 8 },  // minStock
-      { wch: 8 },  // maxStock
-      { wch: 10 }, // categoryId
-      { wch: 10 }, // condition
-      { wch: 15 }, // location
-      { wch: 18 }, // sku
-      { wch: 15 }, // barcode
-      { wch: 25 }, // tags
-      { wch: 20 }, // badges
-      { wch: 50 }, // images
-      { wch: 35 }, // warranty
-      { wch: 35 }, // returnPolicy
+      { wch: 35 }, { wch: 50 }, { wch: 12 }, { wch: 12 }, { wch: 12 },
+      { wch: 12 }, { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 12 },
+      { wch: 15 }, { wch: 18 }, { wch: 15 }, { wch: 25 },
+      { wch: 35 }, { wch: 35 },
     ]
 
     XLSX.utils.book_append_sheet(wb, ws, 'Sản phẩm')
-
-    // Download file
     XLSX.writeFile(wb, 'mau_import_san_pham.xlsx')
   }
 
@@ -555,10 +488,7 @@ export default function ImportProductsPage() {
                           Chỉ hỗ trợ file Excel (.xlsx, .xls) - tối đa 10MB
                         </p>
                       </div>
-                      <Button
-                        variant="outline"
-                        onClick={e => e.stopPropagation()}
-                      >
+                      <Button variant="outline" type="button">
                         Chọn file
                       </Button>
                     </div>
