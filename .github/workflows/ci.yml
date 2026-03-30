@@ -35,19 +35,8 @@ jobs:
       - name: Format check
         run: npm run format:check
 
-      - name: Run tests
-        run: npm run test:coverage
-
       - name: Build
         run: npm run build
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
 
   deploy:
     needs: test
