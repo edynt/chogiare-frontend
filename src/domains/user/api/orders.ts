@@ -33,6 +33,7 @@ export interface Order {
   shippingAddress: string
   billingAddress: string
   notes?: string
+  sellerNotes?: string
   sellerName?: string
   sellerLogo?: string
   buyerEmail?: string

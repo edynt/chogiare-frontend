@@ -69,7 +69,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
   const navigate = useNavigate()
   const { user } = useAuthStore()
   const [newMessage, setNewMessage] = useState('')
-  const [_isTyping, _setIsTyping] = useState(false)
+  const [isTyping, _setIsTyping] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)

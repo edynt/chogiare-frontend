@@ -227,7 +227,7 @@ export function ProductDetails({ productId, className }: ProductDetailsProps) {
           ? 'https://schema.org/InStock'
           : 'https://schema.org/OutOfStock',
       itemCondition:
-        product.condition === 1
+        product.condition === 'new'
           ? 'https://schema.org/NewCondition'
           : 'https://schema.org/UsedCondition',
       seller: {

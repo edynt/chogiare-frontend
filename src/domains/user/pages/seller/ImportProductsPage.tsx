@@ -314,7 +314,7 @@ export default function ImportProductsPage() {
             productData.images = product.images
           }
 
-          await createProduct.mutateAsync(productData)
+          await createProduct.mutateAsync(productData as unknown as Parameters<typeof createProduct.mutateAsync>[0])
           success++
           setSuccessCount(success)
         } catch (error) {

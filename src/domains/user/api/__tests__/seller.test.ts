@@ -21,7 +21,7 @@ vi.mock('@shared/api/axios', () => {
 })
 
 describe('Seller API', () => {
-  const mockApiClient = axios.apiClient as Record<string, ReturnType<typeof vi.fn>>
+  const mockApiClient = axios.apiClient as unknown as Record<string, ReturnType<typeof vi.fn>>
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -78,16 +78,17 @@ describe('Seller API', () => {
   describe('Dashboard Stats', () => {
     it('should call /seller/dashboard/stats endpoint', async () => {
       const mockData: SellerDashboardStats = {
-        totalProducts: 10,
+        totalProducts: { value: 10, change: 0, changeType: 'positive', subtitle: '' },
+        revenue: { value: 1000, change: 0, changeType: 'positive', subtitle: '' },
+        orders: { value: 5, change: 0, changeType: 'positive', subtitle: '' },
+        views: { value: 0, change: 0, changeType: 'positive', subtitle: '' },
         activeProducts: 8,
         soldProducts: 2,
-        totalRevenue: 1000,
         totalOrders: 5,
         pendingOrders: 1,
         completedOrders: 4,
         totalCustomers: 20,
         lowStockProducts: 2,
-        outOfStockProducts: 1,
       }
 
       mockApiClient.get.mockResolvedValueOnce({

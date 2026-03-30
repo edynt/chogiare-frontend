@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { demoData } from './data'
+import type { Product, Order } from '@/types'
 
 export const handlers = [
   // Auth endpoints
@@ -352,7 +353,7 @@ export const handlers = [
       updatedAt: new Date().toISOString(),
     }
 
-    demoData.products.push(newProduct)
+    demoData.products.push(newProduct as unknown as Product)
 
     return HttpResponse.json({
       success: true,
@@ -494,7 +495,7 @@ export const handlers = [
 
     // Filter orders by storeId
     const storeOrders = demoData.orders.filter(
-      order => (order as Record<string, unknown>).storeId === params.storeId
+      order => (order as unknown as Record<string, unknown>).storeId === params.storeId
     )
 
     return HttpResponse.json({
@@ -543,7 +544,7 @@ export const handlers = [
       updatedAt: new Date().toISOString(),
     }
 
-    demoData.orders.push(newOrder)
+    demoData.orders.push(newOrder as unknown as Order)
 
     return HttpResponse.json({
       success: true,
@@ -555,8 +556,8 @@ export const handlers = [
     const data = (await request.json()) as Record<string, unknown>
     const order = demoData.orders.find(o => o.id === params.id)
     if (order) {
-      ;(order as Record<string, unknown>).status = data.status
-      ;(order as Record<string, unknown>).updatedAt = new Date().toISOString()
+      ;(order as unknown as Record<string, unknown>).status = data.status
+      ;(order as unknown as Record<string, unknown>).updatedAt = new Date().toISOString()
     }
     return HttpResponse.json({
       success: true,
@@ -572,10 +573,10 @@ export const handlers = [
     const data = (await request.json()) as Record<string, unknown>
     const order = demoData.orders.find(o => o.id === params.id)
     if (order) {
-      ;(order as Record<string, unknown>).status = 'confirmed'
-      ;(order as Record<string, unknown>).updatedAt = new Date().toISOString()
+      ;(order as unknown as Record<string, unknown>).status = 'confirmed'
+      ;(order as unknown as Record<string, unknown>).updatedAt = new Date().toISOString()
       if (data.sellerNotes) {
-        ;(order as Record<string, unknown>).sellerNotes = data.sellerNotes
+        ;(order as unknown as Record<string, unknown>).sellerNotes = data.sellerNotes
       }
     }
     return HttpResponse.json({
