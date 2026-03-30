@@ -162,8 +162,9 @@ export default function EditProductPage() {
 
       // Convert existing images to ImageItem format for unified handling
       const existingImages: ImageItem[] = Array.isArray(product.images)
-        ? product.images.map((img: any, index: number) => {
-            const url = typeof img === 'string' ? img : img.imageUrl || img.url
+        ? product.images.map((img: unknown, index: number) => {
+            const imgObj = img as { imageUrl?: string; url?: string }
+            const url = typeof img === 'string' ? img : imgObj.imageUrl || imgObj.url || ''
             return {
               id: `existing-${index}-${Date.now()}`,
               url,
@@ -197,7 +198,6 @@ export default function EditProductPage() {
 
     execute(async () => {
       // Separate existing images from new uploads while preserving order
-      const existingImages = images.filter(img => img.isExisting)
       const newImages = images.filter(img => !img.isExisting && img.file)
 
       // Upload new images if any
@@ -248,7 +248,7 @@ export default function EditProductPage() {
           selectedBadges.length > 0
             ? (selectedBadges as ProductBadge[])
             : undefined,
-        images: allImageUrls as any,
+        images: allImageUrls as unknown as Product['images'],
         warranty: isWarranty && warrantyInfo ? warrantyInfo : null,
         returnPolicy: isReturnable && returnPolicy ? returnPolicy : null,
       }

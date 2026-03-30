@@ -93,8 +93,9 @@ export default function UserManagementPage() {
 
   // Debug: Log user status distribution
   React.useEffect(() => {
-    if (users.length) {
-      const statusCounts = users.reduce(
+    const items = usersData?.items || []
+    if (items.length) {
+      const _statusCounts = items.reduce(
         (acc, u) => {
           acc[u.status] = (acc[u.status] || 0) + 1
           return acc
@@ -102,7 +103,7 @@ export default function UserManagementPage() {
         {} as Record<string, number>
       )
     }
-  }, [users])
+  }, [usersData])
 
   const formatCurrency = (amount: number) => {
     if (amount >= 1000000000) {
@@ -117,7 +118,7 @@ export default function UserManagementPage() {
     return `${amount} VNĐ`
   }
 
-  const handleApprove = async (userId: string) => {
+  const _handleApprove = async (userId: string) => {
     try {
       await approveUserMutation.mutateAsync(userId)
       toast.success('Đã duyệt người dùng thành công')
@@ -183,7 +184,7 @@ export default function UserManagementPage() {
     }
   }
 
-  const formatDate = (dateString: string) => {
+  const _formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
       day: '2-digit',
       month: '2-digit',
@@ -191,7 +192,7 @@ export default function UserManagementPage() {
     })
   }
 
-  const formatDateTime = (dateString: string) => {
+  const _formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString('vi-VN', {
       day: '2-digit',
       month: '2-digit',

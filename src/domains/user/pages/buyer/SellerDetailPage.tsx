@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import type { SearchFilters } from '@/types'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { Header } from '@shared/components/layout/Header'
 import { Footer } from '@shared/components/layout/Footer'
@@ -75,7 +76,7 @@ export default function SellerDetailPage() {
 
   // Build filters for InfiniteProductGrid
   const productFilters = React.useMemo(() => {
-    const baseFilters: any = {
+    const baseFilters: Partial<SearchFilters> = {
       sellerId: id,
     }
 

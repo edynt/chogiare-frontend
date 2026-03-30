@@ -303,7 +303,8 @@ class ApiClient {
       // Admin uses adminRefreshToken cookie, user uses refreshToken cookie
       await axios.post(refreshEndpoint, {}, { withCredentials: true })
       // New tokens are set as cookies by the server
-    } catch (error) {
+    // eslint-disable-next-line unused-imports/no-unused-vars
+    } catch (_error) {
       throw new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại')
     }
   }

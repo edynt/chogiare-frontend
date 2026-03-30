@@ -35,7 +35,7 @@ export default function AdminDashboardPage() {
 
   const { data: dashboardStats, isLoading: statsLoading } =
     useAdminDashboardStats()
-  const { data: recentActivities = [], isLoading: activitiesLoading } =
+  const { data: _recentActivities = [], isLoading: _activitiesLoading } =
     useAdminRecentActivities(5)
   const { data: topSellers = [], isLoading: sellersLoading } =
     useAdminTopSellers(5)
@@ -108,7 +108,7 @@ export default function AdminDashboardPage() {
     ]
   }, [dashboardStats])
 
-  const getActivityIcon = (type: string) => {
+  const _getActivityIcon = (type: string) => {
     switch (type) {
       case 'user_registration':
         return Users
@@ -125,7 +125,7 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const formatTimeAgo = (time: string) => {
+  const _formatTimeAgo = (time: string) => {
     const date = new Date(time)
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
@@ -139,7 +139,7 @@ export default function AdminDashboardPage() {
     return `${diffDays} ngày trước`
   }
 
-  const systemHealth = [
+  const _systemHealth = [
     {
       name: 'API Response Time',
       value: '120ms',
@@ -162,7 +162,7 @@ export default function AdminDashboardPage() {
     { name: 'Active Users', value: '2,341', status: 'normal', color: 'yellow' },
   ]
 
-  const getStatusColor = (status: string) => {
+  const _getStatusColor = (status: string) => {
     switch (status) {
       case 'success':
         return 'text-green-600 bg-green-100'
@@ -177,7 +177,7 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const getStatusIcon = (status: string) => {
+  const _getStatusIcon = (status: string) => {
     switch (status) {
       case 'success':
         return <CheckCircle className="h-4 w-4" />
@@ -192,7 +192,7 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const getHealthColor = (color: string) => {
+  const _getHealthColor = (color: string) => {
     switch (color) {
       case 'green':
         return 'text-green-600'

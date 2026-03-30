@@ -213,7 +213,7 @@ export default function StockManagementPage() {
     }
   }
 
-  const handleStockIn = async (data: any) => {
+  const handleStockIn = async (data: Record<string, unknown>) => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
 

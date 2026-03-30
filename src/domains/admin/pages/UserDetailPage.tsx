@@ -62,7 +62,7 @@ export default function UserDetailPage() {
   const navigate = useNavigate()
 
   const { data: user, isLoading, error } = useAdminUser(id!)
-  const approveUserMutation = useApproveUser()
+  const _approveUserMutation = useApproveUser()
   const suspendUserMutation = useSuspendUser()
   const activateUserMutation = useActivateUser()
 
@@ -472,7 +472,7 @@ export default function UserDetailPage() {
       </div>
 
       {/* Seller-specific sections */}
-      {isSeller && (user as any).stores && (user as any).stores.length > 0 && (
+      {isSeller && (user as Record<string, unknown>).stores && ((user as Record<string, unknown>).stores as unknown[]).length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -482,7 +482,7 @@ export default function UserDetailPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {((user as any).stores as Array<{ id: string; name: string; slug: string; description?: string; status: string }>).map(store => (
+              {((user as Record<string, unknown>).stores as Array<{ id: string; name: string; slug: string; description?: string; status: string }>).map(store => (
                 <div
                   key={store.id}
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"

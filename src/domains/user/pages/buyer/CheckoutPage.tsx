@@ -41,7 +41,6 @@ import {
 import {
   Alert,
   AlertDescription,
-  AlertTitle,
 } from '@shared/components/ui/alert'
 import { formatCurrency, PLACEHOLDER_IMAGE } from '@/lib/utils'
 

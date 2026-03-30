@@ -34,7 +34,6 @@ import {
 import { useNotification } from '@shared/components/notification-provider'
 import * as XLSX from 'xlsx'
 import { useCreateProduct } from '@/hooks/useProducts'
-import { PLACEHOLDER_IMAGE } from '@/lib/utils'
 
 interface ParsedProduct {
   title: string

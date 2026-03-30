@@ -46,7 +46,7 @@ interface ChatActions {
 
 type ChatStore = ChatState & ChatActions
 
-export const useChatStore = create<ChatStore>((set, get) => ({
+export const useChatStore = create<ChatStore>((set, _get) => ({
   // Initial State
   isOpen: false,
   activeConversationId: null,

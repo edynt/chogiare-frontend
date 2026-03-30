@@ -36,13 +36,11 @@ import {
   Send,
   HelpCircle,
   Loader2,
-  Eye,
   User,
 } from 'lucide-react'
 import {
   supportTicketApi,
   type SupportTicket,
-  type SupportTicketDetail,
 } from '@/domains/user/api/support-tickets'
 
 // Enum mappings matching backend constants

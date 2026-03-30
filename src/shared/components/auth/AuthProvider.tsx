@@ -9,7 +9,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const location = useLocation()
+  const _location = useLocation()
   const { isAuthenticated, setUser, setLoading, setError } = useAuthStore()
   const { data: profile, error, isLoading } = useProfile()
   const errorHandled = useRef(false)

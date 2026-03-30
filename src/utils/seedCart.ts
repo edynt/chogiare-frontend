@@ -36,7 +36,7 @@ export function seedFakeCartData(products: Product[]) {
   const maxProductsPerSeller = 3
   const maxSellers = 4 // Limit to 4 different sellers
 
-  for (const [sellerId, sellerProducts] of productsBySeller.entries()) {
+  for (const [_sellerId, sellerProducts] of productsBySeller.entries()) {
     if (addedCount >= maxSellers) break
 
     // Take up to maxProductsPerSeller products from this seller

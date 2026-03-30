@@ -813,10 +813,13 @@ export const translations: Record<Language, Translation> = {
 
 export const getTranslation = (language: Language, key: string): string => {
   const keys = key.split('.')
-  let value: any = translations[language]
+  let value: unknown = translations[language]
 
   for (const k of keys) {
-    value = value?.[k]
+    value =
+      value !== null && typeof value === 'object'
+        ? (value as Record<string, unknown>)[k]
+        : undefined
   }
 
   return typeof value === 'string' ? value : key

@@ -215,7 +215,7 @@ export default function OrderDetailPage() {
     }
   }
 
-  const getPaymentMethodLabel = (method: string) => {
+  const _getPaymentMethodLabel = (method: string) => {
     switch (method) {
       case 'cod':
         return 'Thanh toán khi nhận hàng'
@@ -894,7 +894,7 @@ export default function OrderDetailPage() {
               </Card>
 
               {/* Seller Notes Card */}
-              {(order as any).sellerNotes && (
+              {order.sellerNotes && (
                 <Card className="shadow-md">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center gap-2">
@@ -907,7 +907,7 @@ export default function OrderDetailPage() {
                   <CardContent>
                     <div className="bg-muted/50 p-4 rounded-lg">
                       <p className="text-sm text-foreground leading-relaxed">
-                        {(order as any).sellerNotes}
+                        {order.sellerNotes}
                       </p>
                     </div>
                   </CardContent>

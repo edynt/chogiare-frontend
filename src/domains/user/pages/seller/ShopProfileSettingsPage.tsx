@@ -237,7 +237,7 @@ export default function ShopProfileSettingsPage() {
     }).format(price)
   }
 
-  const formatDate = (dateString: string) => {
+  const _formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
       day: '2-digit',
       month: '2-digit',

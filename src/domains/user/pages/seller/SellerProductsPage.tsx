@@ -98,7 +98,7 @@ export default function SellerProductsPage() {
     }
   }
 
-  const handleStatusChange = (productId: string, newStatus: ProductStatus) => {
+  const _handleStatusChange = (productId: string, newStatus: ProductStatus) => {
     // TODO: Implement status change functionality
     notify({
       type: 'info',
@@ -136,7 +136,7 @@ export default function SellerProductsPage() {
   }
 
   // Calculate stats with proper null checks (status is numeric: 0=draft, 1=active, 2=out_of_stock)
-  const stats = {
+  const _stats = {
     total: productsData?.total || 0,
     active: productsData?.items?.filter(p => Number(p.status) === 1).length || 0,
     draft: productsData?.items?.filter(p => Number(p.status) === 0).length || 0,

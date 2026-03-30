@@ -68,7 +68,7 @@ export const useCreateReview = () => {
 
   return useMutation({
     mutationFn: reviewsApi.createReview,
-    onSuccess: (_, variables) => {
+    onSuccess: (_, _variables) => {
       // Invalidate all review queries (includes eligibility, product reviews, etc.)
       queryClient.invalidateQueries({ queryKey: ['reviews'] })
       // Invalidate product query to refresh reviewCount

@@ -35,7 +35,7 @@ interface ProductActions {
 
 type ProductStore = ProductState & ProductActions
 
-export const useProductStore = create<ProductStore>((set, get) => ({
+export const useProductStore = create<ProductStore>((set, _get) => ({
   // State
   products: [],
   featuredProducts: [],

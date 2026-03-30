@@ -21,7 +21,7 @@ vi.mock('@shared/api/axios', () => {
 })
 
 describe('Seller API', () => {
-  const mockApiClient = axios.apiClient as any
+  const mockApiClient = axios.apiClient as Record<string, ReturnType<typeof vi.fn>>
 
   beforeEach(() => {
     vi.clearAllMocks()

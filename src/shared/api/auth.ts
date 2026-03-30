@@ -13,16 +13,20 @@ import type {
 async function withErrorHandling<T>(apiCall: () => Promise<T>): Promise<T> {
   try {
     return await apiCall()
-  } catch (error: any) {
+  } catch (error: unknown) {
     const message = parseApiError(error)
-    const customError = new Error(message) as any
+    const customError = new Error(message) as Error & { code?: string }
     // Preserve error code if available
+    const axiosErr = error as {
+      response?: { data?: { error?: { code?: string }; errorCode?: string } }
+    }
     if (
-      error?.response?.data?.error?.code ||
-      error?.response?.data?.errorCode
+      axiosErr?.response?.data?.error?.code ||
+      axiosErr?.response?.data?.errorCode
     ) {
       customError.code =
-        error.response.data.error?.code || error.response.data.errorCode
+        axiosErr.response?.data?.error?.code ||
+        axiosErr.response?.data?.errorCode
     }
     throw customError
   }

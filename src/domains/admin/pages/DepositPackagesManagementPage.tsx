@@ -137,9 +137,10 @@ export default function DepositPackagesManagementPage() {
       await createPackageMutation.mutateAsync(formData)
       toast.success('Tạo gói nạp tiền thành công')
       setIsCreateDialogOpen(false)
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } }
       toast.error(
-        error.response?.data?.message || 'Có lỗi xảy ra khi tạo gói nạp tiền'
+        err.response?.data?.message || 'Có lỗi xảy ra khi tạo gói nạp tiền'
       )
     }
   }
@@ -158,9 +159,10 @@ export default function DepositPackagesManagementPage() {
       })
       toast.success('Cập nhật gói nạp tiền thành công')
       setIsEditDialogOpen(false)
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } }
       toast.error(
-        error.response?.data?.message ||
+        err.response?.data?.message ||
           'Có lỗi xảy ra khi cập nhật gói nạp tiền'
       )
     }
@@ -173,9 +175,10 @@ export default function DepositPackagesManagementPage() {
       await deletePackageMutation.mutateAsync(deletingPackage.id)
       toast.success('Xóa gói nạp tiền thành công')
       setIsDeleteDialogOpen(false)
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } }
       toast.error(
-        error.response?.data?.message || 'Có lỗi xảy ra khi xóa gói nạp tiền'
+        err.response?.data?.message || 'Có lỗi xảy ra khi xóa gói nạp tiền'
       )
     }
   }

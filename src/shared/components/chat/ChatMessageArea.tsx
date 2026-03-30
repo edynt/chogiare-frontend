@@ -28,7 +28,7 @@ export function ChatMessageArea({ conversationId }: ChatMessageAreaProps) {
     setPendingMessage,
   } = useChatStore()
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const _messagesContainerRef = useRef<HTMLDivElement>(null)
 
   // Local state for realtime messages (optimistic updates)
   const [realtimeMessages, setRealtimeMessages] = useState<ChatMessage[]>([])

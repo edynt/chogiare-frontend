@@ -279,7 +279,13 @@ export default function PackagesManagementPage() {
   const pageSize = 10
 
   const queryParams = useMemo(() => {
-    const params: any = {
+    const params: {
+      page: number
+      pageSize: number
+      sortBy: 'displayOrder'
+      sortOrder: 'asc'
+      isActive?: boolean
+    } = {
       page,
       pageSize,
       sortBy: 'displayOrder' as const,
@@ -301,24 +307,24 @@ export default function PackagesManagementPage() {
   const updatePackageMutation = useUpdatePackage()
   const deletePackageMutation = useDeletePackage()
 
-  const packages = packagesData?.items || []
   const totalPackages = packagesData?.total || 0
   const totalPages = packagesData?.totalPages || 0
 
   const filteredPackages = useMemo(() => {
+    const packages = packagesData?.items || []
     if (!searchQuery) return packages
     return packages.filter(
       pkg =>
         pkg.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         pkg.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
-  }, [packages, searchQuery])
+  }, [packagesData, searchQuery])
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN').format(price) + '₫'
   }
 
-  const formatDate = (dateString: string) => {
+  const _formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
       day: '2-digit',
       month: '2-digit',

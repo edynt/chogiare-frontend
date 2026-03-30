@@ -85,7 +85,7 @@ export default function SupportTicketsPage() {
 
   const { data: ticketDetail } = useTicket(selectedTicket?.id || '')
   const updateStatusMutation = useUpdateTicketStatus()
-  const assignMutation = useAssignTicket()
+  const _assignMutation = useAssignTicket()
   const replyMutation = useReplyToTicket()
 
   const tickets = ticketsData?.items || []

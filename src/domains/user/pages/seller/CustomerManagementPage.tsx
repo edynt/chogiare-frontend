@@ -87,13 +87,14 @@ export default function CustomerManagementPage() {
       }
     }
 
+    const localCustomers = customersData?.items || []
     return {
-      total: customers.length,
-      active: customers.filter(c => c.status === 'active').length,
-      totalSpent: customers.reduce((sum, c) => sum + c.totalSpent, 0),
-      totalOrders: customers.reduce((sum, c) => sum + c.totalOrders, 0),
+      total: localCustomers.length,
+      active: localCustomers.filter(c => c.status === 'active').length,
+      totalSpent: localCustomers.reduce((sum, c) => sum + c.totalSpent, 0),
+      totalOrders: localCustomers.reduce((sum, c) => sum + c.totalOrders, 0),
     }
-  }, [customers, statsData])
+  }, [customersData, statsData])
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value)

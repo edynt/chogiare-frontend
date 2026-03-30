@@ -131,42 +131,48 @@ export default function StockInPage() {
     },
   ]
 
-  const mockStockInHistory: StockInRecord[] = [
-    {
-      id: '1',
-      productId: '1',
-      productName: 'iPhone 14 Pro Max 256GB',
-      quantity: 10,
-      costPrice: 22000000,
-      totalCost: 220000000,
-      supplier: 'Apple Vietnam',
-      batchNumber: 'BATCH001',
-      location: 'Kho A - Kệ 1',
-      notes: 'Nhập hàng định kỳ',
-      createdAt: '2024-01-15T10:30:00Z',
-      createdBy: 'Nguyễn Văn A',
-    },
-    {
-      id: '2',
-      productId: '2',
-      productName: 'AirPods Pro 2nd Gen',
-      quantity: 20,
-      costPrice: 4500000,
-      totalCost: 90000000,
-      supplier: 'Apple Vietnam',
-      batchNumber: 'BATCH002',
-      location: 'Kho A - Kệ 2',
-      notes: 'Nhập hàng khuyến mãi',
-      createdAt: '2024-01-14T14:20:00Z',
-      createdBy: 'Trần Thị B',
-    },
-  ]
-
   useEffect(() => {
+    const mockStockInHistory: StockInRecord[] = [
+      {
+        id: '1',
+        productId: '1',
+        productName: 'iPhone 14 Pro Max 256GB',
+        quantity: 10,
+        costPrice: 22000000,
+        totalCost: 220000000,
+        supplier: 'Apple Vietnam',
+        batchNumber: 'BATCH001',
+        location: 'Kho A - Kệ 1',
+        notes: 'Nhập hàng định kỳ',
+        createdAt: '2024-01-15T10:30:00Z',
+        createdBy: 'Nguyễn Văn A',
+      },
+      {
+        id: '2',
+        productId: '2',
+        productName: 'AirPods Pro 2nd Gen',
+        quantity: 20,
+        costPrice: 4500000,
+        totalCost: 90000000,
+        supplier: 'Apple Vietnam',
+        batchNumber: 'BATCH002',
+        location: 'Kho A - Kệ 2',
+        notes: 'Nhập hàng khuyến mãi',
+        createdAt: '2024-01-14T14:20:00Z',
+        createdBy: 'Trần Thị B',
+      },
+    ]
+
     if (productId && product) {
-      setSelectedProduct(product as any)
+      setSelectedProduct({
+        id: product.id,
+        name: product.title,
+        sku: product.sku || '',
+        currentStock: product.stock,
+        costPrice: product.costPrice || 0,
+      })
       setValue('productId', productId)
-      setValue('costPrice', (product as any).costPrice || 0)
+      setValue('costPrice', product.costPrice || 0)
     }
     setStockInHistory(mockStockInHistory)
   }, [productId, product, setValue])

@@ -346,8 +346,8 @@ export const sellerApi = {
     page?: number
     pageSize?: number
     read?: boolean
-  }): Promise<PaginatedResponse<any>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<any>>>(
+  }): Promise<PaginatedResponse<Record<string, unknown>>> => {
+    const response = await apiClient.get<ApiResponse<PaginatedResponse<Record<string, unknown>>>>(
       '/seller/notifications',
       { params }
     )

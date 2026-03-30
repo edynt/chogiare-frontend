@@ -26,27 +26,18 @@ import {
   DollarSign,
   Package,
   Database,
-  Key,
   Bell,
   AlertTriangle,
   Info,
   Edit,
-  Trash2,
-  Plus,
   Mail,
   Globe,
   HardDrive,
-  Cloud,
   Search,
   FileText,
   Download,
-  Upload,
   Image,
   Lock,
-  Eye,
-  EyeOff,
-  Copy,
-  Check,
   Server,
   Activity,
   CreditCard,
@@ -332,7 +323,7 @@ export default function SystemSettingsPage() {
     isLoading: isLoadingSettings,
     refetch: refetchSettings,
   } = useSystemSettings()
-  const { data: healthData, isLoading: isLoadingHealth } = useSystemHealth()
+  const { data: healthData, isLoading: _isLoadingHealth } = useSystemHealth()
   const updateSettingsMutation = useUpdateSettingsByCategory()
 
   // Local settings state (for editing)
@@ -463,7 +454,7 @@ export default function SystemSettingsPage() {
       toast.success('Cài đặt đã được lưu thành công!')
       // Refetch to get latest data
       refetchSettings()
-    } catch (error) {
+    } catch {
       toast.error('Lỗi khi lưu cài đặt. Vui lòng thử lại!')
     }
   }

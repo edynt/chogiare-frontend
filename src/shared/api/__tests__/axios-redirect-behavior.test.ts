@@ -380,10 +380,10 @@ describe('Axios Interceptor - Single Redirect Behavior', () => {
       window.location.pathname = '/dashboard'
 
       // Step 1: 401 error received
-      const hasError401 = true
+      const _hasError401 = true
 
       // Step 2: Attempt token refresh
-      const isRefreshing = true
+      const _isRefreshing = true
 
       // Step 3: Refresh fails
       const refreshFailed = true

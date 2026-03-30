@@ -344,7 +344,7 @@ export const handlers = [
   }),
 
   http.post('/api/products', async ({ request }) => {
-    const body = (await request.json()) as any
+    const body = (await request.json()) as Record<string, unknown>
     const newProduct = {
       id: `prod${Date.now()}`,
       ...body,
@@ -362,7 +362,7 @@ export const handlers = [
 
   http.patch('/api/products/:id', async ({ params, request }) => {
     const productId = params.id as string
-    const updates = (await request.json()) as any
+    const updates = (await request.json()) as Record<string, unknown>
 
     const productIndex = demoData.products.findIndex(p => p.id === productId)
     if (productIndex === -1) {
@@ -410,7 +410,7 @@ export const handlers = [
   }),
 
   http.post('/api/cart/items', async ({ request }) => {
-    const data = (await request.json()) as any
+    const data = (await request.json()) as Record<string, unknown>
     const newItem = {
       id: `item-${Date.now()}`,
       cartId: 'cart-1',
@@ -433,7 +433,7 @@ export const handlers = [
   }),
 
   http.patch('/api/cart/items/:itemId', async ({ params, request }) => {
-    const data = (await request.json()) as any
+    const data = (await request.json()) as Record<string, unknown>
     return HttpResponse.json({
       success: true,
       data: {
@@ -494,7 +494,7 @@ export const handlers = [
 
     // Filter orders by storeId
     const storeOrders = demoData.orders.filter(
-      order => (order as any).storeId === params.storeId
+      order => (order as Record<string, unknown>).storeId === params.storeId
     )
 
     return HttpResponse.json({
@@ -526,7 +526,7 @@ export const handlers = [
   }),
 
   http.post('/api/orders', async ({ request }) => {
-    const data = (await request.json()) as any
+    const data = (await request.json()) as Record<string, unknown>
     const newOrder = {
       id: `order-${Date.now()}`,
       ...data,
@@ -552,11 +552,11 @@ export const handlers = [
   }),
 
   http.patch('/api/orders/:id/status', async ({ params, request }) => {
-    const data = (await request.json()) as any
+    const data = (await request.json()) as Record<string, unknown>
     const order = demoData.orders.find(o => o.id === params.id)
     if (order) {
-      ;(order as any).status = data.status
-      ;(order as any).updatedAt = new Date().toISOString()
+      ;(order as Record<string, unknown>).status = data.status
+      ;(order as Record<string, unknown>).updatedAt = new Date().toISOString()
     }
     return HttpResponse.json({
       success: true,
@@ -569,13 +569,13 @@ export const handlers = [
   }),
 
   http.patch('/api/orders/:id/confirm', async ({ params, request }) => {
-    const data = (await request.json()) as any
+    const data = (await request.json()) as Record<string, unknown>
     const order = demoData.orders.find(o => o.id === params.id)
     if (order) {
-      ;(order as any).status = 'confirmed'
-      ;(order as any).updatedAt = new Date().toISOString()
+      ;(order as Record<string, unknown>).status = 'confirmed'
+      ;(order as Record<string, unknown>).updatedAt = new Date().toISOString()
       if (data.sellerNotes) {
-        ;(order as any).sellerNotes = data.sellerNotes
+        ;(order as Record<string, unknown>).sellerNotes = data.sellerNotes
       }
     }
     return HttpResponse.json({
@@ -682,7 +682,7 @@ export const handlers = [
   }),
 
   http.post('/api/reviews', async ({ request }) => {
-    const data = (await request.json()) as any
+    const data = (await request.json()) as Record<string, unknown>
     const newReview = {
       id: `review-${Date.now()}`,
       ...data,
@@ -960,7 +960,7 @@ export const handlers = [
   http.post(
     '/api/chat/conversations/:id/messages',
     async ({ params, request }) => {
-      const data = (await request.json()) as any
+      const data = (await request.json()) as Record<string, unknown>
       const newMessage = {
         id: `msg-${Date.now()}`,
         conversationId: params.id,
@@ -1235,12 +1235,11 @@ export const handlers = [
     const priority = url.searchParams.get('priority')
     const search = url.searchParams.get('search')
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let filteredProducts = [...(demoData.moderationProducts || [])] as any[]
+    let filteredProducts = [...(demoData.moderationProducts || [])] as Record<string, unknown>[]
 
     // Apply filters
     if (status) {
-      filteredProducts = filteredProducts.filter(p => p.status === (status as any))
+      filteredProducts = filteredProducts.filter(p => p.status === status)
     }
 
     if (category) {
@@ -1248,17 +1247,22 @@ export const handlers = [
     }
 
     if (priority) {
-      filteredProducts = filteredProducts.filter(p => p.priority === (priority as any))
+      filteredProducts = filteredProducts.filter(p => p.priority === priority)
     }
 
     if (search) {
       const searchLower = search.toLowerCase()
-      filteredProducts = filteredProducts.filter(
-        p =>
-          p.title.toLowerCase().includes(searchLower) ||
-          p.seller.toLowerCase().includes(searchLower) ||
-          p.description.toLowerCase().includes(searchLower)
-      )
+      filteredProducts = filteredProducts.filter(p => {
+        const title = typeof p.title === 'string' ? p.title.toLowerCase() : ''
+        const seller = typeof p.seller === 'string' ? p.seller.toLowerCase() : ''
+        const description =
+          typeof p.description === 'string' ? p.description.toLowerCase() : ''
+        return (
+          title.includes(searchLower) ||
+          seller.includes(searchLower) ||
+          description.includes(searchLower)
+        )
+      })
     }
 
     // Pagination

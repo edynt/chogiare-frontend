@@ -24,7 +24,7 @@ import { ArrowLeft } from 'lucide-react'
 import { APP_NAME } from '@/constants/app.constants'
 import { useCursorBuyerProducts, useCategories } from '@/hooks'
 import { SEOHead } from '@shared/components/seo/SEOHead'
-import type { SearchFilters, Product } from '@/types'
+import type { SearchFilters, Product, ProductCondition, ProductBadge } from '@/types'
 
 export default function ProductListPage() {
   const navigate = useNavigate()
@@ -47,7 +47,7 @@ export default function ProductListPage() {
       maxPrice: searchParams.get('maxPrice')
         ? parseInt(searchParams.get('maxPrice')!, 10)
         : undefined,
-      condition: (searchParams.get('condition') as any) || undefined,
+      condition: (searchParams.get('condition') as ProductCondition) || undefined,
       location: searchParams.get('location') || undefined,
       sortBy: searchParams.get('sortBy') || 'createdAt',
       sortOrder: (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc',
@@ -58,7 +58,7 @@ export default function ProductListPage() {
 
     const badgesParam = searchParams.get('badges')
     if (badgesParam) {
-      parsedFilters.badges = badgesParam.split(',') as any[]
+      parsedFilters.badges = badgesParam.split(',') as ProductBadge[]
     }
     if (searchParams.get('promoted') === 'true') {
       parsedFilters.promoted = true

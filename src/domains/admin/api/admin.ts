@@ -209,7 +209,7 @@ export interface AdminCategory {
   productCount: number
   isActive: boolean
   displayOrder: number
-  metadata: Record<string, any>
+  metadata: Record<string, unknown>
   createdAt: string
   updatedAt: string
   parent?: {

@@ -148,7 +148,7 @@ export default function OrderManagementPage() {
     }
   }
 
-  const getPaymentMethodIcon = (method: string) => {
+  const _getPaymentMethodIcon = (method: string) => {
     switch (method) {
       case 'credit_card':
         return <CreditCard className="h-4 w-4" />

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Avatar,
@@ -69,7 +69,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
   const navigate = useNavigate()
   const { user } = useAuthStore()
   const [newMessage, setNewMessage] = useState('')
-  const [isTyping, setIsTyping] = useState(false)
+  const [_isTyping, _setIsTyping] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -90,7 +90,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
     leaveConversation,
     markAsRead,
   } = useChatSocket({
-    onNewMessage: payload => {
+    onNewMessage: _payload => {
       // Real-time message updates are handled automatically by React Query invalidation
       // in useChatSocket, no additional action needed here
     },
@@ -98,32 +98,37 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
 
   const isLoading = conversationLoading || messagesLoading
 
-  const mapChatMessageToMessage = (msg: ChatMessage): Message => {
-    const isCurrentUser = String(msg.senderId) === String(user?.id)
-    const formatTime = (dateString: string) => {
-      const date = new Date(parseInt(dateString) || dateString)
-      return date.toLocaleTimeString('vi-VN', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    }
+  const mapChatMessageToMessage = useCallback(
+    (msg: ChatMessage): Message => {
+      const isCurrentUser = String(msg.senderId) === String(user?.id)
+      const formatTime = (dateString: string) => {
+        const date = new Date(parseInt(dateString) || dateString)
+        return date.toLocaleTimeString('vi-VN', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      }
 
-    return {
-      id: msg.id.toString(),
-      content: msg.content,
-      timestamp: formatTime(msg.createdAt),
-      senderId: msg.senderId.toString(),
-      senderName: isCurrentUser
-        ? 'Bạn'
-        : msg.sender?.fullName || `User ${msg.senderId}`,
-      senderAvatar: msg.sender?.avatarUrl || '',
-      isRead: msg.isRead,
-      type: (msg.messageType as 'text' | 'image' | 'file') || 'text',
-    }
-  }
+      return {
+        id: msg.id.toString(),
+        content: msg.content,
+        timestamp: formatTime(msg.createdAt),
+        senderId: msg.senderId.toString(),
+        senderName: isCurrentUser
+          ? 'Bạn'
+          : msg.sender?.fullName || `User ${msg.senderId}`,
+        senderAvatar: msg.sender?.avatarUrl || '',
+        isRead: msg.isRead,
+        type: (msg.messageType as 'text' | 'image' | 'file') || 'text',
+      }
+    },
+    [user?.id],
+  )
 
-  const messages: Message[] =
-    messagesData?.items?.map(mapChatMessageToMessage) || []
+  const messages: Message[] = useMemo(
+    () => messagesData?.items?.map(mapChatMessageToMessage) ?? [],
+    [messagesData?.items, mapChatMessageToMessage],
+  )
 
   // Join conversation room when connected
   useEffect(() => {

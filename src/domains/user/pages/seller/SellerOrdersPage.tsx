@@ -142,8 +142,6 @@ export default function SellerOrdersPage() {
     ordersData?.pages.flatMap(page => page.items || []).filter(Boolean) || []
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
-  const isLoading = isLoadingOrders
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',

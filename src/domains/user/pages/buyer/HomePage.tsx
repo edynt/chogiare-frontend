@@ -80,30 +80,30 @@ export default function HomePage() {
     .slice(0, 8)
 
   // 7. Deal sốc từ xưởng (Factory deals) - products with factory badge or wholesale pricing
-  const factoryDeals = allProducts
+  const _factoryDeals = allProducts
     .filter(p => p.stock > 0 && (p.badges?.includes('HOT') || p.price < 100000))
     .sort((a, b) => a.price - b.price)
     .slice(0, 8)
 
   // 8. Hàng có video (Products with video) - simulate with high engagement products
-  const productsWithVideo = allProducts
+  const _productsWithVideo = allProducts
     .filter(p => p.stock > 0 && (p.viewCount || 0) > 50)
     .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
     .slice(0, 8)
 
   // 9. Ưu đãi theo khu vực (Regional offers) - filter by location (simulate with first location)
-  const regionalOffers = allProducts
+  const _regionalOffers = allProducts
     .filter(p => p.stock > 0 && p.location)
     .slice(0, 8)
 
   // 10. Sản phẩm có bảo hành (Products with warranty) - simulate with high rating products
-  const productsWithWarranty = allProducts
+  const _productsWithWarranty = allProducts
     .filter(p => p.stock > 0 && p.rating >= 4.5)
     .sort((a, b) => b.rating - a.rating)
     .slice(0, 8)
 
   // 11. Trend nổi bật trên TikTok (Trending on TikTok) - high engagement
-  const tiktokTrending = allProducts
+  const _tiktokTrending = allProducts
     .filter(p => p.stock > 0)
     .sort((a, b) => {
       const aEngagement = (a.viewCount || 0) + a.reviewCount * 10
@@ -113,13 +113,13 @@ export default function HomePage() {
     .slice(0, 8)
 
   // 12. Giá sỉ rẻ nhất thị trường (Cheapest wholesale prices)
-  const cheapestWholesale = allProducts
+  const _cheapestWholesale = allProducts
     .filter(p => p.stock > 0)
     .sort((a, b) => a.price - b.price)
     .slice(0, 8)
 
   // 13. Sản phẩm chạy quảng cáo nhiều nhất (Products with most ads) - use isPromoted or viewCount
-  const mostAdvertised = allProducts
+  const _mostAdvertised = allProducts
     .filter(p => p.stock > 0)
     .sort((a, b) => {
       if (a.isPromoted && !b.isPromoted) return -1

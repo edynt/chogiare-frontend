@@ -14,7 +14,7 @@ vi.mock('react-router-dom', async importOriginal => {
   const actual = await importOriginal<typeof import('react-router-dom')>()
   return {
     ...actual,
-    Navigate: ({ to, replace, state }: any) => {
+    Navigate: ({ to, replace: _replace, state: _state }: { to: string; replace?: boolean; state?: unknown }) => {
       return <div data-testid="navigate" data-to={to} />
     },
     useLocation: () => ({ pathname: '/test' }),
@@ -24,7 +24,7 @@ vi.mock('react-router-dom', async importOriginal => {
 import { useAuthStore } from '@/stores/authStore'
 
 describe('UserRouteGuard', () => {
-  const mockUseAuthStore = useAuthStore as any
+  const mockUseAuthStore = useAuthStore as ReturnType<typeof vi.fn>
 
   afterEach(() => {
     vi.clearAllMocks()

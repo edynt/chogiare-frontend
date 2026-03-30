@@ -93,8 +93,8 @@ export default function InventoryManagementPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [sortBy, setSortBy] = useState('name')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [_sortBy, _setSortBy] = useState('name')
+  const [_sortOrder, _setSortOrder] = useState<'asc' | 'desc'>('asc')
   const [isStockInModalOpen, setIsStockInModalOpen] = useState(false)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -102,7 +102,7 @@ export default function InventoryManagementPage() {
     null
   )
 
-  const handleStockIn = async (data: any) => {
+  const handleStockIn = async (data: Record<string, unknown>) => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
 
@@ -131,7 +131,7 @@ export default function InventoryManagementPage() {
     setIsEditModalOpen(true)
   }
 
-  const handleSaveProduct = async (updatedProduct: InventoryItem) => {
+  const handleSaveProduct = async (_updatedProduct: InventoryItem) => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
 
