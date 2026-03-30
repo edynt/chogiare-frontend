@@ -72,9 +72,11 @@ export function Header() {
   // Only fetch notifications when authenticated to avoid 401 redirects for guests
   const { data: notificationsData } = useNotifications(
     { page: 1, pageSize: 5 },
-    { enabled: isAuthenticated },
+    { enabled: isAuthenticated }
   )
-  const { data: unreadCount = 0 } = useUnreadNotificationCount({ enabled: isAuthenticated })
+  const { data: unreadCount = 0 } = useUnreadNotificationCount({
+    enabled: isAuthenticated,
+  })
   const markAsReadMutation = useMarkNotificationAsRead()
   const markAllAsReadMutation = useMarkAllNotificationsAsRead()
 
@@ -84,10 +86,15 @@ export function Header() {
   const totalBadgeCount = chatUnreadCount + unreadCount
   useEffect(() => {
     const baseTitle = document.title.replace(/^\(\d+\)\s*/, '')
-    document.title = totalBadgeCount > 0 ? `(${totalBadgeCount}) ${baseTitle}` : baseTitle
+    document.title =
+      totalBadgeCount > 0 ? `(${totalBadgeCount}) ${baseTitle}` : baseTitle
   }, [totalBadgeCount])
 
-  const handleNotificationClick = (notification: { id: string; isRead: boolean; actionUrl?: string }) => {
+  const handleNotificationClick = (notification: {
+    id: string
+    isRead: boolean
+    actionUrl?: string
+  }) => {
     if (!notification.isRead) {
       markAsReadMutation.mutate(notification.id)
     }
@@ -242,14 +249,16 @@ export function Header() {
                       variant="ghost"
                       size="sm"
                       className="text-xs text-blue-600 hover:text-blue-800 h-auto py-1 px-2"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault()
                         e.stopPropagation()
                         markAllAsReadMutation.mutate()
                       }}
                       disabled={markAllAsReadMutation.isPending}
                     >
-                      {markAllAsReadMutation.isPending ? 'Đang xử lý...' : 'Đọc tất cả'}
+                      {markAllAsReadMutation.isPending
+                        ? 'Đang xử lý...'
+                        : 'Đọc tất cả'}
                     </Button>
                   )}
                 </div>
@@ -263,7 +272,7 @@ export function Header() {
                       <DropdownMenuItem
                         key={notification.id}
                         className="p-3 cursor-pointer hover:bg-red-500 group transition-colors"
-                        onSelect={(e) => {
+                        onSelect={e => {
                           e.preventDefault()
                           handleNotificationClick(notification)
                         }}

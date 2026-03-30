@@ -174,8 +174,7 @@ export const MESSAGE_TYPE = {
   FILE: 2,
 } as const
 
-export type MessageTypeValue =
-  (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE]
+export type MessageTypeValue = (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE]
 
 export const MESSAGE_TYPE_LABELS: Record<number, string> = {
   [MESSAGE_TYPE.TEXT]: 'Văn bản',

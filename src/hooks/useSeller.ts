@@ -146,7 +146,9 @@ export const useRemoveProductBoost = () => {
   return useMutation({
     mutationFn: sellerApi.removeProductBoost,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['seller', 'products', 'boosted'] })
+      queryClient.invalidateQueries({
+        queryKey: ['seller', 'products', 'boosted'],
+      })
       queryClient.invalidateQueries({ queryKey: ['seller', 'products'] })
       queryClient.invalidateQueries({ queryKey: ['products'] })
     },

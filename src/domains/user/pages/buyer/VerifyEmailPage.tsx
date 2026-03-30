@@ -197,7 +197,9 @@ export default function VerifyEmailPage() {
               <Button
                 variant="outline"
                 onClick={handleResend}
-                disabled={isResending || resendMutation.isPending || cooldown > 0}
+                disabled={
+                  isResending || resendMutation.isPending || cooldown > 0
+                }
                 className="w-full"
               >
                 {isResending || resendMutation.isPending ? (

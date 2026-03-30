@@ -38,7 +38,8 @@ export default function BuyerDashboardPage() {
       ? parseInt(order.createdAt, 10)
       : new Date(order.createdAt).getTime()
     const isRecent = orderDate >= sevenDaysAgo
-    const isNotCompleted = order.status !== 'completed' && order.status !== 'cancelled'
+    const isNotCompleted =
+      order.status !== 'completed' && order.status !== 'cancelled'
     return isRecent && isNotCompleted
   })
 

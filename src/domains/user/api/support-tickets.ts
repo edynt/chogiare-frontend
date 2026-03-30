@@ -91,7 +91,10 @@ export const supportTicketApi = {
       : (result as unknown as SupportTicketDetail)
   },
 
-  reply: async (ticketId: number, message: string): Promise<TicketReplyItem> => {
+  reply: async (
+    ticketId: number,
+    message: string
+  ): Promise<TicketReplyItem> => {
     const response = await apiClient.post<ApiResponse<TicketReplyItem>>(
       `/support-tickets/${ticketId}/replies`,
       { message }

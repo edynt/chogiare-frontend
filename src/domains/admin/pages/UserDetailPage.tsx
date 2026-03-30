@@ -472,54 +472,65 @@ export default function UserDetailPage() {
       </div>
 
       {/* Seller-specific sections */}
-      {isSeller && (user as unknown as Record<string, unknown>).stores && ((user as unknown as Record<string, unknown>).stores as unknown[]).length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Store className="h-5 w-5" />
-              Thông tin cửa hàng
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {((user as unknown as Record<string, unknown>).stores as Array<{ id: string; name: string; slug: string; description?: string; status: string }>).map(store => (
-                <div
-                  key={store.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                >
-                  <div>
-                    <p className="font-medium text-lg">{store.name}</p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Slug: {store.slug}
-                    </p>
-                    {store.description && (
-                      <p className="text-sm text-gray-500 mt-2">
-                        {store.description}
+      {isSeller &&
+        (user as unknown as Record<string, unknown>).stores &&
+        ((user as unknown as Record<string, unknown>).stores as unknown[])
+          .length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Store className="h-5 w-5" />
+                Thông tin cửa hàng
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {(
+                  (user as unknown as Record<string, unknown>).stores as Array<{
+                    id: string
+                    name: string
+                    slug: string
+                    description?: string
+                    status: string
+                  }>
+                ).map(store => (
+                  <div
+                    key={store.id}
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                  >
+                    <div>
+                      <p className="font-medium text-lg">{store.name}</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Slug: {store.slug}
                       </p>
-                    )}
+                      {store.description && (
+                        <p className="text-sm text-gray-500 mt-2">
+                          {store.description}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        className={
+                          store.status === 'active'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }
+                      >
+                        {store.status === 'active'
+                          ? 'Hoạt động'
+                          : 'Không hoạt động'}
+                      </Badge>
+                      <Button variant="outline" size="sm">
+                        Xem cửa hàng
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      className={
-                        store.status === 'active'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }
-                    >
-                      {store.status === 'active'
-                        ? 'Hoạt động'
-                        : 'Không hoạt động'}
-                    </Badge>
-                    <Button variant="outline" size="sm">
-                      Xem cửa hàng
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
       {/* Products Table for Sellers */}
       {isSeller && user.products && user.products.length > 0 && (

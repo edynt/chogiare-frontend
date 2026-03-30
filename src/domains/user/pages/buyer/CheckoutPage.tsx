@@ -38,10 +38,7 @@ import {
   Sparkles,
   Lock,
 } from 'lucide-react'
-import {
-  Alert,
-  AlertDescription,
-} from '@shared/components/ui/alert'
+import { Alert, AlertDescription } from '@shared/components/ui/alert'
 import { formatCurrency, PLACEHOLDER_IMAGE } from '@/lib/utils'
 
 export default function CheckoutPage() {

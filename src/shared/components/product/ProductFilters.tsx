@@ -224,11 +224,15 @@ export function ProductFilters({
             {/* Price Range — dual thumb slider, min >= 0 */}
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Khoảng giá: {Math.max(0, filters.minPrice || 0).toLocaleString()} -{' '}
+                Khoảng giá:{' '}
+                {Math.max(0, filters.minPrice || 0).toLocaleString()} -{' '}
                 {Math.max(0, filters.maxPrice || 10000000).toLocaleString()} VNĐ
               </label>
               <Slider
-                value={[Math.max(0, filters.minPrice || 0), Math.max(0, filters.maxPrice || 10000000)]}
+                value={[
+                  Math.max(0, filters.minPrice || 0),
+                  Math.max(0, filters.maxPrice || 10000000),
+                ]}
                 onValueChange={handlePriceRangeChange}
                 max={10000000}
                 min={0}
@@ -373,10 +377,7 @@ export function ProductFilters({
             )}
 
             {/* Apply Button */}
-            <Button
-              className="w-full"
-              onClick={applyFilters}
-            >
+            <Button className="w-full" onClick={applyFilters}>
               <CheckCircle className="h-4 w-4 mr-2" />
               Áp dụng bộ lọc
             </Button>

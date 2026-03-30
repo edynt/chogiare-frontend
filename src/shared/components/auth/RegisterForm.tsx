@@ -68,7 +68,7 @@ export function RegisterForm() {
   }
 
   const googleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
+    onSuccess: async tokenResponse => {
       setIsGoogleLoading(true)
       setMessage(null)
       try {
@@ -224,11 +224,7 @@ export function RegisterForm() {
               )}
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={anyLoading}
-            >
+            <Button type="submit" className="w-full" disabled={anyLoading}>
               {registerMutation.isPending ? 'Đang đăng ký...' : 'Đăng ký'}
             </Button>
           </form>

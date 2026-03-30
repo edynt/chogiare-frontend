@@ -145,7 +145,9 @@ export const sellerApi = {
   },
 
   // Get seller's boosted products from product_boosts table
-  getMyBoostedProducts: async (): Promise<PaginatedResponse<BoostedProduct>> => {
+  getMyBoostedProducts: async (): Promise<
+    PaginatedResponse<BoostedProduct>
+  > => {
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<BoostedProduct>>
     >('/seller/products/boosted', {
@@ -347,10 +349,9 @@ export const sellerApi = {
     pageSize?: number
     read?: boolean
   }): Promise<PaginatedResponse<Record<string, unknown>>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Record<string, unknown>>>>(
-      '/seller/notifications',
-      { params }
-    )
+    const response = await apiClient.get<
+      ApiResponse<PaginatedResponse<Record<string, unknown>>>
+    >('/seller/notifications', { params })
     return response.data.data
   },
 
@@ -363,7 +364,9 @@ export const sellerApi = {
   },
 
   // Remove boost from product
-  removeProductBoost: async (productId: string): Promise<{ removed: boolean }> => {
+  removeProductBoost: async (
+    productId: string
+  ): Promise<{ removed: boolean }> => {
     const response = await apiClient.delete<ApiResponse<{ removed: boolean }>>(
       `/seller/products/${productId}/boost`
     )

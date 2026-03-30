@@ -122,12 +122,12 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
         type: (msg.messageType as 'text' | 'image' | 'file') || 'text',
       }
     },
-    [user?.id],
+    [user?.id]
   )
 
   const messages: Message[] = useMemo(
     () => messagesData?.items?.map(mapChatMessageToMessage) ?? [],
-    [messagesData?.items, mapChatMessageToMessage],
+    [messagesData?.items, mapChatMessageToMessage]
   )
 
   // Join conversation room when connected

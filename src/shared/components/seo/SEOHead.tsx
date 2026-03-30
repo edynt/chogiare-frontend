@@ -28,8 +28,11 @@ export function SEOHead({
   structuredData,
   noindex = false,
 }: SEOHeadProps) {
-  const fullTitle = title.includes('Chợ Giá Rẻ') ? title : `${title} | Chợ Giá Rẻ`
-  const pageUrl = url || canonicalUrl || `https://chogiare.com${window.location.pathname}`
+  const fullTitle = title.includes('Chợ Giá Rẻ')
+    ? title
+    : `${title} | Chợ Giá Rẻ`
+  const pageUrl =
+    url || canonicalUrl || `https://chogiare.com${window.location.pathname}`
 
   useEffect(() => {
     document.title = fullTitle
@@ -69,7 +72,9 @@ export function SEOHead({
 
     // Canonical URL
     const canonical = canonicalUrl || pageUrl
-    let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
+    let link = document.querySelector(
+      'link[rel="canonical"]'
+    ) as HTMLLinkElement | null
     if (link) {
       link.href = canonical
     } else {
@@ -82,7 +87,9 @@ export function SEOHead({
     // JSON-LD Structured Data
     if (structuredData) {
       // Use a data attribute to identify SEO-managed script tags
-      const existingScript = document.querySelector('script[data-seo-head="true"]')
+      const existingScript = document.querySelector(
+        'script[data-seo-head="true"]'
+      )
       if (existingScript) {
         existingScript.textContent = JSON.stringify(structuredData)
       } else {
@@ -101,7 +108,18 @@ export function SEOHead({
         script.remove()
       }
     }
-  }, [title, description, keywords, image, pageUrl, type, canonicalUrl, fullTitle, structuredData, noindex])
+  }, [
+    title,
+    description,
+    keywords,
+    image,
+    pageUrl,
+    type,
+    canonicalUrl,
+    fullTitle,
+    structuredData,
+    noindex,
+  ])
 
   return null
 }

@@ -99,7 +99,7 @@ export const useCursorBuyerProducts = (
         limit: filters.limit || 20,
       })
     },
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    getNextPageParam: lastPage => lastPage.nextCursor ?? undefined,
     initialPageParam: undefined as number | undefined,
     staleTime: 5 * 60 * 1000,
   })

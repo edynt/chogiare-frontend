@@ -96,9 +96,7 @@ const PackageFormDialog: React.FC<PackageFormDialogProps> = ({
     <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>
-          Điền thông tin gói đẩy sản phẩm
-        </DialogDescription>
+        <DialogDescription>Điền thông tin gói đẩy sản phẩm</DialogDescription>
       </DialogHeader>
       <div className="space-y-4 py-4">
         <div className="grid grid-cols-2 gap-4">

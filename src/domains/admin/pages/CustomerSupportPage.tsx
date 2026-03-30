@@ -584,7 +584,8 @@ export default function CustomerSupportPage() {
                                       toast.success('Đã cập nhật trạng thái')
                                       setSelectedTicket({
                                         ...selectedTicket,
-                                        status: value as SupportTicket['status'],
+                                        status:
+                                          value as SupportTicket['status'],
                                       })
                                     },
                                     onError: () => {

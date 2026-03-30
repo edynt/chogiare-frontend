@@ -12,9 +12,7 @@ export function seedFakeCartData(products: Product[]) {
   clearCart()
 
   // Filter products that have seller/store info
-  const validProducts = products.filter(
-    p => p.sellerId && p.seller
-  )
+  const validProducts = products.filter(p => p.sellerId && p.seller)
 
   if (validProducts.length === 0) {
     console.warn('⚠️ No products with seller/store info found for seeding cart')

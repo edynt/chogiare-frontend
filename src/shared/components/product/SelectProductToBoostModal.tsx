@@ -12,12 +12,7 @@ import { Badge } from '@shared/components/ui/badge'
 import { Skeleton } from '@shared/components/ui/skeleton'
 import { useSellerProducts } from '@/hooks/useProducts'
 import { formatCurrency } from '@/lib/utils'
-import {
-  Search,
-  Package,
-  Sparkles,
-  TrendingUp,
-} from 'lucide-react'
+import { Search, Package, Sparkles, TrendingUp } from 'lucide-react'
 
 interface SelectProductToBoostModalProps {
   isOpen: boolean
@@ -97,8 +92,7 @@ export function SelectProductToBoostModal({
                 // Use the isPromoted field directly from the product
                 const isPromoted = product.isPromoted === true
                 const productImage =
-                  product.images?.[0] ||
-                  'https://via.placeholder.com/64'
+                  product.images?.[0] || 'https://via.placeholder.com/64'
 
                 return (
                   <div

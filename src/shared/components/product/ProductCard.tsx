@@ -199,9 +199,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           {/* Seller Info */}
           <div className="flex items-center gap-2 pb-2 border-b border-border/50">
             <Avatar className="h-6 w-6">
-              <AvatarImage
-                src={product.seller?.avatar}
-              />
+              <AvatarImage src={product.seller?.avatar} />
               <AvatarFallback className="text-xs">
                 {(product.seller?.name || 'S').charAt(0)}
               </AvatarFallback>

@@ -26,7 +26,7 @@ export function ChatPopup() {
   // Fetch conversations to get unread count (only when authenticated)
   const { data: conversationsData } = useConversations(
     { page: 1, pageSize: 50 },
-    { enabled: isAuthenticated },
+    { enabled: isAuthenticated }
   )
 
   // Create conversation mutation

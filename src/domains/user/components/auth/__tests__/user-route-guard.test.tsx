@@ -14,7 +14,15 @@ vi.mock('react-router-dom', async importOriginal => {
   const actual = await importOriginal<typeof import('react-router-dom')>()
   return {
     ...actual,
-    Navigate: ({ to, replace: _replace, state: _state }: { to: string; replace?: boolean; state?: unknown }) => {
+    Navigate: ({
+      to,
+      replace: _replace,
+      state: _state,
+    }: {
+      to: string
+      replace?: boolean
+      state?: unknown
+    }) => {
       return <div data-testid="navigate" data-to={to} />
     },
     useLocation: () => ({ pathname: '/test' }),

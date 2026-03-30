@@ -50,7 +50,10 @@ export default function SellerProductsPage() {
     error,
   } = useMyProducts({
     query: appliedSearch || undefined,
-    status: appliedStatus !== 'all' ? (appliedStatus as ProductStatusType) : undefined,
+    status:
+      appliedStatus !== 'all'
+        ? (appliedStatus as ProductStatusType)
+        : undefined,
     sortBy: appliedSortBy as 'createdAt' | 'price' | 'rating' | 'viewCount',
   })
 
@@ -108,7 +111,8 @@ export default function SellerProductsPage() {
   }
 
   const getStatusBadge = (status: ProductStatus) => {
-    const statusNum = typeof status === 'string' ? parseInt(String(status), 10) : status
+    const statusNum =
+      typeof status === 'string' ? parseInt(String(status), 10) : status
     switch (statusNum) {
       case 1: // ACTIVE
         return <Badge variant="success">Đang bán</Badge>
@@ -122,7 +126,8 @@ export default function SellerProductsPage() {
   }
 
   const getStatusColor = (status: ProductStatus) => {
-    const statusNum = typeof status === 'string' ? parseInt(String(status), 10) : status
+    const statusNum =
+      typeof status === 'string' ? parseInt(String(status), 10) : status
     switch (statusNum) {
       case 1: // ACTIVE
         return 'text-success'
@@ -138,7 +143,8 @@ export default function SellerProductsPage() {
   // Calculate stats with proper null checks (status is numeric: 0=draft, 1=active, 2=out_of_stock)
   const _stats = {
     total: productsData?.total || 0,
-    active: productsData?.items?.filter(p => Number(p.status) === 1).length || 0,
+    active:
+      productsData?.items?.filter(p => Number(p.status) === 1).length || 0,
     draft: productsData?.items?.filter(p => Number(p.status) === 0).length || 0,
     outOfStock:
       productsData?.items?.filter(p => Number(p.status) === 2).length || 0,

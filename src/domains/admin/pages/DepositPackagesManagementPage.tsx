@@ -162,8 +162,7 @@ export default function DepositPackagesManagementPage() {
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } }
       toast.error(
-        err.response?.data?.message ||
-          'Có lỗi xảy ra khi cập nhật gói nạp tiền'
+        err.response?.data?.message || 'Có lỗi xảy ra khi cập nhật gói nạp tiền'
       )
     }
   }

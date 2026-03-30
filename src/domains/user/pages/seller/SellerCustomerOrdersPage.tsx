@@ -159,7 +159,9 @@ export default function SellerCustomerOrdersPage() {
                         orders.map(order => (
                           <TableRow key={order.id}>
                             <TableCell>
-                              <span className="font-medium">#{order.orderNo || order.id}</span>
+                              <span className="font-medium">
+                                #{order.orderNo || order.id}
+                              </span>
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2 text-sm">

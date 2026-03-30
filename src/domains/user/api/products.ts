@@ -82,13 +82,17 @@ export const productsApi = {
     if (filters.query !== undefined) params.search = filters.query
     if (filters.featured !== undefined) params.isFeatured = filters.featured
     if (filters.promoted !== undefined) params.isPromoted = filters.promoted
-    if (filters.minPrice !== undefined && filters.minPrice > 0) params.minPrice = filters.minPrice
-    if (filters.maxPrice !== undefined && filters.maxPrice < 10000000) params.maxPrice = filters.maxPrice
+    if (filters.minPrice !== undefined && filters.minPrice > 0)
+      params.minPrice = filters.minPrice
+    if (filters.maxPrice !== undefined && filters.maxPrice < 10000000)
+      params.maxPrice = filters.maxPrice
     if (filters.condition !== undefined) params.condition = filters.condition
-    if (filters.location !== undefined && filters.location !== '') params.location = filters.location
+    if (filters.location !== undefined && filters.location !== '')
+      params.location = filters.location
     if (filters.sortBy !== undefined) params.sortBy = filters.sortBy
     if (filters.sortOrder !== undefined) params.sortOrder = filters.sortOrder
-    if (filters.rating !== undefined && filters.rating > 0) params.rating = filters.rating
+    if (filters.rating !== undefined && filters.rating > 0)
+      params.rating = filters.rating
 
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<Product>>
@@ -283,10 +287,9 @@ export const productsApi = {
 export const categoriesApi = {
   // Category CRUD operations
   getCategories: async (): Promise<Category[]> => {
-    const response =
-      await apiClient.get<
-        ApiResponse<Category[] | { items: Category[]; total: number }>
-      >('/categories', { params: { pageSize: 200 } })
+    const response = await apiClient.get<
+      ApiResponse<Category[] | { items: Category[]; total: number }>
+    >('/categories', { params: { pageSize: 200 } })
     const data = response.data.data
     if (Array.isArray(data)) {
       return data

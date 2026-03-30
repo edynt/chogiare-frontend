@@ -72,7 +72,8 @@ export function InfiniteProductGrid({
   // Calculate total products loaded so far
   const allProducts: Product[] = data?.pages.flatMap(page => page.items) || []
   const totalLoaded = allProducts.length
-  const reachedMaxProducts = maxProducts !== undefined && totalLoaded >= maxProducts
+  const reachedMaxProducts =
+    maxProducts !== undefined && totalLoaded >= maxProducts
 
   // Notify parent when data loaded but no products found
   useEffect(() => {
@@ -87,7 +88,12 @@ export function InfiniteProductGrid({
       entries => {
         const firstEntry = entries[0]
         // Only load more if we haven't reached maxProducts limit
-        if (firstEntry?.isIntersecting && hasNextPage && !isFetchingNextPage && !reachedMaxProducts) {
+        if (
+          firstEntry?.isIntersecting &&
+          hasNextPage &&
+          !isFetchingNextPage &&
+          !reachedMaxProducts
+        ) {
           fetchNextPage()
           onLoadMore?.()
         }
@@ -107,7 +113,13 @@ export function InfiniteProductGrid({
         observer.unobserve(currentRef)
       }
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, onLoadMore, reachedMaxProducts])
+  }, [
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    onLoadMore,
+    reachedMaxProducts,
+  ])
 
   const handleRetry = () => {
     refetch()
@@ -124,9 +136,8 @@ export function InfiniteProductGrid({
   }
 
   // Use already calculated allProducts, limit to maxProducts if specified
-  const products: Product[] = maxProducts !== undefined
-    ? allProducts.slice(0, maxProducts)
-    : allProducts
+  const products: Product[] =
+    maxProducts !== undefined ? allProducts.slice(0, maxProducts) : allProducts
 
   if (isLoading && products.length === 0) {
     return <ProductGridSkeleton count={8} />
@@ -158,8 +169,9 @@ export function InfiniteProductGrid({
             <span className="text-sm">Đang tải thêm sản phẩm...</span>
           </div>
         )}
-        {(reachedMaxProducts || !hasNextPage) && products.length > 0 && (
-          viewAllLink && products.length >= 10 ? (
+        {(reachedMaxProducts || !hasNextPage) &&
+          products.length > 0 &&
+          (viewAllLink && products.length >= 10 ? (
             <Link
               to={viewAllLink}
               className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
@@ -170,8 +182,7 @@ export function InfiniteProductGrid({
             <p className="text-sm text-muted-foreground">
               Đã hiển thị tất cả sản phẩm
             </p>
-          ) : null
-        )}
+          ) : null)}
       </div>
     </div>
   )

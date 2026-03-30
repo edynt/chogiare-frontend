@@ -137,13 +137,19 @@ export default function EditProductPage() {
 
       // Convert numeric condition to string (API returns 0=new, 1=like_new, 2=good, 3=fair, 4=poor)
       const conditionMap: Record<number, string> = {
-        0: 'new', 1: 'like_new', 2: 'good', 3: 'fair', 4: 'poor',
+        0: 'new',
+        1: 'like_new',
+        2: 'good',
+        3: 'fair',
+        4: 'poor',
       }
       const condition = conditionMap[Number(product.condition)] || 'new'
 
       // Convert numeric status to string (API returns 0=draft, 1=active, 2=out_of_stock)
       const statusMap: Record<number, string> = {
-        0: 'draft', 1: 'active', 2: 'out_of_stock',
+        0: 'draft',
+        1: 'active',
+        2: 'out_of_stock',
       }
       const status = statusMap[Number(product.status)] || 'draft'
 
@@ -164,7 +170,10 @@ export default function EditProductPage() {
       const existingImages: ImageItem[] = Array.isArray(product.images)
         ? product.images.map((img: unknown, index: number) => {
             const imgObj = img as { imageUrl?: string; url?: string }
-            const url = typeof img === 'string' ? img : imgObj.imageUrl || imgObj.url || ''
+            const url =
+              typeof img === 'string'
+                ? img
+                : imgObj.imageUrl || imgObj.url || ''
             return {
               id: `existing-${index}-${Date.now()}`,
               url,

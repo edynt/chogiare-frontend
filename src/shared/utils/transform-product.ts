@@ -41,12 +41,13 @@ const BADGE_NUM_TO_STR: Record<number, ProductBadgeType> = {
  * Transform a single product's numeric enum fields to string values.
  * Safe to call on already-transformed data (string values pass through unchanged).
  */
- 
+
 export function transformProduct<T>(product: T): T {
   const result = { ...(product as Record<string, unknown>) }
 
   if (typeof result.condition === 'number') {
-    result.condition = CONDITION_NUM_TO_STR[result.condition] ?? result.condition
+    result.condition =
+      CONDITION_NUM_TO_STR[result.condition] ?? result.condition
   }
 
   if (typeof result.status === 'number') {
@@ -72,7 +73,7 @@ export function transformProducts<T>(products: T[]): T[] {
 /**
  * Transform a paginated response containing products.
  */
- 
+
 export function transformPaginatedProducts<T>(response: T): T {
   const result = { ...(response as Record<string, unknown>) }
   if (Array.isArray(result.items)) {

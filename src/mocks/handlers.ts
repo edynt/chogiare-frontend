@@ -495,7 +495,8 @@ export const handlers = [
 
     // Filter orders by storeId
     const storeOrders = demoData.orders.filter(
-      order => (order as unknown as Record<string, unknown>).storeId === params.storeId
+      order =>
+        (order as unknown as Record<string, unknown>).storeId === params.storeId
     )
 
     return HttpResponse.json({
@@ -557,7 +558,8 @@ export const handlers = [
     const order = demoData.orders.find(o => o.id === params.id)
     if (order) {
       ;(order as unknown as Record<string, unknown>).status = data.status
-      ;(order as unknown as Record<string, unknown>).updatedAt = new Date().toISOString()
+      ;(order as unknown as Record<string, unknown>).updatedAt =
+        new Date().toISOString()
     }
     return HttpResponse.json({
       success: true,
@@ -574,9 +576,11 @@ export const handlers = [
     const order = demoData.orders.find(o => o.id === params.id)
     if (order) {
       ;(order as unknown as Record<string, unknown>).status = 'confirmed'
-      ;(order as unknown as Record<string, unknown>).updatedAt = new Date().toISOString()
+      ;(order as unknown as Record<string, unknown>).updatedAt =
+        new Date().toISOString()
       if (data.sellerNotes) {
-        ;(order as unknown as Record<string, unknown>).sellerNotes = data.sellerNotes
+        ;(order as unknown as Record<string, unknown>).sellerNotes =
+          data.sellerNotes
       }
     }
     return HttpResponse.json({
@@ -1236,7 +1240,10 @@ export const handlers = [
     const priority = url.searchParams.get('priority')
     const search = url.searchParams.get('search')
 
-    let filteredProducts = [...(demoData.moderationProducts || [])] as Record<string, unknown>[]
+    let filteredProducts = [...(demoData.moderationProducts || [])] as Record<
+      string,
+      unknown
+    >[]
 
     // Apply filters
     if (status) {
@@ -1255,7 +1262,8 @@ export const handlers = [
       const searchLower = search.toLowerCase()
       filteredProducts = filteredProducts.filter(p => {
         const title = typeof p.title === 'string' ? p.title.toLowerCase() : ''
-        const seller = typeof p.seller === 'string' ? p.seller.toLowerCase() : ''
+        const seller =
+          typeof p.seller === 'string' ? p.seller.toLowerCase() : ''
         const description =
           typeof p.description === 'string' ? p.description.toLowerCase() : ''
         return (

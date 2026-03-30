@@ -21,7 +21,12 @@ import {
   useConfirmOrder,
   useUpdateOrderStatus,
 } from '@/hooks/useOrders'
-import { useSellerDashboardStats, useSellerBoostedProducts, useRemoveProductBoost, useRevenueStats } from '@/hooks/useSeller'
+import {
+  useSellerDashboardStats,
+  useSellerBoostedProducts,
+  useRemoveProductBoost,
+  useRevenueStats,
+} from '@/hooks/useSeller'
 import { useAuth } from '@/hooks/useAuth'
 import {
   Dialog,
@@ -66,7 +71,6 @@ import { cn, getApiErrorMessage } from '@/lib/utils'
 import type { Order } from '@user/api/orders'
 import { BoostProductModal } from '@shared/components/product/BoostProductModal'
 import { SelectProductToBoostModal } from '@shared/components/product/SelectProductToBoostModal'
-
 
 // Helper function to get total quantity from order items
 const getTotalQuantity = (order: Order) => {
@@ -141,8 +145,10 @@ export function SellerDashboardContent() {
   } = useSellerOrders({ page: 1, pageSize: 10 })
   const { data: dashboardStats, isLoading: _isLoadingStats } =
     useSellerDashboardStats()
-  const { data: revenueStats, isLoading: isLoadingRevenue } =
-    useRevenueStats({ period: 'monthly', status: 'completed' })
+  const { data: revenueStats, isLoading: isLoadingRevenue } = useRevenueStats({
+    period: 'monthly',
+    status: 'completed',
+  })
   const { data: boostedProductsData, isLoading: isLoadingBoosted } =
     useSellerBoostedProducts()
   const { notify: _notify } = useNotification()
@@ -152,7 +158,8 @@ export function SellerDashboardContent() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [sellerNotes, setSellerNotes] = useState('')
   const [cancelReason, setCancelReason] = useState('')
-  const [isSelectProductModalOpen, setIsSelectProductModalOpen] = useState(false)
+  const [isSelectProductModalOpen, setIsSelectProductModalOpen] =
+    useState(false)
   const [isBoostModalOpen, setIsBoostModalOpen] = useState(false)
   const [selectedBoostProduct, setSelectedBoostProduct] = useState<{
     id: string
@@ -213,7 +220,10 @@ export function SellerDashboardContent() {
     }
   }
 
-  const handleSelectProductToBoost = (productId: string, productTitle: string) => {
+  const handleSelectProductToBoost = (
+    productId: string,
+    productTitle: string
+  ) => {
     setSelectedBoostProduct({ id: productId, title: productTitle })
     setIsSelectProductModalOpen(false)
     setIsBoostModalOpen(true)
@@ -264,7 +274,10 @@ export function SellerDashboardContent() {
           title: 'Tổng sản phẩm',
           value: dashboardStats.totalProducts.value.toString(),
           icon: Package,
-          change: dashboardStats.totalProducts.change !== 0 ? `${Math.abs(dashboardStats.totalProducts.change).toFixed(0)}%` : null as string | null,
+          change:
+            dashboardStats.totalProducts.change !== 0
+              ? `${Math.abs(dashboardStats.totalProducts.change).toFixed(0)}%`
+              : (null as string | null),
           changeType: dashboardStats.totalProducts.changeType as string | null,
           subtitle: dashboardStats.totalProducts.subtitle,
         },
@@ -272,7 +285,10 @@ export function SellerDashboardContent() {
           title: 'Doanh thu tháng',
           value: formatCurrency(dashboardStats.revenue.value),
           icon: DollarSign,
-          change: dashboardStats.revenue.change !== 0 ? `${Math.abs(dashboardStats.revenue.change).toFixed(0)}%` : null as string | null,
+          change:
+            dashboardStats.revenue.change !== 0
+              ? `${Math.abs(dashboardStats.revenue.change).toFixed(0)}%`
+              : (null as string | null),
           changeType: dashboardStats.revenue.changeType as string | null,
           subtitle: `Đơn hoàn thành: ${dashboardStats.completedOrders}`,
         },
@@ -280,7 +296,10 @@ export function SellerDashboardContent() {
           title: 'Đơn hàng',
           value: formatNumber(dashboardStats.orders.value),
           icon: ShoppingCart,
-          change: dashboardStats.orders.change !== 0 ? `${Math.abs(dashboardStats.orders.change).toFixed(0)}%` : null as string | null,
+          change:
+            dashboardStats.orders.change !== 0
+              ? `${Math.abs(dashboardStats.orders.change).toFixed(0)}%`
+              : (null as string | null),
           changeType: dashboardStats.orders.changeType as string | null,
           subtitle: `Chờ xử lý: ${dashboardStats.pendingOrders}`,
         },
@@ -303,7 +322,8 @@ export function SellerDashboardContent() {
       ? parseInt(order.createdAt, 10)
       : new Date(order.createdAt).getTime()
     const isRecent = orderDate >= sevenDaysAgo
-    const isNotCompleted = order.status !== 'completed' && order.status !== 'cancelled'
+    const isNotCompleted =
+      order.status !== 'completed' && order.status !== 'cancelled'
     return isRecent && isNotCompleted
   })
 
@@ -980,16 +1000,18 @@ export function SellerDashboardContent() {
               ) : boostedProducts.length > 0 ? (
                 <div className="space-y-4">
                   {boostedProducts.map(product => {
-                    const remaining = product.endAt ? getRemainingTime(product.endAt) : null
+                    const remaining = product.endAt
+                      ? getRemainingTime(product.endAt)
+                      : null
                     const isExpired = remaining?.text === 'Đã hết hạn'
                     return (
                       <div
                         key={product.id}
                         className={cn(
-                          "p-4 border rounded-lg hover:shadow-md transition-shadow",
+                          'p-4 border rounded-lg hover:shadow-md transition-shadow',
                           isExpired
-                            ? "border-red-200 bg-red-50/30 hover:bg-red-50"
-                            : "border-orange-200 bg-orange-50/30 hover:bg-orange-50"
+                            ? 'border-red-200 bg-red-50/30 hover:bg-red-50'
+                            : 'border-orange-200 bg-orange-50/30 hover:bg-orange-50'
                         )}
                       >
                         <div className="flex items-start gap-4">
@@ -1006,10 +1028,12 @@ export function SellerDashboardContent() {
                                   'https://via.placeholder.com/80'
                               }}
                             />
-                            <Badge className={cn(
-                              "absolute -top-2 -right-2 text-white text-xs px-1.5 py-0.5",
-                              isExpired ? "bg-red-500" : "bg-orange-500"
-                            )}>
+                            <Badge
+                              className={cn(
+                                'absolute -top-2 -right-2 text-white text-xs px-1.5 py-0.5',
+                                isExpired ? 'bg-red-500' : 'bg-orange-500'
+                              )}
+                            >
                               <Sparkles className="h-3 w-3" />
                             </Badge>
                           </div>
@@ -1021,11 +1045,15 @@ export function SellerDashboardContent() {
                               <h3 className="font-semibold text-lg truncate">
                                 {product.name}
                               </h3>
-                              <Badge className={cn(
-                                "text-white text-xs flex-shrink-0",
-                                isExpired ? "bg-red-500" : "bg-orange-500"
-                              )}>
-                                {isExpired ? 'Hết hạn' : (product.packageName || 'Đang đẩy')}
+                              <Badge
+                                className={cn(
+                                  'text-white text-xs flex-shrink-0',
+                                  isExpired ? 'bg-red-500' : 'bg-orange-500'
+                                )}
+                              >
+                                {isExpired
+                                  ? 'Hết hạn'
+                                  : product.packageName || 'Đang đẩy'}
                               </Badge>
                             </div>
                             <p className="text-sm font-medium text-primary mb-2">
@@ -1035,10 +1063,14 @@ export function SellerDashboardContent() {
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               <div className="flex items-center gap-1">
                                 <Eye className="h-4 w-4" />
-                                <span>{product.viewCount.toLocaleString()} lượt xem</span>
+                                <span>
+                                  {product.viewCount.toLocaleString()} lượt xem
+                                </span>
                               </div>
                               {remaining && (
-                                <div className={`flex items-center gap-1 ${remaining.color}`}>
+                                <div
+                                  className={`flex items-center gap-1 ${remaining.color}`}
+                                >
                                   <Timer className="h-4 w-4" />
                                   <span>{remaining.text}</span>
                                 </div>
@@ -1110,7 +1142,9 @@ export function SellerDashboardContent() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-green-600 font-medium">Tổng doanh thu</p>
+                    <p className="text-sm text-green-600 font-medium">
+                      Tổng doanh thu
+                    </p>
                     <p className="text-2xl font-bold text-green-700">
                       {formatPrice(revenueStats?.total || 0)}
                     </p>
@@ -1126,7 +1160,9 @@ export function SellerDashboardContent() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-blue-600 font-medium">Giá trị đơn TB</p>
+                    <p className="text-sm text-blue-600 font-medium">
+                      Giá trị đơn TB
+                    </p>
                     <p className="text-2xl font-bold text-blue-700">
                       {formatPrice(revenueStats?.averageOrderValue || 0)}
                     </p>
@@ -1142,7 +1178,9 @@ export function SellerDashboardContent() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-purple-600 font-medium">Tổng đơn hàng</p>
+                    <p className="text-sm text-purple-600 font-medium">
+                      Tổng đơn hàng
+                    </p>
                     <p className="text-2xl font-bold text-purple-700">
                       {dashboardStats?.totalOrders || 0}
                     </p>
@@ -1158,11 +1196,18 @@ export function SellerDashboardContent() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-amber-600 font-medium">Tỷ lệ hoàn thành</p>
+                    <p className="text-sm text-amber-600 font-medium">
+                      Tỷ lệ hoàn thành
+                    </p>
                     <p className="text-2xl font-bold text-amber-700">
                       {dashboardStats?.totalOrders
-                        ? Math.round((dashboardStats.completedOrders / dashboardStats.totalOrders) * 100)
-                        : 0}%
+                        ? Math.round(
+                            (dashboardStats.completedOrders /
+                              dashboardStats.totalOrders) *
+                              100
+                          )
+                        : 0}
+                      %
                     </p>
                   </div>
                   <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
@@ -1185,23 +1230,38 @@ export function SellerDashboardContent() {
               {isLoadingRevenue ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                  <p className="mt-2 text-muted-foreground">Đang tải dữ liệu...</p>
+                  <p className="mt-2 text-muted-foreground">
+                    Đang tải dữ liệu...
+                  </p>
                 </div>
               ) : revenueStats?.monthly && revenueStats.monthly.length > 0 ? (
                 <div className="space-y-4">
                   {revenueStats.monthly.slice(-6).map((item, index) => {
-                    const maxRevenue = Math.max(...revenueStats.monthly.map(m => m.revenue))
-                    const percentage = maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0
-                    const prevRevenue = revenueStats.monthly[revenueStats.monthly.indexOf(item) - 1]?.revenue || 0
-                    const change = prevRevenue > 0 ? ((item.revenue - prevRevenue) / prevRevenue) * 100 : 0
+                    const maxRevenue = Math.max(
+                      ...revenueStats.monthly.map(m => m.revenue)
+                    )
+                    const percentage =
+                      maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0
+                    const prevRevenue =
+                      revenueStats.monthly[
+                        revenueStats.monthly.indexOf(item) - 1
+                      ]?.revenue || 0
+                    const change =
+                      prevRevenue > 0
+                        ? ((item.revenue - prevRevenue) / prevRevenue) * 100
+                        : 0
                     const isPositive = change >= 0
 
                     return (
                       <div key={index} className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium">{item.month}</span>
+                          <span className="text-sm font-medium">
+                            {item.month}
+                          </span>
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold">{formatPrice(item.revenue)}</span>
+                            <span className="text-sm font-semibold">
+                              {formatPrice(item.revenue)}
+                            </span>
                             {index > 0 && (
                               <Badge
                                 variant="outline"
@@ -1217,7 +1277,8 @@ export function SellerDashboardContent() {
                                 ) : (
                                   <TrendingDown className="h-3 w-3 mr-1" />
                                 )}
-                                {isPositive ? '+' : ''}{change.toFixed(1)}%
+                                {isPositive ? '+' : ''}
+                                {change.toFixed(1)}%
                               </Badge>
                             )}
                           </div>
@@ -1230,7 +1291,13 @@ export function SellerDashboardContent() {
                         </div>
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
                           <span>{item.orders} đơn hàng</span>
-                          <span>TB: {formatPrice(item.orders > 0 ? item.revenue / item.orders : 0)}/đơn</span>
+                          <span>
+                            TB:{' '}
+                            {formatPrice(
+                              item.orders > 0 ? item.revenue / item.orders : 0
+                            )}
+                            /đơn
+                          </span>
                         </div>
                       </div>
                     )
@@ -1239,7 +1306,9 @@ export function SellerDashboardContent() {
               ) : (
                 <div className="text-center py-8">
                   <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Chưa có dữ liệu doanh thu</h3>
+                  <h3 className="text-xl font-semibold mb-2">
+                    Chưa có dữ liệu doanh thu
+                  </h3>
                   <p className="text-muted-foreground mb-4">
                     Bắt đầu bán hàng để xem thống kê hiệu suất!
                   </p>
@@ -1265,7 +1334,9 @@ export function SellerDashboardContent() {
                   <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-amber-600" />
-                      <span className="text-sm font-medium text-amber-700">Chờ xử lý</span>
+                      <span className="text-sm font-medium text-amber-700">
+                        Chờ xử lý
+                      </span>
                     </div>
                     <Badge className="bg-amber-500 text-white">
                       {dashboardStats?.pendingOrders || 0}
@@ -1274,7 +1345,9 @@ export function SellerDashboardContent() {
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
                     <div className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-medium text-green-700">Hoàn thành</span>
+                      <span className="text-sm font-medium text-green-700">
+                        Hoàn thành
+                      </span>
                     </div>
                     <Badge className="bg-green-500 text-white">
                       {dashboardStats?.completedOrders || 0}
@@ -1283,7 +1356,9 @@ export function SellerDashboardContent() {
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
                     <div className="flex items-center gap-2">
                       <Package className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm font-medium text-blue-700">Tổng đơn</span>
+                      <span className="text-sm font-medium text-blue-700">
+                        Tổng đơn
+                      </span>
                     </div>
                     <Badge className="bg-blue-500 text-white">
                       {dashboardStats?.totalOrders || 0}
@@ -1305,7 +1380,9 @@ export function SellerDashboardContent() {
                   <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-200">
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-purple-600" />
-                      <span className="text-sm font-medium text-purple-700">Tổng khách hàng</span>
+                      <span className="text-sm font-medium text-purple-700">
+                        Tổng khách hàng
+                      </span>
                     </div>
                     <Badge className="bg-purple-500 text-white">
                       {dashboardStats?.totalCustomers || 0}
@@ -1314,7 +1391,9 @@ export function SellerDashboardContent() {
                   <div className="flex items-center justify-between p-3 bg-indigo-50 rounded-lg border border-indigo-200">
                     <div className="flex items-center gap-2">
                       <Package className="h-4 w-4 text-indigo-600" />
-                      <span className="text-sm font-medium text-indigo-700">Sản phẩm đang bán</span>
+                      <span className="text-sm font-medium text-indigo-700">
+                        Sản phẩm đang bán
+                      </span>
                     </div>
                     <Badge className="bg-indigo-500 text-white">
                       {dashboardStats?.activeProducts || 0}
@@ -1323,7 +1402,9 @@ export function SellerDashboardContent() {
                   <div className="flex items-center justify-between p-3 bg-teal-50 rounded-lg border border-teal-200">
                     <div className="flex items-center gap-2">
                       <ShoppingCart className="h-4 w-4 text-teal-600" />
-                      <span className="text-sm font-medium text-teal-700">Đã bán</span>
+                      <span className="text-sm font-medium text-teal-700">
+                        Đã bán
+                      </span>
                     </div>
                     <Badge className="bg-teal-500 text-white">
                       {dashboardStats?.soldProducts || 0}

@@ -338,7 +338,6 @@ export default function SystemSettingsPage() {
 
   const isSaving = updateSettingsMutation.isPending
 
-
   const systemLogs = [
     {
       id: '1',
@@ -464,11 +463,9 @@ export default function SystemSettingsPage() {
     toast.success('Đã làm mới dữ liệu!')
   }
 
-
   const clearCache = () => {
     toast.success('Cache đã được xóa thành công!')
   }
-
 
   const testEmail = () => {
     toast.success('Email test đã được gửi!')

@@ -24,7 +24,12 @@ import { ArrowLeft } from 'lucide-react'
 import { APP_NAME } from '@/constants/app.constants'
 import { useCursorBuyerProducts, useCategories } from '@/hooks'
 import { SEOHead } from '@shared/components/seo/SEOHead'
-import type { SearchFilters, Product, ProductCondition, ProductBadge } from '@/types'
+import type {
+  SearchFilters,
+  Product,
+  ProductCondition,
+  ProductBadge,
+} from '@/types'
 
 export default function ProductListPage() {
   const navigate = useNavigate()
@@ -47,7 +52,8 @@ export default function ProductListPage() {
       maxPrice: searchParams.get('maxPrice')
         ? parseInt(searchParams.get('maxPrice')!, 10)
         : undefined,
-      condition: (searchParams.get('condition') as ProductCondition) || undefined,
+      condition:
+        (searchParams.get('condition') as ProductCondition) || undefined,
       location: searchParams.get('location') || undefined,
       sortBy: searchParams.get('sortBy') || 'createdAt',
       sortOrder: (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc',
@@ -137,8 +143,7 @@ export default function ProductListPage() {
     refetch()
   }
 
-  const allProducts: Product[] =
-    data?.pages.flatMap(page => page.items) || []
+  const allProducts: Product[] = data?.pages.flatMap(page => page.items) || []
   const totalItems = data?.pages[0]?.total || 0
 
   const sortOptions = [
@@ -252,7 +257,8 @@ export default function ProductListPage() {
                   </div>
                   {totalItems > 0 && (
                     <div className="text-sm text-muted-foreground">
-                      Đang hiển thị {allProducts.length} / {totalItems.toLocaleString()} sản phẩm
+                      Đang hiển thị {allProducts.length} /{' '}
+                      {totalItems.toLocaleString()} sản phẩm
                     </div>
                   )}
                 </div>

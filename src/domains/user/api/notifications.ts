@@ -52,7 +52,9 @@ export const notificationsApi = {
         params: {
           page: params?.page || 1,
           pageSize: params?.pageSize || 10,
-          type: params?.type ? NOTIFICATION_TYPE_TO_NUMBER[params.type] : undefined,
+          type: params?.type
+            ? NOTIFICATION_TYPE_TO_NUMBER[params.type]
+            : undefined,
           isRead: params?.isRead,
         },
       }

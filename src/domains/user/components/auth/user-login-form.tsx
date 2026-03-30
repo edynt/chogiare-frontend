@@ -62,7 +62,7 @@ export function UserLoginForm() {
   }
 
   const googleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
+    onSuccess: async tokenResponse => {
       setIsGoogleLoading(true)
       setErrorMessage(null)
       try {

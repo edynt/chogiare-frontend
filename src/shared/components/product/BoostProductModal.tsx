@@ -52,7 +52,11 @@ export function BoostProductModal({
   )
   const [showConfirm, setShowConfirm] = useState(false)
 
-  const { data: packages, isLoading: packagesLoading, error: packagesError } = useBoostPackages(isOpen)
+  const {
+    data: packages,
+    isLoading: packagesLoading,
+    error: packagesError,
+  } = useBoostPackages(isOpen)
   const { data: balance, isLoading: balanceLoading } = useWalletBalance()
   const { data: boostStatus, isLoading: statusLoading } = useBoostStatus(
     productId,
@@ -135,14 +139,20 @@ export function BoostProductModal({
                 <span className="font-bold text-green-600">
                   {formatCurrency(currentBalance)}
                 </span>
-                {packageList.length > 0 && currentBalance < Math.min(...packageList.map(p => p.price)) && (
-                  <Button size="sm" asChild className="bg-green-600 hover:bg-green-700 h-7 text-xs">
-                    <Link to="/buyer/top-up">
-                      <Wallet className="mr-1 h-3 w-3" />
-                      Nạp tiền
-                    </Link>
-                  </Button>
-                )}
+                {packageList.length > 0 &&
+                  currentBalance <
+                    Math.min(...packageList.map(p => p.price)) && (
+                    <Button
+                      size="sm"
+                      asChild
+                      className="bg-green-600 hover:bg-green-700 h-7 text-xs"
+                    >
+                      <Link to="/buyer/top-up">
+                        <Wallet className="mr-1 h-3 w-3" />
+                        Nạp tiền
+                      </Link>
+                    </Button>
+                  )}
               </div>
             </div>
 
@@ -233,29 +243,41 @@ export function BoostProductModal({
                       <div className="flex flex-wrap gap-3 text-sm">
                         <div className="flex items-center gap-1.5 text-muted-foreground">
                           <Clock className="h-4 w-4" />
-                          <span>Thời hạn: <strong className="text-foreground">{selectedPackage.durationDays} ngày</strong></span>
+                          <span>
+                            Thời hạn:{' '}
+                            <strong className="text-foreground">
+                              {selectedPackage.durationDays} ngày
+                            </strong>
+                          </span>
                         </div>
                         {selectedPackage.viewBoost && (
                           <div className="flex items-center gap-1.5 text-muted-foreground">
                             <Eye className="h-4 w-4" />
-                            <span>Tăng <strong className="text-foreground">{selectedPackage.viewBoost}x</strong> lượt xem</span>
+                            <span>
+                              Tăng{' '}
+                              <strong className="text-foreground">
+                                {selectedPackage.viewBoost}x
+                              </strong>{' '}
+                              lượt xem
+                            </span>
                           </div>
                         )}
                       </div>
 
-                      {selectedPackage.features && selectedPackage.features.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {selectedPackage.features.map((feature, idx) => (
-                            <Badge
-                              key={idx}
-                              variant="secondary"
-                              className="text-xs"
-                            >
-                              {feature}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
+                      {selectedPackage.features &&
+                        selectedPackage.features.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {selectedPackage.features.map((feature, idx) => (
+                              <Badge
+                                key={idx}
+                                variant="secondary"
+                                className="text-xs"
+                              >
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                     </div>
                   )}
 
@@ -273,7 +295,8 @@ export function BoostProductModal({
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    Không thể tải danh sách gói đẩy sản phẩm. Vui lòng thử lại sau.
+                    Không thể tải danh sách gói đẩy sản phẩm. Vui lòng thử lại
+                    sau.
                   </AlertDescription>
                 </Alert>
               )}
@@ -282,7 +305,8 @@ export function BoostProductModal({
                 <Alert>
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    Chưa có gói đẩy sản phẩm nào. Vui lòng liên hệ quản trị viên.
+                    Chưa có gói đẩy sản phẩm nào. Vui lòng liên hệ quản trị
+                    viên.
                   </AlertDescription>
                 </Alert>
               )}
@@ -318,16 +342,12 @@ export function BoostProductModal({
           ) : (
             <Button
               onClick={handleRequestBoost}
-              disabled={
-                !selectedPackage ||
-                boostMutation.isPending
-              }
+              disabled={!selectedPackage || boostMutation.isPending}
               className="bg-orange-500 hover:bg-orange-600"
             >
               <TrendingUp className="mr-2 h-4 w-4" />
               Đẩy sản phẩm
-              {selectedPackage &&
-                ` - ${formatCurrency(selectedPackage.price)}`}
+              {selectedPackage && ` - ${formatCurrency(selectedPackage.price)}`}
             </Button>
           )}
         </DialogFooter>
@@ -351,32 +371,46 @@ export function BoostProductModal({
               <div className="rounded-lg border p-3 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Sản phẩm</span>
-                  <span className="font-medium text-right max-w-[200px] truncate">{productTitle}</span>
+                  <span className="font-medium text-right max-w-[200px] truncate">
+                    {productTitle}
+                  </span>
                 </div>
                 <Separator />
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Gói đẩy</span>
-                  <span className="font-medium">{selectedPackage.displayName}</span>
+                  <span className="font-medium">
+                    {selectedPackage.displayName}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Thời hạn</span>
-                  <span className="font-medium">{selectedPackage.durationDays} ngày</span>
+                  <span className="font-medium">
+                    {selectedPackage.durationDays} ngày
+                  </span>
                 </div>
                 <Separator />
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Chi phí</span>
-                  <span className="font-bold text-orange-600">{formatCurrency(selectedPackage.price)}</span>
+                  <span className="font-bold text-orange-600">
+                    {formatCurrency(selectedPackage.price)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Số dư sau</span>
-                  <span className="font-medium text-green-600">{formatCurrency(currentBalance - selectedPackage.price)}</span>
+                  <span className="font-medium text-green-600">
+                    {formatCurrency(currentBalance - selectedPackage.price)}
+                  </span>
                 </div>
               </div>
             </div>
           )}
 
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setShowConfirm(false)} disabled={boostMutation.isPending}>
+            <Button
+              variant="outline"
+              onClick={() => setShowConfirm(false)}
+              disabled={boostMutation.isPending}
+            >
               Hủy
             </Button>
             <Button

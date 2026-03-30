@@ -139,8 +139,15 @@ export default function SellerDetailPage() {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title={seller ? `${seller.name} - Shop trên Chợ Giá Rẻ` : 'Shop trên Chợ Giá Rẻ'}
-        description={seller?.description || `Xem sản phẩm từ ${seller?.name || 'người bán'} trên Chợ Giá Rẻ`}
+        title={
+          seller
+            ? `${seller.name} - Shop trên Chợ Giá Rẻ`
+            : 'Shop trên Chợ Giá Rẻ'
+        }
+        description={
+          seller?.description ||
+          `Xem sản phẩm từ ${seller?.name || 'người bán'} trên Chợ Giá Rẻ`
+        }
         keywords={`${seller?.name || ''}, shop, người bán, chợ giá rẻ`}
         image={seller?.logoUrl || undefined}
         url={`https://chogiare.com/shop/${id}`}
@@ -210,7 +217,10 @@ export default function SellerDetailPage() {
                         <span className="text-white/80">•</span>
                       </>
                     )}
-                    <span>{seller?.totalProducts || productsData?.total || 0} sản phẩm</span>
+                    <span>
+                      {seller?.totalProducts || productsData?.total || 0} sản
+                      phẩm
+                    </span>
                   </div>
                   {seller?.description && (
                     <p className="text-sm text-white/80 mt-2 line-clamp-2">

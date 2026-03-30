@@ -109,10 +109,17 @@ export default function SellerSupportPage() {
   })
 
   const replyMutation = useMutation({
-    mutationFn: ({ ticketId, message }: { ticketId: number; message: string }) =>
-      supportTicketApi.reply(ticketId, message),
+    mutationFn: ({
+      ticketId,
+      message,
+    }: {
+      ticketId: number
+      message: string
+    }) => supportTicketApi.reply(ticketId, message),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['support-ticket-detail', selectedTicketId] })
+      queryClient.invalidateQueries({
+        queryKey: ['support-ticket-detail', selectedTicketId],
+      })
       queryClient.invalidateQueries({ queryKey: ['my-support-tickets'] })
       setReplyMessage('')
       toast.success('Phản hồi đã được gửi')
@@ -131,7 +138,8 @@ export default function SellerSupportPage() {
       setFormErrors({})
       setIsSubmitting(false)
       toast.success('Ticket đã được gửi thành công!', {
-        description: 'Xin lỗi bạn vì sự bất tiện này. Đội ngũ hỗ trợ sẽ phản hồi trong thời gian sớm nhất.',
+        description:
+          'Xin lỗi bạn vì sự bất tiện này. Đội ngũ hỗ trợ sẽ phản hồi trong thời gian sớm nhất.',
       })
     },
     onError: () => {
@@ -184,7 +192,9 @@ export default function SellerSupportPage() {
   }
 
   const totalTickets = tickets.length
-  const openTickets = tickets.filter((t: SupportTicket) => t.status === 0).length
+  const openTickets = tickets.filter(
+    (t: SupportTicket) => t.status === 0
+  ).length
   const inProgressTickets = tickets.filter(
     (t: SupportTicket) => t.status === 1
   ).length
@@ -293,11 +303,16 @@ export default function SellerSupportPage() {
                     value={newTicket.title}
                     onChange={e => {
                       setNewTicket({ ...newTicket, title: e.target.value })
-                      if (formErrors.title) setFormErrors(prev => ({ ...prev, title: '' }))
+                      if (formErrors.title)
+                        setFormErrors(prev => ({ ...prev, title: '' }))
                     }}
                     className={formErrors.title ? 'border-red-500' : ''}
                   />
-                  {formErrors.title && <p className="text-sm text-red-500 mt-1">{formErrors.title}</p>}
+                  {formErrors.title && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {formErrors.title}
+                    </p>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -356,12 +371,17 @@ export default function SellerSupportPage() {
                         ...newTicket,
                         description: e.target.value,
                       })
-                      if (formErrors.description) setFormErrors(prev => ({ ...prev, description: '' }))
+                      if (formErrors.description)
+                        setFormErrors(prev => ({ ...prev, description: '' }))
                     }}
                     rows={5}
                     className={formErrors.description ? 'border-red-500' : ''}
                   />
-                  {formErrors.description && <p className="text-sm text-red-500 mt-1">{formErrors.description}</p>}
+                  {formErrors.description && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {formErrors.description}
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center justify-end gap-2">
                   <Button
@@ -370,10 +390,7 @@ export default function SellerSupportPage() {
                   >
                     Hủy
                   </Button>
-                  <Button
-                    onClick={handleCreateTicket}
-                    disabled={isSubmitting}
-                  >
+                  <Button onClick={handleCreateTicket} disabled={isSubmitting}>
                     {isSubmitting ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     ) : (
@@ -452,9 +469,7 @@ export default function SellerSupportPage() {
                   {filteredTickets.length === 0 ? (
                     <div className="text-center py-12">
                       <HelpCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-500">
-                        Không tìm thấy ticket nào
-                      </p>
+                      <p className="text-gray-500">Không tìm thấy ticket nào</p>
                     </div>
                   ) : (
                     filteredTickets.map((ticket: SupportTicket) => (
@@ -475,8 +490,7 @@ export default function SellerSupportPage() {
                                   'bg-gray-100 text-gray-800'
                                 }
                               >
-                                {PRIORITY_MAP[ticket.priority]?.label ||
-                                  'N/A'}
+                                {PRIORITY_MAP[ticket.priority]?.label || 'N/A'}
                               </Badge>
                               <Badge
                                 className={
@@ -521,7 +535,12 @@ export default function SellerSupportPage() {
         </div>
 
         {/* Ticket Detail Dialog */}
-        <Dialog open={selectedTicketId !== null} onOpenChange={(open) => { if (!open) setSelectedTicketId(null) }}>
+        <Dialog
+          open={selectedTicketId !== null}
+          onOpenChange={open => {
+            if (!open) setSelectedTicketId(null)
+          }}
+        >
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Chi tiết ticket</DialogTitle>
@@ -534,23 +553,42 @@ export default function SellerSupportPage() {
               <div className="space-y-4">
                 {/* Ticket info */}
                 <div>
-                  <h3 className="text-lg font-semibold">{ticketDetail.title}</h3>
+                  <h3 className="text-lg font-semibold">
+                    {ticketDetail.title}
+                  </h3>
                   <div className="flex items-center gap-2 mt-2">
-                    <Badge className={PRIORITY_MAP[ticketDetail.priority]?.color || 'bg-gray-100 text-gray-800'}>
+                    <Badge
+                      className={
+                        PRIORITY_MAP[ticketDetail.priority]?.color ||
+                        'bg-gray-100 text-gray-800'
+                      }
+                    >
                       {PRIORITY_MAP[ticketDetail.priority]?.label || 'N/A'}
                     </Badge>
-                    <Badge className={STATUS_MAP[ticketDetail.status]?.color || 'bg-gray-100 text-gray-800'}>
+                    <Badge
+                      className={
+                        STATUS_MAP[ticketDetail.status]?.color ||
+                        'bg-gray-100 text-gray-800'
+                      }
+                    >
                       {STATUS_MAP[ticketDetail.status]?.label || 'N/A'}
                     </Badge>
-                    <Badge variant="outline">{CATEGORY_MAP[ticketDetail.category] || 'Khác'}</Badge>
+                    <Badge variant="outline">
+                      {CATEGORY_MAP[ticketDetail.category] || 'Khác'}
+                    </Badge>
                   </div>
                 </div>
 
                 {/* Description */}
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{ticketDetail.description}</p>
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                    {ticketDetail.description}
+                  </p>
                   <p className="text-xs text-gray-400 mt-2">
-                    Gửi lúc: {new Date(Number(ticketDetail.createdAt)).toLocaleString('vi-VN')}
+                    Gửi lúc:{' '}
+                    {new Date(Number(ticketDetail.createdAt)).toLocaleString(
+                      'vi-VN'
+                    )}
                   </p>
                 </div>
 
@@ -558,11 +596,16 @@ export default function SellerSupportPage() {
                 <div>
                   <h4 className="font-medium mb-3 flex items-center gap-2">
                     <MessageSquare className="h-4 w-4" />
-                    Phản hồi ({Array.isArray(ticketDetail.replies) ? ticketDetail.replies.length : 0})
+                    Phản hồi (
+                    {Array.isArray(ticketDetail.replies)
+                      ? ticketDetail.replies.length
+                      : 0}
+                    )
                   </h4>
-                  {Array.isArray(ticketDetail.replies) && ticketDetail.replies.length > 0 ? (
+                  {Array.isArray(ticketDetail.replies) &&
+                  ticketDetail.replies.length > 0 ? (
                     <div className="space-y-3">
-                      {ticketDetail.replies.map((reply) => (
+                      {ticketDetail.replies.map(reply => (
                         <div
                           key={reply.id}
                           className={`p-3 rounded-lg ${reply.isInternal ? 'bg-blue-50 border-l-4 border-blue-400' : 'bg-gray-50 border-l-4 border-gray-300'}`}
@@ -571,22 +614,34 @@ export default function SellerSupportPage() {
                             <div className="flex items-center gap-2">
                               <User className="h-3 w-3 text-gray-500" />
                               <span className="text-sm font-medium">
-                                {reply.isInternal ? 'Quản trị viên' : (reply.user?.fullName || reply.user?.email || 'Bạn')}
+                                {reply.isInternal
+                                  ? 'Quản trị viên'
+                                  : reply.user?.fullName ||
+                                    reply.user?.email ||
+                                    'Bạn'}
                               </span>
                               {reply.isInternal && (
-                                <Badge className="bg-blue-100 text-blue-700 text-xs">Admin</Badge>
+                                <Badge className="bg-blue-100 text-blue-700 text-xs">
+                                  Admin
+                                </Badge>
                               )}
                             </div>
                             <span className="text-xs text-gray-400">
-                              {new Date(Number(reply.createdAt)).toLocaleString('vi-VN')}
+                              {new Date(Number(reply.createdAt)).toLocaleString(
+                                'vi-VN'
+                              )}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-700 whitespace-pre-wrap">{reply.message}</p>
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                            {reply.message}
+                          </p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-400 text-center py-4">Chưa có phản hồi nào</p>
+                    <p className="text-sm text-gray-400 text-center py-4">
+                      Chưa có phản hồi nào
+                    </p>
                   )}
                 </div>
 
@@ -606,7 +661,10 @@ export default function SellerSupportPage() {
                     <Button
                       onClick={() => {
                         if (!replyMessage.trim() || !selectedTicketId) return
-                        replyMutation.mutate({ ticketId: selectedTicketId, message: replyMessage.trim() })
+                        replyMutation.mutate({
+                          ticketId: selectedTicketId,
+                          message: replyMessage.trim(),
+                        })
                       }}
                       disabled={replyMutation.isPending || !replyMessage.trim()}
                       size="icon"

@@ -74,7 +74,7 @@ const viToEnMap: Record<string, string> = {
   'Mã SKU': 'sku',
   'Mã vạch': 'barcode',
   'Từ khóa': 'tags',
-  'Nhãn': 'badges',
+  Nhãn: 'badges',
   'Hình ảnh': 'images',
   'Bảo hành': 'warranty',
   'Chính sách đổi trả': 'returnPolicy',
@@ -118,10 +118,15 @@ export default function ImportProductsPage() {
           }
 
           // Convert to JSON (raw column headers)
-          const rawData = XLSX.utils.sheet_to_json(worksheet) as Record<string, unknown>[]
+          const rawData = XLSX.utils.sheet_to_json(worksheet) as Record<
+            string,
+            unknown
+          >[]
 
           // Map Vietnamese headers to English field names
-          const mapRow = (row: Record<string, unknown>): Record<string, unknown> => {
+          const mapRow = (
+            row: Record<string, unknown>
+          ): Record<string, unknown> => {
             const mapped: Record<string, unknown> = {}
             for (const [key, value] of Object.entries(row)) {
               const englishKey = viToEnMap[key] || key
@@ -136,14 +141,19 @@ export default function ImportProductsPage() {
           const parseErrors: string[] = []
 
           const parseNumber = (value: unknown): number | undefined => {
-            if (value === undefined || value === null || value === '') return undefined
+            if (value === undefined || value === null || value === '')
+              return undefined
             if (typeof value === 'number') return value
             const parsed = parseFloat(String(value))
             return isNaN(parsed) ? undefined : parsed
           }
 
-          const parseInteger = (value: unknown, defaultVal?: number): number | undefined => {
-            if (value === undefined || value === null || value === '') return defaultVal
+          const parseInteger = (
+            value: unknown,
+            defaultVal?: number
+          ): number | undefined => {
+            if (value === undefined || value === null || value === '')
+              return defaultVal
             if (typeof value === 'number') return Math.floor(value)
             const parsed = parseInt(String(value), 10)
             return isNaN(parsed) ? defaultVal : parsed
@@ -151,7 +161,10 @@ export default function ImportProductsPage() {
 
           const parseStringArray = (value: unknown): string[] => {
             if (!value) return []
-            return String(value).split(',').map((item: string) => item.trim()).filter(Boolean)
+            return String(value)
+              .split(',')
+              .map((item: string) => item.trim())
+              .filter(Boolean)
           }
 
           jsonData.forEach((row, index) => {
@@ -169,24 +182,34 @@ export default function ImportProductsPage() {
                 categoryId: String(row.categoryId || '1'),
                 images: parseStringArray(row.images),
                 condition: ((row.condition as string) || 'new') as
-                  | 'new' | 'like_new' | 'good' | 'fair' | 'poor',
+                  | 'new'
+                  | 'like_new'
+                  | 'good'
+                  | 'fair'
+                  | 'poor',
                 tags: parseStringArray(row.tags),
                 badges: parseStringArray(row.badges),
                 location: (row.location as string) || 'Hà Nội',
                 sku: row.sku ? String(row.sku) : undefined,
                 barcode: row.barcode ? String(row.barcode) : undefined,
                 warranty: row.warranty ? String(row.warranty) : undefined,
-                returnPolicy: row.returnPolicy ? String(row.returnPolicy) : undefined,
+                returnPolicy: row.returnPolicy
+                  ? String(row.returnPolicy)
+                  : undefined,
               }
 
               if (!product.title || product.price <= 0) {
-                parseErrors.push(`Dòng ${index + 2}: Thiếu tên sản phẩm hoặc giá không hợp lệ`)
+                parseErrors.push(
+                  `Dòng ${index + 2}: Thiếu tên sản phẩm hoặc giá không hợp lệ`
+                )
                 return
               }
 
               products.push(product)
             } catch (error) {
-              parseErrors.push(`Dòng ${index + 2}: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`)
+              parseErrors.push(
+                `Dòng ${index + 2}: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`
+              )
             }
           })
 
@@ -195,13 +218,21 @@ export default function ImportProductsPage() {
           }
 
           if (products.length === 0) {
-            reject(new Error('Không tìm thấy sản phẩm nào trong file. Vui lòng kiểm tra lại file Excel.'))
+            reject(
+              new Error(
+                'Không tìm thấy sản phẩm nào trong file. Vui lòng kiểm tra lại file Excel.'
+              )
+            )
             return
           }
 
           resolve(products)
         } catch (error) {
-          reject(new Error(`Lỗi đọc file Excel: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`))
+          reject(
+            new Error(
+              `Lỗi đọc file Excel: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`
+            )
+          )
         }
       }
 
@@ -299,22 +330,30 @@ export default function ImportProductsPage() {
           }
           // Optional fields — only include if defined
           if (product.description) productData.description = product.description
-          if (product.originalPrice) productData.originalPrice = product.originalPrice
+          if (product.originalPrice)
+            productData.originalPrice = product.originalPrice
           if (product.costPrice) productData.costPrice = product.costPrice
-          if (product.sellingPrice) productData.sellingPrice = product.sellingPrice
+          if (product.sellingPrice)
+            productData.sellingPrice = product.sellingPrice
           if (product.minStock) productData.minStock = product.minStock
           if (product.maxStock) productData.maxStock = product.maxStock
           if (product.location) productData.location = product.location
           if (product.sku) productData.sku = product.sku
           if (product.barcode) productData.barcode = product.barcode
           if (product.warranty) productData.warranty = product.warranty
-          if (product.returnPolicy) productData.returnPolicy = product.returnPolicy
-          if (product.tags && product.tags.length > 0) productData.tags = product.tags
+          if (product.returnPolicy)
+            productData.returnPolicy = product.returnPolicy
+          if (product.tags && product.tags.length > 0)
+            productData.tags = product.tags
           if (product.images && product.images.length > 0) {
             productData.images = product.images
           }
 
-          await createProduct.mutateAsync(productData as unknown as Parameters<typeof createProduct.mutateAsync>[0])
+          await createProduct.mutateAsync(
+            productData as unknown as Parameters<
+              typeof createProduct.mutateAsync
+            >[0]
+          )
           success++
           setSuccessCount(success)
         } catch (error) {
@@ -410,10 +449,22 @@ export default function ImportProductsPage() {
     const ws = XLSX.utils.json_to_sheet(templateData)
 
     ws['!cols'] = [
-      { wch: 35 }, { wch: 50 }, { wch: 12 }, { wch: 12 }, { wch: 12 },
-      { wch: 12 }, { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 12 },
-      { wch: 15 }, { wch: 18 }, { wch: 15 }, { wch: 25 },
-      { wch: 35 }, { wch: 35 },
+      { wch: 35 },
+      { wch: 50 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 10 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 12 },
+      { wch: 15 },
+      { wch: 18 },
+      { wch: 15 },
+      { wch: 25 },
+      { wch: 35 },
+      { wch: 35 },
     ]
 
     XLSX.utils.book_append_sheet(wb, ws, 'Sản phẩm')

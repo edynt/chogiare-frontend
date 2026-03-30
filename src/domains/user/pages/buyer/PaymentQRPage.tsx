@@ -206,16 +206,16 @@ export default function PaymentQRPage() {
                 <div className="flex items-center justify-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
                   <Info className="h-4 w-4" />
                   <span>
-                    Hết thời gian chờ. Nếu bạn đã chuyển khoản, vui lòng liên
-                    hệ hỗ trợ với mã giao dịch {transactionId}.
+                    Hết thời gian chờ. Nếu bạn đã chuyển khoản, vui lòng liên hệ
+                    hỗ trợ với mã giao dịch {transactionId}.
                   </span>
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-2 text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   <span>
-                    Đang chờ xác nhận thanh toán... Hệ thống sẽ tự động cập
-                    nhật khi nhận được tiền.
+                    Đang chờ xác nhận thanh toán... Hệ thống sẽ tự động cập nhật
+                    khi nhận được tiền.
                   </span>
                 </div>
               )}
@@ -280,9 +280,7 @@ export default function PaymentQRPage() {
                     </p>
                   </div>
                   <CopyButton
-                    text={
-                      sepayData?.transferContent || `CGA${transactionId}`
-                    }
+                    text={sepayData?.transferContent || `CGA${transactionId}`}
                     field="content"
                     label="nội dung chuyển khoản"
                   />
@@ -314,9 +312,7 @@ export default function PaymentQRPage() {
                   </h3>
                   <ol className="space-y-2 text-sm text-blue-800 list-decimal list-inside">
                     <li>Mở ứng dụng ngân hàng trên điện thoại</li>
-                    <li>
-                      Quét mã QR ở trên - thông tin sẽ được điền tự động
-                    </li>
+                    <li>Quét mã QR ở trên - thông tin sẽ được điền tự động</li>
                     <li>
                       Hoặc chuyển khoản thủ công với nội dung:{' '}
                       <span className="font-mono font-semibold">
@@ -324,8 +320,8 @@ export default function PaymentQRPage() {
                       </span>
                     </li>
                     <li>
-                      Sau khi chuyển khoản, hệ thống sẽ tự động xác nhận
-                      trong vài giây
+                      Sau khi chuyển khoản, hệ thống sẽ tự động xác nhận trong
+                      vài giây
                     </li>
                   </ol>
                 </div>

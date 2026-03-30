@@ -5,7 +5,10 @@ import type { QueryNotificationParams } from '@user/api/notifications'
 import type { CreateNotificationRequest } from '@admin/api/notifications'
 import { queryKeys } from '@/constants/queryKeys'
 
-export const useNotifications = (params?: QueryNotificationParams, options?: { enabled?: boolean }) => {
+export const useNotifications = (
+  params?: QueryNotificationParams,
+  options?: { enabled?: boolean }
+) => {
   return useQuery({
     queryKey: queryKeys.notifications.all(params),
     queryFn: async () => {

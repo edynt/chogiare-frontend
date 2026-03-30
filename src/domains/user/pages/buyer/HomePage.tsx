@@ -434,7 +434,11 @@ export default function HomePage() {
                     </Link>
                   </Button>
                 </div>
-                <InfiniteProductGrid filters={{ limit: 30 }} maxProducts={30} viewAllLink="/products?discount=true" />
+                <InfiniteProductGrid
+                  filters={{ limit: 30 }}
+                  maxProducts={30}
+                  viewAllLink="/products?discount=true"
+                />
               </div>
             )}
           </LazySection>
@@ -461,7 +465,11 @@ export default function HomePage() {
                     </Link>
                   </Button>
                 </div>
-                <InfiniteProductGrid filters={{ limit: 30 }} maxProducts={30} viewAllLink="/products" />
+                <InfiniteProductGrid
+                  filters={{ limit: 30 }}
+                  maxProducts={30}
+                  viewAllLink="/products"
+                />
               </div>
             )}
           </LazySection>
